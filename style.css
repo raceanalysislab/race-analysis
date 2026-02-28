@@ -25,21 +25,19 @@
 
 /* ===== PRO THEME（形は一切変えず、色だけ差し替え） ===== */
 html[data-theme="pro"]{
-  /* ✅ “黒” をちゃんと黒に */
-  --bg: #060606;
-  --text: rgba(245,245,245,.96);
-  --muted: rgba(245,245,245,.62);
+  /* ベース黒をもっと“漆黒”へ */
+  --bg: #05070a;
+  --text: #efe7d2; /* 白じゃなく金寄り */
+  --muted: rgba(239,231,210,.72);
 
-  /* ✅ 青みを消したニュートラル黒 */
-  --cardOff: #0b0b0b;
-  --cardOn:  #111111;
+  --cardOff: #0b0f14; /* 黒寄せ */
+  --cardOn: #0a0e13;
 
-  /* ✅ 境界は白じゃなく薄い金寄りで上品に */
-  --border: rgba(245,245,245,.08);
+  --border: rgba(239,231,210,.14);
 
-  /* ✅ 金（くすませた本物寄り） */
-  --borderOn: #c9a227;
-  --accent:  #c9a227;
+  /* 黒金の金（黄味を抑えた） */
+  --borderOn: #b88a2a;
+  --accent:  #c89b3c;
 }
 
 *{ box-sizing: border-box; }
@@ -57,15 +55,14 @@ body{
 }
 
 /* =========================================================
-   ✅ PRO 高級感MAX：背景 “質感のある黒” + 微ノイズ
-   （グリッド/余白/サイズは触らない）
+   ✅ PRO：2枚目寄せ「黒金の布＋金の気配」
    ========================================================= */
 html[data-theme="pro"] body{
   background:
-    radial-gradient(1400px 900px at 12% -10%, rgba(201,162,39,.10), transparent 62%),
-    radial-gradient(900px 600px at 92% 12%, rgba(255,255,255,.04), transparent 64%),
-    radial-gradient(700px 520px at 30% 95%, rgba(201,162,39,.04), transparent 58%),
-    linear-gradient(180deg, rgba(255,255,255,.02), transparent 24%),
+    radial-gradient(1200px 900px at 18% -10%, rgba(200,155,60,.20), transparent 58%),
+    radial-gradient(900px 700px at 92% 10%, rgba(255,255,255,.06), transparent 62%),
+    radial-gradient(800px 600px at 40% 105%, rgba(200,155,60,.10), transparent 55%),
+    linear-gradient(180deg, rgba(255,255,255,.02), transparent 26%),
     var(--bg);
 }
 
@@ -74,13 +71,12 @@ html[data-theme="pro"] body::before{
   position: fixed;
   inset: 0;
   pointer-events: none;
-  opacity: .050;
+  opacity: .06;
   mix-blend-mode: overlay;
-  /* 画像なしノイズ（軽い） */
   background-image:
     repeating-linear-gradient(0deg,
-      rgba(255,255,255,.12) 0px,
-      rgba(255,255,255,.12) 1px,
+      rgba(255,255,255,.10) 0px,
+      rgba(255,255,255,.10) 1px,
       rgba(0,0,0,0) 2px,
       rgba(0,0,0,0) 3px
     );
@@ -127,20 +123,20 @@ html[data-theme="pro"] body::before{
   box-shadow: 0 1px 0 rgba(15,23,42,.06);
 }
 
-/* ✅ PRO：ヘッダーボタンを “金属フレーム” に（発光ではなく艶） */
+/* ✅ PRO：ヘッダーボタン＝金の縁＋薄いグロー（2枚目寄せ） */
 html[data-theme="pro"] .top__btn{
-  border-color: rgba(201,162,39,.55);
+  border: 1px solid rgba(200,155,60,.55);
   background:
-    linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.015)) padding-box;
+    linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.01));
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.10),
-    inset 0 -1px 0 rgba(0,0,0,.60),
-    0 10px 26px rgba(0,0,0,.55);
+    inset 0 1px 0 rgba(255,255,255,.08),
+    0 10px 26px rgba(0,0,0,.60),
+    0 0 18px rgba(200,155,60,.08);
 }
 
 .top__btn.is-loading{ opacity: .6; }
 
-/* ✅ PROトグル（形固定。色だけテーマで変わる） */
+/* ✅ PROトグル（形固定） */
 .top__pro{
   appearance:none;
   border: 1px solid var(--border);
@@ -158,15 +154,14 @@ html[data-theme="pro"] .top__btn{
   box-shadow: 0 1px 0 rgba(15,23,42,.06);
 }
 
-/* ✅ PRO：top__proも同じ金属フレーム */
 html[data-theme="pro"] .top__pro{
-  border-color: rgba(201,162,39,.55);
+  border: 1px solid rgba(200,155,60,.55);
   background:
-    linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.015)) padding-box;
+    linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.01));
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.10),
-    inset 0 -1px 0 rgba(0,0,0,.60),
-    0 10px 26px rgba(0,0,0,.55);
+    inset 0 1px 0 rgba(255,255,255,.08),
+    0 10px 26px rgba(0,0,0,.60),
+    0 0 18px rgba(200,155,60,.08);
 }
 
 .top__proDot{
@@ -176,14 +171,15 @@ html[data-theme="pro"] .top__pro{
   background: var(--accent);
 }
 
-/* ✅ PRO：ドットを “宝石っぽい艶” に（光らせ過ぎない） */
+/* ✅ PRO：ドット＝金の芯＋ハイライト */
 html[data-theme="pro"] .top__proDot{
   background:
-    radial-gradient(circle at 30% 30%, rgba(255,255,255,.38), rgba(255,255,255,0) 45%),
-    radial-gradient(circle at 60% 70%, rgba(230,195,92,.50), rgba(201,162,39,.95) 55%, rgba(148,110,24,1) 100%);
+    radial-gradient(circle at 30% 30%, rgba(255,255,255,.40), rgba(255,255,255,0) 45%),
+    radial-gradient(circle at 55% 70%, rgba(235,210,140,.65), rgba(200,155,60,.95) 58%, rgba(128,88,22,1) 100%);
   box-shadow:
-    0 1px 0 rgba(0,0,0,.60),
-    0 0 0 1px rgba(201,162,39,.18);
+    0 1px 0 rgba(0,0,0,.55),
+    0 0 0 1px rgba(200,155,60,.22),
+    0 0 10px rgba(200,155,60,.18);
 }
 
 .top__sub{
@@ -235,17 +231,21 @@ html[data-theme="pro"] .top__proDot{
   min-height: 0; /* grid内の縮み対策 */
 }
 
-/* ✅ PRO：カード面を “黒レザー + ガラス反射” に（形はそのまま） */
+/* ✅ PRO：カード面＝黒、縁＝鈍い金、外側に薄い金グロー（2枚目の“光り”） */
 html[data-theme="pro"] .card{
   background:
+    radial-gradient(900px 220px at 50% 0%, rgba(255,255,255,.05), transparent 55%),
     linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,0) 40%),
-    radial-gradient(900px 220px at 50% 0%, rgba(255,255,255,.04), transparent 58%),
     var(--cardOff);
-  border-color: rgba(245,245,245,.08);
+
+  border-color: rgba(200,155,60,.30);
+
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,.05),
     inset 0 -1px 0 rgba(0,0,0,.65),
-    0 10px 24px rgba(0,0,0,.62);
+    0 10px 24px rgba(0,0,0,.70),
+    0 0 0 1px rgba(200,155,60,.08),
+    0 0 16px rgba(200,155,60,.10);
 }
 
 /* ====== FREE ON ====== */
@@ -254,35 +254,46 @@ html[data-theme="pro"] .card{
   border-color: var(--borderOn);
 }
 
-/* ====== PRO ON（金属エッジ：枠だけ金属。面は黒のまま） ====== */
+/* ====== PRO ON：金縁グラデ＋薄い外グロー（これが2枚目の肝） ====== */
 html[data-theme="pro"] .card--on{
   border: 2px solid transparent; /* 枠の太さ維持 */
   background:
-    /* 面（中） */
-    linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,0) 36%),
+    /* 面（黒） */
+    radial-gradient(900px 240px at 50% 0%, rgba(255,255,255,.06), transparent 56%),
+    linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,0) 42%),
     linear-gradient(var(--cardOn), var(--cardOn)) padding-box,
-    /* 枠（金属） */
+    /* 枠（金） */
     linear-gradient(
       135deg,
-      rgba(230,195,92,.14) 0%,
-      rgba(201,162,39,.86) 18%,
-      rgba(255,255,255,.16) 28%,
-      rgba(201,162,39,.80) 44%,
-      rgba(148,110,24,.88) 62%,
-      rgba(255,255,255,.11) 74%,
-      rgba(201,162,39,.84) 86%,
-      rgba(230,195,92,.12) 100%
+      rgba(255,235,190,.10) 0%,
+      rgba(200,155,60,.82) 18%,
+      rgba(255,255,255,.14) 28%,
+      rgba(200,155,60,.72) 44%,
+      rgba(120,80,18,.86) 62%,
+      rgba(255,255,255,.10) 74%,
+      rgba(200,155,60,.78) 86%,
+      rgba(255,235,190,.10) 100%
     ) border-box;
+
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,.06),
-    inset 0 -1px 0 rgba(0,0,0,.65),
-    0 12px 28px rgba(0,0,0,.70);
+    0 12px 28px rgba(0,0,0,.75),
+    0 0 22px rgba(200,155,60,.14);
 }
 
 /* OFF */
 .card--off{
   background: var(--cardOff);
   border-color: var(--border);
+}
+
+/* ✅ PRO：OFFでも縁だけ少し金寄せ（2枚目の“全部同じ世界観”） */
+html[data-theme="pro"] .card--off{
+  border-color: rgba(200,155,60,.24);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.04),
+    0 10px 24px rgba(0,0,0,.70),
+    0 0 14px rgba(200,155,60,.08);
 }
 
 .card__name{
@@ -297,6 +308,12 @@ html[data-theme="pro"] .card--on{
   text-overflow: ellipsis;
 }
 
+/* ✅ PRO：会場名を“金文字”に寄せる（黄色じゃなく鈍い金） */
+html[data-theme="pro"] .card__name{
+  color: rgba(235,210,140,.92);
+  text-shadow: 0 1px 0 rgba(0,0,0,.70);
+}
+
 /* ✅ 3行を絶対崩さない */
 .card__line{
   font-weight: 800;
@@ -306,9 +323,9 @@ html[data-theme="pro"] .card--on{
   word-break: keep-all;
 }
 
-/* ✅ PROで会場文字が見えなくなるのを防ぐ（少しだけ締めて高級寄せ） */
+/* ✅ PRO：2-3行目も金寄せ（薄め） */
 html[data-theme="pro"] .card__line{
-  color: rgba(245,245,245,.66);
+  color: rgba(235,210,140,.55);
 }
 
 /* 非開催 */
@@ -316,9 +333,11 @@ html[data-theme="pro"] .card__line{
 .card--off .card__line{
   color: #6b7280;
 }
+
+/* ✅ PRO：非開催は“くすんだ金” */
 html[data-theme="pro"] .card--off .card__name,
 html[data-theme="pro"] .card--off .card__line{
-  color: rgba(245,245,245,.38);
+  color: rgba(235,210,140,.34);
 }
 
 /* 2行目 / 3行目 */
@@ -331,13 +350,13 @@ html[data-theme="pro"] .card--off .card__line{
   letter-spacing: 0.02em;
 }
 
-/* ✅ PRO：タップ時だけ “重い” 反応（上品に沈む感じ） */
+/* ✅ PRO：タップ時＝グローが少し強くなる（2枚目の“浮く”感じ） */
 html[data-theme="pro"] .card:active{
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.06),
-    inset 0 -1px 0 rgba(0,0,0,.65),
-    0 0 0 1px rgba(201,162,39,.14),
-    0 16px 32px rgba(0,0,0,.78);
+    inset 0 1px 0 rgba(255,255,255,.07),
+    0 14px 32px rgba(0,0,0,.78),
+    0 0 0 1px rgba(200,155,60,.18),
+    0 0 26px rgba(200,155,60,.20);
   transform: translateY(-1px);
 }
 
@@ -351,7 +370,7 @@ html[data-theme="pro"] .card:active{
 html[data-theme="pro"] .card:focus-visible,
 html[data-theme="pro"] .top__btn:focus-visible,
 html[data-theme="pro"] .top__pro:focus-visible{
-  outline-color: rgba(201,162,39,.30);
+  outline-color: rgba(200,155,60,.35);
 }
 
 /* =========================
@@ -401,17 +420,17 @@ html[data-theme="pro"] .top__pro:focus-visible{
   box-shadow: 0 1px 0 rgba(15,23,42,.04);
 }
 
-/* ✅ PRO：picksカードも “黒レザー＋反射” */
+/* ✅ PRO：picksも金縁＋グロー */
 html[data-theme="pro"] .pickCard{
+  border: 1px solid rgba(200,155,60,.30);
   background:
-    linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,0) 44%),
-    radial-gradient(900px 240px at 50% 0%, rgba(255,255,255,.04), transparent 58%),
-    rgba(16,16,16,.78);
-  border-color: rgba(201,162,39,.22);
+    radial-gradient(900px 240px at 50% 0%, rgba(255,255,255,.06), transparent 56%),
+    linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,0) 46%),
+    rgba(10,14,19,.78);
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.05),
-    inset 0 -1px 0 rgba(0,0,0,.65),
-    0 12px 28px rgba(0,0,0,.70);
+    inset 0 1px 0 rgba(255,255,255,.06),
+    0 14px 30px rgba(0,0,0,.75),
+    0 0 22px rgba(200,155,60,.14);
 }
 
 .pickTop{
@@ -447,7 +466,7 @@ html[data-theme="pro"] .pickCard{
 }
 
 html[data-theme="pro"] .pickSub{
-  color: rgba(245,245,245,.66);
+  color: rgba(235,210,140,.60);
 }
 
 .badge{
@@ -461,11 +480,11 @@ html[data-theme="pro"] .pickSub{
   white-space: nowrap;
 }
 
-/* ✅ PRO：バッジも “薄金フレーム” */
+/* ✅ PRO：バッジも黒金 */
 html[data-theme="pro"] .badge{
-  border-color: rgba(201,162,39,.20);
-  background:
-    linear-gradient(180deg, rgba(201,162,39,.09), rgba(201,162,39,.03));
+  border-color: rgba(200,155,60,.22);
+  background: rgba(200,155,60,.08);
+  color: rgba(235,210,140,.90);
 }
 
 .badge--sg{ border-color: rgba(220,38,38,.35); background: rgba(220,38,38,.06); }
@@ -483,7 +502,7 @@ html[data-theme="pro"] .badge{
 }
 
 html[data-theme="pro"] .pickNote{
-  color: rgba(245,245,245,.80);
+  color: rgba(239,231,210,.82);
 }
 
 .pickEmpty{
@@ -496,14 +515,13 @@ html[data-theme="pro"] .pickNote{
 }
 
 html[data-theme="pro"] .pickEmpty{
-  background: rgba(16,16,16,.62);
-  border-color: rgba(201,162,39,.22);
-  color: rgba(245,245,245,.66);
+  background: rgba(10,14,19,.62);
+  border-color: rgba(200,155,60,.25);
+  color: rgba(235,210,140,.70);
 }
 
 /* =========================
    ✅ 購入CTA（3ボタン）
-   ※グリッド比率に影響なし（picksセクション内だけ）
    ========================= */
 .picksCta{
   margin-top: 10px;
@@ -531,37 +549,25 @@ html[data-theme="pro"] .pickEmpty{
   box-shadow: 0 1px 0 rgba(15,23,42,.04);
 }
 
-/* ✅ PRO：CTAを “金縁プレート” に（高級感の要） */
+/* ✅ PRO：CTA＝金縁＋薄いグロー */
 html[data-theme="pro"] .picksBtn{
-  border: 1px solid transparent;
+  border: 1px solid rgba(200,155,60,.32);
   background:
-    linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,0) 48%),
-    linear-gradient(rgba(16,16,16,.82), rgba(16,16,16,.82)) padding-box,
-    linear-gradient(
-      135deg,
-      rgba(230,195,92,.12) 0%,
-      rgba(201,162,39,.48) 22%,
-      rgba(255,255,255,.12) 34%,
-      rgba(201,162,39,.40) 50%,
-      rgba(148,110,24,.52) 68%,
-      rgba(255,255,255,.08) 78%,
-      rgba(201,162,39,.50) 90%,
-      rgba(230,195,92,.10) 100%
-    ) border-box;
-
+    radial-gradient(900px 240px at 50% 0%, rgba(255,255,255,.06), transparent 56%),
+    linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,0) 54%),
+    rgba(10,14,19,.78);
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.05),
-    inset 0 -1px 0 rgba(0,0,0,.65),
-    0 14px 30px rgba(0,0,0,.72);
+    inset 0 1px 0 rgba(255,255,255,.06),
+    0 16px 34px rgba(0,0,0,.78),
+    0 0 24px rgba(200,155,60,.16);
 }
 
 html[data-theme="pro"] .picksBtn:active{
   transform: translateY(-1px);
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.06),
-    inset 0 -1px 0 rgba(0,0,0,.65),
-    0 0 0 1px rgba(201,162,39,.14),
-    0 18px 36px rgba(0,0,0,.82);
+    inset 0 1px 0 rgba(255,255,255,.07),
+    0 18px 38px rgba(0,0,0,.82),
+    0 0 28px rgba(200,155,60,.20);
 }
 
 .picksBtnMain{
