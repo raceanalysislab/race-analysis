@@ -29,8 +29,8 @@ html[data-theme="pro"]{
   --cardOn:  #090c11;
 
   /* ✅ 金：銅排除（黄味はあるが“茶”は入れない） */
-  --gold: rgba(255,224,150,.98);      /* 枠・アクセント統一 */
-  --goldSoft: rgba(255,224,150,.45);  /* 薄い縁など */
+  --gold: rgba(255,224,150,.98);
+  --goldSoft: rgba(255,224,150,.45);
   --border: rgba(255,252,244,.18);
   --borderOn: var(--gold);
   --accent: var(--gold);
@@ -56,6 +56,11 @@ html[data-theme="pro"]{
     radial-gradient(900px 240px at 50% 0%, rgba(255,255,255,.09), transparent 62%),
     linear-gradient(180deg, rgba(255,255,255,.065), rgba(255,255,255,0) 54%);
 
+  /* ✅ ONだけ“面を明るく”して目立たせる（ここが差） */
+  --proCardFaceOn:
+    radial-gradient(900px 260px at 50% 0%, rgba(255,255,255,.13), transparent 64%),
+    linear-gradient(180deg, rgba(255,255,255,.085), rgba(255,255,255,0) 58%);
+
   /* ✅ 影（縁が沈まない） */
   --proCardShadowStd:
     inset 0 1px 0 rgba(255,255,255,.08),
@@ -63,10 +68,12 @@ html[data-theme="pro"]{
     0 10px 24px rgba(0,0,0,.80),
     0 0 22px rgba(255,224,150,.16);
 
+  /* ✅ ONは“金の外グロー”を増やす（枠は単色のまま） */
   --proCardShadowOn:
-    inset 0 1px 0 rgba(255,255,255,.09),
-    0 12px 28px rgba(0,0,0,.86),
-    0 0 30px rgba(255,224,150,.20);
+    inset 0 1px 0 rgba(255,255,255,.10),
+    0 14px 30px rgba(0,0,0,.88),
+    0 0 0 1px rgba(255,224,150,.20),
+    0 0 42px rgba(255,224,150,.26);
 
   --proCardShadowOff:
     inset 0 1px 0 rgba(255,255,255,.07),
@@ -233,26 +240,32 @@ html[data-theme="pro"] .top__proDot{
 
 /* ✅ PRO：縁グラデ完全撤去 → 単色金（MAX） */
 html[data-theme="pro"] .card{
-  border: 2px solid var(--gold);             /* ← ここが主役 */
+  border: 2px solid var(--gold);
   background:
     var(--proCardFace),
     linear-gradient(var(--cardOff), var(--cardOff));
   box-shadow: var(--proCardShadowStd);
 }
+
+/* ✅ PRO：開催ONだけ “面+グロー” を増やして目立たせる */
 html[data-theme="pro"] .card--on{
-  border-color: var(--gold);                 /* ONも同色で統一（銅化防止） */
+  border-color: var(--gold);
   background:
-    var(--proCardFace),
+    var(--proCardFaceOn),
     linear-gradient(var(--cardOn), var(--cardOn));
   box-shadow: var(--proCardShadowOn);
+  transform: translateY(-1px); /* ほんの少しだけ浮かせる（レイアウト崩れなし） */
 }
+
+/* OFFは少し落とす */
 html[data-theme="pro"] .card--off{
-  border-color: rgba(255,224,150,.78);       /* OFFだけ少し落とす */
+  border-color: rgba(255,224,150,.78);
   background:
     var(--proCardFace),
     linear-gradient(var(--cardOff), var(--cardOff));
   box-shadow: var(--proCardShadowOff);
 }
+
 html[data-theme="pro"] .card:active{
   box-shadow: var(--proCardActiveShadow);
   transform: translateY(-1px);
