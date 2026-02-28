@@ -383,23 +383,46 @@
       `;
     }
 
+    // ✅ 追加：開催判定（blocked でも bytes で判定する）
+    // - held:true はそのまま信頼
+    // - held:false/undefined でも status_code=200 かつ bytes が十分大きければ「開催扱い」
+    function inferHeld(v){
+      if (v && v.held === true) return true;
+
+      const sc = Number(v?.status_code || 0);
+      const bytes = Number(v?.bytes || 0);
+
+      // 目安：ブロック用の薄いHTMLは小さめ、開催ページは大きめ
+      // ※閾値は安全側で 20000 に固定
+      if (sc === 200 && bytes >= 20000) return true;
+
+      return false;
+    }
+
     function render(data){
       const map = new Map();
       (data.venues || []).forEach(v => map.set(v.jcd, v));
 
       const merged = VENUES.map(base => {
         const v = map.get(base.jcd) || {};
+        const held = inferHeld(v);
+
         return {
           jcd: base.jcd,
           name: base.name,
           url: v.url || "",
-          held: !!v.held,
+          held: held,
           grade: v.grade,
           day: v.day,
           race: v.race,
           time: v.time,
           next_r: v.next_r,
           close_at: v.close_at,
+
+          // 使わないけど、デバッグ用に残しておく（表示には影響しない）
+          status_code: v.status_code,
+          bytes: v.bytes,
+          note: v.note
         };
       });
 
