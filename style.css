@@ -77,10 +77,9 @@ html[data-theme="pro"]{
 
   /* ✅ OFFは暗く沈める（ここが主役） */
   --proCardShadowOff:
-    inset 0 1px 0 rgba(255,255,255,.035),
-    0 12px 26px rgba(0,0,0,.92),
-    0 0 10px rgba(0,0,0,.55);
-
+    inset 0 1px 0 rgba(255,255,255,.015),
+    0 18px 40px rgba(0,0,0,.97);
+  
   --proCardActiveShadow:
     inset 0 1px 0 rgba(255,255,255,.12),
     0 14px 32px rgba(0,0,0,.92),
@@ -258,15 +257,13 @@ html[data-theme="pro"] .card--on{
   transform: translateY(-1px);
 }
 
-/* ✅ OFFは暗く沈める（面/縁/文字すべて落とす） */
+/* ✅ PRO：非開催はさらに暗く（ほぼ背景化） */
 html[data-theme="pro"] .card--off{
-  border-color: rgba(255,224,150,.36);
-  background:
-    radial-gradient(900px 220px at 50% 0%, rgba(255,255,255,.035), transparent 72%),
-    linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0) 60%),
-    linear-gradient(#07090d, #07090d);
+  border-color: rgba(255,224,150,.10); /* 縁ほぼ消す */
+  background: linear-gradient(#040509, #040509);
   box-shadow: var(--proCardShadowOff);
-  filter: saturate(.85);
+  filter: saturate(.65) brightness(.75);
+  opacity: .72;
 }
 
 html[data-theme="pro"] .card:active{
@@ -274,7 +271,7 @@ html[data-theme="pro"] .card:active{
   transform: translateY(-1px);
 }
 
-/* ✅ 会場名：さらに明るく */
+/* ✅ 会場名 */
 .card__name{
   font-weight: 900;
   font-size: 18px;
@@ -307,11 +304,11 @@ html[data-theme="pro"] .card__line{ color: rgba(255,252,244,.82); }
 
 /* ✅ PRO：OFF文字をさらに暗く */
 html[data-theme="pro"] .card--off .card__name{
-  color: rgba(255,252,244,.34);
-  text-shadow: 0 1px 0 rgba(0,0,0,.90);
+  color: rgba(255,252,244,.12);
+  text-shadow: none;
 }
 html[data-theme="pro"] .card--off .card__line{
-  color: rgba(255,252,244,.20);
+  color: rgba(255,252,244,.06);
 }
 
 .card__line--mid{ font-size: 12px; letter-spacing: 0.01em; }
