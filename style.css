@@ -1,12 +1,8 @@
 :root{
-  /* iOS safe-area */
   --sat: env(safe-area-inset-top, 0px);
   --sab: env(safe-area-inset-bottom, 0px);
-
-  /* Safari下バー対策の固定余白（被り防止） */
   --bar: 140px;
 
-  /* ===== FREE ===== */
   --bg: #f3f4f6;
   --text: #0f172a;
   --muted: #64748b;
@@ -17,128 +13,120 @@
   --border: #cbd5e1;
   --borderOn: #3b82f6;
 
-  /* accent（FREE=青 / PRO=金） */
   --accent: #3b82f6;
-
-  --gridH: 520px; /* JSが上書き */
+  --gridH: 520px;
 }
 
-/* ===== PRO THEME（形は一切変えず、色だけ差し替え） ===== */
+/* ===== PRO THEME ===== */
 html[data-theme="pro"]{
-  /* ✅ 暗すぎ対策：面は黒のまま、文字/縁を1段明るく */
   --bg: #050608;
 
-  /* ✅ 会場文字を明るく（見えない問題の根本） */
-  --text: rgba(242,228,200,.92);
-  --muted: rgba(242,228,200,.60);
+  /* ✅ 会場名を最大級に明るく（白金寄り） */
+  --text: rgba(255,245,226,.98);
+  --muted: rgba(255,245,226,.72);
 
-  /* ✅ カード面を少しだけ持ち上げ（暗さ軽減） */
   --cardOff: #0a0d12;
   --cardOn:  #090c11;
 
-  /* 枠の基準色 */
-  --border: rgba(242,228,200,.18);
-  --borderOn: rgba(214,177,92,.95);
-  --accent:   rgba(214,177,92,.95);
+  /* ✅ 枠の基準も少し上げる */
+  --border: rgba(255,245,226,.22);
+  --borderOn: rgba(255,215,140,.98);
+  --accent:   rgba(255,215,140,.98);
 
-  /* ===== PRO 共通部品（ここ触れば全体が一発で変わる） ===== */
-
-  /* ✅ 右上PRO/更新：背景と同化（＝塗り無し） */
+  /* ✅ 右上ボタン：背景と同化（塗り無し） */
   --proPlateBg: transparent;
   --proPlateShadow:
-    inset 0 1px 0 rgba(255,255,255,.10),
-    inset 0 -1px 0 rgba(0,0,0,.80),
-    0 10px 26px rgba(0,0,0,.65);
+    inset 0 1px 0 rgba(255,255,255,.12),
+    inset 0 -1px 0 rgba(0,0,0,.82),
+    0 10px 26px rgba(0,0,0,.70);
 
-  /* ドット（宝石） */
   --proGemBg:
-    radial-gradient(circle at 30% 30%, rgba(255,255,255,.50), rgba(255,255,255,0) 46%),
-    radial-gradient(circle at 55% 70%, rgba(255,245,215,.78), rgba(214,177,92,.98) 58%, rgba(112,74,18,1) 100%);
+    radial-gradient(circle at 30% 30%, rgba(255,255,255,.60), rgba(255,255,255,0) 48%),
+    radial-gradient(circle at 55% 70%, rgba(255,245,215,.86), rgba(255,215,140,.98) 58%, rgba(120,78,18,1) 100%);
   --proGemShadow:
-    0 1px 0 rgba(0,0,0,.70),
-    0 0 0 1px rgba(214,177,92,.28),
-    0 0 12px rgba(214,177,92,.20);
+    0 1px 0 rgba(0,0,0,.72),
+    0 0 0 1px rgba(255,215,140,.32),
+    0 0 14px rgba(255,215,140,.24);
 
-  /* ✅ カード面：暗く見えないように白ハイライトを少し強める */
+  /* ✅ カード面：白ハイライト強め（暗さを感じさせない） */
   --proCardFace:
-    radial-gradient(900px 240px at 50% 0%, rgba(255,255,255,.07), transparent 60%),
-    linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,0) 48%);
+    radial-gradient(900px 240px at 50% 0%, rgba(255,255,255,.085), transparent 62%),
+    linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,0) 52%);
 
-  /* ✅ 縁：明るく（黄じゃなくブラス） */
+  /* ✅ 縁：最大級に明るく（“金の光”） */
   --proCardBorderStd: linear-gradient(
     135deg,
-    rgba(255,245,220,.14) 0%,
-    rgba(214,177,92,.62) 18%,
-    rgba(255,255,255,.16) 30%,
-    rgba(214,177,92,.52) 48%,
-    rgba(112,74,18,.78) 66%,
-    rgba(255,255,255,.12) 78%,
-    rgba(214,177,92,.60) 90%,
-    rgba(255,245,220,.14) 100%
+    rgba(255,255,255,.26) 0%,
+    rgba(255,215,140,.92) 18%,
+    rgba(255,255,255,.22) 32%,
+    rgba(255,215,140,.78) 50%,
+    rgba(150,95,20,.90) 66%,
+    rgba(255,255,255,.18) 78%,
+    rgba(255,215,140,.90) 90%,
+    rgba(255,255,255,.22) 100%
   );
 
   --proCardBorderOn: linear-gradient(
     135deg,
-    rgba(255,245,220,.18) 0%,
-    rgba(214,177,92,.98) 18%,
-    rgba(255,255,255,.18) 30%,
-    rgba(214,177,92,.84) 48%,
-    rgba(112,74,18,.90) 66%,
-    rgba(255,255,255,.14) 78%,
-    rgba(214,177,92,.96) 90%,
-    rgba(255,245,220,.18) 100%
+    rgba(255,255,255,.30) 0%,
+    rgba(255,215,140,.99) 18%,
+    rgba(255,255,255,.26) 32%,
+    rgba(255,215,140,.88) 50%,
+    rgba(150,95,20,.96) 66%,
+    rgba(255,255,255,.20) 78%,
+    rgba(255,215,140,.99) 90%,
+    rgba(255,255,255,.26) 100%
   );
 
   --proCardBorderOff: linear-gradient(
     135deg,
-    rgba(255,245,220,.10) 0%,
-    rgba(214,177,92,.46) 18%,
-    rgba(255,255,255,.12) 30%,
-    rgba(214,177,92,.38) 48%,
-    rgba(112,74,18,.64) 66%,
-    rgba(255,255,255,.10) 78%,
-    rgba(214,177,92,.44) 90%,
-    rgba(255,245,220,.10) 100%
+    rgba(255,255,255,.20) 0%,
+    rgba(255,215,140,.70) 18%,
+    rgba(255,255,255,.18) 32%,
+    rgba(255,215,140,.58) 50%,
+    rgba(120,78,18,.82) 66%,
+    rgba(255,255,255,.14) 78%,
+    rgba(255,215,140,.68) 90%,
+    rgba(255,255,255,.18) 100%
   );
 
-  /* ✅ 影：黒は保ちつつ、縁が沈まないようにグロー少し増 */
+  /* ✅ 縁が沈まないようにグローも上げる */
   --proCardShadowStd:
-    inset 0 1px 0 rgba(255,255,255,.06),
-    inset 0 -1px 0 rgba(0,0,0,.78),
-    0 10px 24px rgba(0,0,0,.76),
-    0 0 22px rgba(214,177,92,.14);
+    inset 0 1px 0 rgba(255,255,255,.07),
+    inset 0 -1px 0 rgba(0,0,0,.80),
+    0 10px 24px rgba(0,0,0,.78),
+    0 0 26px rgba(255,215,140,.20);
 
   --proCardShadowOn:
-    inset 0 1px 0 rgba(255,255,255,.07),
-    0 12px 28px rgba(0,0,0,.82),
-    0 0 30px rgba(214,177,92,.20);
+    inset 0 1px 0 rgba(255,255,255,.08),
+    0 12px 28px rgba(0,0,0,.84),
+    0 0 34px rgba(255,215,140,.26);
 
   --proCardShadowOff:
-    inset 0 1px 0 rgba(255,255,255,.05),
-    0 10px 24px rgba(0,0,0,.80),
-    0 0 18px rgba(214,177,92,.12);
+    inset 0 1px 0 rgba(255,255,255,.06),
+    0 10px 24px rgba(0,0,0,.82),
+    0 0 22px rgba(255,215,140,.16);
 
   --proCardActiveShadow:
-    inset 0 1px 0 rgba(255,255,255,.08),
-    0 14px 32px rgba(0,0,0,.88),
-    0 0 0 1px rgba(214,177,92,.22),
-    0 0 34px rgba(214,177,92,.24);
+    inset 0 1px 0 rgba(255,255,255,.10),
+    0 14px 32px rgba(0,0,0,.90),
+    0 0 0 1px rgba(255,215,140,.26),
+    0 0 40px rgba(255,215,140,.30);
 
-  /* picks / CTA（同じ“板”感） */
   --proBoxBg:
-    radial-gradient(900px 260px at 50% 0%, rgba(255,255,255,.07), transparent 62%),
-    linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,0) 60%),
-    rgba(9,12,17,.80);
+    radial-gradient(900px 260px at 50% 0%, rgba(255,255,255,.08), transparent 64%),
+    linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,0) 62%),
+    rgba(9,12,17,.82);
 
   --proBoxShadow:
-    inset 0 1px 0 rgba(255,255,255,.07),
-    0 18px 38px rgba(0,0,0,.86),
-    0 0 30px rgba(214,177,92,.20);
+    inset 0 1px 0 rgba(255,255,255,.08),
+    0 18px 38px rgba(0,0,0,.88),
+    0 0 34px rgba(255,215,140,.24);
 
   --proBoxShadow2:
-    inset 0 1px 0 rgba(255,255,255,.08),
-    0 20px 42px rgba(0,0,0,.90),
-    0 0 36px rgba(214,177,92,.24);
+    inset 0 1px 0 rgba(255,255,255,.10),
+    0 20px 42px rgba(0,0,0,.92),
+    0 0 40px rgba(255,215,140,.30);
 }
 
 *{ box-sizing: border-box; }
@@ -153,27 +141,20 @@ body{
   padding-bottom: calc(var(--sab) + var(--bar));
 }
 
-/* =========================================================
-   ✅ 背景：グラデ撤去 → 黒 + 白い“影(ハイライト)”だけ
-   ========================================================= */
-html[data-theme="pro"] body{
-  background: var(--bg);
-}
+/* ✅ 背景：グラデ無し（黒）＋白い影だけ */
+html[data-theme="pro"] body{ background: var(--bg); }
 
-/* 白い影（高級感）＋わずかなビネット：gradientじゃなくshadowで作る */
 html[data-theme="pro"] body::after{
   content:"";
   position: fixed;
   inset: 0;
   pointer-events: none;
-  /* 上から薄い白ハイライト + 全体の落ち着いた暗さ */
   box-shadow:
-    inset 0 48px 140px rgba(255,255,255,.045),
-    inset 0 -90px 180px rgba(0,0,0,.78),
-    inset 0 0 220px rgba(0,0,0,.35);
+    inset 0 52px 160px rgba(255,255,255,.05),
+    inset 0 -90px 180px rgba(0,0,0,.80),
+    inset 0 0 240px rgba(0,0,0,.38);
 }
 
-/* 微ノイズ（そのまま） */
 html[data-theme="pro"] body::before{
   content:"";
   position: fixed;
@@ -192,25 +173,9 @@ html[data-theme="pro"] body::before{
 
 /* ===== Header ===== */
 .top{ padding: 14px 14px 10px; }
-.top__row{
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap: 12px;
-}
-.top__title{
-  margin: 0;
-  font-size: 30px;
-  line-height: 1.05;
-  letter-spacing: 0.02em;
-  font-weight: 900;
-}
-.top__actions{
-  display:flex;
-  align-items:center;
-  gap: 10px;
-  flex-shrink: 0;
-}
+.top__row{ display:flex; align-items:flex-start; justify-content:space-between; gap: 12px; }
+.top__title{ margin: 0; font-size: 30px; line-height: 1.05; letter-spacing: 0.02em; font-weight: 900; }
+.top__actions{ display:flex; align-items:center; gap: 10px; flex-shrink: 0; }
 
 .top__btn{
   appearance: none;
@@ -242,19 +207,14 @@ html[data-theme="pro"] body::before{
   justify-content:center;
   box-shadow: 0 1px 0 rgba(15,23,42,.06);
 }
-.top__proDot{
-  width: 10px;
-  height: 10px;
-  border-radius: 999px;
-  background: var(--accent);
-}
+.top__proDot{ width: 10px; height: 10px; border-radius: 999px; background: var(--accent); }
 
-/* ✅ PRO：右上PRO/更新＝背景と同化（塗り無し） */
+/* ✅ PRO：右上PRO/更新＝背景統一（透明）＋縁だけ光らせる */
 html[data-theme="pro"] .top__btn,
 html[data-theme="pro"] .top__pro{
-  border: 1px solid rgba(214,177,92,.60);
-  color: rgba(242,228,200,.92);
-  background: var(--proPlateBg);   /* transparent */
+  border: 1px solid rgba(255,215,140,.78);
+  color: rgba(255,245,226,.96);
+  background: var(--proPlateBg);
   box-shadow: var(--proPlateShadow);
 }
 html[data-theme="pro"] .top__proDot{
@@ -283,7 +243,7 @@ html[data-theme="pro"] .top__proDot{
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(6, 1fr);
-  gap: 6px; /* 触らない */
+  gap: 6px;
 }
 
 /* ===== Cards ===== */
@@ -293,19 +253,17 @@ html[data-theme="pro"] .top__proDot{
   justify-content:space-between;
   text-decoration:none;
 
-  border-radius: 8px;        /* 触らない */
+  border-radius: 8px;
   border: 2px solid var(--border);
   overflow:hidden;
 
-  padding: 7px 7px 5px;      /* 触らない */
+  padding: 7px 7px 5px;
   min-height: 0;
 }
 
-/* FREE */
 .card--on{ background: var(--cardOn); border-color: var(--borderOn); }
 .card--off{ background: var(--cardOff); border-color: var(--border); }
 
-/* ✅ PRO：カード共通 */
 html[data-theme="pro"] .card{
   border: 2px solid transparent;
   background:
@@ -323,8 +281,7 @@ html[data-theme="pro"] .card--on{
 }
 html[data-theme="pro"] .card--off{
   background:
-    radial-gradient(900px 240px at 50% 0%, rgba(255,255,255,.06), transparent 64%),
-    linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,0) 54%),
+    var(--proCardFace),
     linear-gradient(var(--cardOff), var(--cardOff)) padding-box,
     var(--proCardBorderOff) border-box;
   box-shadow: var(--proCardShadowOff);
@@ -334,6 +291,7 @@ html[data-theme="pro"] .card:active{
   transform: translateY(-1px);
 }
 
+/* ✅ 会場名：最大明るさ */
 .card__name{
   font-weight: 900;
   font-size: 18px;
@@ -344,8 +302,14 @@ html[data-theme="pro"] .card:active{
   overflow: hidden;
   text-overflow: ellipsis;
 }
+html[data-theme="pro"] .card__name{
+  color: rgba(255,245,226,.98);
+  text-shadow:
+    0 1px 0 rgba(0,0,0,.82),
+    0 0 10px rgba(255,215,140,.10);
+}
 
-/* ✅ 3行を絶対崩さない */
+/* ✅ 2-3行目も見えるように明るく */
 .card__line{
   font-weight: 800;
   color: #334155;
@@ -353,30 +317,20 @@ html[data-theme="pro"] .card:active{
   white-space: nowrap;
   word-break: keep-all;
 }
+html[data-theme="pro"] .card__line{ color: rgba(255,245,226,.78); }
 
-/* ✅ PRO：会場文字/2-3行目を明るく（暗い問題のメイン修正） */
-html[data-theme="pro"] .card__name{
-  color: rgba(242,228,200,.94);
-  text-shadow: 0 1px 0 rgba(0,0,0,.75);
-}
-html[data-theme="pro"] .card__line{
-  color: rgba(242,228,200,.72);
-}
-
-/* 非開催（FREE） */
 .card--off .card__name,
 .card--off .card__line{ color: #6b7280; }
 
-/* ✅ PRO：非開催も“見える範囲で薄く” */
 html[data-theme="pro"] .card--off .card__name,
 html[data-theme="pro"] .card--off .card__line{
-  color: rgba(242,228,200,.42);
+  color: rgba(255,245,226,.46);
 }
 
 .card__line--mid{ font-size: 12px; letter-spacing: 0.01em; }
 .card__line--btm{ font-size: 16px; letter-spacing: 0.02em; }
 
-/* フォーカス */
+/* focus */
 .card:focus-visible,
 .top__btn:focus-visible,
 .top__pro:focus-visible{
@@ -386,35 +340,14 @@ html[data-theme="pro"] .card--off .card__line{
 html[data-theme="pro"] .card:focus-visible,
 html[data-theme="pro"] .top__btn:focus-visible,
 html[data-theme="pro"] .top__pro:focus-visible{
-  outline-color: rgba(214,177,92,.35);
+  outline-color: rgba(255,215,140,.40);
 }
 
-/* =========================
-   本日厳選レース
-   ========================= */
-.picksWrap{
-  margin-top: 14px;
-  padding-bottom: calc(18px + var(--sab) + var(--bar));
-}
-.picksHead{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap: 12px;
-  margin: 0 2px 10px;
-}
-.picksTitle{
-  margin: 0;
-  font-size: 18px;
-  font-weight: 900;
-  letter-spacing: 0.02em;
-  color: var(--text);
-}
-.picksMeta{
-  font-size: 12px;
-  color: var(--muted);
-  white-space: nowrap;
-}
+/* ===== 以下（picks/CTA）はあなたのまま、色だけ微調整 ===== */
+.picksWrap{ margin-top: 14px; padding-bottom: calc(18px + var(--sab) + var(--bar)); }
+.picksHead{ display:flex; align-items:center; justify-content:space-between; gap: 12px; margin: 0 2px 10px; }
+.picksTitle{ margin: 0; font-size: 18px; font-weight: 900; letter-spacing: 0.02em; color: var(--text); }
+.picksMeta{ font-size: 12px; color: var(--muted); white-space: nowrap; }
 .picksList{ display:flex; flex-direction:column; gap: 10px; }
 
 .pickCard{
@@ -428,40 +361,20 @@ html[data-theme="pro"] .top__pro:focus-visible{
   box-shadow: 0 1px 0 rgba(15,23,42,.04);
 }
 html[data-theme="pro"] .pickCard{
-  border: 1px solid rgba(214,177,92,.40);
+  border: 1px solid rgba(255,215,140,.46);
   background: var(--proBoxBg);
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.07),
-    0 16px 34px rgba(0,0,0,.82),
-    0 0 26px rgba(214,177,92,.18);
+    inset 0 1px 0 rgba(255,255,255,.08),
+    0 16px 34px rgba(0,0,0,.84),
+    0 0 30px rgba(255,215,140,.22);
 }
 
-.pickTop{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap: 10px;
-  margin-bottom: 6px;
-}
-.pickName{
-  font-weight: 900;
-  font-size: 14px;
-  letter-spacing: 0.02em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+.pickTop{ display:flex; align-items:center; justify-content:space-between; gap: 10px; margin-bottom: 6px; }
+.pickName{ font-weight: 900; font-size: 14px; letter-spacing: 0.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .pickTime{ font-weight: 900; font-size: 14px; white-space: nowrap; }
 
-.pickSub{
-  display:flex;
-  gap: 8px;
-  flex-wrap:wrap;
-  font-size: 12px;
-  color: #334155;
-  margin-bottom: 6px;
-}
-html[data-theme="pro"] .pickSub{ color: rgba(242,228,200,.70); }
+.pickSub{ display:flex; gap: 8px; flex-wrap:wrap; font-size: 12px; color: #334155; margin-bottom: 6px; }
+html[data-theme="pro"] .pickSub{ color: rgba(255,245,226,.76); }
 
 .badge{
   display:inline-flex;
@@ -474,9 +387,9 @@ html[data-theme="pro"] .pickSub{ color: rgba(242,228,200,.70); }
   white-space: nowrap;
 }
 html[data-theme="pro"] .badge{
-  border-color: rgba(214,177,92,.24);
-  background: rgba(214,177,92,.08);
-  color: rgba(242,228,200,.90);
+  border-color: rgba(255,215,140,.26);
+  background: rgba(255,215,140,.08);
+  color: rgba(255,245,226,.92);
 }
 .badge--sg{ border-color: rgba(220,38,38,.35); background: rgba(220,38,38,.06); }
 .badge--g1{ border-color: rgba(245,158,11,.35); background: rgba(245,158,11,.07); }
@@ -484,14 +397,8 @@ html[data-theme="pro"] .badge{
 .badge--g3{ border-color: rgba(34,197,94,.35); background: rgba(34,197,94,.07); }
 .badge--ippan{ border-color: rgba(15,23,42,.12); background: rgba(15,23,42,.02); }
 
-.pickNote{
-  margin: 0;
-  font-size: 12px;
-  line-height: 1.45;
-  color: #0f172a;
-  opacity: .9;
-}
-html[data-theme="pro"] .pickNote{ color: rgba(242,228,200,.84); }
+.pickNote{ margin: 0; font-size: 12px; line-height: 1.45; color: #0f172a; opacity: .9; }
+html[data-theme="pro"] .pickNote{ color: rgba(255,245,226,.86); }
 
 .pickEmpty{
   background: rgba(15,23,42,.03);
@@ -503,19 +410,12 @@ html[data-theme="pro"] .pickNote{ color: rgba(242,228,200,.84); }
 }
 html[data-theme="pro"] .pickEmpty{
   background: rgba(9,12,17,.62);
-  border-color: rgba(214,177,92,.25);
-  color: rgba(242,228,200,.72);
+  border-color: rgba(255,215,140,.26);
+  color: rgba(255,245,226,.76);
 }
 
-/* =========================
-   購入CTA（3ボタン）
-   ========================= */
-.picksCta{
-  margin-top: 10px;
-  display:flex;
-  flex-direction:column;
-  gap: 10px;
-}
+/* CTA */
+.picksCta{ margin-top: 10px; display:flex; flex-direction:column; gap: 10px; }
 .picksBtn{
   appearance:none;
   -webkit-tap-highlight-color: transparent;
@@ -525,17 +425,15 @@ html[data-theme="pro"] .pickEmpty{
   gap: 10px;
   width: 100%;
   text-decoration:none;
-
   border-radius: 16px;
   padding: 12px 12px;
-
   background: #fff;
   color: inherit;
   border: 1px solid rgba(15,23,42,.10);
   box-shadow: 0 1px 0 rgba(15,23,42,.04);
 }
 html[data-theme="pro"] .picksBtn{
-  border: 1px solid rgba(214,177,92,.40);
+  border: 1px solid rgba(255,215,140,.46);
   background: var(--proBoxBg);
   box-shadow: var(--proBoxShadow);
 }
@@ -545,13 +443,7 @@ html[data-theme="pro"] .picksBtn:active{
 }
 
 .picksBtnMain{ font-weight: 900; font-size: 14px; line-height: 1.25; }
-.picksBtnSub{
-  margin-top: 2px;
-  font-size: 12px;
-  font-weight: 800;
-  opacity: .72;
-  white-space: nowrap;
-}
+.picksBtnSub{ margin-top: 2px; font-size: 12px; font-weight: 800; opacity: .72; white-space: nowrap; }
 .picksBtnArrow{ font-weight: 900; opacity: .75; white-space: nowrap; }
 
 .picksBtn--set .picksBtnMain::after{
@@ -562,7 +454,6 @@ html[data-theme="pro"] .picksBtn:active{
   opacity: .75;
 }
 
-/* 画面が小さい端末向け */
 @media (max-width: 390px){
   :root{ --bar: 150px; }
   .top__title{ font-size: 28px; }
