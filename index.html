@@ -1,0 +1,705 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#f3f4f6" />
+  <title>本日の開催一覧</title>
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- ✅ 追加：PROトグル + PRO配色（24会場のグリッド/比率は一切触らない） -->
+  <style>
+    /* ===== PRO THEME (CSS変数だけ上書き) ===== */
+    html[data-theme="pro"]{
+      --bg: #070b10;
+      --text: #eef2f7;
+      --muted: rgba(238,242,247,.72);
+
+      --cardOff: #151b23;
+      --cardOn: #0f141c;
+
+      --border: rgba(238,242,247,.14);
+      --borderOn: #d4af37;
+
+      --accent: #d4af37;
+      --accent2: #f2d678;
+    }
+
+    /* ===== header actions（既存レイアウト崩さない） ===== */
+    .top__actions{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    /* PRO pill */
+    .top__pro{
+      appearance:none;
+      border: 1px solid rgba(0,0,0,.12);
+      background: #fff;
+      color: inherit;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-weight: 900;
+      font-size: 14px;
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      min-width: 86px;
+      justify-content: center;
+      box-shadow: 0 1px 0 rgba(15,23,42,.06);
+    }
+    .top__proDot{
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: #3b82f6; /* FREE時は青 */
+    }
+    html[data-theme="pro"] .top__pro{
+      background: rgba(255,255,255,.04);
+      border-color: rgba(212,175,55,.55);
+      box-shadow: 0 1px 0 rgba(0,0,0,.6);
+    }
+    html[data-theme="pro"] .top__proDot{
+      background: #d4af37;
+      box-shadow: 0 0 12px rgba(212,175,55,.35);
+    }
+
+    /* PRO時：更新ボタンもゴールド寄せ（形は変えない） */
+    html[data-theme="pro"] #btnRefresh{
+      background: rgba(255,255,255,.04) !important;
+      border-color: rgba(212,175,55,.55) !important;
+      box-shadow: 0 1px 0 rgba(0,0,0,.6) !important;
+    }
+
+    /* ✅ PRO時：カードの文字が消えないように “色だけ” 明るく（形/余白は触らない） */
+    html[data-theme="pro"] .card__name{ color: rgba(238,242,247,.92) !important; }
+    html[data-theme="pro"] .card__line{ color: rgba(238,242,247,.72) !important; }
+    html[data-theme="pro"] .card--off .card__name,
+    html[data-theme="pro"] .card--off .card__line{ color: rgba(238,242,247,.45) !important; }
+
+    /* ✅ PRO時：枠をゴールド、タップ時だけ “薄ら光る”（常時ライティング無し） */
+    html[data-theme="pro"] .card{
+      border-color: rgba(238,242,247,.14) !important;
+      background: var(--cardOff);
+    }
+    html[data-theme="pro"] .card--on{
+      border-color: rgba(212,175,55,.80) !important;
+      background: var(--cardOn) !important;
+    }
+    html[data-theme="pro"] .card:active{
+      border-color: rgba(212,175,55,.95) !important;
+      box-shadow:
+        0 0 0 1px rgba(212,175,55,.25),
+        0 10px 28px rgba(0,0,0,.55),
+        0 0 18px rgba(212,175,55,.10);
+      transform: translateY(-1px);
+    }
+
+    /* ===== ✅ 厳選レース用の最小スタイル（既存CSSは崩さない） ===== */
+    .picksWrap{
+      margin-top: 14px;
+      padding-bottom: calc(14px + env(safe-area-inset-bottom));
+    }
+    .picksHead{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin: 0 2px 10px;
+    }
+    .picksTitle{
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: .02em;
+      margin: 0;
+    }
+    .picksMeta{
+      font-size: 12px;
+      opacity: .7;
+      white-space: nowrap;
+    }
+
+    /* ✅ CTAを見出し直下に置く（常時表示） */
+    .picksCta{
+      margin-top: 0;
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
+    }
+
+    .picksList{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      margin-top: 10px; /* CTAの下に少し空ける */
+    }
+
+    .pickCard{
+      display:block;
+      text-decoration:none;
+      color: inherit;
+      background: #fff;
+      border: 1px solid rgba(0,0,0,.08);
+      border-radius: 16px;
+      padding: 12px 12px;
+      box-shadow: 0 1px 0 rgba(0,0,0,.03);
+    }
+    html[data-theme="pro"] .pickCard{
+      background: rgba(15,20,28,.70);
+      border-color: rgba(212,175,55,.28);
+      box-shadow: 0 1px 0 rgba(0,0,0,.55);
+    }
+
+    .pickTop{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom: 6px;
+    }
+    .pickName{
+      font-weight: 800;
+      font-size: 14px;
+      letter-spacing: .02em;
+    }
+    .pickTime{
+      font-weight: 800;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+    .pickSub{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      font-size: 12px;
+      opacity: .8;
+      margin-bottom: 6px;
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,.08);
+      background: rgba(0,0,0,.02);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    html[data-theme="pro"] .badge{
+      border-color: rgba(212,175,55,.22);
+      background: rgba(212,175,55,.06);
+    }
+    .badge--sg{ border-color: rgba(220,38,38,.35); background: rgba(220,38,38,.06); }
+    .badge--g1{ border-color: rgba(245,158,11,.35); background: rgba(245,158,11,.07); }
+    .badge--g2{ border-color: rgba(59,130,246,.35); background: rgba(59,130,246,.07); }
+    .badge--g3{ border-color: rgba(34,197,94,.35); background: rgba(34,197,94,.07); }
+    .badge--ippan{ border-color: rgba(0,0,0,.12); background: rgba(0,0,0,.02); }
+
+    .pickNote{
+      font-size: 12px;
+      line-height: 1.45;
+      opacity: .9;
+      margin: 0;
+    }
+
+    /* ===== ✅ CTAボタン ===== */
+    .picksBtn{
+      appearance:none;
+      -webkit-tap-highlight-color: transparent;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      width: 100%;
+      text-decoration:none;
+
+      border-radius: 16px;
+      padding: 12px 12px;
+      font-weight: 900;
+      font-size: 14px;
+
+      background: #fff;
+      color: inherit;
+      border: 1px solid rgba(0,0,0,.10);
+      box-shadow: 0 1px 0 rgba(0,0,0,.03);
+    }
+    .picksBtnSub{
+      font-size: 12px;
+      font-weight: 800;
+      opacity: .72;
+      white-space: nowrap;
+    }
+    .picksBtnArrow{
+      font-weight: 900;
+      opacity: .75;
+      white-space: nowrap;
+    }
+
+    /* セットだけ “お得” をさりげなく */
+    .picksBtn--set .picksBtnSub{
+      opacity: .85;
+    }
+
+    html[data-theme="pro"] .picksBtn{
+      background: rgba(15,20,28,.70);
+      border-color: rgba(212,175,55,.30);
+      box-shadow: 0 1px 0 rgba(0,0,0,.55);
+    }
+    html[data-theme="pro"] .picksBtnSub{
+      opacity: .70;
+    }
+  </style>
+</head>
+
+<body>
+  <header class="top">
+    <div class="top__row">
+      <h1 class="top__title">本日の開催一覧</h1>
+
+      <!-- ✅ 右側：PRO → 更新（順番固定） -->
+      <div class="top__actions">
+        <button id="btnPro" class="top__pro" type="button" aria-pressed="false">
+          <span class="top__proDot" aria-hidden="true"></span>
+          <span>PRO</span>
+        </button>
+        <button id="btnRefresh" class="top__btn" type="button">更新</button>
+      </div>
+    </div>
+
+    <div class="top__sub">
+      <div class="top__pull">↓ 引っ張って更新</div>
+      <div class="top__updated">最終更新: <span id="updatedAt">--:--</span></div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="gridWrap" aria-label="会場一覧">
+      <section id="grid" class="grid"></section>
+    </section>
+
+    <!-- ✅ 本日厳選レース（見出しは1つだけ） -->
+    <section class="picksWrap" aria-label="本日厳選レース">
+      <div class="picksHead">
+        <h2 class="picksTitle">本日厳選レース</h2>
+        <div class="picksMeta">更新: <span id="picksUpdatedAt">--:--</span></div>
+      </div>
+
+      <!-- ✅ CTAは見出し直下に固定（常時表示） -->
+      <div id="picksCta" class="picksCta"></div>
+
+      <!-- ✅ picksがある日だけ下に出る（空の説明は出さない） -->
+      <div id="picks" class="picksList"></div>
+    </section>
+  </main>
+
+  <script>
+    // ====== 固定順（公式アプリ順） ======
+    const VENUES = [
+      { jcd: "01", name: "桐生" }, { jcd: "02", name: "戸田" }, { jcd: "03", name: "江戸川" }, { jcd: "04", name: "平和島" },
+      { jcd: "05", name: "多摩川" }, { jcd: "06", name: "浜名湖" }, { jcd: "07", name: "蒲郡" }, { jcd: "08", name: "常滑" },
+      { jcd: "09", name: "津" }, { jcd: "10", name: "三国" }, { jcd: "11", name: "びわこ" }, { jcd: "12", name: "住之江" },
+      { jcd: "13", name: "尼崎" }, { jcd: "14", name: "鳴門" }, { jcd: "15", name: "丸亀" }, { jcd: "16", name: "児島" },
+      { jcd: "17", name: "宮島" }, { jcd: "18", name: "徳山" }, { jcd: "19", name: "下関" }, { jcd: "20", name: "若松" },
+      { jcd: "21", name: "芦屋" }, { jcd: "22", name: "福岡" }, { jcd: "23", name: "唐津" }, { jcd: "24", name: "大村" },
+    ];
+
+    const $grid = document.getElementById("grid");
+    const $updatedAt = document.getElementById("updatedAt");
+    const $btn = document.getElementById("btnRefresh");
+
+    const $picks = document.getElementById("picks");
+    const $picksUpdatedAt = document.getElementById("picksUpdatedAt");
+    const $picksCta = document.getElementById("picksCta");
+
+    const $btnPro = document.getElementById("btnPro");
+
+    const pad2 = (n) => String(n).padStart(2, "0");
+    const toHM = (s) => (typeof s === "string" && s.length >= 4) ? s.slice(0,5) : "--:--";
+
+    // ✅ 「2 日目」みたいな余計な空白を消して「2日目」にする
+    const normalizeJP = (s) => String(s || "").replace(/\s+/g, "");
+
+    // ✅ gradeの表記ブレを吸収して SG/G1/G2/G3 だけ通す（それ以外は一般）
+    function normalizeGrade(raw){
+      let s = String(raw || "").trim();
+
+      // 全角→半角寄せ（Ｇ１など）
+      s = s.replace(/[Ａ-Ｚａ-ｚ０-９]/g, ch =>
+        String.fromCharCode(ch.charCodeAt(0) - 0xFEE0)
+      );
+
+      s = s.toUpperCase();
+      s = s.replace(/\s+/g, "");
+
+      // ローマ数字等のブレ吸収（GⅠ, GI など）
+      s = s.replace("GⅠ", "G1").replace("GI", "G1");
+      s = s.replace("GⅡ", "G2").replace("GII", "G2");
+      s = s.replace("GⅢ", "G3").replace("GIII", "G3");
+
+      // 末尾に変な記号がつくケースを削る（例: "G1,"）
+      s = s.replace(/[^A-Z0-9]/g, "");
+
+      if (s === "SG" || s === "G1" || s === "G2" || s === "G3") return s;
+      return ""; // 記念じゃない扱い
+    }
+
+    function gradeLabel(v){
+      if (!v.held) return "";
+      const g = normalizeGrade(v.grade);
+      return g ? g : "一般";
+    }
+
+    function dayLabel(v){
+      if (!v.held) return "";
+      if (typeof v.day === "number") return `${v.day}日目`;
+      if (typeof v.day === "string" && v.day.trim()) return normalizeJP(v.day.trim());
+      return "—";
+    }
+
+    function raceTimeLine(v){
+      if (!v.held) return "-- --";
+      if (v.race && v.time) return `${String(v.race)} ${toHM(String(v.time))}`;
+      if (v.next_r && v.close_at) return `${String(v.next_r)}R ${toHM(String(v.close_at))}`;
+      return "-- --";
+    }
+
+    function cardHTML(v){
+      const held = !!v.held;
+      const href = held && v.url ? v.url : "#";
+      const cls = held ? "card card--on" : "card card--off";
+
+      const mid = held ? `${gradeLabel(v)} ${dayLabel(v)}` : "-- --";
+      const btm = raceTimeLine(v);
+
+      return `
+        <a class="${cls}" href="${href}" ${held ? "" : 'aria-disabled="true" onclick="return false;"'}>
+          <div class="card__name">${v.name}</div>
+          <div class="card__line card__line--mid">${mid}</div>
+          <div class="card__line card__line--btm">${btm}</div>
+        </a>
+      `;
+    }
+
+    function render(data){
+      const map = new Map();
+      (data.venues || []).forEach(v => map.set(v.jcd, v));
+
+      const merged = VENUES.map(base => {
+        const v = map.get(base.jcd) || {};
+        return {
+          jcd: base.jcd,
+          name: base.name,
+          url: v.url || "",
+          held: !!v.held,
+          grade: v.grade,
+          day: v.day,
+          race: v.race,
+          time: v.time,
+          next_r: v.next_r,
+          close_at: v.close_at,
+        };
+      });
+
+      $grid.innerHTML = merged.map(cardHTML).join("");
+
+      if (data.time) {
+        const t = String(data.time);
+        const hm = t.includes(" ") ? t.split(" ")[1].slice(0,5) : "--:--";
+        $updatedAt.textContent = hm;
+      } else {
+        const now = new Date();
+        $updatedAt.textContent = `${pad2(now.getHours())}:${pad2(now.getMinutes())}`;
+      }
+    }
+
+    // ====== picks_today.json ======
+    function gradeBadgeClass(g){
+      const ng = normalizeGrade(g);
+      if (ng === "SG") return "badge badge--sg";
+      if (ng === "G1") return "badge badge--g1";
+      if (ng === "G2") return "badge badge--g2";
+      if (ng === "G3") return "badge badge--g3";
+      return "badge badge--ippan";
+    }
+
+    function pickCardHTML(p){
+      const venue = p.venue || (p.jcd ? (VENUES.find(v => v.jcd === p.jcd)?.name || "") : "");
+      const race = p.race ? String(p.race) : "";
+      const tm = p.time ? toHM(String(p.time)) : "--:--";
+      const title = p.title ? String(p.title) : "厳選";
+      const g = p.grade ? String(p.grade) : "一般";
+      const note = p.note ? String(p.note) : "";
+      const href = p.url ? String(p.url) : "#";
+      const clickable = !!p.url;
+
+      return `
+        <a class="pickCard" href="${href}" ${clickable ? "" : 'aria-disabled="true" onclick="return false;"'}>
+          <div class="pickTop">
+            <div class="pickName">${venue} ${race} <span style="opacity:.7;font-weight:700">／ ${title}</span></div>
+            <div class="pickTime">${tm}</div>
+          </div>
+          <div class="pickSub">
+            <span class="${gradeBadgeClass(g)}">${normalizeGrade(g) || "一般"}</span>
+            ${p.tag ? `<span class="badge">${String(p.tag)}</span>` : ""}
+          </div>
+          ${note ? `<p class="pickNote">${note}</p>` : ``}
+        </a>
+      `;
+    }
+
+    function renderPicks(data){
+      const picks = Array.isArray(data?.picks) ? data.picks : [];
+
+      // ✅ 空の説明は一切出さない（CTAだけ見せる）
+      if (!picks.length){
+        $picks.innerHTML = "";
+      } else {
+        $picks.innerHTML = picks.map(pickCardHTML).join("");
+      }
+
+      if (data?.time) {
+        const t = String(data.time);
+        const hm = t.includes(" ") ? t.split(" ")[1].slice(0,5) : "--:--";
+        $picksUpdatedAt.textContent = hm;
+      } else {
+        const now = new Date();
+        $picksUpdatedAt.textContent = `${pad2(now.getHours())}:${pad2(now.getMinutes())}`;
+      }
+    }
+
+    // ====== ✅ CTA（FREEは3つ / PROは別枠） ======
+    const URL_YOSO_ONLY = "https://note.com/wsnndboat7/n/n1fdca8b0a7e3";
+    const URL_PRO_ONLY  = "https://note.com/wsnndboat7/n/n8d805a4f27bf";
+    const URL_SET       = "https://note.com/wsnndboat7/n/n6fcdb2a9db4f";
+
+    function renderPicksCta(){
+      const isPro = document.documentElement.getAttribute("data-theme") === "pro";
+
+      // FREE：3導線（常時表示）
+      if (!isPro){
+        $picksCta.innerHTML = `
+          <a class="picksBtn" href="${URL_YOSO_ONLY}" target="_blank" rel="noopener noreferrer">
+            <div>
+              <div>予想だけ購入（500円）</div>
+              <div class="picksBtnSub">noteで確認</div>
+            </div>
+            <div class="picksBtnArrow">→</div>
+          </a>
+
+          <a class="picksBtn" href="${URL_PRO_ONLY}" target="_blank" rel="noopener noreferrer">
+            <div>
+              <div>PROだけ購入（500円）</div>
+              <div class="picksBtnSub">キー配布方式（購読者＝PRO扱い）</div>
+            </div>
+            <div class="picksBtnArrow">→</div>
+          </a>
+
+          <a class="picksBtn picksBtn--set" href="${URL_SET}" target="_blank" rel="noopener noreferrer">
+            <div>
+              <div>セット購入（800円）</div>
+              <div class="picksBtnSub">予想 + PRO（お得）</div>
+            </div>
+            <div class="picksBtnArrow">→</div>
+          </a>
+        `;
+        return;
+      }
+
+      // PRO：下の欄は別にしたい（ここは後で差し替え）
+      $picksCta.innerHTML = `
+        <a class="picksBtn" href="#" aria-disabled="true" onclick="return false;">
+          <div>
+            <div>本日の注目選手（PRO）</div>
+            <div class="picksBtnSub">ここは後で差し替え</div>
+          </div>
+          <div class="picksBtnArrow">—</div>
+        </a>
+
+        <a class="picksBtn" href="#" aria-disabled="true" onclick="return false;">
+          <div>
+            <div>本日の注目機（PRO）</div>
+            <div class="picksBtnSub">ここは後で差し替え</div>
+          </div>
+          <div class="picksBtnArrow">—</div>
+        </a>
+      `;
+    }
+
+    // ✅ 24会場を「画面内に収める」高さ計算（グリッド比率は固定のまま）
+    function setGridHeight(){
+      const root = document.documentElement;
+      const vv = window.visualViewport;
+      const vh = vv ? vv.height : window.innerHeight;
+
+      const header = document.querySelector(".top");
+      const headerH = header ? header.getBoundingClientRect().height : 0;
+
+      const margin = 18;
+      const bottomReserve = 110;
+
+      const gridH = Math.max(360, Math.floor(vh - headerH - margin - bottomReserve));
+      root.style.setProperty("--gridH", `${gridH}px`);
+    }
+
+    // ====== 更新（重複防止 + キャッシュバスター） ======
+    let isLoading = false;
+
+    async function fetchJSON(path, force){
+      const bust = force ? `?t=${Date.now()}` : "";
+      const url = `${path}${bust}`;
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) throw new Error(`failed to fetch: ${path}`);
+      return await res.json();
+    }
+
+    async function loadAll(force){
+      if (isLoading) return;
+      isLoading = true;
+      try{
+        const venuesData = await fetchJSON("./data/venues_today.json", force);
+        render(venuesData);
+
+        try{
+          const picksData = await fetchJSON("./data/picks_today.json", force);
+          renderPicks(picksData);
+        }catch(e){
+          renderPicks({ time: null, picks: [] });
+        }
+
+        renderPicksCta();
+        setGridHeight();
+      }finally{
+        isLoading = false;
+      }
+    }
+
+    $btn.addEventListener("click", () => {
+      $btn.classList.add("is-loading");
+      loadAll(true).catch(()=>{}).finally(()=> $btn.classList.remove("is-loading"));
+    });
+
+    // pull-to-refresh（簡易）
+    let startY = 0;
+    let pulling = false;
+
+    window.addEventListener("touchstart", (e) => {
+      if (window.scrollY <= 0) { startY = e.touches[0].clientY; pulling = true; }
+    }, { passive: true });
+
+    window.addEventListener("touchmove", (e) => {
+      if (!pulling) return;
+      const dy = e.touches[0].clientY - startY;
+      if (dy > 80) { pulling = false; $btn.click(); }
+    }, { passive: true });
+
+    window.addEventListener("touchend", () => { pulling = false; }, { passive: true });
+
+    // viewport変化にも追従
+    window.addEventListener("resize", setGridHeight);
+    if (window.visualViewport) window.visualViewport.addEventListener("resize", setGridHeight);
+
+    // ✅ 5分ごとの自動更新（表示中だけ）
+    const AUTO_MS = 5 * 60 * 1000;
+    setInterval(() => {
+      if (document.visibilityState === "visible") loadAll(true).catch(()=>{});
+    }, AUTO_MS);
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") loadAll(true).catch(()=>{});
+    });
+
+    // ====== ✅ PRO 解放（1日固定 / data/pro_key.json を照合） ======
+    const LS_THEME = "theme";
+    const LS_PRO_OK_DATE = "pro_ok_date";
+
+    function isProNow(){
+      return document.documentElement.getAttribute("data-theme") === "pro";
+    }
+
+    function setTheme(isPro){
+      const html = document.documentElement;
+      if (isPro){
+        html.setAttribute("data-theme","pro");
+        localStorage.setItem(LS_THEME,"pro");
+        $btnPro.setAttribute("aria-pressed","true");
+      }else{
+        html.removeAttribute("data-theme"); // FREE
+        localStorage.setItem(LS_THEME,"free");
+        $btnPro.setAttribute("aria-pressed","false");
+      }
+      renderPicksCta();
+      setGridHeight();
+    }
+
+    async function getProKey(){
+      return await fetchJSON("./data/pro_key.json", true);
+    }
+
+    async function bootProByStoredDate(){
+      const savedTheme = localStorage.getItem(LS_THEME);
+      const savedOkDate = localStorage.getItem(LS_PRO_OK_DATE);
+
+      if (savedTheme !== "pro" || !savedOkDate){
+        setTheme(false);
+        return;
+      }
+
+      try{
+        const pk = await getProKey();
+        if (String(pk?.date || "") === String(savedOkDate)){
+          setTheme(true);
+        }else{
+          localStorage.removeItem(LS_PRO_OK_DATE);
+          setTheme(false);
+        }
+      }catch(e){
+        setTheme(false);
+      }
+    }
+
+    async function unlockProFlow(){
+      if (isProNow()){
+        setTheme(false);
+        return;
+      }
+
+      let pk;
+      try{
+        pk = await getProKey();
+      }catch(e){
+        alert("PROキーの取得に失敗しました。通信状況を確認して、もう一度お試しください。");
+        return;
+      }
+
+      const input = prompt("PROキー（6桁）を入力");
+      if (input === null) return;
+
+      const key = String(input).replace(/\s+/g,"");
+      if (!/^\d{6}$/.test(key)){
+        alert("6桁の数字で入力してください。");
+        return;
+      }
+
+      if (String(pk?.key || "") === key){
+        localStorage.setItem(LS_PRO_OK_DATE, String(pk.date || ""));
+        setTheme(true);
+        alert("PROを解放しました。");
+      }else{
+        alert("キーが違います。");
+      }
+    }
+
+    $btnPro.addEventListener("click", () => {
+      unlockProFlow().catch(()=>{});
+    });
+
+    bootProByStoredDate().catch(()=> setTheme(false));
+
+    // 初回
+    loadAll(false).catch(()=>{ renderPicksCta(); setGridHeight(); });
+  </script>
+</body>
+</html>
