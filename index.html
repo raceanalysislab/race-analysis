@@ -148,13 +148,18 @@
       return false;
     }
 
+    // ✅ デモ用：強制的にONにする会場（本番は [] にするだけ）
+    const DEBUG_FORCE_ON = ["03", "12", "19"]; // 江戸川 / 住之江 / 下関
+
     function render(data){
       const map = new Map();
       (data.venues || []).forEach(v => map.set(v.jcd, v));
 
       const merged = VENUES.map(base => {
         const v = map.get(base.jcd) || {};
-        const held = inferHeld(v);
+
+        // ✅ ここだけ差分：データでON or デモ強制ON
+        const held = inferHeld(v) || DEBUG_FORCE_ON.includes(base.jcd);
 
         return {
           jcd: base.jcd,
