@@ -6,252 +6,6 @@
   <meta name="theme-color" content="#f3f4f6" />
   <title>本日の開催一覧</title>
   <link rel="stylesheet" href="style.css" />
-
-  <!-- ✅ 追加：PROトグル + PRO配色（24会場のグリッド/比率は一切触らない） -->
-  <style>
-    /* ===== PRO THEME (CSS変数だけ上書き) ===== */
-    html[data-theme="pro"]{
-      --bg: #070b10;
-      --text: #eef2f7;
-      --muted: rgba(238,242,247,.72);
-
-      --cardOff: #151b23;
-      --cardOn: #0f141c;
-
-      --border: rgba(238,242,247,.14);
-      --borderOn: #d4af37;
-
-      --accent: #d4af37;
-      --accent2: #f2d678;
-    }
-
-    /* ===== header actions（既存レイアウト崩さない） ===== */
-    .top__actions{
-      display:flex;
-      align-items:center;
-      gap: 10px;
-      flex-shrink: 0;
-    }
-
-    /* PRO pill */
-    .top__pro{
-      appearance:none;
-      border: 1px solid rgba(0,0,0,.12);
-      background: #fff;
-      color: inherit;
-      border-radius: 999px;
-      padding: 10px 14px;
-      font-weight: 900;
-      font-size: 14px;
-      display:flex;
-      align-items:center;
-      gap: 10px;
-      min-width: 86px;
-      justify-content: center;
-      box-shadow: 0 1px 0 rgba(15,23,42,.06);
-    }
-    .top__proDot{
-      width: 10px;
-      height: 10px;
-      border-radius: 999px;
-      background: #3b82f6; /* FREE時は青 */
-    }
-    html[data-theme="pro"] .top__pro{
-      background: rgba(255,255,255,.04);
-      border-color: rgba(212,175,55,.55);
-      box-shadow: 0 1px 0 rgba(0,0,0,.6);
-    }
-    html[data-theme="pro"] .top__proDot{
-      background: #d4af37;
-      box-shadow: 0 0 12px rgba(212,175,55,.35);
-    }
-
-    /* PRO時：更新ボタンもゴールド寄せ（形は変えない） */
-    html[data-theme="pro"] #btnRefresh{
-      background: rgba(255,255,255,.04) !important;
-      border-color: rgba(212,175,55,.55) !important;
-      box-shadow: 0 1px 0 rgba(0,0,0,.6) !important;
-    }
-
-    /* ✅ PRO時：カードの文字が消えないように “色だけ” 明るく（形/余白は触らない） */
-    html[data-theme="pro"] .card__name{ color: rgba(238,242,247,.92) !important; }
-    html[data-theme="pro"] .card__line{ color: rgba(238,242,247,.72) !important; }
-    html[data-theme="pro"] .card--off .card__name,
-    html[data-theme="pro"] .card--off .card__line{ color: rgba(238,242,247,.45) !important; }
-
-    /* ✅ PRO時：枠をゴールド、タップ時だけ “薄ら光る”（常時ライティング無し） */
-    html[data-theme="pro"] .card{
-      border-color: rgba(238,242,247,.14) !important;
-      background: var(--cardOff);
-    }
-    html[data-theme="pro"] .card--on{
-      border-color: rgba(212,175,55,.80) !important;
-      background: var(--cardOn) !important;
-    }
-    html[data-theme="pro"] .card:active{
-      border-color: rgba(212,175,55,.95) !important;
-      box-shadow:
-        0 0 0 1px rgba(212,175,55,.25),
-        0 10px 28px rgba(0,0,0,.55),
-        0 0 18px rgba(212,175,55,.10);
-      transform: translateY(-1px);
-    }
-
-    /* ===== ✅ 厳選レース用の最小スタイル（既存CSSは崩さない） ===== */
-    .picksWrap{
-      margin-top: 14px;
-      padding-bottom: calc(14px + env(safe-area-inset-bottom));
-    }
-    .picksHead{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      margin: 0 2px 10px;
-    }
-    .picksTitle{
-      font-size: 18px;
-      font-weight: 800;
-      letter-spacing: .02em;
-      margin: 0;
-    }
-    .picksMeta{
-      font-size: 12px;
-      opacity: .7;
-      white-space: nowrap;
-    }
-
-    /* ✅ CTAを見出し直下に置く（常時表示） */
-    .picksCta{
-      margin-top: 0;
-      display:flex;
-      flex-direction:column;
-      gap: 10px;
-    }
-
-    .picksList{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      margin-top: 10px; /* CTAの下に少し空ける */
-    }
-
-    .pickCard{
-      display:block;
-      text-decoration:none;
-      color: inherit;
-      background: #fff;
-      border: 1px solid rgba(0,0,0,.08);
-      border-radius: 16px;
-      padding: 12px 12px;
-      box-shadow: 0 1px 0 rgba(0,0,0,.03);
-    }
-    html[data-theme="pro"] .pickCard{
-      background: rgba(15,20,28,.70);
-      border-color: rgba(212,175,55,.28);
-      box-shadow: 0 1px 0 rgba(0,0,0,.55);
-    }
-
-    .pickTop{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      margin-bottom: 6px;
-    }
-    .pickName{
-      font-weight: 800;
-      font-size: 14px;
-      letter-spacing: .02em;
-    }
-    .pickTime{
-      font-weight: 800;
-      font-size: 14px;
-      white-space: nowrap;
-    }
-    .pickSub{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      font-size: 12px;
-      opacity: .8;
-      margin-bottom: 6px;
-    }
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      padding: 2px 8px;
-      border-radius: 999px;
-      border: 1px solid rgba(0,0,0,.08);
-      background: rgba(0,0,0,.02);
-      font-weight: 700;
-      white-space: nowrap;
-    }
-    html[data-theme="pro"] .badge{
-      border-color: rgba(212,175,55,.22);
-      background: rgba(212,175,55,.06);
-    }
-    .badge--sg{ border-color: rgba(220,38,38,.35); background: rgba(220,38,38,.06); }
-    .badge--g1{ border-color: rgba(245,158,11,.35); background: rgba(245,158,11,.07); }
-    .badge--g2{ border-color: rgba(59,130,246,.35); background: rgba(59,130,246,.07); }
-    .badge--g3{ border-color: rgba(34,197,94,.35); background: rgba(34,197,94,.07); }
-    .badge--ippan{ border-color: rgba(0,0,0,.12); background: rgba(0,0,0,.02); }
-
-    .pickNote{
-      font-size: 12px;
-      line-height: 1.45;
-      opacity: .9;
-      margin: 0;
-    }
-
-    /* ===== ✅ CTAボタン ===== */
-    .picksBtn{
-      appearance:none;
-      -webkit-tap-highlight-color: transparent;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap: 10px;
-      width: 100%;
-      text-decoration:none;
-
-      border-radius: 16px;
-      padding: 12px 12px;
-      font-weight: 900;
-      font-size: 14px;
-
-      background: #fff;
-      color: inherit;
-      border: 1px solid rgba(0,0,0,.10);
-      box-shadow: 0 1px 0 rgba(0,0,0,.03);
-    }
-    .picksBtnSub{
-      font-size: 12px;
-      font-weight: 800;
-      opacity: .72;
-      white-space: nowrap;
-    }
-    .picksBtnArrow{
-      font-weight: 900;
-      opacity: .75;
-      white-space: nowrap;
-    }
-
-    /* セットだけ “お得” をさりげなく */
-    .picksBtn--set .picksBtnSub{
-      opacity: .85;
-    }
-
-    html[data-theme="pro"] .picksBtn{
-      background: rgba(15,20,28,.70);
-      border-color: rgba(212,175,55,.30);
-      box-shadow: 0 1px 0 rgba(0,0,0,.55);
-    }
-    html[data-theme="pro"] .picksBtnSub{
-      opacity: .70;
-    }
-  </style>
 </head>
 
 <body>
@@ -384,18 +138,13 @@
     }
 
     // ✅ 追加：開催判定（blocked でも bytes で判定する）
-    // - held:true はそのまま信頼
-    // - held:false/undefined でも status_code=200 かつ bytes が十分大きければ「開催扱い」
     function inferHeld(v){
       if (v && v.held === true) return true;
 
       const sc = Number(v?.status_code || 0);
       const bytes = Number(v?.bytes || 0);
 
-      // 目安：ブロック用の薄いHTMLは小さめ、開催ページは大きめ
-      // ※閾値は安全側で 20000 に固定
       if (sc === 200 && bytes >= 20000) return true;
-
       return false;
     }
 
@@ -419,7 +168,6 @@
           next_r: v.next_r,
           close_at: v.close_at,
 
-          // 使わないけど、デバッグ用に残しておく（表示には影響しない）
           status_code: v.status_code,
           bytes: v.bytes,
           note: v.note
@@ -476,7 +224,6 @@
     function renderPicks(data){
       const picks = Array.isArray(data?.picks) ? data.picks : [];
 
-      // ✅ 空の説明は一切出さない（CTAだけ見せる）
       if (!picks.length){
         $picks.innerHTML = "";
       } else {
@@ -501,7 +248,6 @@
     function renderPicksCta(){
       const isPro = document.documentElement.getAttribute("data-theme") === "pro";
 
-      // FREE：3導線（常時表示）
       if (!isPro){
         $picksCta.innerHTML = `
           <a class="picksBtn" href="${URL_YOSO_ONLY}" target="_blank" rel="noopener noreferrer">
@@ -531,7 +277,6 @@
         return;
       }
 
-      // PRO：下の欄は別にしたい（ここは後で差し替え）
       $picksCta.innerHTML = `
         <a class="picksBtn" href="#" aria-disabled="true" onclick="return false;">
           <div>
