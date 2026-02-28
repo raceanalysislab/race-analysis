@@ -25,18 +25,21 @@
 
 /* ===== PRO THEME（形は一切変えず、色だけ差し替え） ===== */
 html[data-theme="pro"]{
-  --bg: #070b10;
-  --text: #eef2f7;
-  --muted: rgba(238,242,247,.72);
+  /* ✅ “黒” をちゃんと黒に */
+  --bg: #060606;
+  --text: rgba(245,245,245,.96);
+  --muted: rgba(245,245,245,.62);
 
-  --cardOff: #121822;
-  --cardOn: #0e131b;
+  /* ✅ 青みを消したニュートラル黒 */
+  --cardOff: #0b0b0b;
+  --cardOn:  #111111;
 
-  --border: rgba(238,242,247,.14);
+  /* ✅ 境界は白じゃなく薄い金寄りで上品に */
+  --border: rgba(245,245,245,.08);
 
-  /* 金（上品寄り） */
-  --borderOn: #d4af37;
-  --accent:  #d4af37;
+  /* ✅ 金（くすませた本物寄り） */
+  --borderOn: #c9a227;
+  --accent:  #c9a227;
 }
 
 *{ box-sizing: border-box; }
@@ -59,10 +62,10 @@ body{
    ========================================================= */
 html[data-theme="pro"] body{
   background:
-    radial-gradient(1400px 900px at 12% -10%, rgba(212,175,55,.12), transparent 60%),
-    radial-gradient(900px 600px at 92% 12%, rgba(255,255,255,.06), transparent 62%),
-    radial-gradient(700px 520px at 30% 95%, rgba(212,175,55,.05), transparent 55%),
-    linear-gradient(180deg, rgba(255,255,255,.03), transparent 22%),
+    radial-gradient(1400px 900px at 12% -10%, rgba(201,162,39,.10), transparent 62%),
+    radial-gradient(900px 600px at 92% 12%, rgba(255,255,255,.04), transparent 64%),
+    radial-gradient(700px 520px at 30% 95%, rgba(201,162,39,.04), transparent 58%),
+    linear-gradient(180deg, rgba(255,255,255,.02), transparent 24%),
     var(--bg);
 }
 
@@ -71,7 +74,7 @@ html[data-theme="pro"] body::before{
   position: fixed;
   inset: 0;
   pointer-events: none;
-  opacity: .055;
+  opacity: .050;
   mix-blend-mode: overlay;
   /* 画像なしノイズ（軽い） */
   background-image:
@@ -126,13 +129,13 @@ html[data-theme="pro"] body::before{
 
 /* ✅ PRO：ヘッダーボタンを “金属フレーム” に（発光ではなく艶） */
 html[data-theme="pro"] .top__btn{
-  border-color: rgba(212,175,55,.55);
+  border-color: rgba(201,162,39,.55);
   background:
-    linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02)) padding-box;
+    linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.015)) padding-box;
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,.10),
-    inset 0 -1px 0 rgba(0,0,0,.55),
-    0 10px 26px rgba(0,0,0,.50);
+    inset 0 -1px 0 rgba(0,0,0,.60),
+    0 10px 26px rgba(0,0,0,.55);
 }
 
 .top__btn.is-loading{ opacity: .6; }
@@ -157,13 +160,13 @@ html[data-theme="pro"] .top__btn{
 
 /* ✅ PRO：top__proも同じ金属フレーム */
 html[data-theme="pro"] .top__pro{
-  border-color: rgba(212,175,55,.55);
+  border-color: rgba(201,162,39,.55);
   background:
-    linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02)) padding-box;
+    linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.015)) padding-box;
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,.10),
-    inset 0 -1px 0 rgba(0,0,0,.55),
-    0 10px 26px rgba(0,0,0,.50);
+    inset 0 -1px 0 rgba(0,0,0,.60),
+    0 10px 26px rgba(0,0,0,.55);
 }
 
 .top__proDot{
@@ -176,11 +179,11 @@ html[data-theme="pro"] .top__pro{
 /* ✅ PRO：ドットを “宝石っぽい艶” に（光らせ過ぎない） */
 html[data-theme="pro"] .top__proDot{
   background:
-    radial-gradient(circle at 30% 30%, rgba(255,255,255,.45), rgba(255,255,255,0) 45%),
-    radial-gradient(circle at 60% 70%, rgba(242,214,120,.55), rgba(212,175,55,.95) 55%, rgba(176,132,28,1) 100%);
+    radial-gradient(circle at 30% 30%, rgba(255,255,255,.38), rgba(255,255,255,0) 45%),
+    radial-gradient(circle at 60% 70%, rgba(230,195,92,.50), rgba(201,162,39,.95) 55%, rgba(148,110,24,1) 100%);
   box-shadow:
-    0 1px 0 rgba(0,0,0,.55),
-    0 0 0 1px rgba(212,175,55,.18);
+    0 1px 0 rgba(0,0,0,.60),
+    0 0 0 1px rgba(201,162,39,.18);
 }
 
 .top__sub{
@@ -235,14 +238,14 @@ html[data-theme="pro"] .top__proDot{
 /* ✅ PRO：カード面を “黒レザー + ガラス反射” に（形はそのまま） */
 html[data-theme="pro"] .card{
   background:
-    linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,0) 38%),
-    radial-gradient(900px 220px at 50% 0%, rgba(255,255,255,.05), transparent 55%),
+    linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,0) 40%),
+    radial-gradient(900px 220px at 50% 0%, rgba(255,255,255,.04), transparent 58%),
     var(--cardOff);
-  border-color: rgba(238,242,247,.13);
+  border-color: rgba(245,245,245,.08);
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.06),
-    inset 0 -1px 0 rgba(0,0,0,.55),
-    0 10px 24px rgba(0,0,0,.55);
+    inset 0 1px 0 rgba(255,255,255,.05),
+    inset 0 -1px 0 rgba(0,0,0,.65),
+    0 10px 24px rgba(0,0,0,.62);
 }
 
 /* ====== FREE ON ====== */
@@ -256,24 +259,24 @@ html[data-theme="pro"] .card--on{
   border: 2px solid transparent; /* 枠の太さ維持 */
   background:
     /* 面（中） */
-    linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,0) 34%),
+    linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,0) 36%),
     linear-gradient(var(--cardOn), var(--cardOn)) padding-box,
     /* 枠（金属） */
     linear-gradient(
       135deg,
-      rgba(242,214,120,.18) 0%,
-      rgba(212,175,55,.92) 18%,
-      rgba(255,255,255,.22) 28%,
-      rgba(212,175,55,.86) 44%,
-      rgba(176,132,28,.92) 62%,
-      rgba(255,255,255,.14) 74%,
-      rgba(212,175,55,.90) 86%,
-      rgba(242,214,120,.16) 100%
+      rgba(230,195,92,.14) 0%,
+      rgba(201,162,39,.86) 18%,
+      rgba(255,255,255,.16) 28%,
+      rgba(201,162,39,.80) 44%,
+      rgba(148,110,24,.88) 62%,
+      rgba(255,255,255,.11) 74%,
+      rgba(201,162,39,.84) 86%,
+      rgba(230,195,92,.12) 100%
     ) border-box;
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.07),
-    inset 0 -1px 0 rgba(0,0,0,.55),
-    0 12px 28px rgba(0,0,0,.62);
+    inset 0 1px 0 rgba(255,255,255,.06),
+    inset 0 -1px 0 rgba(0,0,0,.65),
+    0 12px 28px rgba(0,0,0,.70);
 }
 
 /* OFF */
@@ -305,7 +308,7 @@ html[data-theme="pro"] .card--on{
 
 /* ✅ PROで会場文字が見えなくなるのを防ぐ（少しだけ締めて高級寄せ） */
 html[data-theme="pro"] .card__line{
-  color: rgba(238,242,247,.70);
+  color: rgba(245,245,245,.66);
 }
 
 /* 非開催 */
@@ -315,7 +318,7 @@ html[data-theme="pro"] .card__line{
 }
 html[data-theme="pro"] .card--off .card__name,
 html[data-theme="pro"] .card--off .card__line{
-  color: rgba(238,242,247,.42);
+  color: rgba(245,245,245,.38);
 }
 
 /* 2行目 / 3行目 */
@@ -331,10 +334,10 @@ html[data-theme="pro"] .card--off .card__line{
 /* ✅ PRO：タップ時だけ “重い” 反応（上品に沈む感じ） */
 html[data-theme="pro"] .card:active{
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.08),
-    inset 0 -1px 0 rgba(0,0,0,.55),
-    0 0 0 1px rgba(212,175,55,.16),
-    0 16px 32px rgba(0,0,0,.70);
+    inset 0 1px 0 rgba(255,255,255,.06),
+    inset 0 -1px 0 rgba(0,0,0,.65),
+    0 0 0 1px rgba(201,162,39,.14),
+    0 16px 32px rgba(0,0,0,.78);
   transform: translateY(-1px);
 }
 
@@ -348,7 +351,7 @@ html[data-theme="pro"] .card:active{
 html[data-theme="pro"] .card:focus-visible,
 html[data-theme="pro"] .top__btn:focus-visible,
 html[data-theme="pro"] .top__pro:focus-visible{
-  outline-color: rgba(212,175,55,.35);
+  outline-color: rgba(201,162,39,.30);
 }
 
 /* =========================
@@ -401,14 +404,14 @@ html[data-theme="pro"] .top__pro:focus-visible{
 /* ✅ PRO：picksカードも “黒レザー＋反射” */
 html[data-theme="pro"] .pickCard{
   background:
-    linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,0) 42%),
-    radial-gradient(900px 240px at 50% 0%, rgba(255,255,255,.05), transparent 55%),
-    rgba(14,19,27,.72);
-  border-color: rgba(212,175,55,.24);
+    linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,0) 44%),
+    radial-gradient(900px 240px at 50% 0%, rgba(255,255,255,.04), transparent 58%),
+    rgba(16,16,16,.78);
+  border-color: rgba(201,162,39,.22);
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.06),
-    inset 0 -1px 0 rgba(0,0,0,.55),
-    0 12px 28px rgba(0,0,0,.62);
+    inset 0 1px 0 rgba(255,255,255,.05),
+    inset 0 -1px 0 rgba(0,0,0,.65),
+    0 12px 28px rgba(0,0,0,.70);
 }
 
 .pickTop{
@@ -444,7 +447,7 @@ html[data-theme="pro"] .pickCard{
 }
 
 html[data-theme="pro"] .pickSub{
-  color: rgba(238,242,247,.70);
+  color: rgba(245,245,245,.66);
 }
 
 .badge{
@@ -460,9 +463,9 @@ html[data-theme="pro"] .pickSub{
 
 /* ✅ PRO：バッジも “薄金フレーム” */
 html[data-theme="pro"] .badge{
-  border-color: rgba(212,175,55,.22);
+  border-color: rgba(201,162,39,.20);
   background:
-    linear-gradient(180deg, rgba(212,175,55,.10), rgba(212,175,55,.04));
+    linear-gradient(180deg, rgba(201,162,39,.09), rgba(201,162,39,.03));
 }
 
 .badge--sg{ border-color: rgba(220,38,38,.35); background: rgba(220,38,38,.06); }
@@ -480,7 +483,7 @@ html[data-theme="pro"] .badge{
 }
 
 html[data-theme="pro"] .pickNote{
-  color: rgba(238,242,247,.82);
+  color: rgba(245,245,245,.80);
 }
 
 .pickEmpty{
@@ -493,9 +496,9 @@ html[data-theme="pro"] .pickNote{
 }
 
 html[data-theme="pro"] .pickEmpty{
-  background: rgba(14,19,27,.52);
-  border-color: rgba(212,175,55,.25);
-  color: rgba(238,242,247,.70);
+  background: rgba(16,16,16,.62);
+  border-color: rgba(201,162,39,.22);
+  color: rgba(245,245,245,.66);
 }
 
 /* =========================
@@ -532,33 +535,33 @@ html[data-theme="pro"] .pickEmpty{
 html[data-theme="pro"] .picksBtn{
   border: 1px solid transparent;
   background:
-    linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,0) 46%),
-    linear-gradient(rgba(14,19,27,.78), rgba(14,19,27,.78)) padding-box,
+    linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,0) 48%),
+    linear-gradient(rgba(16,16,16,.82), rgba(16,16,16,.82)) padding-box,
     linear-gradient(
       135deg,
-      rgba(242,214,120,.16) 0%,
-      rgba(212,175,55,.55) 22%,
-      rgba(255,255,255,.16) 34%,
-      rgba(212,175,55,.45) 50%,
-      rgba(176,132,28,.55) 68%,
-      rgba(255,255,255,.10) 78%,
-      rgba(212,175,55,.55) 90%,
-      rgba(242,214,120,.14) 100%
+      rgba(230,195,92,.12) 0%,
+      rgba(201,162,39,.48) 22%,
+      rgba(255,255,255,.12) 34%,
+      rgba(201,162,39,.40) 50%,
+      rgba(148,110,24,.52) 68%,
+      rgba(255,255,255,.08) 78%,
+      rgba(201,162,39,.50) 90%,
+      rgba(230,195,92,.10) 100%
     ) border-box;
 
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.06),
-    inset 0 -1px 0 rgba(0,0,0,.55),
-    0 14px 30px rgba(0,0,0,.65);
+    inset 0 1px 0 rgba(255,255,255,.05),
+    inset 0 -1px 0 rgba(0,0,0,.65),
+    0 14px 30px rgba(0,0,0,.72);
 }
 
 html[data-theme="pro"] .picksBtn:active{
   transform: translateY(-1px);
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.07),
-    inset 0 -1px 0 rgba(0,0,0,.55),
-    0 0 0 1px rgba(212,175,55,.16),
-    0 18px 36px rgba(0,0,0,.75);
+    inset 0 1px 0 rgba(255,255,255,.06),
+    inset 0 -1px 0 rgba(0,0,0,.65),
+    0 0 0 1px rgba(201,162,39,.14),
+    0 18px 36px rgba(0,0,0,.82);
 }
 
 .picksBtnMain{
