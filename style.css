@@ -297,13 +297,22 @@ html[data-theme="pro"] .card--tone-night{
 }
 html[data-theme="pro"] .card--off::before{ opacity: 0; }
 
-/* ✅ PRO：開催ONだけ “面+グロー” */
+/* =========================================================
+   ✅ 追加：PROは“判別できる”ように上端ラインを入れる（ONだけ）
+========================================================= */
+html[data-theme="pro"] .card--tone-normal{ --toneLine: rgba(255,255,255,.16); }
+html[data-theme="pro"] .card--tone-morning{ --toneLine: rgba(255,224,150,.62); }
+html[data-theme="pro"] .card--tone-night { --toneLine: rgba(120,170,255,.60); }
+
+/* ✅ PRO：開催ONだけ “面+グロー” ＋ 上端ライン */
 html[data-theme="pro"] .card--on{
   border-color: var(--gold);
   background:
     var(--proCardFaceOn),
     linear-gradient(var(--cardOn), var(--cardOn));
-  box-shadow: var(--proCardShadowOn);
+  box-shadow:
+    var(--proCardShadowOn),
+    inset 0 3px 0 var(--toneLine, transparent);
   transform: translateY(-1px);
 }
 
