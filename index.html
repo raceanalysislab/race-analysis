@@ -13,7 +13,6 @@
     <div class="top__row">
       <h1 class="top__title">本日の開催一覧</h1>
 
-      <!-- ✅ 右側：PRO → 更新（順番固定） -->
       <div class="top__actions">
         <button id="btnPro" class="top__pro" type="button" aria-pressed="false">
           <span class="top__proDot" aria-hidden="true"></span>
@@ -24,7 +23,6 @@
     </div>
 
     <div class="top__sub">
-      <!-- ✅ 引っ張って更新は廃止 -->
       <div class="top__updated">最終更新: <span id="updatedAt">--:--</span></div>
     </div>
   </header>
@@ -34,17 +32,13 @@
       <section id="grid" class="grid"></section>
     </section>
 
-    <!-- ✅ 本日厳選レース（見出しは1つだけ） -->
     <section class="picksWrap" aria-label="本日厳選レース">
       <div class="picksHead">
         <h2 class="picksTitle">本日厳選レース</h2>
         <div class="picksMeta">更新: <span id="picksUpdatedAt">--:--</span></div>
       </div>
 
-      <!-- ✅ CTAは見出し直下に固定（常時表示） -->
       <div id="picksCta" class="picksCta"></div>
-
-      <!-- ✅ picksがある日だけ下に出る（空の説明は出さない） -->
       <div id="picks" class="picksList"></div>
     </section>
   </main>
@@ -72,32 +66,18 @@
 
     const pad2 = (n) => String(n).padStart(2, "0");
     const toHM = (s) => (typeof s === "string" && s.length >= 4) ? s.slice(0,5) : "--:--";
-
-    // ✅ 「2 日目」みたいな余計な空白を消して「2日目」にする
     const normalizeJP = (s) => String(s || "").replace(/\s+/g, "");
 
-    // ✅ gradeの表記ブレを吸収して SG/G1/G2/G3 だけ通す（それ以外は一般）
     function normalizeGrade(raw){
       let s = String(raw || "").trim();
-
-      // 全角→半角寄せ（Ｇ１など）
-      s = s.replace(/[Ａ-Ｚａ-ｚ０-９]/g, ch =>
-        String.fromCharCode(ch.charCodeAt(0) - 0xFEE0)
-      );
-
-      s = s.toUpperCase();
-      s = s.replace(/\s+/g, "");
-
-      // ローマ数字等のブレ吸収（GⅠ, GI など）
+      s = s.replace(/[Ａ-Ｚａ-ｚ０-９]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0xFEE0));
+      s = s.toUpperCase().replace(/\s+/g, "");
       s = s.replace("GⅠ", "G1").replace("GI", "G1");
       s = s.replace("GⅡ", "G2").replace("GII", "G2");
       s = s.replace("GⅢ", "G3").replace("GIII", "G3");
-
-      // 末尾に変な記号がつくケースを削る（例: "G1,"）
       s = s.replace(/[^A-Z0-9]/g, "");
-
       if (s === "SG" || s === "G1" || s === "G2" || s === "G3") return s;
-      return ""; // 記念じゃない扱い
+      return "";
     }
 
     function gradeLabel(v){
@@ -120,7 +100,6 @@
       return "-- --";
     }
 
-    // ✅ 追加：開催判定（blocked でも bytes で判定する）
     function inferHeld(v){
       if (v && v.held === true) return true;
       const sc = Number(v?.status_code || 0);
@@ -134,7 +113,6 @@
     // =========================================================
     const DEBUG_SHOW_TONES = true; // ← 本番は false にする
 
-    // ✅ 時刻文字列から「時」を抜く（"08:35" / "08:35:00" / "2026-.. 08:35" も許容）
     function getHourFromTimeStr(t){
       const s = String(t || "");
       const m = s.match(/(\d{2}):(\d{2})/);
@@ -143,7 +121,6 @@
       return Number.isFinite(hh) ? hh : null;
     }
 
-    // ✅ tone判定：morning / night / normal
     function sessionTone(v){
       if (!v.held) return "";
       const src = v.time || v.close_at || "";
@@ -154,14 +131,12 @@
       return "normal";
     }
 
-    // ✅ 表示は「絵文字だけ」
     function sessionIconByTone(tone){
       if (tone === "morning") return "☀️";
       if (tone === "night") return "🌙";
       return "";
     }
 
-    // ✅ DEBUG用：全会場に3パターン散らす
     function debugToneByIndex(i){
       const m = i % 3;
       if (m === 0) return "morning";
@@ -172,7 +147,6 @@
     function cardHTML(v){
       const held = !!v.held;
 
-      // ✅ DEBUG中は誤タップ防止でリンク無効化
       const href = (held && v.url && !DEBUG_SHOW_TONES) ? v.url : "#";
       const clickable = (held && v.url && !DEBUG_SHOW_TONES);
 
@@ -238,7 +212,6 @@
       }
     }
 
-    // ====== picks_today.json ======
     function gradeBadgeClass(g){
       const ng = normalizeGrade(g);
       if (ng === "SG") return "badge badge--sg";
@@ -287,7 +260,6 @@
       }
     }
 
-    // ====== ✅ CTA ======
     const URL_YOSO_ONLY = "https://note.com/wsnndboat7/n/n1fdca8b0a7e3";
     const URL_PRO_ONLY  = "https://note.com/wsnndboat7/n/n8d805a4f27bf";
     const URL_SET       = "https://note.com/wsnndboat7/n/n6fcdb2a9db4f";
@@ -344,10 +316,7 @@
     }
 
     // =========================================================
-    // ✅ グリッド高さ：innerHeightでロック（スクロールで伸び縮みしない）
-    //  - visualViewportは一切使わない
-    //  - 更新(loadAll)では再計算しない
-    //  - 回転(orientationchange)だけ再ロック
+    // ✅ グリッド高さ：innerHeightでロック
     // =========================================================
     let LOCKED_VH = window.innerHeight;
 
@@ -365,7 +334,16 @@
       root.style.setProperty("--gridH", `${gridH}px`);
     }
 
-    // ====== 更新（重複防止 + キャッシュバスター） ======
+    // ✅ “食い込み”対策：更新後に1フレーム遅らせて高さだけ再適用（LOCKED_VHは変えない）
+    function stabilizeLayout(){
+      requestAnimationFrame(() => {
+        setGridHeight(false);
+        // iOSが稀にキャッシュしたレイアウトを保持するので、もう1回
+        requestAnimationFrame(() => setGridHeight(false));
+      });
+    }
+
+    // ====== 更新 ======
     let isLoading = false;
 
     async function fetchJSON(path, force){
@@ -391,6 +369,7 @@
         }
 
         renderPicksCta();
+        stabilizeLayout();
       }finally{
         isLoading = false;
       }
@@ -401,9 +380,33 @@
       loadAll(true).catch(()=>{}).finally(()=> $btn.classList.remove("is-loading"));
     });
 
-    // ✅ 回転だけ再ロック（ここが重要）
+    // =========================================================
+    // ✅ 引っ張り更新はしない。でも上端で下に引っ張った時のゴム伸びだけ止める
+    //    → これで「食い込み」が起きにくくなる
+    // =========================================================
+    let startY = 0;
+    let blocking = false;
+
+    window.addEventListener("touchstart", (e) => {
+      if (window.scrollY <= 0 && !isLoading) {
+        startY = e.touches[0].clientY;
+        blocking = true;
+      } else {
+        blocking = false;
+      }
+    }, { passive: true });
+
+    window.addEventListener("touchmove", (e) => {
+      if (!blocking) return;
+      const dy = e.touches[0].clientY - startY;
+      if (dy > 0) e.preventDefault(); // ゴム伸びだけ抑制
+    }, { passive: false });
+
+    window.addEventListener("touchend", () => { blocking = false; }, { passive: true });
+
+    // ✅ 回転だけ再ロック
     window.addEventListener("orientationchange", () => {
-      setTimeout(() => setGridHeight(true), 50);
+      setTimeout(() => { setGridHeight(true); stabilizeLayout(); }, 50);
     });
 
     // ✅ 5分ごとの自動更新（表示中だけ）
@@ -416,7 +419,7 @@
       if (document.visibilityState === "visible") loadAll(true).catch(()=>{});
     });
 
-    // ====== ✅ PRO 解放（1日固定 / data/pro_key.json を照合） ======
+    // ====== ✅ PRO 解放（1日固定） ======
     const LS_THEME = "theme";
     const LS_PRO_OK_DATE = "pro_ok_date";
 
@@ -431,13 +434,13 @@
         localStorage.setItem(LS_THEME,"pro");
         $btnPro.setAttribute("aria-pressed","true");
       }else{
-        html.removeAttribute("data-theme"); // FREE
+        html.removeAttribute("data-theme");
         localStorage.setItem(LS_THEME,"free");
         $btnPro.setAttribute("aria-pressed","false");
       }
       renderPicksCta();
-      // ✅ テーマ切替でheaderの高さが変わる可能性→再計算（ただしinnerHeightロック）
       setGridHeight(true);
+      stabilizeLayout();
     }
 
     async function getProKey(){
@@ -502,10 +505,10 @@
       unlockProFlow().catch(()=>{});
     });
 
-    // ✅ 初回：高さロック → PRO復元 → 「開いた瞬間に最新化」(force=true) → 5分更新
+    // ✅ 初回：高さロック → PRO復元 → 開いた瞬間に最新化
     setGridHeight(true);
     bootProByStoredDate().catch(()=> setTheme(false));
-    loadAll(true).catch(()=>{ renderPicksCta(); });
+    loadAll(true).catch(()=>{ renderPicksCta(); stabilizeLayout(); });
   </script>
 </body>
 </html>
