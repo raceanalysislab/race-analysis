@@ -356,11 +356,23 @@
       `;
     }
 
-    // ✅ 24会場を「画面内に収める」高さ計算（グリッド比率は固定のまま）
-    function setGridHeight(){
-      const root = document.documentElement;
+    // =========================================================
+    // ✅ グリッド高さ：iPhone Safari の更新/バー出入りで伸び縮みしないようにロック
+    //  - 更新(loadAll)では再計算しない
+    //  - 画面回転/本当のリサイズだけ force=true で更新
+    // =========================================================
+    let LOCKED_VH = null;
+
+    function getVhNow(){
       const vv = window.visualViewport;
-      const vh = vv ? vv.height : window.innerHeight;
+      return vv ? vv.height : window.innerHeight;
+    }
+
+    function setGridHeight(force = false){
+      const root = document.documentElement;
+
+      const vhNow = getVhNow();
+      if (LOCKED_VH === null || force) LOCKED_VH = vhNow;
 
       const header = document.querySelector(".top");
       const headerH = header ? header.getBoundingClientRect().height : 0;
@@ -368,7 +380,7 @@
       const margin = 18;
       const bottomReserve = 110;
 
-      const gridH = Math.max(360, Math.floor(vh - headerH - margin - bottomReserve));
+      const gridH = Math.max(360, Math.floor(LOCKED_VH - headerH - margin - bottomReserve));
       root.style.setProperty("--gridH", `${gridH}px`);
     }
 
@@ -398,7 +410,9 @@
         }
 
         renderPicksCta();
-        setGridHeight();
+
+        // ❌ ここで毎回高さ計算しない（伸び縮みの原因）
+        // setGridHeight();
       }finally{
         isLoading = false;
       }
@@ -425,9 +439,9 @@
 
     window.addEventListener("touchend", () => { pulling = false; }, { passive: true });
 
-    // viewport変化にも追従
-    window.addEventListener("resize", setGridHeight);
-    if (window.visualViewport) window.visualViewport.addEventListener("resize", setGridHeight);
+    // ✅ viewport変化：本当のリサイズだけ force=true
+    window.addEventListener("resize", () => setGridHeight(true));
+    if (window.visualViewport) window.visualViewport.addEventListener("resize", () => setGridHeight(true));
 
     // ✅ 5分ごとの自動更新（表示中だけ）
     const AUTO_MS = 5 * 60 * 1000;
@@ -459,7 +473,9 @@
         $btnPro.setAttribute("aria-pressed","false");
       }
       renderPicksCta();
-      setGridHeight();
+
+      // ✅ テーマ切替は header/余白が変わる可能性あるので、ここだけ再ロック
+      setGridHeight(true);
     }
 
     async function getProKey(){
@@ -524,10 +540,10 @@
       unlockProFlow().catch(()=>{});
     });
 
+    // ✅ 初回：高さロック → データ読込
+    setGridHeight(true);
     bootProByStoredDate().catch(()=> setTheme(false));
-
-    // 初回
-    loadAll(false).catch(()=>{ renderPicksCta(); setGridHeight(); });
+    loadAll(false).catch(()=>{ renderPicksCta(); });
   </script>
 </body>
 </html>
