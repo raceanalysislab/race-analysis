@@ -129,50 +129,52 @@
       return false;
     }
 
-    // =========================================================
-    // ✅ テスト用：3パターン強制配置（朝/夜/通常）
-    //  - morning/night/normal の3種類を “開催ONの会場” に付与
-    //  - 本番はこのDEBUG系を全部消すか、空にすればOK
-    // =========================================================
+    // ✅ 時刻文字列から「時」を抜く（"08:35" / "08:35:00" / "2026-.. 08:35" も許容）
+    function getHourFromTimeStr(t){
+      const s = String(t || "");
+      const m = s.match(/(\d{2}):(\d{2})/);
+      if (!m) return null;
+      const hh = Number(m[1]);
+      return Number.isFinite(hh) ? hh : null;
+    }
 
-    // ✅ ここで「テストでONにする会場」を指定（必要なら増やしてOK）
-    const DEBUG_FORCE_ON = ["01", "12", "19"]; // 桐生 / 住之江 / 下関
+    // ✅ tone判定：morning / night / normal
+    // モーニング：8〜9時台（8:00〜9:59）
+    // ナイター：17時以降
+    function sessionTone(v){
+      if (!v.held) return "";
+      const src = v.time || v.close_at || "";
+      const hh = getHourFromTimeStr(src);
+      if (hh === null) return "normal";
 
-    // ✅ 3パターン割当（tone）
-    // morning: 「朝」表記
-    // night:   「夜」表記
-    // normal:  空（通常開催は空）
-    const DEBUG_TONE_BY_JCD = {
-      "01": "morning",
-      "12": "night",
-      "19": "normal",
-    };
+      if (hh >= 8 && hh < 10) return "morning";
+      if (hh >= 17) return "night";
+      return "normal";
+    }
 
-    function toneLabel(tone){
-      if (tone === "morning") return "☀️ 朝";
-      if (tone === "night") return "🌙 夜";
-      return ""; // normal は空
+    function sessionIconByTone(tone){
+      if (tone === "morning") return "🌞";
+      if (tone === "night") return "🌙";
+      return ""; // normal は何も出さない（色だけで判別）
     }
 
     function cardHTML(v){
       const held = !!v.held;
       const href = held && v.url ? v.url : "#";
 
-      // ✅ toneに応じてクラスを追加（CSSで “上半分の色” を変える用）
-      // - card--tone-morning / card--tone-night / card--tone-normal
-      const tone = v.tone || "";
-      const toneCls = tone ? ` card--tone-${tone}` : "";
-      const cls = held ? `card card--on${toneCls}` : `card card--off${toneCls}`;
+      const tone = held ? (v.tone || "normal") : "";
+      const toneCls = held ? ` card--tone-${tone}` : "";
+      const cls = held ? `card card--on${toneCls}` : `card card--off`;
 
-      // ✅ 2行目：朝/夜だけ表記、通常は空（= そのままグレード+日目だけ）
-      const tl = held ? toneLabel(tone) : "";
+      // ✅ 2行目：絵文字だけ（朝/夜の文字は出さない）
+      const icon = held ? sessionIconByTone(tone) : "";
       const baseMid = held ? `${gradeLabel(v)} ${dayLabel(v)}`.trim() : "-- --";
-      const mid = held ? `${tl ? (tl + " ") : ""}${baseMid}`.trim() : "-- --";
+      const mid = held ? `${icon ? (icon + " ") : ""}${baseMid}`.trim() : "-- --";
 
       const btm = raceTimeLine(v);
 
       return `
-        <a class="${cls}" href="${href}" data-tone="${tone || ""}" ${held ? "" : 'aria-disabled="true" onclick="return false;"'}>
+        <a class="${cls}" href="${href}" data-tone="${tone}" ${held ? "" : 'aria-disabled="true" onclick="return false;"'}>
           <div class="card__name">${v.name}</div>
           <div class="card__line card__line--mid">${mid}</div>
           <div class="card__line card__line--btm">${btm}</div>
@@ -186,33 +188,28 @@
 
       const merged = VENUES.map(base => {
         const v = map.get(base.jcd) || {};
+        const held = inferHeld(v);
 
-        // ✅ データでheld or テスト強制held
-        const held = inferHeld(v) || DEBUG_FORCE_ON.includes(base.jcd);
-
-        // ✅ テストtone（開催ONの時だけ付与）
-        const tone = held ? (DEBUG_TONE_BY_JCD[base.jcd] || "") : "";
-
-        return {
+        const mergedV = {
           jcd: base.jcd,
           name: base.name,
           url: v.url || "",
           held: held,
-
-          // ✅ 追加：tone（CSSと表示用）
-          tone: tone,
-
           grade: v.grade,
           day: v.day,
           race: v.race,
           time: v.time,
           next_r: v.next_r,
           close_at: v.close_at,
-
           status_code: v.status_code,
           bytes: v.bytes,
           note: v.note
         };
+
+        // ✅ tone確定（開催中だけ）
+        mergedV.tone = held ? sessionTone(mergedV) : "";
+
+        return mergedV;
       });
 
       $grid.innerHTML = merged.map(cardHTML).join("");
