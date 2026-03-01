@@ -234,7 +234,6 @@ html[data-theme="pro"] .top__proDot{
   padding: 7px 7px 5px;
   min-height: 0;
 
-  /* ✅ 上半分レイヤー用 */
   position: relative;
 }
 
@@ -245,21 +244,30 @@ html[data-theme="pro"] .top__proDot{
   left:0; right:0; top:0;
   height: 52%;
   pointer-events:none;
-  opacity: .22;
-  background: var(--toneTop, rgba(15,23,42,.08));
+
+  /* ✅ FREEでも確実に見える濃度 */
+  opacity: .55;
+
+  background: var(--toneTop, rgba(15,23,42,.12));
   border-top-left-radius: 6px;
   border-top-right-radius: 6px;
 
-  /* ✅ 追加：色レイヤーを確実に見せる */
   z-index: 1;
 }
 
-/* ✅ 追加：文字を色レイヤーより上へ */
+/* ✅ 文字を色レイヤーより上へ */
 .card > *{ position: relative; z-index: 2; }
 
-.card--tone-normal{ --toneTop: linear-gradient(180deg, rgba(15,23,42,.10), rgba(15,23,42,0)); }
-.card--tone-morning{ --toneTop: linear-gradient(180deg, rgba(245,158,11,.26), rgba(245,158,11,0)); }
-.card--tone-night{ --toneTop: linear-gradient(180deg, rgba(59,130,246,.26), rgba(59,130,246,0)); }
+/* ✅ FREE：tone色を“見える色”に変更 */
+.card--tone-normal{
+  --toneTop: linear-gradient(180deg, rgba(148,163,184,.45), rgba(148,163,184,0));
+}
+.card--tone-morning{
+  --toneTop: linear-gradient(180deg, rgba(251,191,36,.65), rgba(251,191,36,0));
+}
+.card--tone-night{
+  --toneTop: linear-gradient(180deg, rgba(96,165,250,.65), rgba(96,165,250,0));
+}
 
 /* ✅ 非開催は上半分色を出さない */
 .card--off::before{ opacity: 0; }
@@ -276,20 +284,20 @@ html[data-theme="pro"] .card{
   box-shadow: var(--proCardShadowStd);
 }
 
-/* ✅ PRO：上半分カラー “見える強さ” に上げる */
-html[data-theme="pro"] .card::before{ opacity: .28; }
+/* ✅ PRO：上半分カラーも“確実に見える” */
+html[data-theme="pro"] .card::before{ opacity: .60; }
 html[data-theme="pro"] .card--tone-normal{
-  --toneTop: linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,0));
+  --toneTop: linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,0));
 }
 html[data-theme="pro"] .card--tone-morning{
-  --toneTop: linear-gradient(180deg, rgba(255,224,150,.30), rgba(255,224,150,0));
+  --toneTop: linear-gradient(180deg, rgba(255,224,150,.55), rgba(255,224,150,0));
 }
 html[data-theme="pro"] .card--tone-night{
-  --toneTop: linear-gradient(180deg, rgba(120,170,255,.26), rgba(120,170,255,0));
+  --toneTop: linear-gradient(180deg, rgba(120,170,255,.55), rgba(120,170,255,0));
 }
 html[data-theme="pro"] .card--off::before{ opacity: 0; }
 
-/* ✅ PRO：開催ONだけ “面+グロー” を増やして目立たせる */
+/* ✅ PRO：開催ONだけ “面+グロー” */
 html[data-theme="pro"] .card--on{
   border-color: var(--gold);
   background:
