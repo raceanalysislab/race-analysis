@@ -24,7 +24,7 @@
     </div>
 
     <div class="top__sub">
-      <div class="top__pull">↓ 引っ張って更新</div>
+      <!-- ✅ 引っ張って更新は廃止 -->
       <div class="top__updated">最終更新: <span id="updatedAt">--:--</span></div>
     </div>
   </header>
@@ -391,7 +391,6 @@
         }
 
         renderPicksCta();
-        // ❌ ここでは高さ再計算しない
       }finally{
         isLoading = false;
       }
@@ -401,56 +400,6 @@
       $btn.classList.add("is-loading");
       loadAll(true).catch(()=>{}).finally(()=> $btn.classList.remove("is-loading"));
     });
-
-    // =========================================================
-    // ✅ pull-to-refresh（バウンス中に更新しない版）
-    //  - touchmove中は更新しない
-    //  - touchendで確定してから更新
-    //  - pulling中は preventDefault してゴム伸び抑制（カード侵入の主因）
-    // =========================================================
-    let startY = 0;
-    let pulling = false;
-    let willRefresh = false;
-
-    window.addEventListener("touchstart", (e) => {
-      if (window.scrollY <= 0 && !isLoading) {
-        startY = e.touches[0].clientY;
-        pulling = true;
-        willRefresh = false;
-      }
-    }, { passive: true });
-
-    window.addEventListener("touchmove", (e) => {
-      if (!pulling) return;
-
-      const dy = e.touches[0].clientY - startY;
-
-      if (dy > 0) {
-        // ✅ iOSのゴム伸び（オーバースクロール）を止める
-        e.preventDefault();
-      }
-
-      if (dy > 80) {
-        willRefresh = true;
-      }
-    }, { passive: false });
-
-    window.addEventListener("touchend", () => {
-      if (!pulling) return;
-      pulling = false;
-
-      if (!willRefresh) return;
-      willRefresh = false;
-
-      $btn.classList.add("is-loading");
-
-      // ✅ バウンス解除後に更新（DOM再描画で崩れない）
-      requestAnimationFrame(() => {
-        loadAll(true)
-          .catch(()=>{})
-          .finally(()=> $btn.classList.remove("is-loading"));
-      });
-    }, { passive: true });
 
     // ✅ 回転だけ再ロック（ここが重要）
     window.addEventListener("orientationchange", () => {
@@ -553,10 +502,10 @@
       unlockProFlow().catch(()=>{});
     });
 
-    // ✅ 初回：高さロック → データ読込
+    // ✅ 初回：高さロック → PRO復元 → 「開いた瞬間に最新化」(force=true) → 5分更新
     setGridHeight(true);
     bootProByStoredDate().catch(()=> setTheme(false));
-    loadAll(false).catch(()=>{ renderPicksCta(); });
+    loadAll(true).catch(()=>{ renderPicksCta(); });
   </script>
 </body>
 </html>
