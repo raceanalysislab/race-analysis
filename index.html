@@ -167,7 +167,6 @@
 
     // ✅ DEBUG用：全会場に3パターンを散らす（morning/night/normal）
     function debugToneByIndex(i){
-      // 0,1,2 を回す（朝→夜→通常）
       const m = i % 3;
       if (m === 0) return "morning";
       if (m === 1) return "night";
@@ -176,7 +175,10 @@
 
     function cardHTML(v){
       const held = !!v.held;
-      const href = held && v.url ? v.url : "#";
+
+      // ✅ DEBUG中は誤タップ防止でリンク無効化（本番はURLある会場だけ有効）
+      const href = (held && v.url && !DEBUG_SHOW_TONES) ? v.url : "#";
+      const clickable = (held && v.url && !DEBUG_SHOW_TONES);
 
       const tone = held ? (v.tone || "normal") : "";
       const toneCls = held ? ` card--tone-${tone}` : "";
@@ -188,9 +190,9 @@
 
       const btm = raceTimeLine(v);
 
-      // ✅ data-tone を必ず付ける（CSSで上半分の色分けに使う）
       return `
-        <a class="${cls}" href="${href}" data-tone="${tone}" ${held ? "" : 'aria-disabled="true" onclick="return false;"'}>
+        <a class="${cls}" href="${href}" data-tone="${tone}"
+           ${clickable ? "" : 'aria-disabled="true" onclick="return false;"'}>
           <div class="card__name">${v.name}</div>
           <div class="card__line card__line--mid">${mid}</div>
           <div class="card__line card__line--btm">${btm}</div>
@@ -208,7 +210,6 @@
         // ✅ held（DEBUGなら全会場ON）
         const held = DEBUG_SHOW_TONES ? true : inferHeld(v);
 
-        // ✅ マージ
         const mergedV = {
           jcd: base.jcd,
           name: base.name,
@@ -226,8 +227,6 @@
         };
 
         // ✅ tone確定
-        // - DEBUG：見た目確認用に3パターン散らす
-        // - 本番：time/close_at から判定
         mergedV.tone = held
           ? (DEBUG_SHOW_TONES ? debugToneByIndex(idx) : sessionTone(mergedV))
           : "";
