@@ -94,7 +94,12 @@ html[data-theme="pro"]{
 }
 
 *{ box-sizing: border-box; }
-html, body { height: 100%; }
+
+/* ✅ iOSのゴム伸び由来の崩れを抑える */
+html, body {
+  height: 100%;
+  overscroll-behavior-y: none;
+}
 
 body{
   margin: 0;
@@ -103,6 +108,7 @@ body{
   color: var(--text);
   padding-top: var(--sat);
   padding-bottom: calc(var(--sab) + var(--bar));
+  overflow-x: hidden;
 }
 
 html[data-theme="pro"] body{ background: var(--bg); }
@@ -135,7 +141,13 @@ html[data-theme="pro"] body::before{
 }
 
 /* ===== Header ===== */
-.top{ padding: 14px 14px 10px; }
+/* ✅ ヘッダーを最前面で固定（カード侵入の見え方を防ぐ） */
+.top{
+  padding: 14px 14px 10px;
+  position: sticky;
+  top: var(--sat);
+  z-index: 50;
+}
 .top__row{ display:flex; align-items:flex-start; justify-content:space-between; gap: 12px; }
 .top__title{ margin: 0; font-size: 30px; line-height: 1.05; letter-spacing: 0.02em; font-weight: 900; }
 .top__actions{ display:flex; align-items:center; gap: 10px; flex-shrink: 0; }
@@ -196,7 +208,10 @@ html[data-theme="pro"] .top__proDot{
 .top__pull, .top__updated{ white-space: nowrap; }
 
 /* ===== Layout ===== */
-.wrap{ padding: 0 10px calc(18px + var(--sab) + var(--bar)); }
+.wrap{
+  position: relative;
+  padding: 0 10px calc(18px + var(--sab) + var(--bar));
+}
 .gridWrap{ height: var(--gridH); }
 
 /* ===== Grid ===== */
@@ -223,6 +238,11 @@ html[data-theme="pro"] .top__proDot{
   min-height: 0;
 
   position: relative;
+
+  /* ✅ iOSでの合成レイヤ崩れ対策 */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 /* ✅ 上半分カラー */
