@@ -129,6 +129,13 @@
       return false;
     }
 
+    // =========================================================
+    // ✅ テスト表示スイッチ
+    //  - true : 全会場をON扱いにして tone/色分けを確認できる
+    //  - false: 実データ判定のみ（本番）
+    // =========================================================
+    const DEBUG_SHOW_TONES = true; // ← 本番は false にする
+
     // ✅ 時刻文字列から「時」を抜く（"08:35" / "08:35:00" / "2026-.. 08:35" も許容）
     function getHourFromTimeStr(t){
       const s = String(t || "");
@@ -146,16 +153,25 @@
       const src = v.time || v.close_at || "";
       const hh = getHourFromTimeStr(src);
       if (hh === null) return "normal";
-
       if (hh >= 8 && hh < 10) return "morning";
       if (hh >= 17) return "night";
       return "normal";
     }
 
+    // ✅ 表示は「絵文字だけ」：朝/夜の文字は出さない
     function sessionIconByTone(tone){
       if (tone === "morning") return "🌞";
       if (tone === "night") return "🌙";
       return ""; // normal は何も出さない（色だけで判別）
+    }
+
+    // ✅ DEBUG用：全会場に3パターンを散らす（morning/night/normal）
+    function debugToneByIndex(i){
+      // 0,1,2 を回す（朝→夜→通常）
+      const m = i % 3;
+      if (m === 0) return "morning";
+      if (m === 1) return "night";
+      return "normal";
     }
 
     function cardHTML(v){
@@ -166,13 +182,13 @@
       const toneCls = held ? ` card--tone-${tone}` : "";
       const cls = held ? `card card--on${toneCls}` : `card card--off`;
 
-      // ✅ 2行目：絵文字だけ（朝/夜の文字は出さない）
       const icon = held ? sessionIconByTone(tone) : "";
       const baseMid = held ? `${gradeLabel(v)} ${dayLabel(v)}`.trim() : "-- --";
       const mid = held ? `${icon ? (icon + " ") : ""}${baseMid}`.trim() : "-- --";
 
       const btm = raceTimeLine(v);
 
+      // ✅ data-tone を必ず付ける（CSSで上半分の色分けに使う）
       return `
         <a class="${cls}" href="${href}" data-tone="${tone}" ${held ? "" : 'aria-disabled="true" onclick="return false;"'}>
           <div class="card__name">${v.name}</div>
@@ -186,10 +202,13 @@
       const map = new Map();
       (data.venues || []).forEach(v => map.set(v.jcd, v));
 
-      const merged = VENUES.map(base => {
+      const merged = VENUES.map((base, idx) => {
         const v = map.get(base.jcd) || {};
-        const held = inferHeld(v);
 
+        // ✅ held（DEBUGなら全会場ON）
+        const held = DEBUG_SHOW_TONES ? true : inferHeld(v);
+
+        // ✅ マージ
         const mergedV = {
           jcd: base.jcd,
           name: base.name,
@@ -206,8 +225,12 @@
           note: v.note
         };
 
-        // ✅ tone確定（開催中だけ）
-        mergedV.tone = held ? sessionTone(mergedV) : "";
+        // ✅ tone確定
+        // - DEBUG：見た目確認用に3パターン散らす
+        // - 本番：time/close_at から判定
+        mergedV.tone = held
+          ? (DEBUG_SHOW_TONES ? debugToneByIndex(idx) : sessionTone(mergedV))
+          : "";
 
         return mergedV;
       });
