@@ -118,6 +118,7 @@ html[data-theme="pro"] body::after{
   position: fixed;
   inset: 0;
   pointer-events: none;
+  z-index: 0; /* ✅ 念のため最背面 */
   box-shadow:
     inset 0 52px 160px rgba(255,255,255,.05),
     inset 0 -90px 180px rgba(0,0,0,.82),
@@ -129,6 +130,7 @@ html[data-theme="pro"] body::before{
   position: fixed;
   inset: 0;
   pointer-events: none;
+  z-index: 0; /* ✅ 念のため最背面 */
   opacity: .06;
   mix-blend-mode: overlay;
   background-image:
@@ -141,13 +143,25 @@ html[data-theme="pro"] body::before{
 }
 
 /* ===== Header ===== */
-/* ✅ ヘッダーを最前面で固定（カード侵入の見え方を防ぐ） */
+/* ✅ stickyのまま「透け」を止める（ここが本命） */
 .top{
   padding: 14px 14px 10px;
   position: sticky;
   top: var(--sat);
-  z-index: 50;
+  z-index: 1000;
+
+  /* ✅ 下のカードが見えないように背景を塗る */
+  background: var(--bg);
+
+  /* ✅ かぶり感を消すための薄い境界 */
+  box-shadow: 0 1px 0 rgba(15,23,42,.06);
 }
+
+html[data-theme="pro"] .top{
+  background: var(--bg);
+  box-shadow: 0 1px 0 rgba(255,224,150,.14);
+}
+
 .top__row{ display:flex; align-items:flex-start; justify-content:space-between; gap: 12px; }
 .top__title{ margin: 0; font-size: 30px; line-height: 1.05; letter-spacing: 0.02em; font-weight: 900; }
 .top__actions{ display:flex; align-items:center; gap: 10px; flex-shrink: 0; }
@@ -253,7 +267,6 @@ html[data-theme="pro"] .top__proDot{
   height: 52%;
   pointer-events:none;
 
-  /* FREEは見える濃度 */
   opacity: .55;
 
   background: var(--toneTop, rgba(15,23,42,.12));
