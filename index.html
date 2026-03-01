@@ -120,36 +120,65 @@
       return "-- --";
     }
 
+    // ✅ 追加：開催判定（blocked でも bytes で判定する）
+    function inferHeld(v){
+      if (v && v.held === true) return true;
+      const sc = Number(v?.status_code || 0);
+      const bytes = Number(v?.bytes || 0);
+      if (sc === 200 && bytes >= 20000) return true;
+      return false;
+    }
+
+    // =========================================================
+    // ✅ テスト用：3パターン強制配置（朝/夜/通常）
+    //  - morning/night/normal の3種類を “開催ONの会場” に付与
+    //  - 本番はこのDEBUG系を全部消すか、空にすればOK
+    // =========================================================
+
+    // ✅ ここで「テストでONにする会場」を指定（必要なら増やしてOK）
+    const DEBUG_FORCE_ON = ["01", "12", "19"]; // 桐生 / 住之江 / 下関
+
+    // ✅ 3パターン割当（tone）
+    // morning: 「朝」表記
+    // night:   「夜」表記
+    // normal:  空（通常開催は空）
+    const DEBUG_TONE_BY_JCD = {
+      "01": "morning",
+      "12": "night",
+      "19": "normal",
+    };
+
+    function toneLabel(tone){
+      if (tone === "morning") return "☀️ 朝";
+      if (tone === "night") return "🌙 夜";
+      return ""; // normal は空
+    }
+
     function cardHTML(v){
       const held = !!v.held;
       const href = held && v.url ? v.url : "#";
-      const cls = held ? "card card--on" : "card card--off";
 
-      const mid = held ? `${gradeLabel(v)} ${dayLabel(v)}` : "-- --";
+      // ✅ toneに応じてクラスを追加（CSSで “上半分の色” を変える用）
+      // - card--tone-morning / card--tone-night / card--tone-normal
+      const tone = v.tone || "";
+      const toneCls = tone ? ` card--tone-${tone}` : "";
+      const cls = held ? `card card--on${toneCls}` : `card card--off${toneCls}`;
+
+      // ✅ 2行目：朝/夜だけ表記、通常は空（= そのままグレード+日目だけ）
+      const tl = held ? toneLabel(tone) : "";
+      const baseMid = held ? `${gradeLabel(v)} ${dayLabel(v)}`.trim() : "-- --";
+      const mid = held ? `${tl ? (tl + " ") : ""}${baseMid}`.trim() : "-- --";
+
       const btm = raceTimeLine(v);
 
       return `
-        <a class="${cls}" href="${href}" ${held ? "" : 'aria-disabled="true" onclick="return false;"'}>
+        <a class="${cls}" href="${href}" data-tone="${tone || ""}" ${held ? "" : 'aria-disabled="true" onclick="return false;"'}>
           <div class="card__name">${v.name}</div>
           <div class="card__line card__line--mid">${mid}</div>
           <div class="card__line card__line--btm">${btm}</div>
         </a>
       `;
     }
-
-    // ✅ 追加：開催判定（blocked でも bytes で判定する）
-    function inferHeld(v){
-      if (v && v.held === true) return true;
-
-      const sc = Number(v?.status_code || 0);
-      const bytes = Number(v?.bytes || 0);
-
-      if (sc === 200 && bytes >= 20000) return true;
-      return false;
-    }
-
-    // ✅ デモ用：強制的にONにする会場（本番は [] にするだけ）
-    const DEBUG_FORCE_ON = ["03", "12", "19"]; // 江戸川 / 住之江 / 下関
 
     function render(data){
       const map = new Map();
@@ -158,14 +187,21 @@
       const merged = VENUES.map(base => {
         const v = map.get(base.jcd) || {};
 
-        // ✅ ここだけ差分：データでON or デモ強制ON
+        // ✅ データでheld or テスト強制held
         const held = inferHeld(v) || DEBUG_FORCE_ON.includes(base.jcd);
+
+        // ✅ テストtone（開催ONの時だけ付与）
+        const tone = held ? (DEBUG_TONE_BY_JCD[base.jcd] || "") : "";
 
         return {
           jcd: base.jcd,
           name: base.name,
           url: v.url || "",
           held: held,
+
+          // ✅ 追加：tone（CSSと表示用）
+          tone: tone,
+
           grade: v.grade,
           day: v.day,
           race: v.race,
