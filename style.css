@@ -21,28 +21,24 @@
 html[data-theme="pro"]{
   --bg: #050608;
 
-  /* ✅ 文字：さらに白寄り（シャンパン） */
   --text: rgba(255,252,244,.985);
   --muted: rgba(255,252,244,.78);
 
   --cardOff: #0a0d12;
   --cardOn:  #090c11;
 
-  /* ✅ 金：銅排除（黄味はあるが“茶”は入れない） */
   --gold: rgba(255,224,150,.98);
   --goldSoft: rgba(255,224,150,.45);
   --border: rgba(255,252,244,.18);
   --borderOn: var(--gold);
   --accent: var(--gold);
 
-  /* ✅ 右上ボタン：背景同化（透明） */
   --proPlateBg: transparent;
   --proPlateShadow:
     inset 0 1px 0 rgba(255,255,255,.14),
     inset 0 -1px 0 rgba(0,0,0,.84),
     0 10px 26px rgba(0,0,0,.72);
 
-  /* ドット（宝石）も“銅”抜き */
   --proGemBg:
     radial-gradient(circle at 30% 30%, rgba(255,255,255,.62), rgba(255,255,255,0) 48%),
     radial-gradient(circle at 55% 70%, rgba(255,248,228,.90), rgba(255,224,150,.98) 58%, rgba(80,55,10,1) 100%);
@@ -51,31 +47,26 @@ html[data-theme="pro"]{
     0 0 0 1px rgba(255,224,150,.30),
     0 0 14px rgba(255,224,150,.22);
 
-  /* ✅ 面のハイライト（暗さ軽減） */
   --proCardFace:
     radial-gradient(900px 240px at 50% 0%, rgba(255,255,255,.09), transparent 62%),
     linear-gradient(180deg, rgba(255,255,255,.065), rgba(255,255,255,0) 54%);
 
-  /* ✅ ONだけ“面を明るく”して目立たせる（ここが差） */
   --proCardFaceOn:
     radial-gradient(900px 260px at 50% 0%, rgba(255,255,255,.13), transparent 64%),
     linear-gradient(180deg, rgba(255,255,255,.085), rgba(255,255,255,0) 58%);
 
-  /* ✅ 影（縁が沈まない） */
   --proCardShadowStd:
     inset 0 1px 0 rgba(255,255,255,.08),
     inset 0 -1px 0 rgba(0,0,0,.82),
     0 10px 24px rgba(0,0,0,.80),
     0 0 22px rgba(255,224,150,.16);
 
-  /* ✅ ONは“金の外グロー”を増やす（枠は単色のまま） */
   --proCardShadowOn:
     inset 0 1px 0 rgba(255,255,255,.10),
     0 14px 30px rgba(0,0,0,.88),
     0 0 0 1px rgba(255,224,150,.20),
     0 0 42px rgba(255,224,150,.26);
 
-  /* ✅ OFFは暗く沈める（ここが主役） */
   --proCardShadowOff:
     inset 0 1px 0 rgba(255,255,255,.015),
     0 18px 40px rgba(0,0,0,.97);
@@ -86,7 +77,6 @@ html[data-theme="pro"]{
     0 0 0 1px rgba(255,224,150,.26),
     0 0 36px rgba(255,224,150,.24);
 
-  /* picks/CTA */
   --proBoxBg:
     radial-gradient(900px 260px at 50% 0%, rgba(255,255,255,.085), transparent 64%),
     linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,0) 62%),
@@ -115,7 +105,6 @@ body{
   padding-bottom: calc(var(--sab) + var(--bar));
 }
 
-/* ✅ 背景：黒 + 白い影だけ */
 html[data-theme="pro"] body{ background: var(--bg); }
 
 html[data-theme="pro"] body::after{
@@ -183,7 +172,6 @@ html[data-theme="pro"] body::before{
 }
 .top__proDot{ width: 10px; height: 10px; border-radius: 999px; background: var(--accent); }
 
-/* ✅ PRO：右上PRO/更新＝背景統一（透明）＋縁MAX */
 html[data-theme="pro"] .top__btn,
 html[data-theme="pro"] .top__pro{
   border: 1px solid var(--gold);
@@ -237,7 +225,7 @@ html[data-theme="pro"] .top__proDot{
   position: relative;
 }
 
-/* ✅ 上半分カラー（FREE/PRO 共通） */
+/* ✅ 上半分カラー */
 .card::before{
   content:"";
   position:absolute;
@@ -245,20 +233,17 @@ html[data-theme="pro"] .top__proDot{
   height: 52%;
   pointer-events:none;
 
-  /* ✅ FREEでも確実に見える濃度 */
+  /* FREEは見える濃度 */
   opacity: .55;
 
   background: var(--toneTop, rgba(15,23,42,.12));
   border-top-left-radius: 6px;
   border-top-right-radius: 6px;
-
   z-index: 1;
 }
-
-/* ✅ 文字を色レイヤーより上へ */
 .card > *{ position: relative; z-index: 2; }
 
-/* ✅ FREE：tone色を“見える色”に変更 */
+/* FREE：tone色 */
 .card--tone-normal{
   --toneTop: linear-gradient(180deg, rgba(148,163,184,.45), rgba(148,163,184,0));
 }
@@ -269,13 +254,12 @@ html[data-theme="pro"] .top__proDot{
   --toneTop: linear-gradient(180deg, rgba(96,165,250,.65), rgba(96,165,250,0));
 }
 
-/* ✅ 非開催は上半分色を出さない */
 .card--off::before{ opacity: 0; }
 
 .card--on{ background: var(--cardOn); border-color: var(--borderOn); }
 .card--off{ background: var(--cardOff); border-color: var(--border); }
 
-/* ✅ PRO：縁グラデ完全撤去 → 単色金（MAX） */
+/* PRO base */
 html[data-theme="pro"] .card{
   border: 2px solid var(--gold);
   background:
@@ -284,39 +268,30 @@ html[data-theme="pro"] .card{
   box-shadow: var(--proCardShadowStd);
 }
 
-/* ✅ PRO：上半分カラーも“確実に見える” */
-html[data-theme="pro"] .card::before{ opacity: .60; }
+/* ✅ PRO：ラインなしで“上半分の色だけ”を強める */
+html[data-theme="pro"] .card::before{ opacity: .70; }
 html[data-theme="pro"] .card--tone-normal{
-  --toneTop: linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,0));
+  --toneTop: linear-gradient(180deg, rgba(255,255,255,.26), rgba(255,255,255,0));
 }
 html[data-theme="pro"] .card--tone-morning{
-  --toneTop: linear-gradient(180deg, rgba(255,224,150,.55), rgba(255,224,150,0));
+  --toneTop: linear-gradient(180deg, rgba(255,224,150,.62), rgba(255,224,150,0));
 }
 html[data-theme="pro"] .card--tone-night{
-  --toneTop: linear-gradient(180deg, rgba(120,170,255,.55), rgba(120,170,255,0));
+  --toneTop: linear-gradient(180deg, rgba(120,170,255,.60), rgba(120,170,255,0));
 }
 html[data-theme="pro"] .card--off::before{ opacity: 0; }
 
-/* =========================================================
-   ✅ 追加：PROは“判別できる”ように上端ラインを入れる（ONだけ）
-========================================================= */
-html[data-theme="pro"] .card--tone-normal{ --toneLine: rgba(255,255,255,.16); }
-html[data-theme="pro"] .card--tone-morning{ --toneLine: rgba(255,224,150,.62); }
-html[data-theme="pro"] .card--tone-night { --toneLine: rgba(120,170,255,.60); }
-
-/* ✅ PRO：開催ONだけ “面+グロー” ＋ 上端ライン */
+/* PRO ON */
 html[data-theme="pro"] .card--on{
   border-color: var(--gold);
   background:
     var(--proCardFaceOn),
     linear-gradient(var(--cardOn), var(--cardOn));
-  box-shadow:
-    var(--proCardShadowOn),
-    inset 0 3px 0 var(--toneLine, transparent);
+  box-shadow: var(--proCardShadowOn);
   transform: translateY(-1px);
 }
 
-/* ✅ PRO：非開催はさらに暗く（ほぼ背景化） */
+/* PRO OFF */
 html[data-theme="pro"] .card--off{
   border-color: rgba(255,224,150,.10);
   background: linear-gradient(#040509, #040509);
@@ -361,7 +336,6 @@ html[data-theme="pro"] .card__line{ color: rgba(255,252,244,.82); }
 .card--off .card__name,
 .card--off .card__line{ color: #6b7280; }
 
-/* ✅ PRO：OFF文字をさらに暗く */
 html[data-theme="pro"] .card--off .card__name{
   color: rgba(255,252,244,.12);
   text-shadow: none;
