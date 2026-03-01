@@ -249,7 +249,13 @@ html[data-theme="pro"] .top__proDot{
   background: var(--toneTop, rgba(15,23,42,.08));
   border-top-left-radius: 6px;
   border-top-right-radius: 6px;
+
+  /* ✅ 追加：色レイヤーを確実に見せる */
+  z-index: 1;
 }
+
+/* ✅ 追加：文字を色レイヤーより上へ */
+.card > *{ position: relative; z-index: 2; }
 
 .card--tone-normal{ --toneTop: linear-gradient(180deg, rgba(15,23,42,.10), rgba(15,23,42,0)); }
 .card--tone-morning{ --toneTop: linear-gradient(180deg, rgba(245,158,11,.26), rgba(245,158,11,0)); }
@@ -270,11 +276,17 @@ html[data-theme="pro"] .card{
   box-shadow: var(--proCardShadowStd);
 }
 
-/* ✅ PRO：上半分カラーは控えめ（世界観キープ） */
-html[data-theme="pro"] .card::before{ opacity: .16; }
-html[data-theme="pro"] .card--tone-normal{ --toneTop: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,0)); }
-html[data-theme="pro"] .card--tone-morning{ --toneTop: linear-gradient(180deg, rgba(255,224,150,.22), rgba(255,224,150,0)); }
-html[data-theme="pro"] .card--tone-night{ --toneTop: linear-gradient(180deg, rgba(120,170,255,.18), rgba(120,170,255,0)); }
+/* ✅ PRO：上半分カラー “見える強さ” に上げる */
+html[data-theme="pro"] .card::before{ opacity: .28; } /* ← .16 をやめる */
+html[data-theme="pro"] .card--tone-normal{
+  --toneTop: linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,0));
+}
+html[data-theme="pro"] .card--tone-morning{
+  --toneTop: linear-gradient(180deg, rgba(255,224,150,.30), rgba(255,224,150,0));
+}
+html[data-theme="pro"] .card--tone-night{
+  --toneTop: linear-gradient(180deg, rgba(120,170,255,.26), rgba(120,170,255,0));
+}
 html[data-theme="pro"] .card--off::before{ opacity: 0; }
 
 /* ✅ PRO：開催ONだけ “面+グロー” を増やして目立たせる */
