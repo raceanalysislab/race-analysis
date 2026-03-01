@@ -277,7 +277,7 @@ html[data-theme="pro"] .card{
 }
 
 /* ✅ PRO：上半分カラー “見える強さ” に上げる */
-html[data-theme="pro"] .card::before{ opacity: .28; } /* ← .16 をやめる */
+html[data-theme="pro"] .card::before{ opacity: .28; }
 html[data-theme="pro"] .card--tone-normal{
   --toneTop: linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,0));
 }
@@ -301,7 +301,7 @@ html[data-theme="pro"] .card--on{
 
 /* ✅ PRO：非開催はさらに暗く（ほぼ背景化） */
 html[data-theme="pro"] .card--off{
-  border-color: rgba(255,224,150,.10); /* 縁ほぼ消す */
+  border-color: rgba(255,224,150,.10);
   background: linear-gradient(#040509, #040509);
   box-shadow: var(--proCardShadowOff);
   filter: saturate(.65) brightness(.75);
