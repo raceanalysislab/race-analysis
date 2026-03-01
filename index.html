@@ -146,8 +146,6 @@
     }
 
     // ✅ tone判定：morning / night / normal
-    // モーニング：8〜9時台（8:00〜9:59）
-    // ナイター：17時以降
     function sessionTone(v){
       if (!v.held) return "";
       const src = v.time || v.close_at || "";
@@ -158,14 +156,14 @@
       return "normal";
     }
 
-    // ✅ 表示は「絵文字だけ」：朝/夜の文字は出さない
+    // ✅ 表示は「絵文字だけ」
     function sessionIconByTone(tone){
       if (tone === "morning") return "☀️";
       if (tone === "night") return "🌙";
-      return ""; // normal は何も出さない（色だけで判別）
+      return "";
     }
 
-    // ✅ DEBUG用：全会場に3パターンを散らす（morning/night/normal）
+    // ✅ DEBUG用：全会場に3パターン散らす
     function debugToneByIndex(i){
       const m = i % 3;
       if (m === 0) return "morning";
@@ -176,7 +174,7 @@
     function cardHTML(v){
       const held = !!v.held;
 
-      // ✅ DEBUG中は誤タップ防止でリンク無効化（本番はURLある会場だけ有効）
+      // ✅ DEBUG中は誤タップ防止でリンク無効化
       const href = (held && v.url && !DEBUG_SHOW_TONES) ? v.url : "#";
       const clickable = (held && v.url && !DEBUG_SHOW_TONES);
 
@@ -187,7 +185,6 @@
       const icon = held ? sessionIconByTone(tone) : "";
       const baseMid = held ? `${gradeLabel(v)} ${dayLabel(v)}`.trim() : "-- --";
       const mid = held ? `${icon ? (icon + " ") : ""}${baseMid}`.trim() : "-- --";
-
       const btm = raceTimeLine(v);
 
       return `
@@ -207,14 +204,13 @@
       const merged = VENUES.map((base, idx) => {
         const v = map.get(base.jcd) || {};
 
-        // ✅ held（DEBUGなら全会場ON）
         const held = DEBUG_SHOW_TONES ? true : inferHeld(v);
 
         const mergedV = {
           jcd: base.jcd,
           name: base.name,
           url: v.url || "",
-          held: held,
+          held,
           grade: v.grade,
           day: v.day,
           race: v.race,
@@ -226,7 +222,6 @@
           note: v.note
         };
 
-        // ✅ tone確定
         mergedV.tone = held
           ? (DEBUG_SHOW_TONES ? debugToneByIndex(idx) : sessionTone(mergedV))
           : "";
@@ -284,11 +279,7 @@
     function renderPicks(data){
       const picks = Array.isArray(data?.picks) ? data.picks : [];
 
-      if (!picks.length){
-        $picks.innerHTML = "";
-      } else {
-        $picks.innerHTML = picks.map(pickCardHTML).join("");
-      }
+      $picks.innerHTML = picks.length ? picks.map(pickCardHTML).join("") : "";
 
       if (data?.time) {
         const t = String(data.time);
@@ -300,7 +291,7 @@
       }
     }
 
-    // ====== ✅ CTA（FREEは3つ / PROは別枠） ======
+    // ====== ✅ CTA ======
     const URL_YOSO_ONLY = "https://note.com/wsnndboat7/n/n1fdca8b0a7e3";
     const URL_PRO_ONLY  = "https://note.com/wsnndboat7/n/n8d805a4f27bf";
     const URL_SET       = "https://note.com/wsnndboat7/n/n6fcdb2a9db4f";
@@ -357,22 +348,16 @@
     }
 
     // =========================================================
-    // ✅ グリッド高さ：iPhone Safari の更新/バー出入りで伸び縮みしないようにロック
+    // ✅ グリッド高さ：innerHeightでロック（スクロールで伸び縮みしない）
+    //  - visualViewportは一切使わない
     //  - 更新(loadAll)では再計算しない
-    //  - 画面回転/本当のリサイズだけ force=true で更新
+    //  - 回転(orientationchange)だけ再ロック
     // =========================================================
-    let LOCKED_VH = null;
-
-    function getVhNow(){
-      const vv = window.visualViewport;
-      return vv ? vv.height : window.innerHeight;
-    }
+    let LOCKED_VH = window.innerHeight;
 
     function setGridHeight(force = false){
       const root = document.documentElement;
-
-      const vhNow = getVhNow();
-      if (LOCKED_VH === null || force) LOCKED_VH = vhNow;
+      if (force) LOCKED_VH = window.innerHeight;
 
       const header = document.querySelector(".top");
       const headerH = header ? header.getBoundingClientRect().height : 0;
@@ -410,9 +395,7 @@
         }
 
         renderPicksCta();
-
-        // ❌ ここで毎回高さ計算しない（伸び縮みの原因）
-        // setGridHeight();
+        // ❌ ここでは高さ再計算しない
       }finally{
         isLoading = false;
       }
@@ -439,9 +422,10 @@
 
     window.addEventListener("touchend", () => { pulling = false; }, { passive: true });
 
-    // ✅ viewport変化：本当のリサイズだけ force=true
-    window.addEventListener("resize", () => setGridHeight(true));
-    if (window.visualViewport) window.visualViewport.addEventListener("resize", () => setGridHeight(true));
+    // ✅ 回転だけ再ロック（ここが重要）
+    window.addEventListener("orientationchange", () => {
+      setTimeout(() => setGridHeight(true), 50);
+    });
 
     // ✅ 5分ごとの自動更新（表示中だけ）
     const AUTO_MS = 5 * 60 * 1000;
@@ -473,8 +457,7 @@
         $btnPro.setAttribute("aria-pressed","false");
       }
       renderPicksCta();
-
-      // ✅ テーマ切替は header/余白が変わる可能性あるので、ここだけ再ロック
+      // ✅ テーマ切替でheaderの高さが変わる可能性→再計算（ただしinnerHeightロック）
       setGridHeight(true);
     }
 
