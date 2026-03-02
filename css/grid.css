@@ -1,1 +1,156 @@
-あ
+/* ✅ ヘッダーと1段目カードの縁が被って見えるのを防ぐ */
+.gridWrap{
+  height: var(--gridH);
+  margin-top: 8px;
+}
+
+/* ===== Grid ===== */
+.grid{
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(6, 1fr);
+  gap: 6px;
+}
+
+/* ===== Cards ===== */
+.card{
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  text-decoration:none;
+
+  border-radius: 8px;
+  border: 2px solid var(--border);
+  overflow:hidden;
+
+  padding: 7px 7px 5px;
+  min-height: 0;
+
+  position: relative;
+
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* ✅ 上半分カラー */
+.card::before{
+  content:"";
+  position:absolute;
+  left:0; right:0; top:0;
+  height: 52%;
+  pointer-events:none;
+
+  opacity: .55;
+
+  background: var(--toneTop, rgba(15,23,42,.12));
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  z-index: 1;
+}
+.card > *{ position: relative; z-index: 2; }
+
+/* FREE：tone色 */
+.card--tone-normal{
+  --toneTop: linear-gradient(180deg, rgba(148,163,184,.45), rgba(148,163,184,0));
+}
+.card--tone-morning{
+  --toneTop: linear-gradient(180deg, rgba(251,191,36,.65), rgba(251,191,36,0));
+}
+.card--tone-night{
+  --toneTop: linear-gradient(180deg, rgba(96,165,250,.65), rgba(96,165,250,0));
+}
+
+.card--off::before{ opacity: 0; }
+
+.card--on{ background: var(--cardOn); border-color: var(--borderOn); }
+.card--off{ background: var(--cardOff); border-color: var(--border); }
+
+/* PRO base */
+html[data-theme="pro"] .card{
+  border: 2px solid var(--gold);
+  background:
+    var(--proCardFace),
+    linear-gradient(var(--cardOff), var(--cardOff));
+  box-shadow: var(--proCardShadowStd);
+}
+
+/* ✅ PRO：ラインなしで“上半分の色だけ”を強める */
+html[data-theme="pro"] .card::before{ opacity: .70; }
+html[data-theme="pro"] .card--tone-normal{
+  --toneTop: linear-gradient(180deg, rgba(255,255,255,.26), rgba(255,255,255,0));
+}
+html[data-theme="pro"] .card--tone-morning{
+  --toneTop: linear-gradient(180deg, rgba(255,224,150,.62), rgba(255,224,150,0));
+}
+html[data-theme="pro"] .card--tone-night{
+  --toneTop: linear-gradient(180deg, rgba(120,170,255,.60), rgba(120,170,255,0));
+}
+html[data-theme="pro"] .card--off::before{ opacity: 0; }
+
+/* PRO ON */
+html[data-theme="pro"] .card--on{
+  border-color: var(--gold);
+  background:
+    var(--proCardFaceOn),
+    linear-gradient(var(--cardOn), var(--cardOn));
+  box-shadow: var(--proCardShadowOn);
+  transform: translateY(-1px);
+}
+
+/* PRO OFF */
+html[data-theme="pro"] .card--off{
+  border-color: rgba(255,224,150,.10);
+  background: linear-gradient(#040509, #040509);
+  box-shadow: var(--proCardShadowOff);
+  filter: saturate(.65) brightness(.75);
+  opacity: .72;
+}
+
+html[data-theme="pro"] .card:active{
+  box-shadow: var(--proCardActiveShadow);
+  transform: translateY(-1px);
+}
+
+/* ✅ 会場名 */
+.card__name{
+  font-weight: 900;
+  font-size: 18px;
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+html[data-theme="pro"] .card__name{
+  color: rgba(255,252,244,.99);
+  text-shadow:
+    0 1px 0 rgba(0,0,0,.86),
+    0 0 12px rgba(255,224,150,.10);
+}
+
+/* 2-3行目 */
+.card__line{
+  font-weight: 800;
+  color: #334155;
+  line-height: 1.05;
+  white-space: nowrap;
+  word-break: keep-all;
+}
+html[data-theme="pro"] .card__line{ color: rgba(255,252,244,.82); }
+
+.card--off .card__name,
+.card--off .card__line{ color: #6b7280; }
+
+html[data-theme="pro"] .card--off .card__name{
+  color: rgba(255,252,244,.12);
+  text-shadow: none;
+}
+html[data-theme="pro"] .card--off .card__line{
+  color: rgba(255,252,244,.06);
+}
+
+.card__line--mid{ font-size: 12px; letter-spacing: 0.01em; }
+.card__line--btm{ font-size: 16px; letter-spacing: 0.02em; }
