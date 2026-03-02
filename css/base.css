@@ -3,33 +3,164 @@
   --sab: env(safe-area-inset-bottom, 0px);
   --bar: 140px;
 
-  --bg:#f3f4f6;
-  --text:#0f172a;
-  --muted:#64748b;
+  --bg: #f3f4f6;
+  --text: #0f172a;
+  --muted: #64748b;
 
-  --cardOff:#e5e7eb;
-  --cardOn:#ffffff;
+  --cardOff: #e5e7eb;
+  --cardOn: #ffffff;
 
-  --border:#cbd5e1;
-  --borderOn:#3b82f6;
+  --border: #cbd5e1;
+  --borderOn: #3b82f6;
 
-  --accent:#3b82f6;
-  --gridH:520px;
+  --accent: #3b82f6;
+  --gridH: 520px;
 }
 
-*{box-sizing:border-box;}
+/* ===== PRO THEME ===== */
+html[data-theme="pro"]{
+  --bg: #050608;
 
-html,body{
-  height:100%;
-  overscroll-behavior-y:none;
+  --text: rgba(255,252,244,.985);
+  --muted: rgba(255,252,244,.78);
+
+  --cardOff: #0a0d12;
+  --cardOn:  #090c11;
+
+  --gold: rgba(255,224,150,.98);
+  --goldSoft: rgba(255,224,150,.45);
+  --border: rgba(255,252,244,.18);
+  --borderOn: var(--gold);
+  --accent: var(--gold);
+
+  --proPlateBg: transparent;
+  --proPlateShadow:
+    inset 0 1px 0 rgba(255,255,255,.14),
+    inset 0 -1px 0 rgba(0,0,0,.84),
+    0 10px 26px rgba(0,0,0,.72);
+
+  --proGemBg:
+    radial-gradient(circle at 30% 30%, rgba(255,255,255,.62), rgba(255,255,255,0) 48%),
+    radial-gradient(circle at 55% 70%, rgba(255,248,228,.90), rgba(255,224,150,.98) 58%, rgba(80,55,10,1) 100%);
+  --proGemShadow:
+    0 1px 0 rgba(0,0,0,.74),
+    0 0 0 1px rgba(255,224,150,.30),
+    0 0 14px rgba(255,224,150,.22);
+
+  --proCardFace:
+    radial-gradient(900px 240px at 50% 0%, rgba(255,255,255,.09), transparent 62%),
+    linear-gradient(180deg, rgba(255,255,255,.065), rgba(255,255,255,0) 54%);
+
+  --proCardFaceOn:
+    radial-gradient(900px 260px at 50% 0%, rgba(255,255,255,.13), transparent 64%),
+    linear-gradient(180deg, rgba(255,255,255,.085), rgba(255,255,255,0) 58%);
+
+  --proCardShadowStd:
+    inset 0 1px 0 rgba(255,255,255,.08),
+    inset 0 -1px 0 rgba(0,0,0,.82),
+    0 10px 24px rgba(0,0,0,.80),
+    0 0 22px rgba(255,224,150,.16);
+
+  --proCardShadowOn:
+    inset 0 1px 0 rgba(255,255,255,.10),
+    0 14px 30px rgba(0,0,0,.88),
+    0 0 0 1px rgba(255,224,150,.20),
+    0 0 42px rgba(255,224,150,.26);
+
+  --proCardShadowOff:
+    inset 0 1px 0 rgba(255,255,255,.015),
+    0 18px 40px rgba(0,0,0,.97);
+
+  --proCardActiveShadow:
+    inset 0 1px 0 rgba(255,255,255,.12),
+    0 14px 32px rgba(0,0,0,.92),
+    0 0 0 1px rgba(255,224,150,.26),
+    0 0 36px rgba(255,224,150,.24);
+
+  --proBoxBg:
+    radial-gradient(900px 260px at 50% 0%, rgba(255,255,255,.085), transparent 64%),
+    linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,0) 62%),
+    rgba(9,12,17,.82);
+
+  --proBoxShadow:
+    inset 0 1px 0 rgba(255,255,255,.09),
+    0 18px 38px rgba(0,0,0,.90),
+    0 0 28px rgba(255,224,150,.18);
+
+  --proBoxShadow2:
+    inset 0 1px 0 rgba(255,255,255,.12),
+    0 20px 42px rgba(0,0,0,.93),
+    0 0 34px rgba(255,224,150,.22);
+}
+
+*{ box-sizing: border-box; }
+
+/* ✅ iOSのゴム伸び由来の崩れを抑える */
+html, body {
+  height: 100%;
+  overscroll-behavior-y: none;
 }
 
 body{
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  padding-top:var(--sat);
-  padding-bottom:calc(var(--sab) + var(--bar));
-  overflow-x:hidden;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+
+  /* ✅ safe-areaは「body」で確保する（stickyは top:0 にする） */
+  padding-top: var(--sat);
+  padding-bottom: calc(var(--sab) + var(--bar));
+  overflow-x: hidden;
+}
+
+html[data-theme="pro"] body{ background: var(--bg); }
+
+html[data-theme="pro"] body::after{
+  content:"";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  box-shadow:
+    inset 0 52px 160px rgba(255,255,255,.05),
+    inset 0 -90px 180px rgba(0,0,0,.82),
+    inset 0 0 240px rgba(0,0,0,.40);
+}
+
+html[data-theme="pro"] body::before{
+  content:"";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: .06;
+  mix-blend-mode: overlay;
+  background-image:
+    repeating-linear-gradient(0deg,
+      rgba(255,255,255,.10) 0px,
+      rgba(255,255,255,.10) 1px,
+      rgba(0,0,0,0) 2px,
+      rgba(0,0,0,0) 3px
+    );
+}
+
+/* focus */
+.card:focus-visible,
+.top__btn:focus-visible,
+.top__pro:focus-visible{
+  outline: 3px solid rgba(59,130,246,.35);
+  outline-offset: 3px;
+}
+html[data-theme="pro"] .card:focus-visible,
+html[data-theme="pro"] .top__btn:focus-visible,
+html[data-theme="pro"] .top__pro:focus-visible{
+  outline-color: rgba(255,224,150,.45);
+}
+
+@media (max-width: 390px){
+  :root{ --bar: 150px; }
+  .top__title{ font-size: 28px; }
+  .card__name{ font-size: 17px; }
+  .card__line--btm{ font-size: 15px; }
+  .picksTitle{ font-size: 17px; }
 }
