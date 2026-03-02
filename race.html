@@ -202,6 +202,16 @@
       line-height:1.6;
     }
 
+    .err{
+      font-size:12px;
+      color:rgba(255,255,255,.72);
+      line-height:1.7;
+      padding:10px 12px;
+      border:1px dashed rgba(255,255,255,.18);
+      border-radius:12px;
+      background:rgba(255,255,255,.03);
+    }
+
     /* iOS下部余白 */
     .safeBottom{
       height:calc(16px + env(safe-area-inset-bottom));
@@ -210,7 +220,7 @@
 </head>
 
 <body>
-  <div class="raceTop">
+  <div class="raceTop" id="raceTop">
     <div class="raceHead">
       <div class="raceHead__left">
         <div id="venueName" class="raceVenue">—</div>
@@ -222,9 +232,7 @@
       <button class="raceBtn" type="button" id="btnBack">戻る</button>
     </div>
 
-    <div class="raceTabs" id="tabs" aria-label="レース番号">
-      <!-- JSで1〜12R生成 -->
-    </div>
+    <div class="raceTabs" id="tabs" aria-label="レース番号"></div>
   </div>
 
   <div class="raceBody" id="raceBody">
@@ -234,9 +242,8 @@
       <div class="note" id="note">
         ※無料版は「各選手データの確認」専用です。予想は表示しません。
       </div>
+      <div class="safeBottom"></div>
     </section>
-
-    <div class="safeBottom"></div>
   </div>
 
   <script>
@@ -246,13 +253,30 @@
     const venueName = qs.get("name") || "会場";
     document.getElementById("venueName").textContent = decodeURIComponent(venueName);
 
-    // ===== UI生成（1〜12R）=====
+    // ===== UI =====
     const $tabs = document.getElementById("tabs");
     const $table = document.getElementById("table");
     const $raceNoLabel = document.getElementById("raceNoLabel");
     const $timeLabel = document.getElementById("timeLabel");
+    const $raceTop = document.getElementById("raceTop");
 
-    const pad2 = (n) => String(n).padStart(2,"0");
+    function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
+
+    function toHM(x){
+      const s = String(x || "");
+      // "HH:MM" / "YYYY-MM-DD HH:MM" みたいなのも許容
+      const m = s.match(/(\d{1,2}):(\d{2})/);
+      if (!m) return "--:--";
+      const hh = String(m[1]).padStart(2,"0");
+      return `${hh}:${m[2]}`;
+    }
+
+    function setTopHeight(){
+      const h = $raceTop.getBoundingClientRect().height || 132;
+      document.documentElement.style.setProperty("--raceTopH", `${Math.ceil(h)}px`);
+    }
+    addEventListener("resize", () => setTopHeight(), {passive:true});
+    requestAnimationFrame(() => setTopHeight());
 
     function makeTabs(active){
       $tabs.innerHTML = "";
@@ -266,69 +290,215 @@
       }
     }
 
-    // ===== ダミーデータ（まず見た目確認）=====
-    // 後で data/ から読み込むように差し替える
-    function dummyRace(r){
-      const base = [
-        { w:1, name:"選手A", st:"0.16", win:"逃げ 62%" },
-        { w:2, name:"選手B", st:"0.17", win:"差し 24%" },
-        { w:3, name:"選手C", st:"0.19", win:"まくり 18%" },
-        { w:4, name:"選手D", st:"0.18", win:"まくり差し 12%" },
-        { w:5, name:"選手E", st:"0.20", win:"展開待ち" },
-        { w:6, name:"選手F", st:"0.15", win:"一撃 9%" },
-      ];
-      return {
-        raceNo:r,
-        closeAt: (r<10 ? `1${r}:35` : `20:${pad2((r-10)*4+10)}`),
-        rows: base.map(x => ({...x, name: x.name + "（" + r + "R）"}))
-      };
+    // ===== today.json 読み込み =====
+    let TODAY = null;
+    let VENUE = null;
+
+    async function fetchJSON(path){
+      const url = `${path}?t=${Date.now()}`;
+      const res = await fetch(url, { cache:"no-store" });
+      if (!res.ok) throw new Error(`failed: ${path}`);
+      return await res.json();
+    }
+
+    function pickFirst(obj, keys){
+      for (const k of keys){
+        if (obj && obj[k] !== undefined && obj[k] !== null && obj[k] !== "") return obj[k];
+      }
+      return null;
+    }
+
+    function findVenueData(today, jcd){
+      if (!today || !jcd) return null;
+
+      // 1) { "01": {...}, "02": {...} } 形式
+      if (typeof today === "object" && !Array.isArray(today) && today[jcd]){
+        return today[jcd];
+      }
+
+      // 2) { venues: [...] } / { data: [...] } 形式
+      const arr = today.venues || today.data || today.items || null;
+      if (Array.isArray(arr)){
+        return arr.find(v => String(v.jcd || v.venue_id || v.id || "") === String(jcd)) || null;
+      }
+
+      // 3) その他：全部舐める
+      if (typeof today === "object" && !Array.isArray(today)){
+        for (const k of Object.keys(today)){
+          const v = today[k];
+          if (v && String(v.jcd || "") === String(jcd)) return v;
+        }
+      }
+      return null;
+    }
+
+    function getRaceObj(venue, r){
+      if (!venue) return null;
+
+      // よくある：venue.races が配列 or オブジェクト
+      const races = venue.races || venue.race || venue.race_list || venue.racelist || null;
+
+      if (Array.isArray(races)){
+        // raceNo / r / no / race みたいなキーで探す
+        return races.find(x => Number(pickFirst(x, ["raceNo","race_no","r","no","race"])) === Number(r)) || races[r-1] || null;
+      }
+
+      if (races && typeof races === "object"){
+        return races[String(r)] || races[`r${r}`] || races[r] || null;
+      }
+
+      // venue直下に "1": {...} みたいな形
+      if (venue[String(r)]) return venue[String(r)];
+
+      return null;
+    }
+
+    function normalizeEntries(raceObj){
+      if (!raceObj) return [];
+
+      const entries =
+        raceObj.entries ||
+        raceObj.entry ||
+        raceObj.members ||
+        raceObj.players ||
+        raceObj.rows ||
+        raceObj.racers ||
+        raceObj.list ||
+        (Array.isArray(raceObj) ? raceObj : null);
+
+      if (Array.isArray(entries)) return entries;
+
+      // entriesがオブジェクトで 1..6 キー持ってる場合
+      if (entries && typeof entries === "object"){
+        const vals = Object.values(entries);
+        if (vals.every(v => typeof v === "object")) return vals;
+      }
+      return [];
+    }
+
+    function mapRow(raw, idx){
+      const w =
+        Number(pickFirst(raw, ["waku","w","lane","course","teiban","枠","艇番"])) ||
+        (idx + 1);
+
+      const name =
+        String(pickFirst(raw, ["name","racer_name","player","nm","選手名"])) ||
+        `選手${w}`;
+
+      const id =
+        String(pickFirst(raw, ["id","regno","toban","number","登録番号"])) || "";
+
+      const branch =
+        String(pickFirst(raw, ["branch","pref","shusshin","出身","支部"])) || "";
+
+      const st =
+        String(pickFirst(raw, ["st","avg_st","avgST","start","平均ST"])) || "--";
+
+      const rate =
+        String(pickFirst(raw, ["rate","win","nation","national","zennkoku","全国"])) || "";
+
+      return { w, name, id, branch, st, rate };
     }
 
     function rowHTML(p){
+      const idText = p.id ? `登録 ${p.id}` : "";
+      const branchText = p.branch ? p.branch : "";
+      const rateText = p.rate ? p.rate : "";
+
       return `
         <div class="row">
           <div class="waku w${p.w}">${p.w}</div>
           <div class="info">
-            <div class="name">${p.name}</div>
+            <div class="name">${escapeHTML(p.name)}</div>
             <div class="sub">
-              <span>枠: ${p.w}</span>
-              <span>平均ST: ${p.st}</span>
+              ${idText ? `<span>${escapeHTML(idText)}</span>` : ``}
+              ${branchText ? `<span>${escapeHTML(branchText)}</span>` : ``}
             </div>
           </div>
           <div class="metric">
-            <div class="st">ST ${p.st}</div>
-            <div class="win">${p.win}</div>
+            <div class="st">ST ${escapeHTML(p.st)}</div>
+            <div class="win">${escapeHTML(rateText)}</div>
           </div>
         </div>
       `;
     }
 
-    function renderRace(data){
-      $raceNoLabel.textContent = data.raceNo + "R";
-      $timeLabel.textContent = "締切: " + (data.closeAt || "--:--");
-      $table.innerHTML = data.rows.map(rowHTML).join("");
-      // 下スクロール位置は維持しつつ、見た目だけ更新
+    function escapeHTML(s){
+      return String(s ?? "").replace(/[&<>"']/g, (c) => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+      }[c]));
     }
 
-    function setRace(r){
-      makeTabs(r);
+    function renderRace(r, raceObj){
+      $raceNoLabel.textContent = `${r}R`;
 
-      // いったんダミー表示（ここを後でJSON fetchに置き換える）
-      const data = dummyRace(r);
-      renderRace(data);
+      const close =
+        pickFirst(raceObj, ["close_at","closeAt","close","time","deadline","締切","close_time"]);
+      $timeLabel.textContent = "締切: " + toHM(close);
 
-      // URLも同期（共有しやすい）
+      const entries = normalizeEntries(raceObj).map(mapRow);
+      if (!entries.length){
+        $table.innerHTML = `<div class="err">このレースの出走表データが見つかりませんでした。<br>（today.json の形式が想定と違う可能性あり）</div>`;
+        return;
+      }
+      $table.innerHTML = entries.map(rowHTML).join("");
+    }
+
+    function syncURLRace(r){
       const next = new URL(location.href);
       next.searchParams.set("race", String(r));
       history.replaceState(null, "", next.toString());
     }
 
-    // 初期レース
-    const initialRace = Math.min(12, Math.max(1, Number(qs.get("race") || 1) || 1));
-    setRace(initialRace);
+    function setRace(r){
+      r = clamp(Number(r)||1, 1, 12);
+      makeTabs(r);
+      syncURLRace(r);
+
+      if (!TODAY || !VENUE){
+        $table.innerHTML = `<div class="err">データ読込中…</div>`;
+        return;
+      }
+
+      const raceObj = getRaceObj(VENUE, r);
+      if (!raceObj){
+        $table.innerHTML = `<div class="err">${r}R のデータが見つかりませんでした。</div>`;
+        $raceNoLabel.textContent = `${r}R`;
+        $timeLabel.textContent = "締切: --:--";
+        return;
+      }
+
+      renderRace(r, raceObj);
+    }
+
+    async function boot(){
+      // 初期タブだけ先に出す
+      const initialRace = clamp(Number(qs.get("race") || 1) || 1, 1, 12);
+      makeTabs(initialRace);
+      $table.innerHTML = `<div class="err">データを読み込み中…</div>`;
+
+      try{
+        TODAY = await fetchJSON("./data/today.json");
+      }catch(e){
+        $table.innerHTML = `<div class="err">today.json の取得に失敗しました。<br>./data/today.json が存在するか確認して下さい。</div>`;
+        return;
+      }
+
+      VENUE = findVenueData(TODAY, jcd);
+      if (!VENUE){
+        $table.innerHTML = `<div class="err">会場データが見つかりませんでした。<br>jcd=${escapeHTML(jcd)} が today.json にあるか確認して下さい。</div>`;
+        return;
+      }
+
+      // ここで初回描画
+      setRace(initialRace);
+      requestAnimationFrame(() => setTopHeight());
+    }
 
     // 戻る
     document.getElementById("btnBack").addEventListener("click", () => history.back());
+
+    boot();
   </script>
 </body>
 </html>
