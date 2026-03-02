@@ -6,14 +6,14 @@
   <meta name="theme-color" content="#f3f4f6" />
   <title>本日の開催一覧</title>
 
-  <!-- 既存CSS（まだ消さない） -->
-  <link rel="stylesheet" href="style.css" />
+  <!-- ✅ site/配下なので1つ上を参照 -->
+  <link rel="stylesheet" href="../style.css" />
 
-  <!-- 分割CSS（追加） -->
-  <link rel="stylesheet" href="css/base.css" />
-  <link rel="stylesheet" href="css/layout.css" />
-  <link rel="stylesheet" href="css/header.css" />
-  <link rel="stylesheet" href="css/grid.css" />
+  <!-- ✅ 分割CSS（site/配下なので1つ上を参照） -->
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/layout.css" />
+  <link rel="stylesheet" href="../css/header.css" />
+  <link rel="stylesheet" href="../css/grid.css" />
 </head>
 
 <body>
@@ -152,11 +152,17 @@
       return "normal";
     }
 
+    // ✅ 会場カードは race.html に飛ばす（無料もPROも同じ）
+    function venueHref(v){
+      return `./race.html?jcd=${encodeURIComponent(v.jcd)}&name=${encodeURIComponent(v.name)}`;
+    }
+
     function cardHTML(v){
       const held = !!v.held;
 
-      const href = (held && v.url && !DEBUG_SHOW_TONES) ? v.url : "#";
-      const clickable = (held && v.url && !DEBUG_SHOW_TONES);
+      // ✅ heldの時だけクリック可能（DEBUGでもOK）
+      const href = held ? venueHref(v) : "#";
+      const clickable = held;
 
       const tone = held ? (v.tone || "normal") : "";
       const toneCls = held ? ` card--tone-${tone}` : "";
@@ -188,7 +194,6 @@
         const mergedV = {
           jcd: base.jcd,
           name: base.name,
-          url: v.url || "",
           held,
           grade: v.grade,
           day: v.day,
@@ -364,11 +369,12 @@
       if (isLoading) return;
       isLoading = true;
       try{
-        const venuesData = await fetchJSON("./data/venues_today.json", force);
+        // ✅ site/配下なので data は1つ上
+        const venuesData = await fetchJSON("../data/venues_today.json", force);
         render(venuesData);
 
         try{
-          const picksData = await fetchJSON("./data/picks_today.json", force);
+          const picksData = await fetchJSON("../data/picks_today.json", force);
           renderPicks(picksData);
         }catch(e){
           renderPicks({ time: null, picks: [] });
@@ -444,7 +450,8 @@
     }
 
     async function getProKey(){
-      return await fetchJSON("./data/pro_key.json", true);
+      // ✅ site/配下なので data は1つ上
+      return await fetchJSON("../data/pro_key.json", true);
     }
 
     async function bootProByStoredDate(){
