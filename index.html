@@ -5,7 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#f3f4f6" />
   <title>本日の開催一覧</title>
+
+  <!-- 既存CSS（まだ消さない） -->
   <link rel="stylesheet" href="style.css" />
+
+  <!-- 分割CSS（追加） -->
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/header.css" />
+  <link rel="stylesheet" href="css/grid.css" />
 </head>
 
 <body>
@@ -334,11 +342,9 @@
       root.style.setProperty("--gridH", `${gridH}px`);
     }
 
-    // ✅ “食い込み”対策：更新後に1フレーム遅らせて高さだけ再適用（LOCKED_VHは変えない）
     function stabilizeLayout(){
       requestAnimationFrame(() => {
         setGridHeight(false);
-        // iOSが稀にキャッシュしたレイアウトを保持するので、もう1回
         requestAnimationFrame(() => setGridHeight(false));
       });
     }
@@ -380,10 +386,6 @@
       loadAll(true).catch(()=>{}).finally(()=> $btn.classList.remove("is-loading"));
     });
 
-    // =========================================================
-    // ✅ 引っ張り更新はしない。でも上端で下に引っ張った時のゴム伸びだけ止める
-    //    → これで「食い込み」が起きにくくなる
-    // =========================================================
     let startY = 0;
     let blocking = false;
 
@@ -399,17 +401,15 @@
     window.addEventListener("touchmove", (e) => {
       if (!blocking) return;
       const dy = e.touches[0].clientY - startY;
-      if (dy > 0) e.preventDefault(); // ゴム伸びだけ抑制
+      if (dy > 0) e.preventDefault();
     }, { passive: false });
 
     window.addEventListener("touchend", () => { blocking = false; }, { passive: true });
 
-    // ✅ 回転だけ再ロック
     window.addEventListener("orientationchange", () => {
       setTimeout(() => { setGridHeight(true); stabilizeLayout(); }, 50);
     });
 
-    // ✅ 5分ごとの自動更新（表示中だけ）
     const AUTO_MS = 5 * 60 * 1000;
     setInterval(() => {
       if (document.visibilityState === "visible") loadAll(true).catch(()=>{});
@@ -505,7 +505,6 @@
       unlockProFlow().catch(()=>{});
     });
 
-    // ✅ 初回：高さロック → PRO復元 → 開いた瞬間に最新化
     setGridHeight(true);
     bootProByStoredDate().catch(()=> setTheme(false));
     loadAll(true).catch(()=>{ renderPicksCta(); stabilizeLayout(); });
