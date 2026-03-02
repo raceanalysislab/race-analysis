@@ -6,14 +6,14 @@
   <meta name="theme-color" content="#f3f4f6" />
   <title>本日の開催一覧</title>
 
-  <!-- ✅ site/配下なので1つ上を参照 -->
-  <link rel="stylesheet" href="../style.css" />
+  <!-- ✅ ルート(index.html)なので ./ で参照 -->
+  <link rel="stylesheet" href="./style.css" />
 
-  <!-- ✅ 分割CSS（site/配下なので1つ上を参照） -->
-  <link rel="stylesheet" href="../css/base.css" />
-  <link rel="stylesheet" href="../css/layout.css" />
-  <link rel="stylesheet" href="../css/header.css" />
-  <link rel="stylesheet" href="../css/grid.css" />
+  <!-- ✅ 分割CSS（ルートなので ./ で参照） -->
+  <link rel="stylesheet" href="./css/base.css" />
+  <link rel="stylesheet" href="./css/layout.css" />
+  <link rel="stylesheet" href="./css/header.css" />
+  <link rel="stylesheet" href="./css/grid.css" />
 </head>
 
 <body>
@@ -116,10 +116,8 @@
       return false;
     }
 
-    // =========================================================
-    // ✅ テスト表示スイッチ
-    // =========================================================
-    const DEBUG_SHOW_TONES = true; // ← 本番は false にする
+    // ✅ テスト表示スイッチ（本番は false）
+    const DEBUG_SHOW_TONES = true;
 
     function getHourFromTimeStr(t){
       const s = String(t || "");
@@ -152,15 +150,13 @@
       return "normal";
     }
 
-    // ✅ 会場カードは race.html に飛ばす（無料もPROも同じ）
+    // ✅ 会場カードは race.html に飛ばす（同階層なので ./）
     function venueHref(v){
       return `./race.html?jcd=${encodeURIComponent(v.jcd)}&name=${encodeURIComponent(v.name)}`;
     }
 
     function cardHTML(v){
       const held = !!v.held;
-
-      // ✅ heldの時だけクリック可能（DEBUGでもOK）
       const href = held ? venueHref(v) : "#";
       const clickable = held;
 
@@ -328,9 +324,7 @@
       `;
     }
 
-    // =========================================================
     // ✅ グリッド高さ：innerHeightでロック
-    // =========================================================
     let LOCKED_VH = window.innerHeight;
 
     function setGridHeight(force = false){
@@ -354,7 +348,6 @@
       });
     }
 
-    // ====== 更新 ======
     let isLoading = false;
 
     async function fetchJSON(path, force){
@@ -369,12 +362,12 @@
       if (isLoading) return;
       isLoading = true;
       try{
-        // ✅ site/配下なので data は1つ上
-        const venuesData = await fetchJSON("../data/venues_today.json", force);
+        // ✅ ルートなので ./data
+        const venuesData = await fetchJSON("./data/venues_today.json", force);
         render(venuesData);
 
         try{
-          const picksData = await fetchJSON("../data/picks_today.json", force);
+          const picksData = await fetchJSON("./data/picks_today.json", force);
           renderPicks(picksData);
         }catch(e){
           renderPicks({ time: null, picks: [] });
@@ -425,7 +418,7 @@
       if (document.visibilityState === "visible") loadAll(true).catch(()=>{});
     });
 
-    // ====== ✅ PRO 解放（1日固定） ======
+    // ✅ PRO 解放（1日固定）
     const LS_THEME = "theme";
     const LS_PRO_OK_DATE = "pro_ok_date";
 
@@ -450,8 +443,8 @@
     }
 
     async function getProKey(){
-      // ✅ site/配下なので data は1つ上
-      return await fetchJSON("../data/pro_key.json", true);
+      // ✅ ルートなので ./data
+      return await fetchJSON("./data/pro_key.json", true);
     }
 
     async function bootProByStoredDate(){
