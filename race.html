@@ -1,10 +1,334 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<meta charset="utf-8">
-<title>Race</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1220" />
+  <title>レース詳細</title>
+
+  <!-- 既存CSS（残してOK） -->
+  <link rel="stylesheet" href="./style.css" />
+
+  <!-- 分割CSS（あるならON） -->
+  <link rel="stylesheet" href="./css/base.css" />
+  <link rel="stylesheet" href="./css/layout.css" />
+  <link rel="stylesheet" href="./css/header.css" />
+  <link rel="stylesheet" href="./css/grid.css" />
+
+  <style>
+    /* race.html専用（最低限） */
+    :root{
+      --raceTopH: 132px;
+      --bg:#0b1220;
+      --panel:#111a2e;
+      --card:#1f2937;
+      --muted:#94a3b8;
+      --accent:#f59e0b;
+      --line:rgba(255,255,255,.08);
+    }
+    body{
+      margin:0;
+      background:var(--bg);
+      color:#fff;
+    }
+
+    /* 上部固定 */
+    .raceTop{
+      position:sticky;
+      top:0;
+      z-index:50;
+      background:linear-gradient(180deg, rgba(11,18,32,1) 0%, rgba(11,18,32,.96) 60%, rgba(11,18,32,.0) 100%);
+      padding:12px 12px 10px;
+      backdrop-filter:saturate(120%) blur(6px);
+    }
+    .raceHead{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:10px 10px;
+    }
+    .raceHead__left{
+      display:flex; flex-direction:column; gap:2px;
+      min-width:0;
+    }
+    .raceVenue{
+      font-weight:900;
+      letter-spacing:.02em;
+      font-size:16px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .raceMeta{
+      font-size:12px;
+      color:var(--muted);
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+    .raceBtn{
+      appearance:none;
+      border:none;
+      border-radius:12px;
+      padding:10px 12px;
+      font-weight:900;
+      background:rgba(255,255,255,.08);
+      color:#fff;
+    }
+
+    /* 1〜12R固定バー */
+    .raceTabs{
+      margin-top:10px;
+      display:flex;
+      gap:8px;
+      overflow-x:auto;
+      -webkit-overflow-scrolling:touch;
+      padding-bottom:6px;
+    }
+    .raceTabs::-webkit-scrollbar{ display:none; }
+    .tab{
+      flex:0 0 auto;
+      padding:10px 12px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      color:#fff;
+      font-weight:900;
+      font-size:13px;
+    }
+    .tab.is-active{
+      background:var(--accent);
+      color:#000;
+      border-color:transparent;
+    }
+
+    /* 下だけスクロール */
+    .raceBody{
+      height:calc(100dvh - var(--raceTopH));
+      overflow:auto;
+      -webkit-overflow-scrolling:touch;
+      padding:12px;
+    }
+
+    .section{
+      background:rgba(255,255,255,.03);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:12px;
+      margin-bottom:12px;
+    }
+    .secTitle{
+      margin:0 0 10px;
+      font-size:13px;
+      color:var(--muted);
+      letter-spacing:.08em;
+      font-weight:900;
+    }
+
+    /* 出走表（無料＝選手情報だけ） */
+    .table{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .row{
+      display:grid;
+      grid-template-columns: 44px 1fr 88px;
+      gap:10px;
+      align-items:center;
+      background:var(--card);
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:14px;
+      padding:10px 10px;
+    }
+    .waku{
+      width:44px; height:44px;
+      border-radius:12px;
+      display:flex; align-items:center; justify-content:center;
+      font-weight:1000;
+      color:#000;
+      background:#fff;
+    }
+    .waku.w1{ background:#ffffff; }
+    .waku.w2{ background:#111827; color:#fff; }
+    .waku.w3{ background:#ef4444; color:#fff; }
+    .waku.w4{ background:#2563eb; color:#fff; }
+    .waku.w5{ background:#fbbf24; color:#000; }
+    .waku.w6{ background:#22c55e; color:#000; }
+
+    .info{
+      min-width:0;
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+    .name{
+      font-weight:1000;
+      font-size:14px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .sub{
+      font-size:12px;
+      color:rgba(255,255,255,.72);
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .metric{
+      text-align:right;
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+    .st{
+      font-weight:1000;
+      font-size:13px;
+    }
+    .win{
+      font-size:11px;
+      color:rgba(255,255,255,.7);
+    }
+
+    .note{
+      margin-top:10px;
+      color:rgba(255,255,255,.72);
+      font-size:12px;
+      line-height:1.6;
+    }
+
+    /* iOS下部余白 */
+    .safeBottom{
+      height:calc(16px + env(safe-area-inset-bottom));
+    }
+  </style>
 </head>
+
 <body>
-Race Page
+  <div class="raceTop">
+    <div class="raceHead">
+      <div class="raceHead__left">
+        <div id="venueName" class="raceVenue">—</div>
+        <div class="raceMeta">
+          <span id="raceNoLabel">—R</span>
+          <span id="timeLabel">締切: --:--</span>
+        </div>
+      </div>
+      <button class="raceBtn" type="button" id="btnBack">戻る</button>
+    </div>
+
+    <div class="raceTabs" id="tabs" aria-label="レース番号">
+      <!-- JSで1〜12R生成 -->
+    </div>
+  </div>
+
+  <div class="raceBody" id="raceBody">
+    <section class="section">
+      <h2 class="secTitle">出走表（無料：選手情報のみ）</h2>
+      <div class="table" id="table"></div>
+      <div class="note" id="note">
+        ※無料版は「各選手データの確認」専用です。予想は表示しません。
+      </div>
+    </section>
+
+    <div class="safeBottom"></div>
+  </div>
+
+  <script>
+    // ===== 受け取る =====
+    const qs = new URLSearchParams(location.search);
+    const jcd = qs.get("jcd") || "";
+    const venueName = qs.get("name") || "会場";
+    document.getElementById("venueName").textContent = decodeURIComponent(venueName);
+
+    // ===== UI生成（1〜12R）=====
+    const $tabs = document.getElementById("tabs");
+    const $table = document.getElementById("table");
+    const $raceNoLabel = document.getElementById("raceNoLabel");
+    const $timeLabel = document.getElementById("timeLabel");
+
+    const pad2 = (n) => String(n).padStart(2,"0");
+
+    function makeTabs(active){
+      $tabs.innerHTML = "";
+      for(let r=1; r<=12; r++){
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "tab" + (r===active ? " is-active" : "");
+        b.textContent = r + "R";
+        b.addEventListener("click", () => setRace(r));
+        $tabs.appendChild(b);
+      }
+    }
+
+    // ===== ダミーデータ（まず見た目確認）=====
+    // 後で data/ から読み込むように差し替える
+    function dummyRace(r){
+      const base = [
+        { w:1, name:"選手A", st:"0.16", win:"逃げ 62%" },
+        { w:2, name:"選手B", st:"0.17", win:"差し 24%" },
+        { w:3, name:"選手C", st:"0.19", win:"まくり 18%" },
+        { w:4, name:"選手D", st:"0.18", win:"まくり差し 12%" },
+        { w:5, name:"選手E", st:"0.20", win:"展開待ち" },
+        { w:6, name:"選手F", st:"0.15", win:"一撃 9%" },
+      ];
+      return {
+        raceNo:r,
+        closeAt: (r<10 ? `1${r}:35` : `20:${pad2((r-10)*4+10)}`),
+        rows: base.map(x => ({...x, name: x.name + "（" + r + "R）"}))
+      };
+    }
+
+    function rowHTML(p){
+      return `
+        <div class="row">
+          <div class="waku w${p.w}">${p.w}</div>
+          <div class="info">
+            <div class="name">${p.name}</div>
+            <div class="sub">
+              <span>枠: ${p.w}</span>
+              <span>平均ST: ${p.st}</span>
+            </div>
+          </div>
+          <div class="metric">
+            <div class="st">ST ${p.st}</div>
+            <div class="win">${p.win}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderRace(data){
+      $raceNoLabel.textContent = data.raceNo + "R";
+      $timeLabel.textContent = "締切: " + (data.closeAt || "--:--");
+      $table.innerHTML = data.rows.map(rowHTML).join("");
+      // 下スクロール位置は維持しつつ、見た目だけ更新
+    }
+
+    function setRace(r){
+      makeTabs(r);
+
+      // いったんダミー表示（ここを後でJSON fetchに置き換える）
+      const data = dummyRace(r);
+      renderRace(data);
+
+      // URLも同期（共有しやすい）
+      const next = new URL(location.href);
+      next.searchParams.set("race", String(r));
+      history.replaceState(null, "", next.toString());
+    }
+
+    // 初期レース
+    const initialRace = Math.min(12, Math.max(1, Number(qs.get("race") || 1) || 1));
+    setRace(initialRace);
+
+    // 戻る
+    document.getElementById("btnBack").addEventListener("click", () => history.back());
+  </script>
 </body>
 </html>
