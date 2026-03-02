@@ -1,126 +1,174 @@
 {
-  "date": "20260227",
-  "generated_at": "2026-02-27 15:27:54",
+  "date": "2026-03-02",
+  "updated_at": "20:39",
   "venues": [
     {
       "jcd": "01",
-      "name": "",
-      "active": false
+      "name": "桐生",
+      "held": false,
+      "status_code": 200,
+      "bytes": 307
     },
     {
       "jcd": "02",
-      "name": "",
-      "active": false
+      "name": "戸田",
+      "held": false,
+      "status_code": 200,
+      "bytes": 307
     },
     {
       "jcd": "03",
-      "name": "",
-      "active": false
+      "name": "江戸川",
+      "held": false,
+      "status_code": 200,
+      "bytes": 307
     },
     {
       "jcd": "04",
-      "name": "",
-      "active": false
+      "name": "平和島",
+      "held": false,
+      "status_code": 200,
+      "bytes": 307
     },
     {
       "jcd": "05",
-      "name": "",
-      "active": false
+      "name": "多摩川",
+      "held": false,
+      "status_code": 200,
+      "bytes": 307
     },
     {
       "jcd": "06",
-      "name": "",
-      "active": false
+      "name": "浜名湖",
+      "held": false,
+      "status_code": 200,
+      "bytes": 307
     },
     {
       "jcd": "07",
-      "name": "",
-      "active": false
+      "name": "蒲郡",
+      "held": false,
+      "status_code": 200,
+      "bytes": 307
     },
     {
       "jcd": "08",
-      "name": "",
-      "active": false
+      "name": "常滑",
+      "held": false,
+      "status_code": 200,
+      "bytes": 307
     },
     {
       "jcd": "09",
-      "name": "",
-      "active": false
+      "name": "津",
+      "held": false,
+      "status_code": 200,
+      "bytes": 307
     },
     {
       "jcd": "10",
-      "name": "",
-      "active": false
+      "name": "三国",
+      "held": false,
+      "status_code": 200,
+      "bytes": 307
     },
     {
       "jcd": "11",
-      "name": "",
-      "active": false
+      "name": "びわこ",
+      "held": false,
+      "status_code": 200,
+      "bytes": 307
     },
     {
       "jcd": "12",
-      "name": "",
-      "active": false
+      "name": "住之江",
+      "held": false,
+      "status_code": 200,
+      "bytes": 307
     },
     {
       "jcd": "13",
-      "name": "",
-      "active": false
+      "name": "尼崎",
+      "held": false,
+      "status_code": 200,
+      "bytes": 307
     },
     {
       "jcd": "14",
-      "name": "",
-      "active": false
+      "name": "鳴門",
+      "held": false,
+      "status_code": 200,
+      "bytes": 307
     },
     {
       "jcd": "15",
-      "name": "",
-      "active": false
+      "name": "丸亀",
+      "held": false,
+      "status_code": 200,
+      "bytes": 307
     },
     {
       "jcd": "16",
-      "name": "",
-      "active": false
+      "name": "児島",
+      "held": false,
+      "status_code": 200,
+      "bytes": 307
     },
     {
       "jcd": "17",
-      "name": "",
-      "active": false
+      "name": "宮島",
+      "held": false,
+      "status_code": 200,
+      "bytes": 307
     },
     {
       "jcd": "18",
-      "name": "",
-      "active": false
+      "name": "徳山",
+      "held": false,
+      "status_code": 200,
+      "bytes": 307
     },
     {
       "jcd": "19",
-      "name": "",
-      "active": false
+      "name": "下関",
+      "held": false,
+      "status_code": 200,
+      "bytes": 307
     },
     {
       "jcd": "20",
-      "name": "",
-      "active": false
+      "name": "若松",
+      "held": false,
+      "status_code": 200,
+      "bytes": 307
     },
     {
       "jcd": "21",
-      "name": "",
-      "active": false
+      "name": "芦屋",
+      "held": false,
+      "status_code": 200,
+      "bytes": 307
     },
     {
       "jcd": "22",
-      "name": "",
-      "active": false
+      "name": "福岡",
+      "held": false,
+      "status_code": 200,
+      "bytes": 307
     },
     {
       "jcd": "23",
-      "name": "",
-      "active": false
+      "name": "唐津",
+      "held": false,
+      "status_code": 200,
+      "bytes": 307
     },
     {
       "jcd": "24",
-      "name": "",
-      "active": false
+      "name": "大村",
+      "held": false,
+      "status_code": 200,
+      "bytes": 307
     }
   ]
 }
