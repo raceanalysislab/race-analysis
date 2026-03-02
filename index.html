@@ -6,10 +6,8 @@
   <meta name="theme-color" content="#f3f4f6" />
   <title>本日の開催一覧</title>
 
-  <!-- ✅ ルート(index.html)なので ./ で参照 -->
   <link rel="stylesheet" href="./style.css" />
 
-  <!-- ✅ 分割CSS（ルートなので ./ で参照） -->
   <link rel="stylesheet" href="./css/base.css" />
   <link rel="stylesheet" href="./css/layout.css" />
   <link rel="stylesheet" href="./css/header.css" />
@@ -108,16 +106,8 @@
       return "-- --";
     }
 
-    function inferHeld(v){
-      if (v && v.held === true) return true;
-      const sc = Number(v?.status_code || 0);
-      const bytes = Number(v?.bytes || 0);
-      if (sc === 200 && bytes >= 20000) return true;
-      return false;
-    }
-
     // ✅ テスト表示スイッチ（本番は false）
-    const DEBUG_SHOW_TONES = true;
+    const DEBUG_SHOW_TONES = false;
 
     function getHourFromTimeStr(t){
       const s = String(t || "");
@@ -150,15 +140,12 @@
       return "normal";
     }
 
-    // ✅ 会場カードは race.html に飛ばす（同階層なので ./）
     function venueHref(v){
       return `./race.html?jcd=${encodeURIComponent(v.jcd)}&name=${encodeURIComponent(v.name)}`;
     }
 
     function cardHTML(v){
       const held = !!v.held;
-      const href = held ? venueHref(v) : "#";
-      const clickable = held;
 
       const tone = held ? (v.tone || "normal") : "";
       const toneCls = held ? ` card--tone-${tone}` : "";
@@ -169,9 +156,19 @@
       const mid = held ? `${icon ? (icon + " ") : ""}${baseMid}`.trim() : "-- --";
       const btm = raceTimeLine(v);
 
+      // ✅ 非開催は「リンク自体を作らない」＝非タップ
+      if (!held){
+        return `
+          <div class="${cls}" aria-disabled="true">
+            <div class="card__name">${v.name}</div>
+            <div class="card__line card__line--mid">${mid}</div>
+            <div class="card__line card__line--btm">${btm}</div>
+          </div>
+        `;
+      }
+
       return `
-        <a class="${cls}" href="${href}" data-tone="${tone}"
-           ${clickable ? "" : 'aria-disabled="true" onclick="return false;"'}>
+        <a class="${cls}" href="${venueHref(v)}" data-tone="${tone}">
           <div class="card__name">${v.name}</div>
           <div class="card__line card__line--mid">${mid}</div>
           <div class="card__line card__line--btm">${btm}</div>
@@ -185,7 +182,9 @@
 
       const merged = VENUES.map((base, idx) => {
         const v = map.get(base.jcd) || {};
-        const held = DEBUG_SHOW_TONES ? true : inferHeld(v);
+
+        // ✅ held は JSON の値を最優先（未定義なら false）
+        const held = DEBUG_SHOW_TONES ? true : (v.held === true);
 
         const mergedV = {
           jcd: base.jcd,
@@ -211,7 +210,9 @@
 
       $grid.innerHTML = merged.map(cardHTML).join("");
 
-      if (data.time) {
+      if (data.updated_at) {
+        $updatedAt.textContent = toHM(String(data.updated_at));
+      } else if (data.time) {
         const t = String(data.time);
         const hm = t.includes(" ") ? t.split(" ")[1].slice(0,5) : "--:--";
         $updatedAt.textContent = hm;
@@ -362,7 +363,6 @@
       if (isLoading) return;
       isLoading = true;
       try{
-        // ✅ ルートなので ./data
         const venuesData = await fetchJSON("./data/venues_today.json", force);
         render(venuesData);
 
@@ -443,7 +443,6 @@
     }
 
     async function getProKey(){
-      // ✅ ルートなので ./data
       return await fetchJSON("./data/pro_key.json", true);
     }
 
