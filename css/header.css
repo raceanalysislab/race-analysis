@@ -1,1 +1,79 @@
-あ
+/* ===== Header ===== */
+/* ✅ stickyのまま「透け」と「縁かぶり」を止める（完成版） */
+.top{
+  padding: 14px 14px 10px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  isolation: isolate;
+
+  background: rgba(243,244,246,.94);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+
+  box-shadow: 0 12px 28px rgba(15,23,42,.10);
+}
+
+html[data-theme="pro"] .top{
+  background: rgba(5,6,8,.90);
+  box-shadow: 0 16px 40px rgba(0,0,0,.70);
+}
+
+.top__row{ display:flex; align-items:flex-start; justify-content:space-between; gap: 12px; }
+.top__title{ margin: 0; font-size: 30px; line-height: 1.05; letter-spacing: 0.02em; font-weight: 900; }
+.top__actions{ display:flex; align-items:center; gap: 10px; flex-shrink: 0; }
+
+.top__btn{
+  appearance: none;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--text);
+  border-radius: 14px;
+  padding: 10px 14px;
+  font-weight: 800;
+  font-size: 14px;
+  min-width: 64px;
+  box-shadow: 0 1px 0 rgba(15,23,42,.06);
+}
+.top__btn.is-loading{ opacity: .6; }
+
+.top__pro{
+  appearance:none;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--text);
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-weight: 900;
+  font-size: 14px;
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  min-width: 86px;
+  justify-content:center;
+  box-shadow: 0 1px 0 rgba(15,23,42,.06);
+}
+.top__proDot{ width: 10px; height: 10px; border-radius: 999px; background: var(--accent); }
+
+html[data-theme="pro"] .top__btn,
+html[data-theme="pro"] .top__pro{
+  border: 1px solid var(--gold);
+  color: rgba(255,252,244,.98);
+  background: var(--proPlateBg);
+  box-shadow: var(--proPlateShadow);
+}
+html[data-theme="pro"] .top__proDot{
+  background: var(--proGemBg);
+  box-shadow: var(--proGemShadow);
+}
+
+.top__sub{
+  margin-top: 8px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.top__updated{ white-space: nowrap; }
