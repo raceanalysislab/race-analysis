@@ -81,13 +81,50 @@
     const $btnPro = document.getElementById("btnPro");
 
     const pad2 = (n) => String(n).padStart(2, "0");
-    const toHM = (s) => (typeof s === "string" && s.length >= 4) ? s.slice(0,5) : "--:--";
+    const toHM = (s) => (typeof s === "string" && String(s).length >= 4) ? String(s).slice(0,5) : "--:--";
     const normalizeJP = (s) => String(s || "").replace(/\s+/g, "");
 
     // ====== bot の JSON を参照 ======
     const BOT_VENUES_URL = "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/venues_today.json";
     const BOT_PICKS_URL  = "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/picks_today.json";
     const BOT_PROKEY_URL = "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/pro_key.json";
+
+    // ====== 内部状態（リアルタイム表示更新のため保持） ======
+    let LAST_VENUES_RAW = null;       // botの生JSON
+    let LAST_VENUES_ADAPTED = null;   // adapt後
+    let LAST_MERGED = null;           // render用にmergeした配列
+    let NEXT_FETCH_TIMER = null;      // 次締切後のfetch予約
+
+    // ====== JSTの"いま"を取る（iOSでもズレにくい） ======
+    function nowJST(){
+      const parts = new Intl.DateTimeFormat("ja-JP", {
+        timeZone: "Asia/Tokyo",
+        year: "numeric", month: "2-digit", day: "2-digit",
+        hour: "2-digit", minute: "2-digit", second: "2-digit",
+        hour12: false
+      }).formatToParts(new Date());
+
+      const get = (type) => parts.find(p => p.type === type)?.value;
+      const y = Number(get("year"));
+      const m = Number(get("month"));
+      const d = Number(get("day"));
+      const hh = Number(get("hour"));
+      const mm = Number(get("minute"));
+      const ss = Number(get("second"));
+      // これは「JSTの各要素」でDateを作る（端末TZに依存しないためにUTCで作って補正する）
+      // ただ、ここでは比較/分計算にしか使わないので「同じ基準」で統一できればOK
+      return { y, m, d, hh, mm, ss };
+    }
+
+    function minutesFromHHMM(hhmm){
+      const s = String(hhmm || "");
+      const m = s.match(/^(\d{1,2}):(\d{2})$/);
+      if (!m) return null;
+      const hh = Number(m[1]);
+      const mm = Number(m[2]);
+      if (!Number.isFinite(hh) || !Number.isFinite(mm)) return null;
+      return hh * 60 + mm;
+    }
 
     function normalizeGrade(raw){
       let s = String(raw || "").trim();
@@ -120,7 +157,7 @@
       if (v.next_r && v.close_at) return `${String(v.next_r)}R ${toHM(String(v.close_at))}`;
       // 旧形式
       if (v.race && v.time) return `${String(v.race)} ${toHM(String(v.time))}`;
-      // ✅ bot の next_display が "終了" など文字で来る場合
+      // botの next_display が "終了" など文字で来る場合
       if (v.next_display) return String(v.next_display);
       return "-- --";
     }
@@ -202,10 +239,11 @@
     }
 
     function adaptVenuesData(raw){
-      const out = { venues: [], updated_at: null, checked_at: null, raw };
+      const out = { venues: [], updated_at: null, checked_at: null, date: null, raw };
 
       // bot形式
       if (raw && Array.isArray(raw.venues) && (raw.checked_at || raw.held_places || raw.blocked !== undefined)){
+        out.date = raw.date || null;
         out.checked_at = raw.checked_at || null;
         out.updated_at = hmFromISO(raw.checked_at) || null;
 
@@ -244,6 +282,74 @@
       return out;
     }
 
+    // ====== 締切表(cutoffs)から「いまの次」を端末側で計算（bot更新待ちを回避） ======
+    function computeLiveNextFromCutoffs(cutoffs){
+      if (!Array.isArray(cutoffs) || cutoffs.length === 0) return { next_r: null, close_at: null, next_display: null };
+      const now = nowJST();
+      const nowMin = now.hh * 60 + now.mm;
+
+      // cutoffs: [{rno, time:"HH:MM"}]
+      for (const c of cutoffs){
+        const tMin = minutesFromHHMM(c?.time);
+        if (tMin === null) continue;
+        if (tMin > nowMin){
+          const rno = Number(c?.rno);
+          const hh = Math.floor(tMin / 60);
+          const mm = tMin % 60;
+          const hm = `${pad2(hh)}:${pad2(mm)}`;
+          return {
+            next_r: Number.isFinite(rno) ? rno : null,
+            close_at: hm,
+            next_display: (Number.isFinite(rno) ? `${rno}R ${hm}` : `${hm}`)
+          };
+        }
+      }
+
+      // もう今日の締切が全部終わってる
+      return { next_r: null, close_at: null, next_display: "終了" };
+    }
+
+    // ====== 次締切の直後に「自動fetch」予約（botが追いついた瞬間に即同期） ======
+    function scheduleFetchAfterNextCutoff(){
+      if (NEXT_FETCH_TIMER) {
+        clearTimeout(NEXT_FETCH_TIMER);
+        NEXT_FETCH_TIMER = null;
+      }
+      if (!LAST_MERGED) return;
+
+      // 今日の中で一番近い締切（全場）を探す
+      const now = nowJST();
+      const nowMin = now.hh * 60 + now.mm;
+      let bestMin = null;
+
+      for (const v of LAST_MERGED){
+        if (!v?.held) continue;
+        const cutoffs = v.cutoffs;
+        if (!Array.isArray(cutoffs) || cutoffs.length === 0) continue;
+
+        for (const c of cutoffs){
+          const tMin = minutesFromHHMM(c?.time);
+          if (tMin === null) continue;
+          if (tMin > nowMin){
+            if (bestMin === null || tMin < bestMin) bestMin = tMin;
+            break; // その会場の次だけ見ればOK（cutoffsは昇順の想定）
+          }
+        }
+      }
+
+      if (bestMin === null) return; // 次締切が無い
+
+      const diffMin = bestMin - nowMin;
+      const diffMs = diffMin * 60 * 1000 - (now.ss * 1000);
+
+      // 締切の「直後」+3秒に fetch（ページ表示をズラさず同期だけ狙う）
+      const wait = Math.max(3000, diffMs + 3000);
+
+      NEXT_FETCH_TIMER = setTimeout(() => {
+        if (document.visibilityState === "visible") loadAll(true).catch(()=>{});
+      }, wait);
+    }
+
     function render(rawData){
       const data = adaptVenuesData(rawData);
 
@@ -254,6 +360,12 @@
         const v = map.get(base.jcd) || {};
         const held = DEBUG_SHOW_TONES ? true : (v.held === true);
 
+        // ✅ 端末側で「次」を毎回計算（cutoffsがある時だけ）
+        let live = { next_r: v.next_r, close_at: v.close_at, next_display: v.next_display };
+        if (held && Array.isArray(v.cutoffs) && v.cutoffs.length){
+          live = computeLiveNextFromCutoffs(v.cutoffs);
+        }
+
         const mergedV = {
           jcd: base.jcd,
           name: base.name,
@@ -262,11 +374,16 @@
           day: v.day,
           race: v.race,
           time: v.time,
-          next_r: v.next_r,
-          close_at: v.close_at,
-          next_display: v.next_display,
+
+          // 表示は live を優先（botの遅れを吸収）
+          next_r: live.next_r,
+          close_at: live.close_at,
+          next_display: live.next_display,
+
+          // 生も残す（将来用）
           next_cutoff: v.next_cutoff,
           cutoffs: v.cutoffs,
+
           note: v.note
         };
 
@@ -277,18 +394,24 @@
         return mergedV;
       });
 
+      LAST_VENUES_ADAPTED = data;
+      LAST_MERGED = merged;
+
       $grid.innerHTML = merged.map(cardHTML).join("");
 
-      // 更新時刻表示
+      // ✅ 「最終更新」はデータの更新時刻（botのchecked_at）
       if (data.checked_at) {
         const hm = hmFromISO(data.checked_at);
         $updatedAt.textContent = hm ? hm : "--:--";
       } else if (data.updated_at) {
         $updatedAt.textContent = toHM(String(data.updated_at));
       } else {
-        const now = new Date();
-        $updatedAt.textContent = `${pad2(now.getHours())}:${pad2(now.getMinutes())}`;
+        const now = nowJST();
+        $updatedAt.textContent = `${pad2(now.hh)}:${pad2(now.mm)}`;
       }
+
+      // 次締切直後のfetch予約
+      scheduleFetchAfterNextCutoff();
     }
 
     function gradeBadgeClass(g){
@@ -350,10 +473,11 @@
         return;
       }
 
-      const now = new Date();
-      $picksUpdatedAt.textContent = `${pad2(now.getHours())}:${pad2(now.getMinutes())}`;
+      const now = nowJST();
+      $picksUpdatedAt.textContent = `${pad2(now.hh)}:${pad2(now.mm)}`;
     }
 
+    // ====== note導線：触らない（現状維持） ======
     const URL_YOSO_ONLY = "https://note.com/wsnndboat7/n/n1fdca8b0a7e3";
     const URL_PRO_ONLY  = "https://note.com/wsnndboat7/n/n8d805a4f27bf";
     const URL_SET       = "https://note.com/wsnndboat7/n/n6fcdb2a9db4f";
@@ -409,6 +533,7 @@
       `;
     }
 
+    // ✅ グリッド高さ
     let LOCKED_VH = window.innerHeight;
 
     function setGridHeight(force = false){
@@ -446,15 +571,15 @@
       if (isLoading) return;
       isLoading = true;
       try{
-        const venuesData = await fetchJSON(BOT_VENUES_URL, true);
-        render(venuesData);
+        const venuesRaw = await fetchJSON(BOT_VENUES_URL, true);
+        LAST_VENUES_RAW = venuesRaw;
+        render(venuesRaw);
 
-        // ✅ 厳選の更新時刻は venuesData.checked_at をフォールバックとして渡す
         try{
           const picksData = await fetchJSON(BOT_PICKS_URL, force);
-          renderPicks(picksData, venuesData?.checked_at || null);
+          renderPicks(picksData, venuesRaw?.checked_at || null);
         }catch(e){
-          renderPicks({ picks: [] }, venuesData?.checked_at || null);
+          renderPicks({ picks: [] }, venuesRaw?.checked_at || null);
         }
 
         renderPicksCta();
@@ -464,17 +589,28 @@
       }
     }
 
-    // ✅ 更新ボタン：即最新を取りに行く（時刻も bot の checked_at に揃う）
+    // ✅ 更新ボタン：即fetch（※GitHub Actionsを回すわけじゃない。JSONを取りに行くだけ）
     $btn.addEventListener("click", () => {
       $btn.classList.add("is-loading");
       loadAll(true).catch(()=>{}).finally(()=> $btn.classList.remove("is-loading"));
     });
 
-    // 画面復帰で最新
+    // ✅ 表示だけのリアルタイム更新（締切に合わせて「次」を進める）
+    // botが5分おきでも、見た目は遅れない
+    setInterval(() => {
+      if (document.visibilityState !== "visible") return;
+      if (!LAST_VENUES_RAW) return;
+
+      // 再fetchはしない。手元のcutoffsで再renderだけ
+      render(LAST_VENUES_RAW);
+    }, 20 * 1000);
+
+    // 画面復帰で最新JSON
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState === "visible") loadAll(true).catch(()=>{});
     });
 
+    // 5分ごとに最新JSON（保険）
     const AUTO_MS = 5 * 60 * 1000;
     setInterval(() => {
       if (document.visibilityState === "visible") loadAll(true).catch(()=>{});
@@ -566,12 +702,13 @@
       unlockProFlow().catch(()=>{});
     });
 
+    // 起動
     setGridHeight(true);
     bootProByStoredDate().catch(()=> setTheme(false));
     renderPicksCta(); // 先に出す（通信前でも消えない）
     loadAll(true).catch(()=>{ stabilizeLayout(); });
 
-    // ✅ iOSで初回ロードがキャッシュ/遅延する時があるので、短時間で1回だけ追いロード
+    // iOSで初回ロードがキャッシュ/遅延する時があるので、短時間で1回だけ追いロード
     setTimeout(() => {
       if (document.visibilityState === "visible") loadAll(true).catch(()=>{});
     }, 800);
