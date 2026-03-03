@@ -74,6 +74,10 @@
     const toHM = (s) => (typeof s === "string" && s.length >= 4) ? s.slice(0,5) : "--:--";
     const normalizeJP = (s) => String(s || "").replace(/\s+/g, "");
 
+    // ====== ここが重要：bot の JSON を参照する ======
+    // ✅ 安定URL（refs/heads は使わない）
+    const BOT_VENUES_URL = "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/venues_today.json";
+
     function normalizeGrade(raw){
       let s = String(raw || "").trim();
       s = s.replace(/[Ａ-Ｚａ-ｚ０-９]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0xFEE0));
@@ -176,7 +180,72 @@
       `;
     }
 
-    function render(data){
+    // ====== bot JSON をこの画面の形式に寄せる（互換レイヤー） ======
+    function hmFromISO(iso){
+      const s = String(iso || "");
+      const m = s.match(/T(\d{2}):(\d{2})/);
+      if (!m) return null;
+      return `${m[1]}:${m[2]}`;
+    }
+
+    function adaptVenuesData(raw){
+      // raw: bot側(推奨) or 旧ローカルのどっちでも動くようにする
+      const out = { venues: [], updated_at: null, time: null, checked_at: null, raw };
+
+      // bot側（あなたの最新）
+      // {
+      //   checked_at: "2026-03-03T18:33:15....+09:00",
+      //   venues:[{jcd,name,held,next_race,next_cutoff,next_display,cutoffs...}]
+      // }
+      if (raw && Array.isArray(raw.venues) && (raw.checked_at || raw.held_places || raw.blocked !== undefined)){
+        out.checked_at = raw.checked_at || null;
+        out.updated_at = hmFromISO(raw.checked_at) || null;
+
+        out.venues = raw.venues.map(v => {
+          const closeHM = v.next_cutoff ? (hmFromISO(v.next_cutoff) || null) : null;
+          const nextR = (typeof v.next_race === "number") ? v.next_race : null;
+
+          return {
+            jcd: v.jcd,
+            name: v.name,
+            held: v.held === true,
+            // 画面側で参照してる名前に寄せる
+            next_r: nextR,
+            close_at: closeHM,
+            // そのまま残しておく（将来詳細で使える）
+            next_cutoff: v.next_cutoff || null,
+            next_display: v.next_display || null,
+            cutoffs: v.cutoffs || null,
+
+            // 旧フィールドは未使用なので空でOK
+            grade: v.grade,
+            day: v.day,
+            race: v.race,
+            time: v.time,
+            status_code: v.status_code,
+            bytes: v.bytes,
+            note: v.note,
+          };
+        });
+
+        return out;
+      }
+
+      // 旧ローカル側（./data/venues_today.json 形式）
+      // { updated_at:"HH:MM", time:"YYYY-MM-DD HH:MM", venues:[{jcd,name,held,...}] }
+      if (raw && Array.isArray(raw.venues)){
+        out.time = raw.time || null;
+        out.updated_at = raw.updated_at || (raw.time ? (String(raw.time).split(" ")[1]?.slice(0,5) || null) : null);
+        out.venues = raw.venues;
+        return out;
+      }
+
+      return out;
+    }
+
+    function render(rawData){
+      const data = adaptVenuesData(rawData);
+
       const map = new Map();
       (data.venues || []).forEach(v => map.set(v.jcd, v));
 
@@ -196,6 +265,11 @@
           time: v.time,
           next_r: v.next_r,
           close_at: v.close_at,
+          // bot拡張（表示には未使用、将来用）
+          next_cutoff: v.next_cutoff,
+          next_display: v.next_display,
+          cutoffs: v.cutoffs,
+
           status_code: v.status_code,
           bytes: v.bytes,
           note: v.note
@@ -210,6 +284,7 @@
 
       $grid.innerHTML = merged.map(cardHTML).join("");
 
+      // ✅ 更新時刻：botのchecked_at優先 → 次にupdated_at → 最後にnow
       if (data.updated_at) {
         $updatedAt.textContent = toHM(String(data.updated_at));
       } else if (data.time) {
@@ -351,11 +426,12 @@
 
     let isLoading = false;
 
-    async function fetchJSON(path, force){
-      const bust = force ? `?t=${Date.now()}` : "";
-      const url = `${path}${bust}`;
+    async function fetchJSON(urlOrPath, force){
+      // ✅ キャッシュ対策：常にクエリ付ける（GitHub raw は特に効く）
+      const bust = force ? (urlOrPath.includes("?") ? `&t=${Date.now()}` : `?t=${Date.now()}`) : "";
+      const url = `${urlOrPath}${bust}`;
       const res = await fetch(url, { cache: "no-store" });
-      if (!res.ok) throw new Error(`failed to fetch: ${path}`);
+      if (!res.ok) throw new Error(`failed to fetch: ${urlOrPath}`);
       return await res.json();
     }
 
@@ -363,9 +439,11 @@
       if (isLoading) return;
       isLoading = true;
       try{
-        const venuesData = await fetchJSON("./data/venues_today.json", force);
+        // ✅ 会場一覧：bot の raw を読む（ここが反映ポイント）
+        const venuesData = await fetchJSON(BOT_VENUES_URL, true);
         render(venuesData);
 
+        // ✅ 厳選：メイン repo の ./data をそのまま使う（今まで通り）
         try{
           const picksData = await fetchJSON("./data/picks_today.json", force);
           renderPicks(picksData);
