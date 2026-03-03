@@ -6,14 +6,13 @@
   <meta name="theme-color" content="#f3f4f6" />
   <title>本日の開催一覧</title>
 
-  <!-- 既存CSS -->
   <link rel="stylesheet" href="./style.css" />
   <link rel="stylesheet" href="./css/base.css" />
   <link rel="stylesheet" href="./css/layout.css" />
   <link rel="stylesheet" href="./css/header.css" />
   <link rel="stylesheet" href="./css/grid.css" />
 
-  <!-- ✅ 保険：CSSが当たらなくても「PRO/更新/厳選」が消えない最低限 -->
+  <!-- ✅ 保険（最小） -->
   <style>
     .top__actions{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
     .top__pro, .top__btn{ display:inline-flex; align-items:center; justify-content:center; }
@@ -58,7 +57,7 @@
     </section>
   </main>
 
-  <!-- ✅ JSを分割（毎日触るのは config.js だけ） -->
+  <!-- ✅ 毎日触るのは config.js だけ -->
   <script type="module" src="./js/app.js"></script>
 </body>
 </html>
