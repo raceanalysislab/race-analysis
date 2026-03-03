@@ -53,6 +53,7 @@
         <div class="picksMeta">更新: <span id="picksUpdatedAt">--:--</span></div>
       </div>
 
+      <!-- ✅ 厳選レースのnote差し込み欄：リンクに飛ばす欄なので「何もしない」= 現状維持 -->
       <div id="picksCta" class="picksCta"></div>
       <div id="picks" class="picksList"></div>
     </section>
@@ -324,18 +325,33 @@
       `;
     }
 
-    function renderPicks(data){
+    // ✅ 厳選の更新時刻を bot の checked_at に揃える（picks側に時刻が無い場合は venuesのchecked_atを流用）
+    function renderPicks(data, fallbackCheckedAtISO){
       const picks = Array.isArray(data?.picks) ? data.picks : [];
       $picks.innerHTML = picks.length ? picks.map(pickCardHTML).join("") : "";
+
+      const pickedISO = data?.checked_at || data?.updated_at || null;
+      if (pickedISO) {
+        const hm = hmFromISO(pickedISO);
+        $picksUpdatedAt.textContent = hm ? hm : "--:--";
+        return;
+      }
 
       if (data?.time) {
         const t = String(data.time);
         const hm = t.includes(" ") ? t.split(" ")[1].slice(0,5) : "--:--";
         $picksUpdatedAt.textContent = hm;
-      } else {
-        const now = new Date();
-        $picksUpdatedAt.textContent = `${pad2(now.getHours())}:${pad2(now.getMinutes())}`;
+        return;
       }
+
+      if (fallbackCheckedAtISO) {
+        const hm = hmFromISO(fallbackCheckedAtISO);
+        $picksUpdatedAt.textContent = hm ? hm : "--:--";
+        return;
+      }
+
+      const now = new Date();
+      $picksUpdatedAt.textContent = `${pad2(now.getHours())}:${pad2(now.getMinutes())}`;
     }
 
     const URL_YOSO_ONLY = "https://note.com/wsnndboat7/n/n1fdca8b0a7e3";
@@ -433,11 +449,12 @@
         const venuesData = await fetchJSON(BOT_VENUES_URL, true);
         render(venuesData);
 
+        // ✅ 厳選の更新時刻は venuesData.checked_at をフォールバックとして渡す
         try{
           const picksData = await fetchJSON(BOT_PICKS_URL, force);
-          renderPicks(picksData);
+          renderPicks(picksData, venuesData?.checked_at || null);
         }catch(e){
-          renderPicks({ time: null, picks: [] });
+          renderPicks({ picks: [] }, venuesData?.checked_at || null);
         }
 
         renderPicksCta();
@@ -447,6 +464,7 @@
       }
     }
 
+    // ✅ 更新ボタン：即最新を取りに行く（時刻も bot の checked_at に揃う）
     $btn.addEventListener("click", () => {
       $btn.classList.add("is-loading");
       loadAll(true).catch(()=>{}).finally(()=> $btn.classList.remove("is-loading"));
@@ -552,6 +570,11 @@
     bootProByStoredDate().catch(()=> setTheme(false));
     renderPicksCta(); // 先に出す（通信前でも消えない）
     loadAll(true).catch(()=>{ stabilizeLayout(); });
+
+    // ✅ iOSで初回ロードがキャッシュ/遅延する時があるので、短時間で1回だけ追いロード
+    setTimeout(() => {
+      if (document.visibilityState === "visible") loadAll(true).catch(()=>{});
+    }, 800);
   </script>
 </body>
 </html>
