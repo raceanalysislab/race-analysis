@@ -111,8 +111,6 @@
       const hh = Number(get("hour"));
       const mm = Number(get("minute"));
       const ss = Number(get("second"));
-      // これは「JSTの各要素」でDateを作る（端末TZに依存しないためにUTCで作って補正する）
-      // ただ、ここでは比較/分計算にしか使わないので「同じ基準」で統一できればOK
       return { y, m, d, hh, mm, ss };
     }
 
@@ -151,13 +149,11 @@
       return "—";
     }
 
+    // ✅ 表示用：next_r/close_at/next_display があればそれ優先
     function raceTimeLine(v){
       if (!v.held) return "-- --";
-      // bot由来の next_r / close_at
       if (v.next_r && v.close_at) return `${String(v.next_r)}R ${toHM(String(v.close_at))}`;
-      // 旧形式
       if (v.race && v.time) return `${String(v.race)} ${toHM(String(v.time))}`;
-      // botの next_display が "終了" など文字で来る場合
       if (v.next_display) return String(v.next_display);
       return "-- --";
     }
@@ -282,16 +278,20 @@
       return out;
     }
 
-    // ====== 締切表(cutoffs)から「いまの次」を端末側で計算（bot更新待ちを回避） ======
+    // ====== 締切表(cutoffs)から「いまの次」を端末側で計算（即時切替） ======
     function computeLiveNextFromCutoffs(cutoffs){
-      if (!Array.isArray(cutoffs) || cutoffs.length === 0) return { next_r: null, close_at: null, next_display: null };
+      if (!Array.isArray(cutoffs) || cutoffs.length === 0) {
+        return { next_r: null, close_at: null, next_display: null };
+      }
+
       const now = nowJST();
       const nowMin = now.hh * 60 + now.mm;
 
-      // cutoffs: [{rno, time:"HH:MM"}]
       for (const c of cutoffs){
         const tMin = minutesFromHHMM(c?.time);
         if (tMin === null) continue;
+
+        // ✅ 「締切時刻になった瞬間に次へ」=>  tMin > nowMin のみ採用
         if (tMin > nowMin){
           const rno = Number(c?.rno);
           const hh = Math.floor(tMin / 60);
@@ -305,11 +305,11 @@
         }
       }
 
-      // もう今日の締切が全部終わってる
+      // 全部終わってる
       return { next_r: null, close_at: null, next_display: "終了" };
     }
 
-    // ====== 次締切の直後に「自動fetch」予約（botが追いついた瞬間に即同期） ======
+    // ====== 次締切の直後に「自動fetch」予約（bot同期を最短にする） ======
     function scheduleFetchAfterNextCutoff(){
       if (NEXT_FETCH_TIMER) {
         clearTimeout(NEXT_FETCH_TIMER);
@@ -317,7 +317,6 @@
       }
       if (!LAST_MERGED) return;
 
-      // 今日の中で一番近い締切（全場）を探す
       const now = nowJST();
       const nowMin = now.hh * 60 + now.mm;
       let bestMin = null;
@@ -327,22 +326,23 @@
         const cutoffs = v.cutoffs;
         if (!Array.isArray(cutoffs) || cutoffs.length === 0) continue;
 
+        // cutoffsは昇順の想定
         for (const c of cutoffs){
           const tMin = minutesFromHHMM(c?.time);
           if (tMin === null) continue;
           if (tMin > nowMin){
             if (bestMin === null || tMin < bestMin) bestMin = tMin;
-            break; // その会場の次だけ見ればOK（cutoffsは昇順の想定）
+            break;
           }
         }
       }
 
-      if (bestMin === null) return; // 次締切が無い
+      if (bestMin === null) return;
 
       const diffMin = bestMin - nowMin;
       const diffMs = diffMin * 60 * 1000 - (now.ss * 1000);
 
-      // 締切の「直後」+3秒に fetch（ページ表示をズラさず同期だけ狙う）
+      // 締切直後 +3秒
       const wait = Math.max(3000, diffMs + 3000);
 
       NEXT_FETCH_TIMER = setTimeout(() => {
@@ -375,12 +375,12 @@
           race: v.race,
           time: v.time,
 
-          // 表示は live を優先（botの遅れを吸収）
+          // 表示は live を優先
           next_r: live.next_r,
           close_at: live.close_at,
           next_display: live.next_display,
 
-          // 生も残す（将来用）
+          // 生も残す
           next_cutoff: v.next_cutoff,
           cutoffs: v.cutoffs,
 
@@ -399,7 +399,7 @@
 
       $grid.innerHTML = merged.map(cardHTML).join("");
 
-      // ✅ 「最終更新」はデータの更新時刻（botのchecked_at）
+      // ✅ 「最終更新」は bot の checked_at
       if (data.checked_at) {
         const hm = hmFromISO(data.checked_at);
         $updatedAt.textContent = hm ? hm : "--:--";
@@ -600,7 +600,6 @@
     setInterval(() => {
       if (document.visibilityState !== "visible") return;
       if (!LAST_VENUES_RAW) return;
-
       // 再fetchはしない。手元のcutoffsで再renderだけ
       render(LAST_VENUES_RAW);
     }, 20 * 1000);
