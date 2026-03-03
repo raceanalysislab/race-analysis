@@ -74,9 +74,10 @@
     const toHM = (s) => (typeof s === "string" && s.length >= 4) ? s.slice(0,5) : "--:--";
     const normalizeJP = (s) => String(s || "").replace(/\s+/g, "");
 
-    // ====== ここが重要：bot の JSON を参照する ======
-    // ✅ 安定URL（refs/heads は使わない）
+    // ====== bot の JSON を参照（raw はキャッシュされやすいので強めに bust する） ======
     const BOT_VENUES_URL = "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/venues_today.json";
+    const BOT_PICKS_URL  = "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/picks_today.json";
+    const BOT_PROKEY_URL = "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/pro_key.json";
 
     function normalizeGrade(raw){
       let s = String(raw || "").trim();
@@ -285,7 +286,10 @@
       $grid.innerHTML = merged.map(cardHTML).join("");
 
       // ✅ 更新時刻：botのchecked_at優先 → 次にupdated_at → 最後にnow
-      if (data.updated_at) {
+      if (data.checked_at) {
+        const hm = hmFromISO(data.checked_at);
+        $updatedAt.textContent = hm ? hm : "--:--";
+      } else if (data.updated_at) {
         $updatedAt.textContent = toHM(String(data.updated_at));
       } else if (data.time) {
         const t = String(data.time);
@@ -427,7 +431,7 @@
     let isLoading = false;
 
     async function fetchJSON(urlOrPath, force){
-      // ✅ キャッシュ対策：常にクエリ付ける（GitHub raw は特に効く）
+      // ✅ キャッシュ対策：raw/Pages 両方に効くように毎回 bust
       const bust = force ? (urlOrPath.includes("?") ? `&t=${Date.now()}` : `?t=${Date.now()}`) : "";
       const url = `${urlOrPath}${bust}`;
       const res = await fetch(url, { cache: "no-store" });
@@ -443,9 +447,9 @@
         const venuesData = await fetchJSON(BOT_VENUES_URL, true);
         render(venuesData);
 
-        // ✅ 厳選：メイン repo の ./data をそのまま使う（今まで通り）
+        // ✅ 厳選：bot から読む（メインに置かない方が即戦力＆ズレない）
         try{
-          const picksData = await fetchJSON("./data/picks_today.json", force);
+          const picksData = await fetchJSON(BOT_PICKS_URL, force);
           renderPicks(picksData);
         }catch(e){
           renderPicks({ time: null, picks: [] });
@@ -521,7 +525,7 @@
     }
 
     async function getProKey(){
-      return await fetchJSON("./data/pro_key.json", true);
+      return await fetchJSON(BOT_PROKEY_URL, true);
     }
 
     async function bootProByStoredDate(){
