@@ -32,6 +32,9 @@
   -webkit-transform: translateZ(0);
   transform: translateZ(0);
   will-change: transform;
+
+  /* ✅ アプリ寄せ：カード内を中央寄せ */
+  text-align: center;
 }
 
 /* ✅ 上半分カラー */
@@ -123,6 +126,9 @@ html[data-theme="pro"] .card:active{
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+
+  /* ✅ 中央寄せでも見た目安定 */
+  margin: 0 auto;
 }
 html[data-theme="pro"] .card__name{
   color: rgba(255,252,244,.99);
@@ -154,3 +160,66 @@ html[data-theme="pro"] .card--off .card__line{
 
 .card__line--mid{ font-size: 12px; letter-spacing: 0.01em; }
 .card__line--btm{ font-size: 16px; letter-spacing: 0.02em; }
+
+/* =========================================================
+   ✅ ここから「アプリ寄せ」のための追加スタイル
+   ※ index.html 側で mid 行を下記構造にする想定：
+   <div class="card__meta">
+     <span class="grade grade--g1">G1</span> / <span class="grade grade--ippan">一般</span>
+     <span class="day">2日目</span>
+   </div>
+   ========================================================= */
+.card__meta{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+/* gradeバッジ（左） */
+.grade{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  height: 18px;
+  padding: 0 6px;
+  border-radius: 4px;
+  font-weight: 900;
+  font-size: 12px;
+  line-height: 1;
+  letter-spacing: .02em;
+
+  color: #0b1220;
+  background: rgba(148,163,184,.55);
+}
+
+/* ✅ 指定カラー：G1(オレンジ) SG(赤) G2(青) G3(緑) */
+.grade--g1{ background: rgba(251,146,60,.90); }   /* orange */
+.grade--sg{ background: rgba(239,68,68,.92); }    /* red */
+.grade--g2{ background: rgba(59,130,246,.90); }   /* blue */
+.grade--g3{ background: rgba(34,197,94,.90); }    /* green */
+.grade--ippan{ background: rgba(148,163,184,.55); }
+
+/* PRO時のバッジは文字を明るく */
+html[data-theme="pro"] .grade{
+  color: rgba(255,252,244,.95);
+  box-shadow: 0 1px 0 rgba(0,0,0,.45);
+}
+
+/* day（右） */
+.day{
+  font-weight: 900;
+  font-size: 12px;
+  letter-spacing: .02em;
+  color: #334155;
+}
+html[data-theme="pro"] .day{ color: rgba(255,252,244,.82); }
+.card--off .day{ color: #6b7280; }
+html[data-theme="pro"] .card--off .day{ color: rgba(255,252,244,.06); }
+
+/* ✅ 「販売終了」の見た目（index側で文言を置き換える想定） */
+.status--soldout{
+  font-weight: 900;
+  letter-spacing: .02em;
+}
