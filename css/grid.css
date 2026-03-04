@@ -2,6 +2,10 @@
 .gridWrap{
   height: var(--gridH);
   margin-top: 8px;
+
+  /* ✅ iOS合成バグ抑止：この塊を独立させる */
+  isolation: isolate;
+  contain: layout paint;
 }
 
 /* ===== Grid ===== */
@@ -29,14 +33,14 @@
 
   position: relative;
 
-  /* GPU固定を削除（ゴースト対策） */
-  transform: none;
-  will-change: auto;
+  /* ✅ ゴースト対策：カード単体で塗りを閉じる */
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 
   text-align: center;
 }
 
-/* 上半分カラー */
+/* ✅ 上半分カラー */
 .card::before{
   content:"";
   position:absolute;
@@ -45,7 +49,6 @@
   pointer-events:none;
 
   opacity: .55;
-
   background: var(--toneTop, rgba(15,23,42,.12));
   border-top-left-radius: 6px;
   border-top-right-radius: 6px;
@@ -53,7 +56,7 @@
 }
 .card > *{ position: relative; z-index: 2; }
 
-/* FREE tone */
+/* FREE：tone色 */
 .card--tone-normal{
   --toneTop: linear-gradient(180deg, rgba(148,163,184,.45), rgba(148,163,184,0));
 }
@@ -69,8 +72,7 @@
 .card--on{ background: var(--cardOn); border-color: var(--borderOn); }
 .card--off{ background: var(--cardOff); border-color: var(--border); }
 
-/* ===== PRO ===== */
-
+/* PRO base */
 html[data-theme="pro"] .card{
   border: 2px solid var(--gold);
   background:
@@ -79,8 +81,8 @@ html[data-theme="pro"] .card{
   box-shadow: var(--proCardShadowStd);
 }
 
+/* ✅ PRO：上半分の色だけ強める */
 html[data-theme="pro"] .card::before{ opacity: .70; }
-
 html[data-theme="pro"] .card--tone-normal{
   --toneTop: linear-gradient(180deg, rgba(255,255,255,.26), rgba(255,255,255,0));
 }
@@ -90,11 +92,9 @@ html[data-theme="pro"] .card--tone-morning{
 html[data-theme="pro"] .card--tone-night{
   --toneTop: linear-gradient(180deg, rgba(120,170,255,.60), rgba(120,170,255,0));
 }
-
 html[data-theme="pro"] .card--off::before{ opacity: 0; }
 
 /* PRO ON */
-
 html[data-theme="pro"] .card--on{
   border-color: var(--gold);
   background:
@@ -104,7 +104,6 @@ html[data-theme="pro"] .card--on{
 }
 
 /* PRO OFF */
-
 html[data-theme="pro"] .card--off{
   border-color: rgba(255,224,150,.10);
   background: linear-gradient(#040509, #040509);
@@ -113,15 +112,12 @@ html[data-theme="pro"] .card--off{
   opacity: .72;
 }
 
-/* 押した時だけ浮かす */
-
 html[data-theme="pro"] .card:active{
   box-shadow: var(--proCardActiveShadow);
   transform: translateY(-1px);
 }
 
-/* 会場名 */
-
+/* ✅ 会場名 */
 .card__name{
   font-weight: 900;
   font-size: 18px;
@@ -133,7 +129,6 @@ html[data-theme="pro"] .card:active{
   text-overflow: ellipsis;
   margin: 0 auto;
 }
-
 html[data-theme="pro"] .card__name{
   color: rgba(255,252,244,.99);
   text-shadow:
@@ -141,8 +136,7 @@ html[data-theme="pro"] .card__name{
     0 0 12px rgba(255,224,150,.10);
 }
 
-/* lines */
-
+/* 2-3行目 */
 .card__line{
   font-weight: 800;
   color: #334155;
@@ -150,50 +144,44 @@ html[data-theme="pro"] .card__name{
   white-space: nowrap;
   word-break: keep-all;
 }
-
-html[data-theme="pro"] .card__line{
-  color: rgba(255,252,244,.82);
-}
+html[data-theme="pro"] .card__line{ color: rgba(255,252,244,.82); }
 
 .card--off .card__name,
-.card--off .card__line{
-  color: #6b7280;
-}
+.card--off .card__line{ color: #6b7280; }
 
 html[data-theme="pro"] .card--off .card__name{
   color: rgba(255,252,244,.12);
   text-shadow: none;
 }
-
 html[data-theme="pro"] .card--off .card__line{
   color: rgba(255,252,244,.06);
 }
 
-.card__line--mid{ font-size: 12px; }
-.card__line--btm{ font-size: 16px; }
+.card__line--mid{ font-size: 12px; letter-spacing: 0.01em; }
+.card__line--btm{ font-size: 16px; letter-spacing: 0.02em; }
 
-/* meta */
-
+/* meta（今後用） */
 .card__meta{
   display:flex;
   align-items:center;
   justify-content:center;
-  gap:8px;
-  margin-top:2px;
+  gap: 8px;
+  margin-top: 2px;
 }
 
 .grade{
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  height:18px;
-  padding:0 6px;
-  border-radius:4px;
-  font-weight:900;
-  font-size:12px;
-  letter-spacing:.02em;
-  color:#0b1220;
-  background:rgba(148,163,184,.55);
+  height: 18px;
+  padding: 0 6px;
+  border-radius: 4px;
+  font-weight: 900;
+  font-size: 12px;
+  line-height: 1;
+  letter-spacing: .02em;
+  color: #0b1220;
+  background: rgba(148,163,184,.55);
 }
 
 .grade--g1{ background: rgba(251,146,60,.90); }
@@ -208,23 +196,16 @@ html[data-theme="pro"] .grade{
 }
 
 .day{
-  font-weight:900;
-  font-size:12px;
-  letter-spacing:.02em;
-  color:#334155;
+  font-weight: 900;
+  font-size: 12px;
+  letter-spacing: .02em;
+  color: #334155;
 }
-
-html[data-theme="pro"] .day{
-  color: rgba(255,252,244,.82);
-}
-
-.card--off .day{ color:#6b7280; }
-
-html[data-theme="pro"] .card--off .day{
-  color: rgba(255,252,244,.06);
-}
+html[data-theme="pro"] .day{ color: rgba(255,252,244,.82); }
+.card--off .day{ color: #6b7280; }
+html[data-theme="pro"] .card--off .day{ color: rgba(255,252,244,.06); }
 
 .status--soldout{
-  font-weight:900;
-  letter-spacing:.02em;
+  font-weight: 900;
+  letter-spacing: .02em;
 }
