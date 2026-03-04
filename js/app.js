@@ -1,3 +1,4 @@
+/* ③ js/app.js（完全置き換え：PRO⇄FREE切替時の“カードゴースト”対策入り） */
 import { BOT_VENUES_URL, BOT_PICKS_URL, NOTE_URLS } from "./config.js";
 
 // ====== 固定順（公式アプリ順） ======
@@ -21,7 +22,7 @@ const $picksCta = document.getElementById("picksCta");
 const $btnPro = document.getElementById("btnPro");
 
 const pad2 = (n) => String(n).padStart(2, "0");
-const toHM = (s) => (typeof s === "string" && String(s).length >= 4) ? String(s).slice(0,5) : "--:--";
+const toHM = (s) => (typeof s === "string" && String(s).length >= 4) ? String(s).slice(0, 5) : "--:--";
 const normalizeJP = (s) => String(s || "").replace(/\s+/g, "");
 
 // ====== 内部状態（リアルタイム表示更新のため保持） ======
@@ -30,7 +31,7 @@ let LAST_MERGED = null;
 let NEXT_FETCH_TIMER = null;
 
 // ====== JSTの"いま"を取る（iOSでもズレにくい） ======
-function nowJST(){
+function nowJST() {
   const parts = new Intl.DateTimeFormat("ja-JP", {
     timeZone: "Asia/Tokyo",
     year: "numeric", month: "2-digit", day: "2-digit",
@@ -47,12 +48,12 @@ function nowJST(){
   const ss = Number(get("second"));
   return { y, m, d, hh, mm, ss };
 }
-function todayJSTStr(){
+function todayJSTStr() {
   const n = nowJST();
   return `${n.y}-${pad2(n.m)}-${pad2(n.d)}`;
 }
 
-function minutesFromHHMM(hhmm){
+function minutesFromHHMM(hhmm) {
   const s = String(hhmm || "");
   const m = s.match(/^(\d{1,2}):(\d{2})$/);
   if (!m) return null;
@@ -62,7 +63,7 @@ function minutesFromHHMM(hhmm){
   return hh * 60 + mm;
 }
 
-function normalizeGrade(raw){
+function normalizeGrade(raw) {
   let s = String(raw || "").trim();
   s = s.replace(/[Ａ-Ｚａ-ｚ０-９]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0xFEE0));
   s = s.toUpperCase().replace(/\s+/g, "");
@@ -74,20 +75,20 @@ function normalizeGrade(raw){
   return "";
 }
 
-function gradeLabel(v){
+function gradeLabel(v) {
   if (!v.held) return "";
   const g = normalizeGrade(v.grade);
   return g ? g : "一般";
 }
 
-function dayLabel(v){
+function dayLabel(v) {
   if (!v.held) return "";
   if (typeof v.day === "number") return `${v.day}日目`;
   if (typeof v.day === "string" && v.day.trim()) return normalizeJP(v.day.trim());
   return "—";
 }
 
-function raceTimeLine(v){
+function raceTimeLine(v) {
   if (!v.held) return "-- --";
   if (v.next_r && v.close_at) return `${String(v.next_r)}R ${toHM(String(v.close_at))}`;
   if (v.race && v.time) return `${String(v.race)} ${toHM(String(v.time))}`;
@@ -95,7 +96,7 @@ function raceTimeLine(v){
   return "-- --";
 }
 
-function getHourFromTimeStr(t){
+function getHourFromTimeStr(t) {
   const s = String(t || "");
   const m = s.match(/(\d{2}):(\d{2})/);
   if (!m) return null;
@@ -103,7 +104,7 @@ function getHourFromTimeStr(t){
   return Number.isFinite(hh) ? hh : null;
 }
 
-function sessionTone(v){
+function sessionTone(v) {
   if (!v.held) return "";
   const src = v.time || v.close_at || "";
   const hh = getHourFromTimeStr(src);
@@ -113,17 +114,17 @@ function sessionTone(v){
   return "normal";
 }
 
-function sessionIconByTone(tone){
+function sessionIconByTone(tone) {
   if (tone === "morning") return "☀️";
   if (tone === "night") return "🌙";
   return "";
 }
 
-function venueHref(v){
+function venueHref(v) {
   return `./race.html?jcd=${encodeURIComponent(v.jcd)}&name=${encodeURIComponent(v.name)}`;
 }
 
-function cardHTML(v){
+function cardHTML(v) {
   const held = !!v.held;
 
   const tone = held ? (v.tone || "normal") : "";
@@ -136,7 +137,7 @@ function cardHTML(v){
 
   const btm = raceTimeLine(v);
 
-  if (!held){
+  if (!held) {
     return `
       <div class="${cls}" aria-disabled="true">
         <div class="card__name">${v.name}</div>
@@ -155,17 +156,17 @@ function cardHTML(v){
   `;
 }
 
-function hmFromISO(iso){
+function hmFromISO(iso) {
   const s = String(iso || "");
   const m = s.match(/T(\d{2}):(\d{2})/);
   if (!m) return null;
   return `${m[1]}:${m[2]}`;
 }
 
-function adaptVenuesData(raw){
+function adaptVenuesData(raw) {
   const out = { venues: [], updated_at: null, checked_at: null, date: null, raw };
 
-  if (raw && Array.isArray(raw.venues) && (raw.checked_at || raw.held_places || raw.blocked !== undefined)){
+  if (raw && Array.isArray(raw.venues) && (raw.checked_at || raw.held_places || raw.blocked !== undefined)) {
     out.date = raw.date || null;
     out.checked_at = raw.checked_at || null;
     out.updated_at = hmFromISO(raw.checked_at) || null;
@@ -195,8 +196,8 @@ function adaptVenuesData(raw){
     return out;
   }
 
-  if (raw && Array.isArray(raw.venues)){
-    out.updated_at = raw.updated_at || (raw.time ? (String(raw.time).split(" ")[1]?.slice(0,5) || null) : null);
+  if (raw && Array.isArray(raw.venues)) {
+    out.updated_at = raw.updated_at || (raw.time ? (String(raw.time).split(" ")[1]?.slice(0, 5) || null) : null);
     out.venues = raw.venues;
     return out;
   }
@@ -204,7 +205,7 @@ function adaptVenuesData(raw){
   return out;
 }
 
-function computeLiveNextFromCutoffs(cutoffs){
+function computeLiveNextFromCutoffs(cutoffs) {
   if (!Array.isArray(cutoffs) || cutoffs.length === 0) {
     return { next_r: null, close_at: null, next_display: null };
   }
@@ -212,11 +213,11 @@ function computeLiveNextFromCutoffs(cutoffs){
   const now = nowJST();
   const nowMin = now.hh * 60 + now.mm;
 
-  for (const c of cutoffs){
+  for (const c of cutoffs) {
     const tMin = minutesFromHHMM(c?.time);
     if (tMin === null) continue;
 
-    if (tMin > nowMin){
+    if (tMin > nowMin) {
       const rno = Number(c?.rno);
       const hh = Math.floor(tMin / 60);
       const mm = tMin % 60;
@@ -232,7 +233,7 @@ function computeLiveNextFromCutoffs(cutoffs){
   return { next_r: null, close_at: null, next_display: "終了" };
 }
 
-function scheduleFetchAfterNextCutoff(){
+function scheduleFetchAfterNextCutoff() {
   if (NEXT_FETCH_TIMER) {
     clearTimeout(NEXT_FETCH_TIMER);
     NEXT_FETCH_TIMER = null;
@@ -243,15 +244,15 @@ function scheduleFetchAfterNextCutoff(){
   const nowMin = now.hh * 60 + now.mm;
   let bestMin = null;
 
-  for (const v of LAST_MERGED){
+  for (const v of LAST_MERGED) {
     if (!v?.held) continue;
     const cutoffs = v.cutoffs;
     if (!Array.isArray(cutoffs) || cutoffs.length === 0) continue;
 
-    for (const c of cutoffs){
+    for (const c of cutoffs) {
       const tMin = minutesFromHHMM(c?.time);
       if (tMin === null) continue;
-      if (tMin > nowMin){
+      if (tMin > nowMin) {
         if (bestMin === null || tMin < bestMin) bestMin = tMin;
         break;
       }
@@ -265,11 +266,11 @@ function scheduleFetchAfterNextCutoff(){
   const wait = Math.max(3000, diffMs + 3000);
 
   NEXT_FETCH_TIMER = setTimeout(() => {
-    if (document.visibilityState === "visible") loadAll(true).catch(()=>{});
+    if (document.visibilityState === "visible") loadAll(true).catch(() => {});
   }, wait);
 }
 
-function render(rawData){
+function render(rawData) {
   const data = adaptVenuesData(rawData);
 
   const map = new Map();
@@ -280,7 +281,7 @@ function render(rawData){
     const held = (v.held === true);
 
     let live = { next_r: v.next_r, close_at: v.close_at, next_display: v.next_display };
-    if (held && Array.isArray(v.cutoffs) && v.cutoffs.length){
+    if (held && Array.isArray(v.cutoffs) && v.cutoffs.length) {
       live = computeLiveNextFromCutoffs(v.cutoffs);
     }
 
@@ -324,7 +325,7 @@ function render(rawData){
   scheduleFetchAfterNextCutoff();
 }
 
-function gradeBadgeClass(g){
+function gradeBadgeClass(g) {
   const ng = normalizeGrade(g);
   if (ng === "SG") return "badge badge--sg";
   if (ng === "G1") return "badge badge--g1";
@@ -333,7 +334,7 @@ function gradeBadgeClass(g){
   return "badge badge--ippan";
 }
 
-function pickCardHTML(p){
+function pickCardHTML(p) {
   const venue = p.venue || (p.jcd ? (VENUES.find(v => v.jcd === p.jcd)?.name || "") : "");
   const race = p.race ? String(p.race) : "";
   const tm = p.time ? toHM(String(p.time)) : "--:--";
@@ -358,7 +359,7 @@ function pickCardHTML(p){
   `;
 }
 
-function renderPicks(data, fallbackCheckedAtISO){
+function renderPicks(data, fallbackCheckedAtISO) {
   const picks = Array.isArray(data?.picks) ? data.picks : [];
   $picks.innerHTML = picks.length ? picks.map(pickCardHTML).join("") : "";
 
@@ -379,10 +380,10 @@ function renderPicks(data, fallbackCheckedAtISO){
   $picksUpdatedAt.textContent = `${pad2(now.hh)}:${pad2(now.mm)}`;
 }
 
-function renderPicksCta(){
+function renderPicksCta() {
   const isPro = document.documentElement.getAttribute("data-theme") === "pro";
 
-  if (!isPro){
+  if (!isPro) {
     $picksCta.innerHTML = `
       <a class="picksBtn" href="${NOTE_URLS.YOSO_ONLY}" target="_blank" rel="noopener noreferrer">
         <div>
@@ -433,7 +434,7 @@ function renderPicksCta(){
 // ✅ グリッド高さ
 let LOCKED_VH = window.innerHeight;
 
-function setGridHeight(force = false){
+function setGridHeight(force = false) {
   const root = document.documentElement;
   if (force) LOCKED_VH = window.innerHeight;
 
@@ -447,41 +448,40 @@ function setGridHeight(force = false){
   root.style.setProperty("--gridH", `${gridH}px`);
 }
 
-function stabilizeLayout(){
+function stabilizeLayout() {
   requestAnimationFrame(() => {
     setGridHeight(false);
     requestAnimationFrame(() => setGridHeight(false));
   });
 }
 
-// ✅ iOSの合成バグ対策：強制再描画（ゴースト/残像を消す）
-function forceRepaintGrid(){
+// =========================
+// ✅ iOS Safari “カード残像/ゴースト”対策
+//   - innerHTML退避/復元はやらない（固まることがある）
+//   - display:none → reflow → 戻す → renderで上書き が最強
+// =========================
+function forceRepaintGrid() {
   if (!$grid) return;
 
-  // クリック状態/フォーカスが残ると iOS が合成を保持することがある
-  try { document.activeElement?.blur?.(); } catch(e) {}
+  // クリック/フォーカスが残ると合成保持されることがある
+  try { document.activeElement?.blur?.(); } catch (e) {}
 
-  // 位置を維持
   const y = window.scrollY || 0;
 
-  // DOMを一度「描き直す」＝合成レイヤーを確実にリセット
-  const html = $grid.innerHTML;
-  $grid.innerHTML = "";
-  // reflow
-  void $grid.offsetHeight;
-  $grid.innerHTML = html;
+  // “見た目”のレイヤーを確実に捨てさせる
+  $grid.style.display = "none";
+  void $grid.offsetHeight; // reflow
+  $grid.style.display = "";
 
-  // さらに “再レンダリング” で新しい要素に置き換える（より強い）
-  if (LAST_VENUES_RAW) {
-    render(LAST_VENUES_RAW);
-  }
+  // 既存データで必ず上書き描画
+  if (LAST_VENUES_RAW) render(LAST_VENUES_RAW);
 
   window.scrollTo(0, y);
 }
 
 let isLoading = false;
 
-async function fetchJSON(urlOrPath, force){
+async function fetchJSON(urlOrPath, force) {
   const bust = force ? (urlOrPath.includes("?") ? `&t=${Date.now()}` : `?t=${Date.now()}`) : "";
   const url = `${urlOrPath}${bust}`;
   const res = await fetch(url, { cache: "no-store" });
@@ -489,24 +489,24 @@ async function fetchJSON(urlOrPath, force){
   return await res.json();
 }
 
-async function loadAll(force){
+async function loadAll(force) {
   if (isLoading) return;
   isLoading = true;
-  try{
+  try {
     const venuesRaw = await fetchJSON(BOT_VENUES_URL, true);
     LAST_VENUES_RAW = venuesRaw;
     render(venuesRaw);
 
-    try{
+    try {
       const picksData = await fetchJSON(BOT_PICKS_URL, force);
       renderPicks(picksData, venuesRaw?.checked_at || null);
-    }catch(e){
+    } catch (e) {
       renderPicks({ picks: [] }, venuesRaw?.checked_at || null);
     }
 
     renderPicksCta();
     stabilizeLayout();
-  }finally{
+  } finally {
     isLoading = false;
   }
 }
@@ -514,7 +514,7 @@ async function loadAll(force){
 // ✅ 更新ボタン：即fetch
 $btn.addEventListener("click", () => {
   $btn.classList.add("is-loading");
-  loadAll(true).catch(()=>{}).finally(()=> $btn.classList.remove("is-loading"));
+  loadAll(true).catch(() => {}).finally(() => $btn.classList.remove("is-loading"));
 });
 
 // ✅ 表示だけのリアルタイム更新
@@ -526,12 +526,12 @@ setInterval(() => {
 
 // 画面復帰で最新JSON
 document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState === "visible") loadAll(true).catch(()=>{});
+  if (document.visibilityState === "visible") loadAll(true).catch(() => {});
 });
 
 // 5分ごとに最新JSON（保険）
 setInterval(() => {
-  if (document.visibilityState === "visible") loadAll(true).catch(()=>{});
+  if (document.visibilityState === "visible") loadAll(true).catch(() => {});
 }, 5 * 60 * 1000);
 
 // =========================
@@ -551,7 +551,7 @@ const $proClear = document.getElementById("proClear");
 
 let MODAL_SCROLL_Y = 0;
 
-function lockScroll(){
+function lockScroll() {
   MODAL_SCROLL_Y = window.scrollY || 0;
 
   document.documentElement.classList.add("is-modal-open");
@@ -564,7 +564,7 @@ function lockScroll(){
   document.body.style.width = "100%";
 }
 
-function unlockScroll(){
+function unlockScroll() {
   document.documentElement.classList.remove("is-modal-open");
   document.body.classList.remove("is-modal-open");
 
@@ -577,44 +577,42 @@ function unlockScroll(){
   window.scrollTo(0, MODAL_SCROLL_Y);
 }
 
-function isProNow(){
+function isProNow() {
   return document.documentElement.getAttribute("data-theme") === "pro";
 }
 
-function setTheme(isPro){
+function setTheme(isPro) {
   const html = document.documentElement;
 
-  if (isPro){
-    html.setAttribute("data-theme","pro");
-    localStorage.setItem(LS_THEME,"pro");
-    $btnPro.setAttribute("aria-pressed","true");
-  }else{
+  if (isPro) {
+    html.setAttribute("data-theme", "pro");
+    localStorage.setItem(LS_THEME, "pro");
+    $btnPro.setAttribute("aria-pressed", "true");
+  } else {
     html.removeAttribute("data-theme");
-    localStorage.setItem(LS_THEME,"free");
-    $btnPro.setAttribute("aria-pressed","false");
+    localStorage.setItem(LS_THEME, "free");
+    $btnPro.setAttribute("aria-pressed", "false");
   }
 
-  // CTAなど
   renderPicksCta();
 
-  // 高さ再計算
   setGridHeight(true);
   stabilizeLayout();
 
-  // ✅ ここが本命：テーマ切替直後に iOS の合成が壊れるので強制再描画
+  // ✅ ここが本命：テーマ切替直後の合成バグを2フレームで叩く
   requestAnimationFrame(() => {
     forceRepaintGrid();
     requestAnimationFrame(() => forceRepaintGrid());
   });
 }
 
-function openProModal(){
+function openProModal() {
   if (!$proModal) return;
 
   lockScroll();
 
   $proModal.classList.add("show");
-  $proModal.setAttribute("aria-hidden","false");
+  $proModal.setAttribute("aria-hidden", "false");
 
   $proInputs.forEach(i => i.value = "");
 
@@ -623,35 +621,35 @@ function openProModal(){
   });
 }
 
-function closeProModal(){
+function closeProModal() {
   if (!$proModal) return;
 
   $proModal.classList.remove("show");
-  $proModal.setAttribute("aria-hidden","true");
+  $proModal.setAttribute("aria-hidden", "true");
 
   unlockScroll();
 }
 
-function bootProByStoredDate(){
+function bootProByStoredDate() {
   const savedTheme = localStorage.getItem(LS_THEME);
   const savedOkDate = localStorage.getItem(LS_PRO_OK_DATE);
 
-  if (savedTheme !== "pro" || !savedOkDate){
+  if (savedTheme !== "pro" || !savedOkDate) {
     setTheme(false);
     return;
   }
 
-  if (String(savedOkDate) === todayJSTStr()){
+  if (String(savedOkDate) === todayJSTStr()) {
     setTheme(true);
-  }else{
+  } else {
     localStorage.removeItem(LS_PRO_OK_DATE);
     localStorage.removeItem(LS_PRO_KEY);
     setTheme(false);
   }
 }
 
-function unlockProFlow(){
-  if (isProNow()){
+function unlockProFlow() {
+  if (isProNow()) {
     setTheme(false);
     localStorage.removeItem(LS_PRO_OK_DATE);
     localStorage.removeItem(LS_PRO_KEY);
@@ -660,24 +658,27 @@ function unlockProFlow(){
   openProModal();
 }
 
-if ($proModal){
+// ✅ 背景タップで閉じる
+if ($proModal) {
   $proModal.addEventListener("click", (e) => {
     if (e.target === $proModal) closeProModal();
   });
 }
 
+// ✅ ESCで閉じる
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && $proModal?.classList.contains("show")) closeProModal();
 });
 
+// 入力挙動
 $proInputs.forEach((input, idx) => {
   input.addEventListener("input", () => {
-    input.value = String(input.value || "").replace(/\D/g,"").slice(0,1);
-    if (input.value && $proInputs[idx+1]) $proInputs[idx+1].focus({ preventScroll: true });
+    input.value = String(input.value || "").replace(/\D/g, "").slice(0, 1);
+    if (input.value && $proInputs[idx + 1]) $proInputs[idx + 1].focus({ preventScroll: true });
   });
   input.addEventListener("keydown", (e) => {
-    if (e.key === "Backspace" && !input.value && $proInputs[idx-1]){
-      $proInputs[idx-1].focus({ preventScroll: true });
+    if (e.key === "Backspace" && !input.value && $proInputs[idx - 1]) {
+      $proInputs[idx - 1].focus({ preventScroll: true });
     }
   });
 });
@@ -690,7 +691,7 @@ if ($proClear) $proClear.addEventListener("click", () => {
 
 if ($proUnlock) $proUnlock.addEventListener("click", () => {
   const key = $proInputs.map(i => i.value).join("");
-  if (!/^\d{6}$/.test(key)){
+  if (!/^\d{6}$/.test(key)) {
     alert("6桁入力してください");
     return;
   }
@@ -702,15 +703,16 @@ if ($proUnlock) $proUnlock.addEventListener("click", () => {
 });
 
 $btnPro.addEventListener("click", () => {
-  try{ unlockProFlow(); }catch(e){}
+  try { unlockProFlow(); } catch (e) {}
 });
 
 // 起動
 setGridHeight(true);
 bootProByStoredDate();
 renderPicksCta();
-loadAll(true).catch(()=>{ stabilizeLayout(); });
+loadAll(true).catch(() => { stabilizeLayout(); });
 
+// iOSで初回ロードがキャッシュ/遅延する時があるので、短時間で1回だけ追いロード
 setTimeout(() => {
-  if (document.visibilityState === "visible") loadAll(true).catch(()=>{});
+  if (document.visibilityState === "visible") loadAll(true).catch(() => {});
 }, 800);
