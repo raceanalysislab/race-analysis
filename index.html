@@ -57,6 +57,33 @@
     </section>
   </main>
 
+  <!-- ✅ PROキー入力モーダル -->
+  <div id="proModal" class="proModal" aria-hidden="true">
+    <div class="proModalBox" role="dialog" aria-modal="true" aria-label="PROキー入力">
+      <div class="proTitle">PROキー入力</div>
+      <div class="proDesc">
+        note購読者専用機能です<br>
+        配布された6桁キーを入力してください
+      </div>
+
+      <div class="proInputs" id="proInputs">
+        <input inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="1桁目">
+        <input inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="2桁目">
+        <input inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="3桁目">
+        <input inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="4桁目">
+        <input inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="5桁目">
+        <input inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="6桁目">
+      </div>
+
+      <button id="proUnlock" class="proUnlock" type="button">PROを解放する</button>
+
+      <div class="proBottom">
+        <button id="proCancel" type="button">キャンセル</button>
+        <button id="proClear" type="button">クリア</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ✅ 毎日触るのは config.js だけ -->
   <script type="module" src="./js/app.js"></script>
 </body>
