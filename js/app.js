@@ -27,7 +27,6 @@ const normalizeJP = (s) => String(s || "").replace(/\s+/g, "");
 
 // ====== 内部状態（リアルタイム表示更新のため保持） ======
 let LAST_VENUES_RAW = null;       // botの生JSON
-let LAST_VENUES_ADAPTED = null;   // adapt後
 let LAST_MERGED = null;           // render用にmergeした配列
 let NEXT_FETCH_TIMER = null;      // 次締切後のfetch予約
 
@@ -98,8 +97,6 @@ function raceTimeLine(v){
   return "-- --";
 }
 
-const DEBUG_SHOW_TONES = false;
-
 function getHourFromTimeStr(t){
   const s = String(t || "");
   const m = s.match(/(\d{2}):(\d{2})/);
@@ -122,13 +119,6 @@ function sessionIconByTone(tone){
   if (tone === "morning") return "☀️";
   if (tone === "night") return "🌙";
   return "";
-}
-
-function debugToneByIndex(i){
-  const m = i % 3;
-  if (m === 0) return "morning";
-  if (m === 1) return "night";
-  return "normal";
 }
 
 function venueHref(v){
@@ -231,7 +221,6 @@ function computeLiveNextFromCutoffs(cutoffs){
     const tMin = minutesFromHHMM(c?.time);
     if (tMin === null) continue;
 
-    // ✅ 「締切時刻になった瞬間に次へ」
     if (tMin > nowMin){
       const rno = Number(c?.rno);
       const hh = Math.floor(tMin / 60);
@@ -279,7 +268,6 @@ function scheduleFetchAfterNextCutoff(){
 
   const diffMin = bestMin - nowMin;
   const diffMs = diffMin * 60 * 1000 - (now.ss * 1000);
-
   const wait = Math.max(3000, diffMs + 3000);
 
   NEXT_FETCH_TIMER = setTimeout(() => {
@@ -295,7 +283,7 @@ function render(rawData){
 
   const merged = VENUES.map((base, idx) => {
     const v = map.get(base.jcd) || {};
-    const held = DEBUG_SHOW_TONES ? true : (v.held === true);
+    const held = (v.held === true);
 
     let live = { next_r: v.next_r, close_at: v.close_at, next_display: v.next_display };
     if (held && Array.isArray(v.cutoffs) && v.cutoffs.length){
@@ -321,14 +309,10 @@ function render(rawData){
       note: v.note
     };
 
-    mergedV.tone = held
-      ? (DEBUG_SHOW_TONES ? debugToneByIndex(idx) : sessionTone(mergedV))
-      : "";
-
+    mergedV.tone = held ? sessionTone(mergedV) : "";
     return mergedV;
   });
 
-  LAST_VENUES_ADAPTED = data;
   LAST_MERGED = merged;
 
   $grid.innerHTML = merged.map(cardHTML).join("");
@@ -391,13 +375,6 @@ function renderPicks(data, fallbackCheckedAtISO){
     return;
   }
 
-  if (data?.time) {
-    const t = String(data.time);
-    const hm = t.includes(" ") ? t.split(" ")[1].slice(0,5) : "--:--";
-    $picksUpdatedAt.textContent = hm;
-    return;
-  }
-
   if (fallbackCheckedAtISO) {
     const hm = hmFromISO(fallbackCheckedAtISO);
     $picksUpdatedAt.textContent = hm ? hm : "--:--";
@@ -416,7 +393,7 @@ function renderPicksCta(){
     $picksCta.innerHTML = `
       <a class="picksBtn" href="${NOTE_URLS.YOSO_ONLY}" target="_blank" rel="noopener noreferrer">
         <div>
-          <div>予想だけ購入（500円）</div>
+          <div class="picksBtnMain">予想だけ購入（500円）</div>
           <div class="picksBtnSub">noteで確認</div>
         </div>
         <div class="picksBtnArrow">→</div>
@@ -424,7 +401,7 @@ function renderPicksCta(){
 
       <a class="picksBtn" href="${NOTE_URLS.PRO_ONLY}" target="_blank" rel="noopener noreferrer">
         <div>
-          <div>PROだけ購入（500円）</div>
+          <div class="picksBtnMain">PROだけ購入（500円）</div>
           <div class="picksBtnSub">キー配布方式（購読者＝PRO扱い）</div>
         </div>
         <div class="picksBtnArrow">→</div>
@@ -432,7 +409,7 @@ function renderPicksCta(){
 
       <a class="picksBtn picksBtn--set" href="${NOTE_URLS.SET}" target="_blank" rel="noopener noreferrer">
         <div>
-          <div>セット購入（800円）</div>
+          <div class="picksBtnMain">セット購入（800円）</div>
           <div class="picksBtnSub">予想 + PRO（お得）</div>
         </div>
         <div class="picksBtnArrow">→</div>
@@ -444,7 +421,7 @@ function renderPicksCta(){
   $picksCta.innerHTML = `
     <a class="picksBtn" href="#" aria-disabled="true" onclick="return false;">
       <div>
-        <div>本日の注目選手（PRO）</div>
+        <div class="picksBtnMain">本日の注目選手（PRO）</div>
         <div class="picksBtnSub">ここは後で差し替え</div>
       </div>
       <div class="picksBtnArrow">—</div>
@@ -452,7 +429,7 @@ function renderPicksCta(){
 
     <a class="picksBtn" href="#" aria-disabled="true" onclick="return false;">
       <div>
-        <div>本日の注目機（PRO）</div>
+        <div class="picksBtnMain">本日の注目機（PRO）</div>
         <div class="picksBtnSub">ここは後で差し替え</div>
       </div>
       <div class="picksBtnArrow">—</div>
@@ -541,11 +518,18 @@ setInterval(() => {
 }, AUTO_MS);
 
 // =========================
-// ✅ PRO：手入力のみ（通信しない）
+// ✅ PRO：手入力（モーダル方式）
 // =========================
 const LS_THEME = "theme";
 const LS_PRO_OK_DATE = "pro_ok_date";
 const LS_PRO_KEY = "pro_key";
+
+const $proModal = document.getElementById("proModal");
+const $proInputsWrap = document.getElementById("proInputs");
+const $proInputs = $proInputsWrap ? Array.from($proInputsWrap.querySelectorAll("input")) : [];
+const $proUnlock = document.getElementById("proUnlock");
+const $proCancel = document.getElementById("proCancel");
+const $proClear = document.getElementById("proClear");
 
 function isProNow(){
   return document.documentElement.getAttribute("data-theme") === "pro";
@@ -565,6 +549,20 @@ function setTheme(isPro){
   renderPicksCta();
   setGridHeight(true);
   stabilizeLayout();
+}
+
+function openProModal(){
+  if (!$proModal) return;
+  $proModal.classList.add("show");
+  $proModal.setAttribute("aria-hidden","false");
+  $proInputs.forEach(i => i.value = "");
+  if ($proInputs[0]) $proInputs[0].focus();
+}
+
+function closeProModal(){
+  if (!$proModal) return;
+  $proModal.classList.remove("show");
+  $proModal.setAttribute("aria-hidden","true");
 }
 
 function bootProByStoredDate(){
@@ -592,21 +590,40 @@ function unlockProFlow(){
     localStorage.removeItem(LS_PRO_KEY);
     return;
   }
+  openProModal();
+}
 
-  const input = prompt("PROキー（6桁）を入力");
-  if (input === null) return;
+// 入力挙動
+$proInputs.forEach((input, idx) => {
+  input.addEventListener("input", () => {
+    input.value = String(input.value || "").replace(/\D/g,"").slice(0,1);
+    if (input.value && $proInputs[idx+1]) $proInputs[idx+1].focus();
+  });
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Backspace" && !input.value && $proInputs[idx-1]){
+      $proInputs[idx-1].focus();
+    }
+  });
+});
 
-  const key = String(input).replace(/\s+/g,"");
+if ($proCancel) $proCancel.addEventListener("click", closeProModal);
+if ($proClear) $proClear.addEventListener("click", () => {
+  $proInputs.forEach(i => i.value = "");
+  if ($proInputs[0]) $proInputs[0].focus();
+});
+
+if ($proUnlock) $proUnlock.addEventListener("click", () => {
+  const key = $proInputs.map(i => i.value).join("");
   if (!/^\d{6}$/.test(key)){
-    alert("6桁の数字で入力してください。");
+    alert("6桁入力してください");
     return;
   }
-
   localStorage.setItem(LS_PRO_KEY, key);
   localStorage.setItem(LS_PRO_OK_DATE, todayJSTStr());
+  closeProModal();
   setTheme(true);
   alert("PROを解放しました。");
-}
+});
 
 $btnPro.addEventListener("click", () => {
   try{ unlockProFlow(); }catch(e){}
