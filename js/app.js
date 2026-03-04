@@ -454,6 +454,31 @@ function stabilizeLayout(){
   });
 }
 
+// ✅ iOSの合成バグ対策：強制再描画（ゴースト/残像を消す）
+function forceRepaintGrid(){
+  if (!$grid) return;
+
+  // クリック状態/フォーカスが残ると iOS が合成を保持することがある
+  try { document.activeElement?.blur?.(); } catch(e) {}
+
+  // 位置を維持
+  const y = window.scrollY || 0;
+
+  // DOMを一度「描き直す」＝合成レイヤーを確実にリセット
+  const html = $grid.innerHTML;
+  $grid.innerHTML = "";
+  // reflow
+  void $grid.offsetHeight;
+  $grid.innerHTML = html;
+
+  // さらに “再レンダリング” で新しい要素に置き換える（より強い）
+  if (LAST_VENUES_RAW) {
+    render(LAST_VENUES_RAW);
+  }
+
+  window.scrollTo(0, y);
+}
+
 let isLoading = false;
 
 async function fetchJSON(urlOrPath, force){
@@ -558,6 +583,7 @@ function isProNow(){
 
 function setTheme(isPro){
   const html = document.documentElement;
+
   if (isPro){
     html.setAttribute("data-theme","pro");
     localStorage.setItem(LS_THEME,"pro");
@@ -567,9 +593,19 @@ function setTheme(isPro){
     localStorage.setItem(LS_THEME,"free");
     $btnPro.setAttribute("aria-pressed","false");
   }
+
+  // CTAなど
   renderPicksCta();
+
+  // 高さ再計算
   setGridHeight(true);
   stabilizeLayout();
+
+  // ✅ ここが本命：テーマ切替直後に iOS の合成が壊れるので強制再描画
+  requestAnimationFrame(() => {
+    forceRepaintGrid();
+    requestAnimationFrame(() => forceRepaintGrid());
+  });
 }
 
 function openProModal(){
