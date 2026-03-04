@@ -1,4 +1,4 @@
-/* ===== js/app.js（完全置き換え） ===== */
+/* ③ js/app.js（完全置き換え：あなたの現状版 + “下に飛ばない”修正版） */
 import { BOT_VENUES_URL, BOT_PICKS_URL, NOTE_URLS } from "./config.js";
 
 // ====== 固定順（公式アプリ順） ======
@@ -26,9 +26,9 @@ const toHM = (s) => (typeof s === "string" && String(s).length >= 4) ? String(s)
 const normalizeJP = (s) => String(s || "").replace(/\s+/g, "");
 
 // ====== 内部状態（リアルタイム表示更新のため保持） ======
-let LAST_VENUES_RAW = null;       // botの生JSON
-let LAST_MERGED = null;           // render用にmergeした配列
-let NEXT_FETCH_TIMER = null;      // 次締切後のfetch予約
+let LAST_VENUES_RAW = null;
+let LAST_MERGED = null;
+let NEXT_FETCH_TIMER = null;
 
 // ====== JSTの"いま"を取る（iOSでもズレにくい） ======
 function nowJST(){
@@ -88,7 +88,6 @@ function dayLabel(v){
   return "—";
 }
 
-// ✅ 表示用：next_r/close_at/next_display があればそれ優先
 function raceTimeLine(v){
   if (!v.held) return "-- --";
   if (v.next_r && v.close_at) return `${String(v.next_r)}R ${toHM(String(v.close_at))}`;
@@ -167,7 +166,6 @@ function hmFromISO(iso){
 function adaptVenuesData(raw){
   const out = { venues: [], updated_at: null, checked_at: null, date: null, raw };
 
-  // bot形式
   if (raw && Array.isArray(raw.venues) && (raw.checked_at || raw.held_places || raw.blocked !== undefined)){
     out.date = raw.date || null;
     out.checked_at = raw.checked_at || null;
@@ -198,7 +196,6 @@ function adaptVenuesData(raw){
     return out;
   }
 
-  // 旧形式
   if (raw && Array.isArray(raw.venues)){
     out.updated_at = raw.updated_at || (raw.time ? (String(raw.time).split(" ")[1]?.slice(0,5) || null) : null);
     out.venues = raw.venues;
@@ -208,7 +205,6 @@ function adaptVenuesData(raw){
   return out;
 }
 
-// ====== 締切表(cutoffs)から「いまの次」を端末側で計算（即時切替） ======
 function computeLiveNextFromCutoffs(cutoffs){
   if (!Array.isArray(cutoffs) || cutoffs.length === 0) {
     return { next_r: null, close_at: null, next_display: null };
@@ -237,7 +233,6 @@ function computeLiveNextFromCutoffs(cutoffs){
   return { next_r: null, close_at: null, next_display: "終了" };
 }
 
-// ====== 次締切の直後に「自動fetch」予約（bot同期を最短にする） ======
 function scheduleFetchAfterNextCutoff(){
   if (NEXT_FETCH_TIMER) {
     clearTimeout(NEXT_FETCH_TIMER);
@@ -281,7 +276,7 @@ function render(rawData){
   const map = new Map();
   (data.venues || []).forEach(v => map.set(v.jcd, v));
 
-  const merged = VENUES.map((base, idx) => {
+  const merged = VENUES.map((base) => {
     const v = map.get(base.jcd) || {};
     const held = (v.held === true);
 
@@ -385,7 +380,6 @@ function renderPicks(data, fallbackCheckedAtISO){
   $picksUpdatedAt.textContent = `${pad2(now.hh)}:${pad2(now.mm)}`;
 }
 
-// ====== note導線：config.jsのNOTE_URLSだけ触ればOK ======
 function renderPicksCta(){
   const isPro = document.documentElement.getAttribute("data-theme") === "pro";
 
@@ -499,7 +493,7 @@ $btn.addEventListener("click", () => {
   loadAll(true).catch(()=>{}).finally(()=> $btn.classList.remove("is-loading"));
 });
 
-// ✅ 表示だけのリアルタイム更新（締切に合わせて「次」を進める）
+// ✅ 表示だけのリアルタイム更新
 setInterval(() => {
   if (document.visibilityState !== "visible") return;
   if (!LAST_VENUES_RAW) return;
@@ -512,13 +506,13 @@ document.addEventListener("visibilitychange", () => {
 });
 
 // 5分ごとに最新JSON（保険）
-const AUTO_MS = 5 * 60 * 1000;
 setInterval(() => {
   if (document.visibilityState === "visible") loadAll(true).catch(()=>{});
-}, AUTO_MS);
+}, 5 * 60 * 1000);
 
 // =========================
 // ✅ PRO：手入力（モーダル方式）
+// ✅ iOSの「下に飛ぶ」対策：body fixed ロック
 // =========================
 const LS_THEME = "theme";
 const LS_PRO_OK_DATE = "pro_ok_date";
@@ -530,6 +524,35 @@ const $proInputs = $proInputsWrap ? Array.from($proInputsWrap.querySelectorAll("
 const $proUnlock = document.getElementById("proUnlock");
 const $proCancel = document.getElementById("proCancel");
 const $proClear = document.getElementById("proClear");
+
+let MODAL_SCROLL_Y = 0;
+
+function lockScroll(){
+  MODAL_SCROLL_Y = window.scrollY || 0;
+
+  document.documentElement.classList.add("is-modal-open");
+  document.body.classList.add("is-modal-open");
+
+  // iOS最強の固定（overflow:hidden だけだと負ける）
+  document.body.style.position = "fixed";
+  document.body.style.top = `-${MODAL_SCROLL_Y}px`;
+  document.body.style.left = "0";
+  document.body.style.right = "0";
+  document.body.style.width = "100%";
+}
+
+function unlockScroll(){
+  document.documentElement.classList.remove("is-modal-open");
+  document.body.classList.remove("is-modal-open");
+
+  document.body.style.position = "";
+  document.body.style.top = "";
+  document.body.style.left = "";
+  document.body.style.right = "";
+  document.body.style.width = "";
+
+  window.scrollTo(0, MODAL_SCROLL_Y);
+}
 
 function isProNow(){
   return document.documentElement.getAttribute("data-theme") === "pro";
@@ -553,16 +576,27 @@ function setTheme(isPro){
 
 function openProModal(){
   if (!$proModal) return;
+
+  lockScroll();
+
   $proModal.classList.add("show");
   $proModal.setAttribute("aria-hidden","false");
+
   $proInputs.forEach(i => i.value = "");
-  if ($proInputs[0]) $proInputs[0].focus();
+
+  // ✅ 表示直後のfocusで飛ぶのを避ける（1フレーム遅らせる）
+  requestAnimationFrame(() => {
+    if ($proInputs[0]) $proInputs[0].focus({ preventScroll: true });
+  });
 }
 
 function closeProModal(){
   if (!$proModal) return;
+
   $proModal.classList.remove("show");
   $proModal.setAttribute("aria-hidden","true");
+
+  unlockScroll();
 }
 
 function bootProByStoredDate(){
@@ -593,15 +627,27 @@ function unlockProFlow(){
   openProModal();
 }
 
+// ✅ 背景タップで閉じる（Box以外）
+if ($proModal){
+  $proModal.addEventListener("click", (e) => {
+    if (e.target === $proModal) closeProModal();
+  });
+}
+
+// ✅ ESCで閉じる
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && $proModal?.classList.contains("show")) closeProModal();
+});
+
 // 入力挙動
 $proInputs.forEach((input, idx) => {
   input.addEventListener("input", () => {
     input.value = String(input.value || "").replace(/\D/g,"").slice(0,1);
-    if (input.value && $proInputs[idx+1]) $proInputs[idx+1].focus();
+    if (input.value && $proInputs[idx+1]) $proInputs[idx+1].focus({ preventScroll: true });
   });
   input.addEventListener("keydown", (e) => {
     if (e.key === "Backspace" && !input.value && $proInputs[idx-1]){
-      $proInputs[idx-1].focus();
+      $proInputs[idx-1].focus({ preventScroll: true });
     }
   });
 });
@@ -609,7 +655,7 @@ $proInputs.forEach((input, idx) => {
 if ($proCancel) $proCancel.addEventListener("click", closeProModal);
 if ($proClear) $proClear.addEventListener("click", () => {
   $proInputs.forEach(i => i.value = "");
-  if ($proInputs[0]) $proInputs[0].focus();
+  if ($proInputs[0]) $proInputs[0].focus({ preventScroll: true });
 });
 
 if ($proUnlock) $proUnlock.addEventListener("click", () => {
