@@ -1,4 +1,4 @@
-/* ③ js/app.js（完全置き換え：PRO⇄FREE切替のカードゴースト最終対策） */
+/* ③ js/app.js（完全置き換え：PRO⇄FREE切替のカードゴースト最終対策 + 当日PRO→FREE禁止 + 日付変わったらFREEへ） */
 import { BOT_VENUES_URL, BOT_PICKS_URL, NOTE_URLS } from "./config.js";
 
 // ====== 固定順（公式アプリ順） ======
@@ -466,7 +466,6 @@ function forceRepaintGrid() {
 
   try { document.activeElement?.blur?.(); } catch (e) {}
 
-  // GPU合成を一回だけ作り直す（DOMは触らない）
   $grid.style.willChange = "transform, opacity";
   $grid.style.transform = "translateZ(0)";
   $grid.style.opacity = "0.9999";
@@ -535,7 +534,8 @@ setInterval(() => {
 
 // =========================
 // ✅ PRO：手入力（モーダル方式）
-// ✅ iOSの「下に飛ぶ」対策：body fixed ロック
+// ✅ 仕様：コード入力でPROになった人は「当日PRO→FREEに戻れない」
+// ✅ 日付が変わったら自動でFREEへ戻す（起動時 + 0時監視）
 // =========================
 const LS_THEME = "theme";
 const LS_PRO_OK_DATE = "pro_ok_date";
@@ -580,6 +580,13 @@ function isProNow() {
   return document.documentElement.getAttribute("data-theme") === "pro";
 }
 
+// ✅ 当日ロック（今日コード入力でPROにしたら、当日はFREEに戻せない）
+function isLockedProToday() {
+  const okDate = localStorage.getItem(LS_PRO_OK_DATE);
+  const theme = localStorage.getItem(LS_THEME);
+  return (theme === "pro" && okDate && String(okDate) === todayJSTStr());
+}
+
 function setTheme(isPro) {
   const html = document.documentElement;
 
@@ -588,6 +595,15 @@ function setTheme(isPro) {
     localStorage.setItem(LS_THEME, "pro");
     $btnPro.setAttribute("aria-pressed", "true");
   } else {
+    // ✅ 当日ロック中は戻さない
+    if (isLockedProToday()) {
+      html.setAttribute("data-theme", "pro");
+      localStorage.setItem(LS_THEME, "pro");
+      $btnPro.setAttribute("aria-pressed", "true");
+      alert("コードでPRO解放した日はFREEに戻せません。日付が変わると自動でFREEに戻ります。");
+      return;
+    }
+
     html.removeAttribute("data-theme");
     localStorage.setItem(LS_THEME, "free");
     $btnPro.setAttribute("aria-pressed", "false");
@@ -598,7 +614,7 @@ function setTheme(isPro) {
   setGridHeight(true);
   stabilizeLayout();
 
-  // ✅ repaintは1回だけ（2連打しない）
+  // ✅ repaintは1回だけ
   requestAnimationFrame(() => forceRepaintGrid());
 }
 
@@ -626,6 +642,20 @@ function closeProModal() {
   unlockScroll();
 }
 
+function downgradeToFreeHard() {
+  // ロック解除含めて完全にFREEへ
+  localStorage.removeItem(LS_PRO_OK_DATE);
+  localStorage.removeItem(LS_PRO_KEY);
+  localStorage.setItem(LS_THEME, "free");
+  const html = document.documentElement;
+  html.removeAttribute("data-theme");
+  $btnPro.setAttribute("aria-pressed", "false");
+  renderPicksCta();
+  setGridHeight(true);
+  stabilizeLayout();
+  requestAnimationFrame(() => forceRepaintGrid());
+}
+
 function bootProByStoredDate() {
   const savedTheme = localStorage.getItem(LS_THEME);
   const savedOkDate = localStorage.getItem(LS_PRO_OK_DATE);
@@ -638,18 +668,20 @@ function bootProByStoredDate() {
   if (String(savedOkDate) === todayJSTStr()) {
     setTheme(true);
   } else {
-    localStorage.removeItem(LS_PRO_OK_DATE);
-    localStorage.removeItem(LS_PRO_KEY);
-    setTheme(false);
+    // ✅ 日付変わってたらFREEに戻す
+    downgradeToFreeHard();
   }
 }
 
 function unlockProFlow() {
   if (isProNow()) {
-    // PRO → FREE も許可（必要ならここを return; にすれば「戻れない仕様」になる）
-    setTheme(false);
-    localStorage.removeItem(LS_PRO_OK_DATE);
-    localStorage.removeItem(LS_PRO_KEY);
+    // ✅ 当日ロック中は戻せない
+    if (isLockedProToday()) {
+      alert("コードでPRO解放した日はFREEに戻せません。日付が変わると自動でFREEに戻ります。");
+      return;
+    }
+    // 翌日以降だけ手動で戻せる（基本は自動で落ちる）
+    downgradeToFreeHard();
     return;
   }
   openProModal();
@@ -692,16 +724,34 @@ if ($proUnlock) $proUnlock.addEventListener("click", () => {
     alert("6桁入力してください");
     return;
   }
+
+  // ✅ 今日解放した証拠を保存（当日ロックが効く）
   localStorage.setItem(LS_PRO_KEY, key);
   localStorage.setItem(LS_PRO_OK_DATE, todayJSTStr());
+  localStorage.setItem(LS_THEME, "pro");
+
   closeProModal();
   setTheme(true);
-  alert("PROを解放しました。");
+  alert("PROを解放しました。今日はFREEに戻せません。");
 });
 
 $btnPro.addEventListener("click", () => {
   try { unlockProFlow(); } catch (e) {}
 });
+
+// ✅ 0時監視（ページ開きっぱなしでも日付変わったらFREEへ戻す）
+let _lastDate = todayJSTStr();
+setInterval(() => {
+  const d = todayJSTStr();
+  if (d !== _lastDate) {
+    _lastDate = d;
+    // 当日ロック情報が昨日なら落とす
+    const okDate = localStorage.getItem(LS_PRO_OK_DATE);
+    if (localStorage.getItem(LS_THEME) === "pro" && okDate && String(okDate) !== d) {
+      downgradeToFreeHard();
+    }
+  }
+}, 30 * 1000);
 
 // 起動
 setGridHeight(true);
