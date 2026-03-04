@@ -1,4 +1,5 @@
-import { BOT_VENUES_URL, BOT_PICKS_URL, BOT_PROKEY_URL, NOTE_URLS } from "./config.js";
+/* ===== js/app.js（完全置き換え） ===== */
+import { BOT_VENUES_URL, BOT_PICKS_URL, NOTE_URLS } from "./config.js";
 
 // ====== 固定順（公式アプリ順） ======
 const VENUES = [
@@ -47,6 +48,10 @@ function nowJST(){
   const mm = Number(get("minute"));
   const ss = Number(get("second"));
   return { y, m, d, hh, mm, ss };
+}
+function todayJSTStr(){
+  const n = nowJST();
+  return `${n.y}-${pad2(n.m)}-${pad2(n.d)}`;
 }
 
 function minutesFromHHMM(hhmm){
@@ -511,7 +516,7 @@ async function loadAll(force){
   }
 }
 
-// ✅ 更新ボタン：即fetch（※GitHub Actionsを回すわけじゃない。JSONを取りに行くだけ）
+// ✅ 更新ボタン：即fetch
 $btn.addEventListener("click", () => {
   $btn.classList.add("is-loading");
   loadAll(true).catch(()=>{}).finally(()=> $btn.classList.remove("is-loading"));
@@ -535,9 +540,12 @@ setInterval(() => {
   if (document.visibilityState === "visible") loadAll(true).catch(()=>{});
 }, AUTO_MS);
 
-// ✅ PRO 解放（1日固定）
+// =========================
+// ✅ PRO：手入力のみ（通信しない）
+// =========================
 const LS_THEME = "theme";
 const LS_PRO_OK_DATE = "pro_ok_date";
+const LS_PRO_KEY = "pro_key";
 
 function isProNow(){
   return document.documentElement.getAttribute("data-theme") === "pro";
@@ -559,11 +567,7 @@ function setTheme(isPro){
   stabilizeLayout();
 }
 
-async function getProKey(){
-  return await fetchJSON(BOT_PROKEY_URL, true);
-}
-
-async function bootProByStoredDate(){
+function bootProByStoredDate(){
   const savedTheme = localStorage.getItem(LS_THEME);
   const savedOkDate = localStorage.getItem(LS_PRO_OK_DATE);
 
@@ -572,30 +576,20 @@ async function bootProByStoredDate(){
     return;
   }
 
-  try{
-    const pk = await getProKey();
-    if (String(pk?.date || "") === String(savedOkDate)){
-      setTheme(true);
-    }else{
-      localStorage.removeItem(LS_PRO_OK_DATE);
-      setTheme(false);
-    }
-  }catch(e){
+  if (String(savedOkDate) === todayJSTStr()){
+    setTheme(true);
+  }else{
+    localStorage.removeItem(LS_PRO_OK_DATE);
+    localStorage.removeItem(LS_PRO_KEY);
     setTheme(false);
   }
 }
 
-async function unlockProFlow(){
+function unlockProFlow(){
   if (isProNow()){
     setTheme(false);
-    return;
-  }
-
-  let pk;
-  try{
-    pk = await getProKey();
-  }catch(e){
-    alert("PROキーの取得に失敗しました。通信状況を確認して、もう一度お試しください。");
+    localStorage.removeItem(LS_PRO_OK_DATE);
+    localStorage.removeItem(LS_PRO_KEY);
     return;
   }
 
@@ -608,22 +602,19 @@ async function unlockProFlow(){
     return;
   }
 
-  if (String(pk?.key || "") === key){
-    localStorage.setItem(LS_PRO_OK_DATE, String(pk.date || ""));
-    setTheme(true);
-    alert("PROを解放しました。");
-  }else{
-    alert("キーが違います。");
-  }
+  localStorage.setItem(LS_PRO_KEY, key);
+  localStorage.setItem(LS_PRO_OK_DATE, todayJSTStr());
+  setTheme(true);
+  alert("PROを解放しました。");
 }
 
 $btnPro.addEventListener("click", () => {
-  unlockProFlow().catch(()=>{});
+  try{ unlockProFlow(); }catch(e){}
 });
 
 // 起動
 setGridHeight(true);
-bootProByStoredDate().catch(()=> setTheme(false));
+bootProByStoredDate();
 renderPicksCta();
 loadAll(true).catch(()=>{ stabilizeLayout(); });
 
