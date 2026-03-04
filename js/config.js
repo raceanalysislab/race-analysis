@@ -1,5 +1,4 @@
 // ここだけ触ればOK（noteやbot URLの差し替え用）
-
 export const BOT_VENUES_URL = "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/venues_today.json";
 export const BOT_PICKS_URL  = "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/picks_today.json";
 
