@@ -3,9 +3,13 @@
   height: var(--gridH);
   margin-top: 8px;
 
-  /* ✅ iOS合成バグ抑止：この塊を独立させる */
+  /* ✅ iOS合成バグ抑止：強すぎるcontain(layout)は外す */
   isolation: isolate;
-  contain: layout paint;
+  contain: paint;
+
+  /* ✅ ここで合成レイヤー固定（テーマ切替で崩れにくい） */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 
 /* ===== Grid ===== */
@@ -15,6 +19,10 @@
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(6, 1fr);
   gap: 6px;
+
+  /* ✅ グリッド自体を別レイヤーに固定 */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 
 /* ===== Cards ===== */
@@ -32,12 +40,16 @@
   min-height: 0;
 
   position: relative;
+  text-align: center;
 
-  /* ✅ ゴースト対策：カード単体で塗りを閉じる */
+  /* ✅ iOSゴースト対策（最重要） */
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 
-  text-align: center;
+  /* ✅ 変な“押下残り”を抑える */
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* ✅ 上半分カラー */
@@ -53,6 +65,10 @@
   border-top-left-radius: 6px;
   border-top-right-radius: 6px;
   z-index: 1;
+
+  /* ✅ 擬似要素も合成固定 */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 .card > *{ position: relative; z-index: 2; }
 
@@ -112,9 +128,11 @@ html[data-theme="pro"] .card--off{
   opacity: .72;
 }
 
+/* 押した時だけ浮かす（でもGPU固定済みなので崩れにくい） */
 html[data-theme="pro"] .card:active{
   box-shadow: var(--proCardActiveShadow);
-  transform: translateY(-1px);
+  transform: translateZ(0) translateY(-1px);
+  -webkit-transform: translateZ(0) translateY(-1px);
 }
 
 /* ✅ 会場名 */
