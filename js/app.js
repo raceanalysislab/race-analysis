@@ -1,4 +1,4 @@
-/* ③ js/app.js（完全置き換え：PRO⇄FREE切替時の“カードゴースト”対策入り） */
+/* ③ js/app.js（完全置き換え：PRO⇄FREE切替のカードゴースト最終対策） */
 import { BOT_VENUES_URL, BOT_PICKS_URL, NOTE_URLS } from "./config.js";
 
 // ====== 固定順（公式アプリ順） ======
@@ -456,27 +456,26 @@ function stabilizeLayout() {
 }
 
 // =========================
-// ✅ iOS Safari “カード残像/ゴースト”対策
-//   - innerHTML退避/復元はやらない（固まることがある）
-//   - display:none → reflow → 戻す → renderで上書き が最強
+// ✅ iOS Safari “カード残像/ゴースト”対策（最終版）
+//   - display:none禁止
+//   - render()禁止（ここでDOM再生成しない）
+//   - GPUレイヤーだけリセット
 // =========================
 function forceRepaintGrid() {
   if (!$grid) return;
 
-  // クリック/フォーカスが残ると合成保持されることがある
   try { document.activeElement?.blur?.(); } catch (e) {}
 
-  const y = window.scrollY || 0;
+  // GPU合成を一回だけ作り直す（DOMは触らない）
+  $grid.style.willChange = "transform, opacity";
+  $grid.style.transform = "translateZ(0)";
+  $grid.style.opacity = "0.9999";
 
-  // “見た目”のレイヤーを確実に捨てさせる
-  $grid.style.display = "none";
-  void $grid.offsetHeight; // reflow
-  $grid.style.display = "";
-
-  // 既存データで必ず上書き描画
-  if (LAST_VENUES_RAW) render(LAST_VENUES_RAW);
-
-  window.scrollTo(0, y);
+  requestAnimationFrame(() => {
+    $grid.style.opacity = "";
+    $grid.style.transform = "";
+    $grid.style.willChange = "";
+  });
 }
 
 let isLoading = false;
@@ -599,11 +598,8 @@ function setTheme(isPro) {
   setGridHeight(true);
   stabilizeLayout();
 
-  // ✅ ここが本命：テーマ切替直後の合成バグを2フレームで叩く
-  requestAnimationFrame(() => {
-    forceRepaintGrid();
-    requestAnimationFrame(() => forceRepaintGrid());
-  });
+  // ✅ repaintは1回だけ（2連打しない）
+  requestAnimationFrame(() => forceRepaintGrid());
 }
 
 function openProModal() {
@@ -650,6 +646,7 @@ function bootProByStoredDate() {
 
 function unlockProFlow() {
   if (isProNow()) {
+    // PRO → FREE も許可（必要ならここを return; にすれば「戻れない仕様」になる）
     setTheme(false);
     localStorage.removeItem(LS_PRO_OK_DATE);
     localStorage.removeItem(LS_PRO_KEY);
