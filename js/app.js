@@ -1,4 +1,3 @@
-/* ③ js/app.js（完全置き換え：あなたの現状版 + “下に飛ばない”修正版） */
 import { BOT_VENUES_URL, BOT_PICKS_URL, NOTE_URLS } from "./config.js";
 
 // ====== 固定順（公式アプリ順） ======
@@ -533,7 +532,6 @@ function lockScroll(){
   document.documentElement.classList.add("is-modal-open");
   document.body.classList.add("is-modal-open");
 
-  // iOS最強の固定（overflow:hidden だけだと負ける）
   document.body.style.position = "fixed";
   document.body.style.top = `-${MODAL_SCROLL_Y}px`;
   document.body.style.left = "0";
@@ -584,7 +582,6 @@ function openProModal(){
 
   $proInputs.forEach(i => i.value = "");
 
-  // ✅ 表示直後のfocusで飛ぶのを避ける（1フレーム遅らせる）
   requestAnimationFrame(() => {
     if ($proInputs[0]) $proInputs[0].focus({ preventScroll: true });
   });
@@ -627,19 +624,16 @@ function unlockProFlow(){
   openProModal();
 }
 
-// ✅ 背景タップで閉じる（Box以外）
 if ($proModal){
   $proModal.addEventListener("click", (e) => {
     if (e.target === $proModal) closeProModal();
   });
 }
 
-// ✅ ESCで閉じる
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && $proModal?.classList.contains("show")) closeProModal();
 });
 
-// 入力挙動
 $proInputs.forEach((input, idx) => {
   input.addEventListener("input", () => {
     input.value = String(input.value || "").replace(/\D/g,"").slice(0,1);
@@ -681,7 +675,6 @@ bootProByStoredDate();
 renderPicksCta();
 loadAll(true).catch(()=>{ stabilizeLayout(); });
 
-// iOSで初回ロードがキャッシュ/遅延する時があるので、短時間で1回だけ追いロード
 setTimeout(() => {
   if (document.visibilityState === "visible") loadAll(true).catch(()=>{});
 }, 800);
