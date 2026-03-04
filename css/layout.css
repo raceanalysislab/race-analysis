@@ -1,3 +1,5 @@
+/* ② css/layout.css（完全置き換え or 末尾に追記でもOK：このまま丸ごと置き換え版） */
+
 /* ===== Layout ===== */
 .wrap{
   position: relative;
@@ -203,4 +205,102 @@ html[data-theme="pro"] .picksBtn:active{
   font-weight: 900;
   margin-left: 6px;
   opacity: .75;
+}
+
+/* =========================
+   ✅ PROモーダル（下に飛ばない固定）
+   ========================= */
+.proModal{
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 18px 14px calc(18px + env(safe-area-inset-bottom));
+  background: rgba(2,6,23,.55);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+.proModal.show{ display:flex; }
+
+.proModalBox{
+  width: min(520px, 100%);
+  background: #f6f7fb;
+  border-radius: 22px;
+  box-shadow: 0 22px 80px rgba(0,0,0,.30);
+  padding: 18px 16px 14px;
+  border: 1px solid rgba(15,23,42,.12);
+}
+
+.proTitle{
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: .02em;
+  color: #0f172a;
+  margin: 2px 0 6px;
+}
+
+.proDesc{
+  font-size: 16px;
+  font-weight: 900;
+  line-height: 1.35;
+  color: rgba(15,23,42,.80);
+  margin-bottom: 14px;
+}
+
+.proInputs{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 10px;
+  margin-bottom: 14px;
+}
+
+.proInputs input{
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid rgba(15,23,42,.18);
+  background: #fff;
+  font-size: 18px;
+  font-weight: 900;
+  text-align: center;
+  outline: none;
+}
+
+.proInputs input:focus{
+  border-color: rgba(59,130,246,.55);
+  box-shadow: 0 0 0 4px rgba(59,130,246,.14);
+}
+
+.proUnlock{
+  width: 100%;
+  height: 44px;
+  border-radius: 14px;
+  border: 1px solid rgba(15,23,42,.14);
+  background: #e5e7eb;
+  font-weight: 900;
+  font-size: 16px;
+}
+
+.proBottom{
+  display:flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.proBottom button{
+  flex:1;
+  height: 42px;
+  border-radius: 14px;
+  border: 1px solid rgba(15,23,42,.14);
+  background: #e5e7eb;
+  font-weight: 900;
+  font-size: 16px;
+}
+
+/* ✅ スクロールロック中（JSが付ける） */
+html.is-modal-open,
+body.is-modal-open{
+  overflow: hidden;
 }
