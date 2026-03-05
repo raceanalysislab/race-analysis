@@ -26,66 +26,37 @@
       --accent:#f59e0b;
       --line:rgba(255,255,255,.08);
     }
-    body{
-      margin:0;
-      background:var(--bg);
-      color:#fff;
-    }
+    body{ margin:0; background:var(--bg); color:#fff; }
 
     /* 上部固定 */
     .raceTop{
-      position:sticky;
-      top:0;
-      z-index:50;
+      position:sticky; top:0; z-index:50;
       background:linear-gradient(180deg, rgba(11,18,32,1) 0%, rgba(11,18,32,.96) 60%, rgba(11,18,32,.0) 100%);
       padding:12px 12px 10px;
       backdrop-filter:saturate(120%) blur(6px);
     }
     .raceHead{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
       background:var(--panel);
       border:1px solid var(--line);
       border-radius:14px;
       padding:10px 10px;
     }
-    .raceHead__left{
-      display:flex; flex-direction:column; gap:2px;
-      min-width:0;
-    }
+    .raceHead__left{ display:flex; flex-direction:column; gap:2px; min-width:0; }
     .raceVenue{
-      font-weight:900;
-      letter-spacing:.02em;
-      font-size:16px;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
+      font-weight:900; letter-spacing:.02em; font-size:16px;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
     }
-    .raceMeta{
-      font-size:12px;
-      color:var(--muted);
-      display:flex;
-      gap:10px;
-      align-items:center;
-    }
+    .raceMeta{ font-size:12px; color:var(--muted); display:flex; gap:10px; align-items:center; }
     .raceBtn{
-      appearance:none;
-      border:none;
-      border-radius:12px;
-      padding:10px 12px;
-      font-weight:900;
-      background:rgba(255,255,255,.08);
-      color:#fff;
+      appearance:none; border:none; border-radius:12px; padding:10px 12px;
+      font-weight:900; background:rgba(255,255,255,.08); color:#fff;
     }
 
     /* 1〜12R固定バー */
     .raceTabs{
       margin-top:10px;
-      display:flex;
-      gap:8px;
-      overflow-x:auto;
+      display:flex; gap:8px; overflow-x:auto;
       -webkit-overflow-scrolling:touch;
       padding-bottom:6px;
     }
@@ -100,11 +71,7 @@
       font-weight:900;
       font-size:13px;
     }
-    .tab.is-active{
-      background:var(--accent);
-      color:#000;
-      border-color:transparent;
-    }
+    .tab.is-active{ background:var(--accent); color:#000; border-color:transparent; }
 
     /* 下だけスクロール */
     .raceBody{
@@ -130,14 +97,10 @@
     }
 
     /* 出走表（無料＝選手情報だけ） */
-    .table{
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-    }
+    .table{ display:flex; flex-direction:column; gap:8px; }
     .row{
       display:grid;
-      grid-template-columns: 44px 1fr 88px;
+      grid-template-columns: 44px 1fr 118px;
       gap:10px;
       align-items:center;
       background:var(--card);
@@ -160,18 +123,10 @@
     .waku.w5{ background:#fbbf24; color:#000; }
     .waku.w6{ background:#22c55e; color:#000; }
 
-    .info{
-      min-width:0;
-      display:flex;
-      flex-direction:column;
-      gap:2px;
-    }
+    .info{ min-width:0; display:flex; flex-direction:column; gap:2px; }
     .name{
-      font-weight:1000;
-      font-size:14px;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
+      font-weight:1000; font-size:14px;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
     }
     .sub{
       font-size:12px;
@@ -185,15 +140,11 @@
       display:flex;
       flex-direction:column;
       gap:2px;
+      min-width:0;
     }
-    .st{
-      font-weight:1000;
-      font-size:13px;
-    }
-    .win{
-      font-size:11px;
-      color:rgba(255,255,255,.7);
-    }
+    .st{ font-weight:1000; font-size:13px; }
+    .win{ font-size:11px; color:rgba(255,255,255,.7); }
+    .muted{ color:rgba(255,255,255,.68); }
 
     .note{
       margin-top:10px;
@@ -201,7 +152,6 @@
       font-size:12px;
       line-height:1.6;
     }
-
     .err{
       font-size:12px;
       color:rgba(255,255,255,.72);
@@ -211,11 +161,7 @@
       border-radius:12px;
       background:rgba(255,255,255,.03);
     }
-
-    /* iOS下部余白 */
-    .safeBottom{
-      height:calc(16px + env(safe-area-inset-bottom));
-    }
+    .safeBottom{ height:calc(16px + env(safe-area-inset-bottom)); }
   </style>
 </head>
 
@@ -251,9 +197,11 @@
     // 受け取り
     // ======================
     const qs = new URLSearchParams(location.search);
-    const jcd = qs.get("jcd") || "";               // "01".."24"
-    const venueName = qs.get("name") || "会場";
-    document.getElementById("venueName").textContent = decodeURIComponent(venueName);
+    const jcd = qs.get("jcd") || ""; // 使うけど、ファイルパスは name ベースで読む
+    const venueNameRaw = qs.get("name") || "会場";
+    const venueName = decodeURIComponent(venueNameRaw);
+
+    document.getElementById("venueName").textContent = venueName;
 
     const $tabs = document.getElementById("tabs");
     const $table = document.getElementById("table");
@@ -296,100 +244,69 @@
       }[c]));
     }
 
-    function pad2(n){ return String(n).padStart(2,"0"); }
-
-    // ======================
-    // JST日付（フォルダ名用：YYYYMMDD）
-    // ======================
-    function todayJST_YYYYMMDD(){
-      const parts = new Intl.DateTimeFormat("ja-JP", {
-        timeZone: "Asia/Tokyo",
-        year: "numeric", month: "2-digit", day: "2-digit",
-        hour12: false
-      }).formatToParts(new Date());
-
-      const get = (t) => parts.find(p => p.type === t)?.value;
-      const y = get("year");
-      const m = get("month");
-      const d = get("day");
-      return `${y}${m}${d}`;
-    }
-
-    // ======================
-    // HTML取得（data/html/YYYYMMDD/{jcd}_r{r}.html）
-    // ======================
-    async function fetchText(path){
+    async function fetchJSON(path){
       const url = `${path}?t=${Date.now()}`;
       const res = await fetch(url, { cache:"no-store" });
       if (!res.ok) throw new Error(`failed: ${path}`);
-      return await res.text();
-    }
-
-    // ======================
-    // mbrace HTML を DOM で解析
-    // ======================
-    function parseMbraceHTML(htmlText){
-      const doc = new DOMParser().parseFromString(htmlText, "text/html");
-      const text = doc.body ? (doc.body.innerText || "") : "";
-
-      // 締切（例: 電話投票締切予定１５：２０）
-      // 半角/全角どっちも拾う
-      const mClose = text.match(/締切予定\s*([0-9]{1,2})[:：]([0-9]{2})/);
-      const closeHM = mClose ? `${pad2(mClose[1])}:${mClose[2]}` : null;
-
-      // 選手行：先頭が 1..6 の行を拾う（例: "1 5285若林 麗26東京53B1 3.74 ..."）
-      const lines = text.split("\n").map(s => s.trim()).filter(Boolean);
-      const rows = [];
-
-      for (const ln of lines){
-        // 1 5285若林　麗26東京53B1 3.74 ...
-        // 名前にスペース/全角スペースが混じるので幅広く
-        const m = ln.match(/^([1-6])\s+(\d{4})\s*([^\d\s]{1,6}\s*[^\d\s]{0,6})\s*([0-9]{1,2})\s*([^\d\s]{2,6})\s*([0-9]{2})\s*(A1|A2|B1|B2)\s+([0-9]+\.[0-9]{2})/);
-        if (!m) continue;
-
-        const w = Number(m[1]);
-        const regno = m[2];
-        const name = String(m[3] || "").replace(/\s+/g,"");
-        const age = m[4];
-        const branch = m[5];
-        const weight = m[6];
-        const grade = m[7];
-        const natWin = m[8]; // ここでは参考表示に使える
-
-        rows.push({
-          w,
-          id: regno,
-          name,
-          branch,
-          st: "--",                 // mbrace HTMLのこの部分だけでは平均STが無いことが多いので "--"
-          rate: `勝率 ${natWin}`,    // 右端の表示に流用（無料版は情報だけ）
-        });
-      }
-
-      return { closeHM, rows };
+      return await res.json();
     }
 
     function rowHTML(p){
-      const idText = p.id ? `登録 ${p.id}` : "";
-      const branchText = p.branch ? p.branch : "";
-      const rateText = p.rate ? p.rate : "";
+      const w = Number(p.waku || p.w || p.lane || 0) || 0;
+
+      const idText = (p.regno || p.id) ? `登録 ${p.regno || p.id}` : "";
+      const branchText = p.branch ? String(p.branch) : "";
+      const ageText = (p.age !== undefined && p.age !== null && p.age !== "") ? `年齢 ${p.age}` : "";
+      const gradeText = p.grade ? String(p.grade) : "";
+
+      // 無料で見せる用：勝率/2連率/モーター/ボート
+      const natWin = (p.nat_win !== undefined && p.nat_win !== null) ? `勝率 ${Number(p.nat_win).toFixed(2)}` : "";
+      const nat2 = (p.nat_2 !== undefined && p.nat_2 !== null) ? `2連 ${Number(p.nat_2).toFixed(2)}%` : "";
+      const motor = (p.motor_no !== undefined && p.motor_no !== null) ? `M${p.motor_no} (${p.motor_2 ?? ""}%)` : "";
+      const boat = (p.boat_no !== undefined && p.boat_no !== null) ? `B${p.boat_no} (${p.boat_2 ?? ""}%)` : "";
+
+      const rightTop = (natWin || nat2) ? [natWin, nat2].filter(Boolean).join(" / ") : "—";
+      const rightBtm = [motor, boat].filter(Boolean).join(" / ");
 
       return `
         <div class="row">
-          <div class="waku w${p.w}">${p.w}</div>
+          <div class="waku w${w}">${w || ""}</div>
+
           <div class="info">
-            <div class="name">${escapeHTML(p.name)}</div>
+            <div class="name">${escapeHTML(p.name || "")}</div>
             <div class="sub">
               ${idText ? `<span>${escapeHTML(idText)}</span>` : ``}
               ${branchText ? `<span>${escapeHTML(branchText)}</span>` : ``}
+              ${ageText ? `<span class="muted">${escapeHTML(ageText)}</span>` : ``}
+              ${gradeText ? `<span class="muted">${escapeHTML(gradeText)}</span>` : ``}
             </div>
           </div>
+
           <div class="metric">
-            <div class="st">ST ${escapeHTML(p.st)}</div>
-            <div class="win">${escapeHTML(rateText)}</div>
+            <div class="st">${escapeHTML(rightTop)}</div>
+            <div class="win">${escapeHTML(rightBtm || "")}</div>
           </div>
         </div>
       `;
+    }
+
+    function renderRaceJSON(r, json){
+      $raceNoLabel.textContent = `${r}R`;
+
+      const close = json?.race?.cutoff || json?.cutoff || "";
+      $timeLabel.textContent = "締切: " + toHM(close);
+
+      const boats = Array.isArray(json?.race?.boats) ? json.race.boats : [];
+      if (!boats.length){
+        $table.innerHTML = `<div class="err">出走表が空です。<br>（data/site/races のJSONが想定と違うか、boatsが未生成）</div>`;
+        return;
+      }
+
+      // waku順で並べる
+      boats.sort((a,b) => Number(a.waku||0) - Number(b.waku||0));
+
+      $table.innerHTML = boats.map(rowHTML).join("");
+      requestAnimationFrame(() => setTopHeight());
     }
 
     function syncURLRace(r){
@@ -407,29 +324,20 @@
       $timeLabel.textContent = "締切: --:--";
       $table.innerHTML = `<div class="err">データを読み込み中…</div>`;
 
-      if (!jcd){
-        $table.innerHTML = `<div class="err">jcd が指定されていません。<br>例：race.html?jcd=04&name=平和島</div>`;
+      if (!venueName || venueName === "会場"){
+        $table.innerHTML = `<div class="err">name が指定されていません。<br>例：race.html?jcd=04&name=平和島</div>`;
         return;
       }
 
-      const ymd = todayJST_YYYYMMDD();
-      const path = `./data/html/${ymd}/${jcd}_r${r}.html`;
+      // ✅ build_site_json.py が作った形式に合わせる
+      // data/site/races/びわこ_10R.json
+      const path = `./data/site/races/${encodeURIComponent(venueName)}_${r}R.json`;
 
       try{
-        const htmlText = await fetchText(path);
-        const parsed = parseMbraceHTML(htmlText);
-
-        if (parsed.closeHM) $timeLabel.textContent = "締切: " + toHM(parsed.closeHM);
-
-        if (!parsed.rows.length){
-          $table.innerHTML = `<div class="err">出走表が読み取れませんでした。<br>${escapeHTML(path)}<br>（HTML形式が想定と違う可能性）</div>`;
-          return;
-        }
-
-        $table.innerHTML = parsed.rows.map(rowHTML).join("");
-        requestAnimationFrame(() => setTopHeight());
+        const json = await fetchJSON(path);
+        renderRaceJSON(r, json);
       }catch(e){
-        $table.innerHTML = `<div class="err">HTMLの取得に失敗しました。<br>${escapeHTML(path)}<br>（ファイルが未生成 or パス違い）</div>`;
+        $table.innerHTML = `<div class="err">JSONの取得に失敗しました。<br>${escapeHTML(path)}<br>（ファイル未生成 or パス違い）</div>`;
       }
     }
 
