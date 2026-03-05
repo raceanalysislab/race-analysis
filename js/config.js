@@ -1,12 +1,12 @@
 // ここだけ触ればOK（noteやbot URLの差し替え用）
 
-// ✅ 会場一覧（開催場）: a案（data/site/venues.json を使う）
+// 会場一覧（開催場）
 export const BOT_VENUES_URL =
-  "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/site/venues.json";
+  "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/site/venues.json?t=" + Date.now();
 
 // 厳選レース
 export const BOT_PICKS_URL =
-  "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/picks_today.json";
+  "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/picks_today.json?t=" + Date.now();
 
 // レース詳細JSON（びわこ_1R.json など）
 export const BOT_RACES_BASE_URL =
