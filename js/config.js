@@ -1,18 +1,18 @@
 // ここだけ触ればOK（noteやbot URLの差し替え用）
 
-// 会場一覧（開催場）
-export const BOT_VENUES_URL =
-  "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/venues_today.json";
+// ✅ 会場一覧（開催場）
+// bot依存をやめて「サイト側の固定スケジュール」を参照（開催漏れ・更新遅延対策）
+export const BOT_VENUES_URL = "./data/site/venues.json";
 
-// 厳選レース
+// ✅ 厳選レース（bot）
 export const BOT_PICKS_URL =
   "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/picks_today.json";
 
-// レース詳細JSON（びわこ_1R.json など）
+// ✅ レース詳細JSON（bot）
 export const BOT_RACES_BASE_URL =
   "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/site/races/";
 
-// note導線（毎日更新するならここだけ編集）
+// ✅ note導線（毎日更新するならここだけ編集）
 export const NOTE_URLS = {
   YOSO_ONLY: "https://note.com/wsnndboat7/n/n1fdca8b0a7e3",
   PRO_ONLY:  "https://note.com/wsnndboat7/n/n8d805a4f27bf",
