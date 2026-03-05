@@ -6,17 +6,13 @@
   <meta name="theme-color" content="#0b1220" />
   <title>レース詳細</title>
 
-  <!-- 既存CSS（残してOK） -->
   <link rel="stylesheet" href="./style.css" />
-
-  <!-- 分割CSS（あるならON） -->
   <link rel="stylesheet" href="./css/base.css" />
   <link rel="stylesheet" href="./css/layout.css" />
   <link rel="stylesheet" href="./css/header.css" />
   <link rel="stylesheet" href="./css/grid.css" />
 
   <style>
-    /* race.html専用（最低限） */
     :root{
       --raceTopH: 132px;
       --bg:#0b1220;
@@ -28,7 +24,6 @@
     }
     body{ margin:0; background:var(--bg); color:#fff; }
 
-    /* 上部固定 */
     .raceTop{
       position:sticky; top:0; z-index:50;
       background:linear-gradient(180deg, rgba(11,18,32,1) 0%, rgba(11,18,32,.96) 60%, rgba(11,18,32,.0) 100%);
@@ -53,7 +48,6 @@
       font-weight:900; background:rgba(255,255,255,.08); color:#fff;
     }
 
-    /* 1〜12R固定バー */
     .raceTabs{
       margin-top:10px;
       display:flex; gap:8px; overflow-x:auto;
@@ -73,7 +67,6 @@
     }
     .tab.is-active{ background:var(--accent); color:#000; border-color:transparent; }
 
-    /* 下だけスクロール */
     .raceBody{
       height:calc(100dvh - var(--raceTopH));
       overflow:auto;
@@ -96,7 +89,6 @@
       font-weight:900;
     }
 
-    /* 出走表（無料＝選手情報だけ） */
     .table{ display:flex; flex-direction:column; gap:8px; }
     .row{
       display:grid;
@@ -160,6 +152,7 @@
       border:1px dashed rgba(255,255,255,.18);
       border-radius:12px;
       background:rgba(255,255,255,.03);
+      word-break:break-word;
     }
     .safeBottom{ height:calc(16px + env(safe-area-inset-bottom)); }
   </style>
@@ -197,7 +190,6 @@
     // 受け取り
     // ======================
     const qs = new URLSearchParams(location.search);
-    const jcd = qs.get("jcd") || ""; // 使うけど、ファイルパスは name ベースで読む
     const venueNameRaw = qs.get("name") || "会場";
     const venueName = decodeURIComponent(venueNameRaw);
 
@@ -208,6 +200,10 @@
     const $raceNoLabel = document.getElementById("raceNoLabel");
     const $timeLabel = document.getElementById("timeLabel");
     const $raceTop = document.getElementById("raceTop");
+
+    // ✅ bot repo の race json 直読み（ここだけが正）
+    const BOT_RACES_BASE_URL =
+      "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/site/races/";
 
     function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
 
@@ -244,22 +240,21 @@
       }[c]));
     }
 
-    async function fetchJSON(path){
-      const url = `${path}?t=${Date.now()}`;
-      const res = await fetch(url, { cache:"no-store" });
-      if (!res.ok) throw new Error(`failed: ${path}`);
+    async function fetchJSON(url){
+      const bust = url.includes("?") ? `&t=${Date.now()}` : `?t=${Date.now()}`;
+      const res = await fetch(url + bust, { cache:"no-store" });
+      if (!res.ok) throw new Error(`failed: ${url}`);
       return await res.json();
     }
 
     function rowHTML(p){
-      const w = Number(p.waku || p.w || p.lane || 0) || 0;
+      const w = Number(p.waku ?? 0) || 0;
 
       const idText = (p.regno || p.id) ? `登録 ${p.regno || p.id}` : "";
       const branchText = p.branch ? String(p.branch) : "";
       const ageText = (p.age !== undefined && p.age !== null && p.age !== "") ? `年齢 ${p.age}` : "";
       const gradeText = p.grade ? String(p.grade) : "";
 
-      // 無料で見せる用：勝率/2連率/モーター/ボート
       const natWin = (p.nat_win !== undefined && p.nat_win !== null) ? `勝率 ${Number(p.nat_win).toFixed(2)}` : "";
       const nat2 = (p.nat_2 !== undefined && p.nat_2 !== null) ? `2連 ${Number(p.nat_2).toFixed(2)}%` : "";
       const motor = (p.motor_no !== undefined && p.motor_no !== null) ? `M${p.motor_no} (${p.motor_2 ?? ""}%)` : "";
@@ -298,13 +293,11 @@
 
       const boats = Array.isArray(json?.race?.boats) ? json.race.boats : [];
       if (!boats.length){
-        $table.innerHTML = `<div class="err">出走表が空です。<br>（data/site/races のJSONが想定と違うか、boatsが未生成）</div>`;
+        $table.innerHTML = `<div class="err">出走表が空です。<br>（race.boats が見つかりません）</div>`;
         return;
       }
 
-      // waku順で並べる
       boats.sort((a,b) => Number(a.waku||0) - Number(b.waku||0));
-
       $table.innerHTML = boats.map(rowHTML).join("");
       requestAnimationFrame(() => setTopHeight());
     }
@@ -325,19 +318,19 @@
       $table.innerHTML = `<div class="err">データを読み込み中…</div>`;
 
       if (!venueName || venueName === "会場"){
-        $table.innerHTML = `<div class="err">name が指定されていません。<br>例：race.html?jcd=04&name=平和島</div>`;
+        $table.innerHTML = `<div class="err">name が指定されていません。<br>例：race.html?name=平和島</div>`;
         return;
       }
 
-      // ✅ build_site_json.py が作った形式に合わせる
-      // data/site/races/びわこ_10R.json
-      const path = `./data/site/races/${encodeURIComponent(venueName)}_${r}R.json`;
+      // ✅ ここが重要：ファイル名は「若松_1R.json」みたいに日本語のまま
+      // ✅ encodeURIComponent しない（= GitHub上の実ファイル名と一致させる）
+      const url = `${BOT_RACES_BASE_URL}${venueName}_${r}R.json`;
 
       try{
-        const json = await fetchJSON(path);
+        const json = await fetchJSON(url);
         renderRaceJSON(r, json);
       }catch(e){
-        $table.innerHTML = `<div class="err">JSONの取得に失敗しました。<br>${escapeHTML(path)}<br>（ファイル未生成 or パス違い）</div>`;
+        $table.innerHTML = `<div class="err">JSONの取得に失敗しました。<br>${escapeHTML(url)}<br>（ファイル未生成 or URL違い）</div>`;
       }
     }
 
