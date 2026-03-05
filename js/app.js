@@ -1,4 +1,4 @@
-/* ③ js/app.js（完全置き換え：PRO⇄FREE切替のカードゴースト最終対策 + 当日PRO→FREE禁止 + 日付変わったらFREEへ） */
+/* js/app.js（完全置き換え：data/site/venues.json 対応 + 既存PRO/ゴースト対策維持） */
 import { BOT_VENUES_URL, BOT_PICKS_URL, NOTE_URLS } from "./config.js";
 
 // ====== 固定順（公式アプリ順） ======
@@ -25,12 +25,12 @@ const pad2 = (n) => String(n).padStart(2, "0");
 const toHM = (s) => (typeof s === "string" && String(s).length >= 4) ? String(s).slice(0, 5) : "--:--";
 const normalizeJP = (s) => String(s || "").replace(/\s+/g, "");
 
-// ====== 内部状態（リアルタイム表示更新のため保持） ======
+// ====== 内部状態 ======
 let LAST_VENUES_RAW = null;
 let LAST_MERGED = null;
 let NEXT_FETCH_TIMER = null;
 
-// ====== JSTの"いま"を取る（iOSでもズレにくい） ======
+// ====== JST now ======
 function nowJST() {
   const parts = new Intl.DateTimeFormat("ja-JP", {
     timeZone: "Asia/Tokyo",
@@ -91,7 +91,6 @@ function dayLabel(v) {
 function raceTimeLine(v) {
   if (!v.held) return "-- --";
   if (v.next_r && v.close_at) return `${String(v.next_r)}R ${toHM(String(v.close_at))}`;
-  if (v.race && v.time) return `${String(v.race)} ${toHM(String(v.time))}`;
   if (v.next_display) return String(v.next_display);
   return "-- --";
 }
@@ -106,7 +105,7 @@ function getHourFromTimeStr(t) {
 
 function sessionTone(v) {
   if (!v.held) return "";
-  const src = v.time || v.close_at || "";
+  const src = v.close_at || "";
   const hh = getHourFromTimeStr(src);
   if (hh === null) return "normal";
   if (hh >= 8 && hh < 10) return "morning";
@@ -121,6 +120,7 @@ function sessionIconByTone(tone) {
 }
 
 function venueHref(v) {
+  // 会場タップ先は次のステップで venue.html / race.html を確定する
   return `./race.html?jcd=${encodeURIComponent(v.jcd)}&name=${encodeURIComponent(v.name)}`;
 }
 
@@ -163,9 +163,48 @@ function hmFromISO(iso) {
   return `${m[1]}:${m[2]}`;
 }
 
+// ✅ data/site/venues.json みたいな next_display ("11R 16:05") からHMを抜く
+function hmFromNextDisplay(nextDisplay) {
+  const s = String(nextDisplay || "");
+  const m = s.match(/(\d{1,2})R\s+(\d{2}:\d{2})/);
+  if (!m) return null;
+  return m[2];
+}
+function rnoFromNextDisplay(nextDisplay) {
+  const s = String(nextDisplay || "");
+  const m = s.match(/(\d{1,2})R\s+(\d{2}:\d{2})/);
+  if (!m) return null;
+  const r = Number(m[1]);
+  return Number.isFinite(r) ? r : null;
+}
+
 function adaptVenuesData(raw) {
   const out = { venues: [], updated_at: null, checked_at: null, date: null, raw };
 
+  // ✅ NEW: data/site/venues.json は「配列」で来る
+  if (Array.isArray(raw)) {
+    out.venues = raw.map(v => {
+      const nd = v.next_display || null;
+      const closeHM = hmFromNextDisplay(nd);
+      const nextR = (typeof v.next_race === "number") ? v.next_race : (rnoFromNextDisplay(nd));
+      return {
+        jcd: String(v.jcd || ""),
+        name: String(v.name || ""),
+        held: true,
+        next_r: nextR,
+        close_at: closeHM,
+        next_display: nd,
+        next_cutoff: null,
+        cutoffs: null,
+        grade: v.grade,
+        day: v.day,
+      };
+    });
+    // 更新時刻がなければ表示は「いま」でOK（下で処理）
+    return out;
+  }
+
+  // 旧：boatrace由来の venues_today.json
   if (raw && Array.isArray(raw.venues) && (raw.checked_at || raw.held_places || raw.blocked !== undefined)) {
     out.date = raw.date || null;
     out.checked_at = raw.checked_at || null;
@@ -184,20 +223,17 @@ function adaptVenuesData(raw) {
         next_display: v.next_display || null,
         next_cutoff: v.next_cutoff || null,
         cutoffs: v.cutoffs || null,
-
         grade: v.grade,
         day: v.day,
-        race: v.race,
-        time: v.time,
-        note: v.note,
       };
     });
 
     return out;
   }
 
+  // 互換：{venues:[...]} 形式
   if (raw && Array.isArray(raw.venues)) {
-    out.updated_at = raw.updated_at || (raw.time ? (String(raw.time).split(" ")[1]?.slice(0, 5) || null) : null);
+    out.updated_at = raw.updated_at || null;
     out.venues = raw.venues;
     return out;
   }
@@ -240,6 +276,10 @@ function scheduleFetchAfterNextCutoff() {
   }
   if (!LAST_MERGED) return;
 
+  // cutoffs が無い（data/site/venues.json）場合はスケジュールしない
+  const hasAnyCutoffs = LAST_MERGED.some(v => Array.isArray(v.cutoffs) && v.cutoffs.length);
+  if (!hasAnyCutoffs) return;
+
   const now = nowJST();
   const nowMin = now.hh * 60 + now.mm;
   let bestMin = null;
@@ -274,7 +314,7 @@ function render(rawData) {
   const data = adaptVenuesData(rawData);
 
   const map = new Map();
-  (data.venues || []).forEach(v => map.set(v.jcd, v));
+  (data.venues || []).forEach(v => map.set(String(v.jcd), v));
 
   const merged = VENUES.map((base) => {
     const v = map.get(base.jcd) || {};
@@ -291,8 +331,6 @@ function render(rawData) {
       held,
       grade: v.grade,
       day: v.day,
-      race: v.race,
-      time: v.time,
 
       next_r: live.next_r,
       close_at: live.close_at,
@@ -300,8 +338,6 @@ function render(rawData) {
 
       next_cutoff: v.next_cutoff,
       cutoffs: v.cutoffs,
-
-      note: v.note
     };
 
     mergedV.tone = held ? sessionTone(mergedV) : "";
@@ -309,9 +345,9 @@ function render(rawData) {
   });
 
   LAST_MERGED = merged;
-
   $grid.innerHTML = merged.map(cardHTML).join("");
 
+  // 更新表示
   if (data.checked_at) {
     const hm = hmFromISO(data.checked_at);
     $updatedAt.textContent = hm ? hm : "--:--";
@@ -325,6 +361,7 @@ function render(rawData) {
   scheduleFetchAfterNextCutoff();
 }
 
+// ===== picks =====
 function gradeBadgeClass(g) {
   const ng = normalizeGrade(g);
   if (ng === "SG") return "badge badge--sg";
@@ -333,7 +370,6 @@ function gradeBadgeClass(g) {
   if (ng === "G3") return "badge badge--g3";
   return "badge badge--ippan";
 }
-
 function pickCardHTML(p) {
   const venue = p.venue || (p.jcd ? (VENUES.find(v => v.jcd === p.jcd)?.name || "") : "");
   const race = p.race ? String(p.race) : "";
@@ -358,7 +394,6 @@ function pickCardHTML(p) {
     </a>
   `;
 }
-
 function renderPicks(data, fallbackCheckedAtISO) {
   const picks = Array.isArray(data?.picks) ? data.picks : [];
   $picks.innerHTML = picks.length ? picks.map(pickCardHTML).join("") : "";
@@ -455,15 +490,9 @@ function stabilizeLayout() {
   });
 }
 
-// =========================
-// ✅ iOS Safari “カード残像/ゴースト”対策（最終版）
-//   - display:none禁止
-//   - render()禁止（ここでDOM再生成しない）
-//   - GPUレイヤーだけリセット
-// =========================
+// ✅ iOSゴースト対策
 function forceRepaintGrid() {
   if (!$grid) return;
-
   try { document.activeElement?.blur?.(); } catch (e) {}
 
   $grid.style.willChange = "transform, opacity";
@@ -509,33 +538,31 @@ async function loadAll(force) {
   }
 }
 
-// ✅ 更新ボタン：即fetch
+// ✅ 更新ボタン
 $btn.addEventListener("click", () => {
   $btn.classList.add("is-loading");
   loadAll(true).catch(() => {}).finally(() => $btn.classList.remove("is-loading"));
 });
 
-// ✅ 表示だけのリアルタイム更新
+// ✅ 表示だけのリアルタイム更新（cutoffs無しでも next_display はそのまま）
 setInterval(() => {
   if (document.visibilityState !== "visible") return;
   if (!LAST_VENUES_RAW) return;
   render(LAST_VENUES_RAW);
 }, 20 * 1000);
 
-// 画面復帰で最新JSON
+// 画面復帰で最新
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible") loadAll(true).catch(() => {});
 });
 
-// 5分ごとに最新JSON（保険）
+// 5分ごとに保険
 setInterval(() => {
   if (document.visibilityState === "visible") loadAll(true).catch(() => {});
 }, 5 * 60 * 1000);
 
 // =========================
-// ✅ PRO：手入力（モーダル方式）
-// ✅ 仕様：コード入力でPROになった人は「当日PRO→FREEに戻れない」
-// ✅ 日付が変わったら自動でFREEへ戻す（起動時 + 0時監視）
+// ✅ PRO：手入力（当日PRO→FREE禁止 / 日付変わったらFREE）
 // =========================
 const LS_THEME = "theme";
 const LS_PRO_OK_DATE = "pro_ok_date";
@@ -580,7 +607,6 @@ function isProNow() {
   return document.documentElement.getAttribute("data-theme") === "pro";
 }
 
-// ✅ 当日ロック（今日コード入力でPROにしたら、当日はFREEに戻せない）
 function isLockedProToday() {
   const okDate = localStorage.getItem(LS_PRO_OK_DATE);
   const theme = localStorage.getItem(LS_THEME);
@@ -595,7 +621,6 @@ function setTheme(isPro) {
     localStorage.setItem(LS_THEME, "pro");
     $btnPro.setAttribute("aria-pressed", "true");
   } else {
-    // ✅ 当日ロック中は戻さない
     if (isLockedProToday()) {
       html.setAttribute("data-theme", "pro");
       localStorage.setItem(LS_THEME, "pro");
@@ -603,18 +628,14 @@ function setTheme(isPro) {
       alert("コードでPRO解放した日はFREEに戻せません。日付が変わると自動でFREEに戻ります。");
       return;
     }
-
     html.removeAttribute("data-theme");
     localStorage.setItem(LS_THEME, "free");
     $btnPro.setAttribute("aria-pressed", "false");
   }
 
   renderPicksCta();
-
   setGridHeight(true);
   stabilizeLayout();
-
-  // ✅ repaintは1回だけ
   requestAnimationFrame(() => forceRepaintGrid());
 }
 
@@ -622,7 +643,6 @@ function openProModal() {
   if (!$proModal) return;
 
   lockScroll();
-
   $proModal.classList.add("show");
   $proModal.setAttribute("aria-hidden", "false");
 
@@ -635,15 +655,12 @@ function openProModal() {
 
 function closeProModal() {
   if (!$proModal) return;
-
   $proModal.classList.remove("show");
   $proModal.setAttribute("aria-hidden", "true");
-
   unlockScroll();
 }
 
 function downgradeToFreeHard() {
-  // ロック解除含めて完全にFREEへ
   localStorage.removeItem(LS_PRO_OK_DATE);
   localStorage.removeItem(LS_PRO_KEY);
   localStorage.setItem(LS_THEME, "free");
@@ -668,38 +685,32 @@ function bootProByStoredDate() {
   if (String(savedOkDate) === todayJSTStr()) {
     setTheme(true);
   } else {
-    // ✅ 日付変わってたらFREEに戻す
     downgradeToFreeHard();
   }
 }
 
 function unlockProFlow() {
   if (isProNow()) {
-    // ✅ 当日ロック中は戻せない
     if (isLockedProToday()) {
       alert("コードでPRO解放した日はFREEに戻せません。日付が変わると自動でFREEに戻ります。");
       return;
     }
-    // 翌日以降だけ手動で戻せる（基本は自動で落ちる）
     downgradeToFreeHard();
     return;
   }
   openProModal();
 }
 
-// ✅ 背景タップで閉じる
 if ($proModal) {
   $proModal.addEventListener("click", (e) => {
     if (e.target === $proModal) closeProModal();
   });
 }
 
-// ✅ ESCで閉じる
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && $proModal?.classList.contains("show")) closeProModal();
 });
 
-// 入力挙動
 $proInputs.forEach((input, idx) => {
   input.addEventListener("input", () => {
     input.value = String(input.value || "").replace(/\D/g, "").slice(0, 1);
@@ -725,7 +736,6 @@ if ($proUnlock) $proUnlock.addEventListener("click", () => {
     return;
   }
 
-  // ✅ 今日解放した証拠を保存（当日ロックが効く）
   localStorage.setItem(LS_PRO_KEY, key);
   localStorage.setItem(LS_PRO_OK_DATE, todayJSTStr());
   localStorage.setItem(LS_THEME, "pro");
@@ -739,13 +749,12 @@ $btnPro.addEventListener("click", () => {
   try { unlockProFlow(); } catch (e) {}
 });
 
-// ✅ 0時監視（ページ開きっぱなしでも日付変わったらFREEへ戻す）
+// ✅ 0時監視
 let _lastDate = todayJSTStr();
 setInterval(() => {
   const d = todayJSTStr();
   if (d !== _lastDate) {
     _lastDate = d;
-    // 当日ロック情報が昨日なら落とす
     const okDate = localStorage.getItem(LS_PRO_OK_DATE);
     if (localStorage.getItem(LS_THEME) === "pro" && okDate && String(okDate) !== d) {
       downgradeToFreeHard();
@@ -759,7 +768,6 @@ bootProByStoredDate();
 renderPicksCta();
 loadAll(true).catch(() => { stabilizeLayout(); });
 
-// iOSで初回ロードがキャッシュ/遅延する時があるので、短時間で1回だけ追いロード
 setTimeout(() => {
   if (document.visibilityState === "visible") loadAll(true).catch(() => {});
 }, 800);
