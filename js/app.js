@@ -1,5 +1,9 @@
-/* js/app.js（完全置き換え：data/site/venues.json 対応 + 既存PRO/ゴースト対策維持） */
+/* js/app.js（完全置き換え：開催一覧＝mbrace主導 + JSTリアルタイム次締切 + bot遅延保険 + 既存PRO/ゴースト対策維持） */
 import { BOT_VENUES_URL, BOT_PICKS_URL, NOTE_URLS } from "./config.js";
+
+// ====== ✅ mbrace（出走表）を開催一覧の主ソースにする ======
+// 配置に合わせてここだけ調整してOK
+const MBRACE_RACES_URL = "./data/mbrace_races_today.json";
 
 // ====== 固定順（公式アプリ順） ======
 const VENUES = [
@@ -26,8 +30,8 @@ const toHM = (s) => (typeof s === "string" && String(s).length >= 4) ? String(s)
 const normalizeJP = (s) => String(s || "").replace(/\s+/g, "");
 
 // ====== 内部状態 ======
-let LAST_VENUES_RAW = null;
-let LAST_MERGED = null;
+let LAST_VENUES_RAW = null;   // render() に渡す “開催一覧raw”
+let LAST_MERGED = null;       // UI用にVENUES順へmergeした配列
 let NEXT_FETCH_TIMER = null;
 
 // ====== JST now ======
@@ -120,7 +124,6 @@ function sessionIconByTone(tone) {
 }
 
 function venueHref(v) {
-  // 会場タップ先は次のステップで venue.html / race.html を確定する
   return `./race.html?jcd=${encodeURIComponent(v.jcd)}&name=${encodeURIComponent(v.name)}`;
 }
 
@@ -163,7 +166,6 @@ function hmFromISO(iso) {
   return `${m[1]}:${m[2]}`;
 }
 
-// ✅ data/site/venues.json みたいな next_display ("11R 16:05") からHMを抜く
 function hmFromNextDisplay(nextDisplay) {
   const s = String(nextDisplay || "");
   const m = s.match(/(\d{1,2})R\s+(\d{2}:\d{2})/);
@@ -178,10 +180,116 @@ function rnoFromNextDisplay(nextDisplay) {
   return Number.isFinite(r) ? r : null;
 }
 
+// ====== ✅ mbrace payload → “venues raw（開催一覧raw）”へ ======
+function buildHeldVenuesFromMbrace(mbracePayload) {
+  // 戻りは render() が読める形に寄せる：{ date, checked_at, venues:[...] }
+  const out = {
+    date: null,
+    checked_at: null,
+    venues: [],
+  };
+
+  if (!mbracePayload || !Array.isArray(mbracePayload.venues)) return out;
+
+  const today = todayJSTStr();
+  // mbracePayload.date は “そのファイルの先頭日” だったりするので、会場ごとのdate優先
+  const venues = mbracePayload.venues;
+
+  // 会場名→jcd
+  const nameToJcd = new Map();
+  VENUES.forEach(v => nameToJcd.set(normalizeJP(v.name), v.jcd));
+
+  const list = [];
+
+  for (const v of venues) {
+    const venueName = normalizeJP(v?.venue || "");
+    const jcd = nameToJcd.get(venueName) || "";
+
+    // 今日開催のみ（今日以外は無視）
+    const ymd = String(v?.date || "");
+    if (ymd && ymd !== today) continue;
+
+    // races から cutoffs を作る（締切予定）
+    const races = Array.isArray(v?.races) ? v.races : [];
+    const cutoffs = [];
+
+    for (const r of races) {
+      const rno = Number(r?.rno);
+      const t = String(r?.cutoff || "").trim();
+      const m = t.match(/^(\d{1,2}):(\d{2})$/);
+      if (!Number.isFinite(rno) || rno < 1 || rno > 12) continue;
+      if (!m) continue;
+      const hh = pad2(Number(m[1]));
+      const mm = pad2(Number(m[2]));
+      cutoffs.push({ rno, time: `${hh}:${mm}` });
+    }
+
+    // 競合や欠損があっても会場は出す（消すよりマシ）
+    cutoffs.sort((a, b) => (minutesFromHHMM(a.time) ?? 0) - (minutesFromHHMM(b.time) ?? 0));
+
+    list.push({
+      jcd,
+      name: venueName || (jcd ? (VENUES.find(x => x.jcd === jcd)?.name || "") : ""),
+      held: true,
+      grade: "",   // botで補完
+      day: null,   // botで補完
+      next_r: null,
+      close_at: null,
+      next_display: null,
+      next_cutoff: null,
+      cutoffs,
+    });
+  }
+
+  out.date = today;
+  out.checked_at = new Date().toISOString();
+  out.venues = list;
+  return out;
+}
+
+// ====== ✅ bot venues を “メタ補完”として使う（失敗してもOK） ======
+function mergeMetaFromBot(primaryRaw, botRaw) {
+  // primaryRaw: {venues:[{jcd,...}]}
+  if (!primaryRaw || !Array.isArray(primaryRaw.venues)) return primaryRaw;
+
+  // bot側が array 形式 or {venues:[...]} の両対応（現行互換）
+  const botVenues = Array.isArray(botRaw) ? botRaw : (Array.isArray(botRaw?.venues) ? botRaw.venues : []);
+  if (!botVenues.length) return primaryRaw;
+
+  const botMap = new Map();
+  botVenues.forEach(v => {
+    const jcd = String(v?.jcd || "");
+    if (!jcd) return;
+    botMap.set(jcd, v);
+  });
+
+  const merged = primaryRaw.venues.map(v => {
+    const b = botMap.get(String(v.jcd || "")) || null;
+    if (!b) return v;
+    return {
+      ...v,
+      grade: (v.grade || b.grade || ""),
+      day: (v.day ?? b.day ?? null),
+    };
+  });
+
+  return { ...primaryRaw, venues: merged };
+}
+
+// ====== 既存：venues raw の形を吸収 ======
 function adaptVenuesData(raw) {
   const out = { venues: [], updated_at: null, checked_at: null, date: null, raw };
 
-  // ✅ NEW: data/site/venues.json は「配列」で来る
+  // {date, checked_at, venues:[...]}（今回のmbrace変換はこれ）
+  if (raw && Array.isArray(raw.venues) && raw.checked_at) {
+    out.date = raw.date || null;
+    out.checked_at = raw.checked_at || null;
+    out.updated_at = hmFromISO(raw.checked_at) || null;
+    out.venues = raw.venues;
+    return out;
+  }
+
+  // ✅ data/site/venues.json が「配列」で来る
   if (Array.isArray(raw)) {
     out.venues = raw.map(v => {
       const nd = v.next_display || null;
@@ -195,12 +303,11 @@ function adaptVenuesData(raw) {
         close_at: closeHM,
         next_display: nd,
         next_cutoff: null,
-        cutoffs: null,
+        cutoffs: v.cutoffs || null,
         grade: v.grade,
         day: v.day,
       };
     });
-    // 更新時刻がなければ表示は「いま」でOK（下で処理）
     return out;
   }
 
@@ -241,6 +348,7 @@ function adaptVenuesData(raw) {
   return out;
 }
 
+// ====== “リアルタイム次締切”算出 ======
 function computeLiveNextFromCutoffs(cutoffs) {
   if (!Array.isArray(cutoffs) || cutoffs.length === 0) {
     return { next_r: null, close_at: null, next_display: null };
@@ -253,6 +361,7 @@ function computeLiveNextFromCutoffs(cutoffs) {
     const tMin = minutesFromHHMM(c?.time);
     if (tMin === null) continue;
 
+    // “未来”を次締切にする（同分は締切済み扱いでOK）
     if (tMin > nowMin) {
       const rno = Number(c?.rno);
       const hh = Math.floor(tMin / 60);
@@ -269,6 +378,7 @@ function computeLiveNextFromCutoffs(cutoffs) {
   return { next_r: null, close_at: null, next_display: "終了" };
 }
 
+// ====== 次締切に合わせて “自動で再fetch” ======
 function scheduleFetchAfterNextCutoff() {
   if (NEXT_FETCH_TIMER) {
     clearTimeout(NEXT_FETCH_TIMER);
@@ -276,7 +386,7 @@ function scheduleFetchAfterNextCutoff() {
   }
   if (!LAST_MERGED) return;
 
-  // cutoffs が無い（data/site/venues.json）場合はスケジュールしない
+  // cutoffs が無い会場はスキップ
   const hasAnyCutoffs = LAST_MERGED.some(v => Array.isArray(v.cutoffs) && v.cutoffs.length);
   if (!hasAnyCutoffs) return;
 
@@ -301,6 +411,7 @@ function scheduleFetchAfterNextCutoff() {
 
   if (bestMin === null) return;
 
+  // bestMin の “締切3秒後” に更新
   const diffMin = bestMin - nowMin;
   const diffMs = diffMin * 60 * 1000 - (now.ss * 1000);
   const wait = Math.max(3000, diffMs + 3000);
@@ -320,6 +431,7 @@ function render(rawData) {
     const v = map.get(base.jcd) || {};
     const held = (v.held === true);
 
+    // ✅ mbrace cutoffs があればそれでリアルタイム next を出す
     let live = { next_r: v.next_r, close_at: v.close_at, next_display: v.next_display };
     if (held && Array.isArray(v.cutoffs) && v.cutoffs.length) {
       live = computeLiveNextFromCutoffs(v.cutoffs);
@@ -347,7 +459,7 @@ function render(rawData) {
   LAST_MERGED = merged;
   $grid.innerHTML = merged.map(cardHTML).join("");
 
-  // 更新表示
+  // 更新表示：mbrace主導なので “今” を出してOK（checked_at があればそれ）
   if (data.checked_at) {
     const hm = hmFromISO(data.checked_at);
     $updatedAt.textContent = hm ? hm : "--:--";
@@ -519,20 +631,55 @@ async function fetchJSON(urlOrPath, force) {
 async function loadAll(force) {
   if (isLoading) return;
   isLoading = true;
-  try {
-    const venuesRaw = await fetchJSON(BOT_VENUES_URL, true);
-    LAST_VENUES_RAW = venuesRaw;
-    render(venuesRaw);
 
+  try {
+    // ====== ✅ 1) mbrace（開催一覧の真実） ======
+    let mbracePayload = null;
+    try {
+      mbracePayload = await fetchJSON(MBRACE_RACES_URL, true);
+    } catch (e) {
+      mbracePayload = null;
+    }
+
+    // mbraceが取れない場合だけ、旧bot venues を“暫定開催一覧”として使う（保険）
+    let primaryRaw = null;
+
+    if (mbracePayload) {
+      primaryRaw = buildHeldVenuesFromMbrace(mbracePayload);
+    } else {
+      // 旧：BOT_VENUES_URL（配列でもobjectでもadaptが吸収）
+      try {
+        primaryRaw = await fetchJSON(BOT_VENUES_URL, true);
+      } catch (e) {
+        primaryRaw = { date: todayJSTStr(), checked_at: new Date().toISOString(), venues: [] };
+      }
+    }
+
+    // ====== ✅ 2) bot venues は “grade/day補完” にだけ使う（遅れてもOK） ======
+    try {
+      const botVenuesRaw = await fetchJSON(BOT_VENUES_URL, false);
+      // primaryRaw が mbrace変換（{venues:[...]}) のときだけメタ補完する
+      if (primaryRaw && Array.isArray(primaryRaw.venues)) {
+        primaryRaw = mergeMetaFromBot(primaryRaw, botVenuesRaw);
+      }
+    } catch (e) {
+      // 無視（mbraceだけで一覧は成立）
+    }
+
+    LAST_VENUES_RAW = primaryRaw;
+    render(primaryRaw);
+
+    // ====== ✅ 3) picks ======
     try {
       const picksData = await fetchJSON(BOT_PICKS_URL, force);
-      renderPicks(picksData, venuesRaw?.checked_at || null);
+      renderPicks(picksData, primaryRaw?.checked_at || null);
     } catch (e) {
-      renderPicks({ picks: [] }, venuesRaw?.checked_at || null);
+      renderPicks({ picks: [] }, primaryRaw?.checked_at || null);
     }
 
     renderPicksCta();
     stabilizeLayout();
+
   } finally {
     isLoading = false;
   }
@@ -544,7 +691,7 @@ $btn.addEventListener("click", () => {
   loadAll(true).catch(() => {}).finally(() => $btn.classList.remove("is-loading"));
 });
 
-// ✅ 表示だけのリアルタイム更新（cutoffs無しでも next_display はそのまま）
+// ✅ 表示だけのリアルタイム更新（mbrace cutoffs があるので next は常に追従）
 setInterval(() => {
   if (document.visibilityState !== "visible") return;
   if (!LAST_VENUES_RAW) return;
