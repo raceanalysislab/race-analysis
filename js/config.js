@@ -2,15 +2,15 @@
 
 // 会場一覧（開催場）
 export const BOT_VENUES_URL =
-  "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/site/venues.json?t=" + Date.now();
+  "https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/site/venues.json?t=" + Date.now();
 
 // 厳選レース
 export const BOT_PICKS_URL =
-  "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/picks_today.json?t=" + Date.now();
+  "https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/picks_today.json?t=" + Date.now();
 
 // レース詳細JSON（びわこ_1R.json など）
 export const BOT_RACES_BASE_URL =
-  "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/site/races/";
+  "https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/site/races/";
 
 // note導線（毎日更新するならここだけ編集）
 export const NOTE_URLS = {
