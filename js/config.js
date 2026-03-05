@@ -1,8 +1,6 @@
 // ここだけ触ればOK（noteやbot URLの差し替え用）
 
-// ✅ 会場一覧（開催場）
-// 旧: data/venues_today.json（不安定）
-// 新: data/site/venues.json（mbrace由来の「開催してる会場だけ」）
+// ✅ 会場一覧（開催場）: a案（data/site/venues.json を使う）
 export const BOT_VENUES_URL =
   "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/site/venues.json";
 
