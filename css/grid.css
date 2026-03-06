@@ -2,10 +2,8 @@
 .gridWrap{
   height: var(--gridH);
   margin-top: 10px;
-
   isolation: isolate;
   contain: paint;
-
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
 }
@@ -17,7 +15,6 @@
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(6, 1fr);
   gap: 4px;
-
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
 }
@@ -28,17 +25,13 @@
   flex-direction:column;
   justify-content:space-between;
   text-decoration:none;
-
   border-radius: 9px;
   border: 2px solid var(--border);
   overflow:hidden;
-
   padding: 8px 7px 6px;
   min-height: 0;
-
   position: relative;
   text-align: center;
-
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   transform: translateZ(0);
@@ -55,13 +48,11 @@
   top:0;
   height: 54%;
   pointer-events:none;
-
   opacity: .55;
   background: var(--toneTop, rgba(15,23,42,.12));
   border-top-left-radius: 7px;
   border-top-right-radius: 7px;
   z-index: 1;
-
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
 }
@@ -69,21 +60,6 @@
 .card > *{
   position: relative;
   z-index: 2;
-}
-
-/* ✅ 時間帯アイコン */
-.card__icon{
-  position:absolute;
-  top:7px;
-  right:8px;
-  font-size: 12px;
-  line-height: 1;
-  opacity: .96;
-  pointer-events:none;
-}
-
-.card--off .card__icon{
-  display:none;
 }
 
 /* FREE：tone色 */
@@ -120,7 +96,6 @@ html[data-theme="pro"] .card{
   box-shadow: var(--proCardShadowStd);
 }
 
-/* ✅ PRO：上半分の色だけ強める */
 html[data-theme="pro"] .card::before{
   opacity: .70;
 }
@@ -137,7 +112,6 @@ html[data-theme="pro"] .card--off::before{
   opacity: 0;
 }
 
-/* PRO ON */
 html[data-theme="pro"] .card--on{
   border-color: var(--gold);
   background:
@@ -146,7 +120,6 @@ html[data-theme="pro"] .card--on{
   box-shadow: var(--proCardShadowOn);
 }
 
-/* PRO OFF */
 html[data-theme="pro"] .card--off{
   border-color: rgba(255,224,150,.10);
   background: linear-gradient(#040509, #040509);
@@ -181,7 +154,7 @@ html[data-theme="pro"] .card__name{
     0 0 12px rgba(255,224,150,.10);
 }
 
-/* 2-3行目 */
+/* 下段 */
 .card__line{
   font-weight: 800;
   color: #334155;
@@ -208,111 +181,81 @@ html[data-theme="pro"] .card--off .card__line{
   color: rgba(255,252,244,.06);
 }
 
-/* ✅ 下段の次レース表示 / 終了表示 */
 .card__line--btm{
   font-size: 16px;
   letter-spacing: 0.02em;
 }
 
-/* 互換用 */
 .card__line--mid{
   font-size: 12px;
   letter-spacing: 0.01em;
 }
 
-/* meta */
+/* ✅ meta：左に「☀️ 一般」、右に「◯日目 」 */
 .card__meta{
   display:flex;
   align-items:center;
-  justify-content:center;
-  gap: 10px;
-  margin-top: 8px;   /* ← 縁に当たらないよう少し下げる */
+  justify-content:space-between;
+  gap: 8px;
+  margin-top: 8px;
   margin-bottom: 2px;
-  min-height: 22px;
-  flex-wrap: nowrap;
+  min-height: 20px;
+  width: 100%;
+  padding: 0 2px;
+  box-sizing: border-box;
 }
 
-/* ✅ 日目は絶対1行・上枠と少し隙間 */
-.day{
-  display:inline-block;
-  white-space: nowrap;
-  word-break: keep-all;
-  font-weight: 900;
-  font-size: 12px;
-  line-height: 1;
-  letter-spacing: .02em;
-  color: #334155;
-  flex: 0 0 auto;
-}
-
-html[data-theme="pro"] .day{
-  color: rgba(255,252,244,.82);
-}
-
-.card--off .day{
-  color: #6b7280;
-}
-
-html[data-theme="pro"] .card--off .day{
-  color: rgba(255,252,244,.06);
-}
-
-/* ✅ グレードバッジは1行固定・背景はカード面に同期 */
-.grade{
+.metaLeft{
   display:inline-flex;
   align-items:center;
-  justify-content:center;
-  flex: 0 0 auto;
-  min-width: 50px;
-  height: 20px;
-  padding: 0 10px;
-  border-radius: 999px;
+  gap: 3px;
+  min-width: 0;
+  flex: 0 1 auto;
   white-space: nowrap;
-  word-break: keep-all;
-  overflow: hidden;
+}
 
-  font-weight: 900;
+.metaIcon{
+  display:inline-block;
+  font-size: 15px;
+  line-height: 1;
+}
+
+.gradeText{
+  display:inline-block;
+  font-weight: 500;
   font-size: 11px;
   line-height: 1;
   letter-spacing: .01em;
   color: #334155;
-
-  /* ← いまのカード背景に同期 */
-  background: rgba(148,163,184,.20);
-  border: 1px solid rgba(148,163,184,.18);
-  backdrop-filter: blur(1px);
+  white-space: nowrap;
 }
 
-/* ✅ グレードごとの文字色だけ少し変える（背景は同期） */
-.grade--sg{
-  color: #b91c1c;
-}
-.grade--g1{
-  color: #c2410c;
-}
-.grade--g2{
-  color: #1d4ed8;
-}
-.grade--g3{
-  color: #15803d;
-}
-.grade--ippan{
+.day{
+  display:inline-block;
+  white-space: nowrap;
+  word-break: keep-all;
+  font-weight: 500;
+  font-size: 11px;
+  line-height: 1;
+  letter-spacing: .01em;
   color: #334155;
+  flex: 0 0 auto;
+  text-align: right;
 }
 
-html[data-theme="pro"] .grade{
-  color: rgba(255,252,244,.92);
-  background: rgba(255,255,255,.08);
-  border-color: rgba(255,224,150,.16);
-  box-shadow: 0 1px 0 rgba(0,0,0,.35);
+html[data-theme="pro"] .gradeText,
+html[data-theme="pro"] .day{
+  color: rgba(255,252,244,.82);
 }
 
-html[data-theme="pro"] .grade--sg,
-html[data-theme="pro"] .grade--g1,
-html[data-theme="pro"] .grade--g2,
-html[data-theme="pro"] .grade--g3,
-html[data-theme="pro"] .grade--ippan{
-  color: rgba(255,252,244,.92);
+.card--off .gradeText,
+.card--off .day{
+  color: #6b7280;
+}
+
+html[data-theme="pro"] .card--off .gradeText,
+html[data-theme="pro"] .card--off .day{
+  color: rgba(255,252,244,.06);
 }
 
 .status--soldout{
