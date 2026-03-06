@@ -1,15 +1,10 @@
-/* js/app.js（完全置き換え：開催一覧安定版 / ローカル優先 + CDN保険 + キャッシュ回避） */
+/* js/app.js（完全置き換え：開催一覧 / bot repo の venues.json を直接使用） */
 
 import { BOT_VENUES_URL, BOT_PICKS_URL, NOTE_URLS } from "./config.js";
 
-/* ===== データURL（ローカル優先 / CDN保険） ===== */
-const LOCAL_MBRACE_RACES_URL = "./data/mbrace_races_today.json";
-const CDN_MBRACE_RACES_URL =
-  "https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/mbrace_races_today.json";
-
-/* ここを修正：venues_today.json ではなく data/site/venues.json を使う */
-const LOCAL_VENUES_URL = "./data/site/venues.json";
-const LOCAL_PICKS_URL = "./data/picks_today.json";
+/* ===== データURL ===== */
+const SITE_VENUES_URL = BOT_VENUES_URL;
+const PICKS_URL = BOT_PICKS_URL;
 
 /* ===== 会場順（固定） ===== */
 const VENUES = [
@@ -30,7 +25,6 @@ const $picksUpdatedAt = document.getElementById("picksUpdatedAt");
 const $picksCta = document.getElementById("picksCta");
 
 const pad2 = (n) => String(n).padStart(2, "0");
-
 let isLoading = false;
 
 /* ===== JST ===== */
@@ -57,21 +51,6 @@ function nowJST() {
   };
 }
 
-function todayJSTStr() {
-  const n = nowJST();
-  return `${n.y}-${pad2(n.m)}-${pad2(n.d)}`;
-}
-
-function minutesFromHHMM(hhmm) {
-  const m = String(hhmm || "").match(/^(\d{1,2}):(\d{2})$/);
-  if (!m) return null;
-  const hh = Number(m[1]);
-  const mm = Number(m[2]);
-  if (!Number.isFinite(hh) || !Number.isFinite(mm)) return null;
-  return hh * 60 + mm;
-}
-
-/* ===== 文字正規化 ===== */
 function normalizeVenueName(s) {
   return String(s ?? "")
     .normalize("NFKC")
@@ -100,127 +79,28 @@ async function fetchJSON(url) {
   return await res.json();
 }
 
-async function fetchFirstJSON(urls) {
-  for (const url of urls) {
-    try {
-      const data = await fetchJSON(url);
-      console.log("[fetch ok]", url);
-      return data;
-    } catch (e) {
-      console.warn("[fetch ng]", url, e);
-    }
-  }
-  return null;
-}
-
 /* ===== 会場リンク ===== */
 function venueHref(v) {
   return `./race.html?jcd=${encodeURIComponent(v.jcd)}&name=${encodeURIComponent(v.name)}`;
 }
 
-/* ===== next表示 ===== */
-function computeNextDisplayFromCutoffs(cutoffs) {
-  if (!Array.isArray(cutoffs) || !cutoffs.length) return "-- --";
-
-  const now = nowJST();
-  const nowMin = now.hh * 60 + now.mm;
-
-  const sorted = [...cutoffs]
-    .filter((c) => Number.isFinite(Number(c?.rno)) && minutesFromHHMM(c?.time) !== null)
-    .sort((a, b) => (minutesFromHHMM(a.time) ?? 0) - (minutesFromHHMM(b.time) ?? 0));
-
-  for (const c of sorted) {
-    const tMin = minutesFromHHMM(c.time);
-    if (tMin === null) continue;
-    if (tMin > nowMin) {
-      return `${Number(c.rno)}R ${c.time}`;
-    }
-  }
-
-  return "終了";
-}
-
-/* ===== 会場名 → ベース会場 ===== */
-function findVenueBaseByName(name) {
-  const raw = String(name || "").trim();
-  const norm = normalizeVenueName(raw);
-
-  return (
-    VENUES.find((v) => v.name === raw) ||
-    VENUES.find((v) => normalizeVenueName(v.name) === norm) ||
-    VENUES.find((v) => normalizeVenueName(v.name).includes(norm)) ||
-    VENUES.find((v) => norm.includes(normalizeVenueName(v.name))) ||
-    null
-  );
-}
-
+/* ===== 会場照合 ===== */
 function findVenueBase(v) {
-  const jcd = String(v?.jcd ?? v?.stadium_code ?? v?.place_code ?? "").padStart(2, "0");
+  const jcd = String(v?.jcd || "").padStart(2, "0");
   if (jcd) {
     const byJcd = VENUES.find((x) => x.jcd === jcd);
     if (byJcd) return byJcd;
   }
 
-  return findVenueBaseByName(v?.name || v?.venue || v?.place || "");
+  const name = normalizeVenueName(v?.name || v?.venue || "");
+  return VENUES.find((x) => normalizeVenueName(x.name) === name) || null;
 }
 
-/* ===== mbrace → venues ===== */
-function buildHeldVenuesFromMbrace(mbrace) {
-  const all = Array.isArray(mbrace?.venues) ? mbrace.venues : [];
-  const venues = [];
-
-  for (const v of all) {
-    const base = findVenueBase(v);
-    if (!base) continue;
-
-    const races = Array.isArray(v?.races) ? v.races : [];
-    const cutoffs = [];
-
-    for (const r of races) {
-      const rno = Number(r?.rno);
-      const cutoffRaw = String(r?.cutoff || "").trim();
-      const mm = cutoffRaw.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
-
-      if (!Number.isFinite(rno) || rno < 1 || rno > 12) continue;
-      if (!mm) continue;
-
-      cutoffs.push({
-        rno,
-        time: `${pad2(Number(mm[1]))}:${pad2(Number(mm[2]))}`
-      });
-    }
-
-    venues.push({
-      jcd: base.jcd,
-      name: base.name,
-      held: true,
-      cutoffs,
-      next_display: computeNextDisplayFromCutoffs(cutoffs)
-    });
-  }
-
-  const uniq = [];
-  const seen = new Set();
-
-  for (const v of venues) {
-    if (seen.has(v.jcd)) continue;
-    seen.add(v.jcd);
-    uniq.push(v);
-  }
-
-  return {
-    date: String(mbrace?.date || todayJSTStr()),
-    checked_at: String(mbrace?.parsed_at || new Date().toISOString()),
-    venues: uniq
-  };
-}
-
-/* ===== held venues系 JSON → venues ===== */
-function buildHeldVenuesFromBot(raw) {
+/* ===== bot site/venues.json → venues ===== */
+function buildHeldVenuesFromSite(raw) {
   const arr =
     Array.isArray(raw) ? raw :
     Array.isArray(raw?.venues) ? raw.venues :
-    Array.isArray(raw?.data) ? raw.data :
     [];
 
   const venues = [];
@@ -229,29 +109,11 @@ function buildHeldVenuesFromBot(raw) {
     const base = findVenueBase(v);
     if (!base) continue;
 
-    const explicitHeld =
-      v?.held === true ||
-      v?.is_open === true ||
-      v?.open === true ||
-      v?.status === "held" ||
-      v?.status === "open" ||
-      v?.status === "開催中";
-
-    const explicitOff =
-      v?.held === false ||
-      v?.is_open === false ||
-      v?.open === false ||
-      v?.status === "off" ||
-      v?.status === "closed" ||
-      v?.status === "中止";
-
-    if (explicitOff) continue;
-
     venues.push({
       jcd: base.jcd,
       name: base.name,
-      held: explicitHeld || true,
-      next_display: String(v?.next_display || v?.next || "-- --")
+      held: true,
+      next_display: String(v?.next_display || "-- --")
     });
   }
 
@@ -264,46 +126,7 @@ function buildHeldVenuesFromBot(raw) {
     uniq.push(v);
   }
 
-  return {
-    date: String(raw?.date || todayJSTStr()),
-    checked_at: String(raw?.checked_at || raw?.updated_at || new Date().toISOString()),
-    venues: uniq
-  };
-}
-
-/* ===== mbrace と bot をマージ ===== */
-function mergeVenueSources(mbraceRaw, botRaw) {
-  const map = new Map();
-
-  const botArr = Array.isArray(botRaw?.venues) ? botRaw.venues : [];
-  for (const v of botArr) {
-    const jcd = String(v?.jcd || "");
-    if (!jcd) continue;
-    map.set(jcd, {
-      jcd,
-      name: v.name,
-      held: true,
-      next_display: String(v?.next_display || "-- --")
-    });
-  }
-
-  const mbraceArr = Array.isArray(mbraceRaw?.venues) ? mbraceRaw.venues : [];
-  for (const v of mbraceArr) {
-    const jcd = String(v?.jcd || "");
-    if (!jcd) continue;
-    map.set(jcd, {
-      jcd,
-      name: v.name,
-      held: true,
-      next_display: String(v?.next_display || "-- --")
-    });
-  }
-
-  return {
-    date: todayJSTStr(),
-    checked_at: new Date().toISOString(),
-    venues: Array.from(map.values())
-  };
+  return { venues: uniq };
 }
 
 /* ===== render ===== */
@@ -404,30 +227,15 @@ async function loadAll() {
   isLoading = true;
 
   try {
-    const [mbrace, botVenues, picks] = await Promise.all([
-      fetchFirstJSON([LOCAL_MBRACE_RACES_URL, CDN_MBRACE_RACES_URL]),
-      fetchFirstJSON([LOCAL_VENUES_URL, BOT_VENUES_URL]),
-      fetchFirstJSON([LOCAL_PICKS_URL, BOT_PICKS_URL])
+    const [siteVenues, picks] = await Promise.all([
+      fetchJSON(SITE_VENUES_URL).catch(() => null),
+      fetchJSON(PICKS_URL).catch(() => null)
     ]);
 
-    const mbraceRaw = mbrace ? buildHeldVenuesFromMbrace(mbrace) : { venues: [] };
-    const botRaw = botVenues ? buildHeldVenuesFromBot(botVenues) : { venues: [] };
+    const raw = siteVenues ? buildHeldVenuesFromSite(siteVenues) : { venues: [] };
 
-    let raw = null;
-
-    if (mbraceRaw.venues.length && botRaw.venues.length) {
-      raw = mergeVenueSources(mbraceRaw, botRaw);
-    } else if (mbraceRaw.venues.length) {
-      raw = mbraceRaw;
-    } else if (botRaw.venues.length) {
-      raw = botRaw;
-    } else {
-      raw = { venues: [] };
-    }
-
-    console.log("[mbrace built]", mbraceRaw);
-    console.log("[bot built]", botRaw);
-    console.log("[merged raw]", raw);
+    console.log("[site venues raw]", siteVenues);
+    console.log("[built raw]", raw);
 
     render(raw);
     renderPicks(picks || { picks: [] });
