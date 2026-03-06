@@ -1,7 +1,6 @@
-/* js/app.js（完全置き換え：開催一覧 / day_label / 終了対応 / jsdelivr安定版） */
+/* js/app.js（完全置き換え：開催一覧 / day_label / 終了対応 / 同一オリジン安定版） */
 
-const SITE_VENUES_URL =
-  "https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/site/venues.json";
+const SITE_VENUES_URL = "./data/site/venues.json";
 
 const NOTE_URLS = {
   YOSO_ONLY: "https://note.com/wsnndboat7/n/n1fdca8b0a7e3",
@@ -52,8 +51,15 @@ function normalizeVenueName(s) {
 }
 
 async function fetchJSON(url) {
-  const finalUrl = `${url}?t=${Date.now()}`;
-  const res = await fetch(finalUrl, { cache: "no-store" });
+  const finalUrl = `${url}${url.includes("?") ? "&" : "?"}t=${Date.now()}`;
+  const res = await fetch(finalUrl, {
+    cache: "no-store",
+    headers: {
+      "cache-control": "no-cache",
+      pragma: "no-cache"
+    }
+  });
+
   if (!res.ok) throw new Error(`fetch fail: ${res.status}`);
   return await res.json();
 }
@@ -92,6 +98,7 @@ function buildHeldVenuesFromSite(raw) {
 
   const uniq = [];
   const seen = new Set();
+
   for (const v of venues) {
     if (seen.has(v.jcd)) continue;
     seen.add(v.jcd);
