@@ -63,10 +63,7 @@ function escapeHTML(s) {
 
 async function fetchJSON(url) {
   const finalUrl = `${url}${url.includes("?") ? "&" : "?"}t=${Date.now()}`;
-  const res = await fetch(finalUrl, {
-    cache: "no-store"
-  });
-
+  const res = await fetch(finalUrl, { cache: "no-store" });
   if (!res.ok) throw new Error(`fetch fail: ${res.status}`);
   return await res.json();
 }
@@ -92,14 +89,11 @@ function getVenueArray(raw) {
   return [];
 }
 
-function normalizeGradeClass(label) {
-  const s = String(label || "").trim().toUpperCase();
-
-  if (s === "SG") return "grade grade--sg";
-  if (s === "PG1" || s === "G1") return "grade grade--g1";
-  if (s === "G2") return "grade grade--g2";
-  if (s === "G3") return "grade grade--g3";
-  return "grade grade--ippan";
+function normalizeToneClass(tone) {
+  const s = String(tone || "").trim().toLowerCase();
+  if (s === "morning") return "card--tone-morning";
+  if (s === "night") return "card--tone-night";
+  return "card--tone-normal";
 }
 
 function detectCardToneByTime(nextDisplay) {
@@ -111,24 +105,9 @@ function detectCardToneByTime(nextDisplay) {
   const mm = Number(m[2]);
   const tmin = hh * 60 + mm;
 
-  /* ☀️ 8:30〜9:00 開催1R */
-  if (tmin >= (8 * 60 + 30) && tmin <= (9 * 60 + 0)) {
-    return "morning";
-  }
-
-  /* 🌙 15:00〜15:40 開催1R */
-  if (tmin >= (15 * 60 + 0) && tmin <= (15 * 60 + 40)) {
-    return "night";
-  }
-
+  if (tmin >= 8 * 60 + 30 && tmin <= 9 * 60) return "morning";
+  if (tmin >= 15 * 60 && tmin <= 15 * 60 + 40) return "night";
   return "normal";
-}
-
-function normalizeToneClass(tone) {
-  const s = String(tone || "").trim().toLowerCase();
-  if (s === "morning") return "card--tone-morning";
-  if (s === "night") return "card--tone-night";
-  return "card--tone-normal";
 }
 
 function toneIcon(tone) {
@@ -139,21 +118,16 @@ function toneIcon(tone) {
 }
 
 function getVenueMetaLine(v) {
+  const grade = String(v?.grade_label || "").trim() || "一般";
   const day = String(v?.day_label || "").trim();
-  const grade = String(v?.grade_label || "").trim();
-
-  if (!day && !grade) {
-    return `
-      <div class="card__meta">
-        <span class="day">-- --</span>
-      </div>
-    `;
-  }
 
   return `
     <div class="card__meta">
-      ${day ? `<span class="day">${escapeHTML(day)}</span>` : ``}
-      ${grade ? `<span class="${normalizeGradeClass(grade)}">${escapeHTML(grade)}</span>` : ``}
+      <span class="metaLeft">
+        ${toneIcon(v.card_tone) ? `<span class="metaIcon">${toneIcon(v.card_tone)}</span>` : ``}
+        <span class="gradeText">${escapeHTML(grade)}</span>
+      </span>
+      <span class="day">${day ? `${escapeHTML(day)} ` : "-- -- "}</span>
     </div>
   `;
 }
@@ -177,7 +151,7 @@ function normalizeVenueList(raw) {
       name: base.name,
       next_display: nextDisplay,
       day_label: String(item?.day_label || "").trim(),
-      grade_label: String(item?.grade_label || "").trim(),
+      grade_label: String(item?.grade_label || "").trim() || "一般",
       card_tone: tone
     });
   }
@@ -187,9 +161,7 @@ function normalizeVenueList(raw) {
 
 function render(venueList) {
   const map = new Map();
-  for (const v of venueList) {
-    map.set(String(v.jcd), v);
-  }
+  for (const v of venueList) map.set(String(v.jcd), v);
 
   const merged = VENUES.map((base) => {
     const v = map.get(base.jcd);
@@ -199,7 +171,7 @@ function render(venueList) {
       exists: !!v,
       next_display: v?.next_display || "-- --",
       day_label: v?.day_label || "",
-      grade_label: v?.grade_label || "",
+      grade_label: v?.grade_label || "一般",
       card_tone: v?.card_tone || "normal"
     };
   });
@@ -210,7 +182,8 @@ function render(venueList) {
         <div class="card card--off" aria-disabled="true">
           <div class="card__name">${escapeHTML(v.name)}</div>
           <div class="card__meta">
-            <span class="day">-- --</span>
+            <span class="metaLeft"><span class="gradeText">-- --</span></span>
+            <span class="day">-- -- </span>
           </div>
           <div class="card__line card__line--btm">-- --</div>
         </div>
@@ -219,7 +192,6 @@ function render(venueList) {
 
     return `
       <a class="card card--on ${normalizeToneClass(v.card_tone)}" href="${venueHref(v)}">
-        <div class="card__icon">${toneIcon(v.card_tone)}</div>
         <div class="card__name">${escapeHTML(v.name)}</div>
         ${getVenueMetaLine(v)}
         <div class="card__line card__line--btm">${escapeHTML(v.next_display || "-- --")}</div>
@@ -286,9 +258,7 @@ async function loadAll() {
   }
 }
 
-if ($btn) {
-  $btn.addEventListener("click", loadAll);
-}
+if ($btn) $btn.addEventListener("click", loadAll);
 
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible") loadAll();
