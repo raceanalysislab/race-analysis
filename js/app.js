@@ -26,17 +26,7 @@ const $picksCta = document.getElementById("picksCta");
 
 const pad2 = (n) => String(n).padStart(2, "0");
 
-/* ===== 状態 ===== */
 let isLoading = false;
-
-/* ===== 文字正規化 ===== */
-function normalizeVenueName(s) {
-  return String(s ?? "")
-    .normalize("NFKC")
-    .replace(/\u3000/g, " ")
-    .replace(/\s+/g, "")
-    .trim();
-}
 
 /* ===== JST ===== */
 function nowJST() {
@@ -74,6 +64,15 @@ function minutesFromHHMM(hhmm) {
   const mm = Number(m[2]);
   if (!Number.isFinite(hh) || !Number.isFinite(mm)) return null;
   return hh * 60 + mm;
+}
+
+/* ===== 文字正規化 ===== */
+function normalizeVenueName(s) {
+  return String(s ?? "")
+    .normalize("NFKC")
+    .replace(/\u3000/g, " ")
+    .replace(/\s+/g, "")
+    .trim();
 }
 
 /* ===== fetch ===== */
@@ -131,16 +130,10 @@ function findVenueBaseByName(name) {
 
 /* ===== mbrace → venues ===== */
 function buildHeldVenuesFromMbrace(mbrace) {
-  const today = todayJSTStr();
   const all = Array.isArray(mbrace?.venues) ? mbrace.venues : [];
-
-  /* 今日一致を優先、ゼロなら全件で保険 */
-  let sourceVenues = all.filter((v) => String(v?.date || "") === today);
-  if (!sourceVenues.length) sourceVenues = all;
-
   const venues = [];
 
-  for (const v of sourceVenues) {
+  for (const v of all) {
     const base = findVenueBaseByName(v?.venue || "");
     if (!base) continue;
 
@@ -170,7 +163,6 @@ function buildHeldVenuesFromMbrace(mbrace) {
     });
   }
 
-  /* jcd重複除去 */
   const uniq = [];
   const seen = new Set();
 
@@ -181,7 +173,7 @@ function buildHeldVenuesFromMbrace(mbrace) {
   }
 
   return {
-    date: today,
+    date: todayJSTStr(),
     checked_at: new Date().toISOString(),
     venues: uniq
   };
@@ -209,6 +201,41 @@ function buildHeldVenuesFromBot(raw) {
     date: todayJSTStr(),
     checked_at: new Date().toISOString(),
     venues
+  };
+}
+
+/* ===== mbrace と bot をマージ ===== */
+function mergeVenueSources(mbraceRaw, botRaw) {
+  const map = new Map();
+
+  const botArr = Array.isArray(botRaw?.venues) ? botRaw.venues : [];
+  for (const v of botArr) {
+    const jcd = String(v?.jcd || "");
+    if (!jcd) continue;
+    map.set(jcd, {
+      jcd,
+      name: v.name,
+      held: true,
+      next_display: String(v?.next_display || "-- --")
+    });
+  }
+
+  const mbraceArr = Array.isArray(mbraceRaw?.venues) ? mbraceRaw.venues : [];
+  for (const v of mbraceArr) {
+    const jcd = String(v?.jcd || "");
+    if (!jcd) continue;
+    map.set(jcd, {
+      jcd,
+      name: v.name,
+      held: true,
+      next_display: String(v?.next_display || "-- --")
+    });
+  }
+
+  return {
+    date: todayJSTStr(),
+    checked_at: new Date().toISOString(),
+    venues: Array.from(map.values())
   };
 }
 
@@ -316,22 +343,23 @@ async function loadAll() {
       fetchJSON(BOT_PICKS_URL).catch(() => null)
     ]);
 
+    const mbraceRaw = mbrace ? buildHeldVenuesFromMbrace(mbrace) : { venues: [] };
+    const botRaw = botVenues ? buildHeldVenuesFromBot(botVenues) : { venues: [] };
+
     let raw = null;
 
-    if (mbrace) {
-      raw = buildHeldVenuesFromMbrace(mbrace);
+    if (mbraceRaw.venues.length && botRaw.venues.length) {
+      raw = mergeVenueSources(mbraceRaw, botRaw);
+    } else if (mbraceRaw.venues.length) {
+      raw = mbraceRaw;
+    } else if (botRaw.venues.length) {
+      raw = botRaw;
+    } else {
+      raw = { venues: [] };
     }
 
-    /* mbraceが空なら bot にフォールバック */
-    if ((!raw || !Array.isArray(raw.venues) || !raw.venues.length) && botVenues) {
-      raw = buildHeldVenuesFromBot(botVenues);
-    }
-
-    render(raw || { venues: [] });
-
-    if (picks) renderPicks(picks);
-    else renderPicks({ picks: [] });
-
+    render(raw);
+    renderPicks(picks || { picks: [] });
     renderPicksCta();
   } finally {
     isLoading = false;
