@@ -59,7 +59,9 @@
 .card::before{
   content:"";
   position:absolute;
-  left:0; right:0; top:0;
+  left:0;
+  right:0;
+  top:0;
   height: 54%;
   pointer-events:none;
 
@@ -73,7 +75,11 @@
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
 }
-.card > *{ position: relative; z-index: 2; }
+
+.card > *{
+  position: relative;
+  z-index: 2;
+}
 
 /* FREE：tone色 */
 .card--tone-normal{
@@ -86,10 +92,19 @@
   --toneTop: linear-gradient(180deg, rgba(96,165,250,.65), rgba(96,165,250,0));
 }
 
-.card--off::before{ opacity: 0; }
+.card--off::before{
+  opacity: 0;
+}
 
-.card--on{ background: var(--cardOn); border-color: var(--borderOn); }
-.card--off{ background: var(--cardOff); border-color: var(--border); }
+.card--on{
+  background: var(--cardOn);
+  border-color: var(--borderOn);
+}
+
+.card--off{
+  background: var(--cardOff);
+  border-color: var(--border);
+}
 
 /* PRO base */
 html[data-theme="pro"] .card{
@@ -101,7 +116,9 @@ html[data-theme="pro"] .card{
 }
 
 /* ✅ PRO：上半分の色だけ強める */
-html[data-theme="pro"] .card::before{ opacity: .70; }
+html[data-theme="pro"] .card::before{
+  opacity: .70;
+}
 html[data-theme="pro"] .card--tone-normal{
   --toneTop: linear-gradient(180deg, rgba(255,255,255,.26), rgba(255,255,255,0));
 }
@@ -111,7 +128,9 @@ html[data-theme="pro"] .card--tone-morning{
 html[data-theme="pro"] .card--tone-night{
   --toneTop: linear-gradient(180deg, rgba(120,170,255,.60), rgba(120,170,255,0));
 }
-html[data-theme="pro"] .card--off::before{ opacity: 0; }
+html[data-theme="pro"] .card--off::before{
+  opacity: 0;
+}
 
 /* PRO ON */
 html[data-theme="pro"] .card--on{
@@ -150,6 +169,7 @@ html[data-theme="pro"] .card:active{
   text-overflow: ellipsis;
   margin: 0 auto;
 }
+
 html[data-theme="pro"] .card__name{
   color: rgba(255,252,244,.99);
   text-shadow:
@@ -165,15 +185,21 @@ html[data-theme="pro"] .card__name{
   white-space: nowrap;
   word-break: keep-all;
 }
-html[data-theme="pro"] .card__line{ color: rgba(255,252,244,.82); }
+
+html[data-theme="pro"] .card__line{
+  color: rgba(255,252,244,.82);
+}
 
 .card--off .card__name,
-.card--off .card__line{ color: #6b7280; }
+.card--off .card__line{
+  color: #6b7280;
+}
 
 html[data-theme="pro"] .card--off .card__name{
   color: rgba(255,252,244,.12);
   text-shadow: none;
 }
+
 html[data-theme="pro"] .card--off .card__line{
   color: rgba(255,252,244,.06);
 }
@@ -186,7 +212,7 @@ html[data-theme="pro"] .card--off .card__line{
   margin-bottom: 1px;
 }
 
-/* ✅ 下段の次レース表示 */
+/* ✅ 下段の次レース表示 / 終了表示 */
 .card__line--btm{
   font-size: 16px;
   letter-spacing: 0.02em;
@@ -239,9 +265,18 @@ html[data-theme="pro"] .grade{
   letter-spacing: .02em;
   color: #334155;
 }
-html[data-theme="pro"] .day{ color: rgba(255,252,244,.82); }
-.card--off .day{ color: #6b7280; }
-html[data-theme="pro"] .card--off .day{ color: rgba(255,252,244,.06); }
+
+html[data-theme="pro"] .day{
+  color: rgba(255,252,244,.82);
+}
+
+.card--off .day{
+  color: #6b7280;
+}
+
+html[data-theme="pro"] .card--off .day{
+  color: rgba(255,252,244,.06);
+}
 
 .status--soldout{
   font-weight: 900;
