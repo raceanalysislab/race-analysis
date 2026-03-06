@@ -54,11 +54,7 @@ function normalizeVenueName(s) {
 async function fetchJSON(url) {
   const finalUrl = `${url}${url.includes("?") ? "&" : "?"}t=${Date.now()}`;
   const res = await fetch(finalUrl, {
-    cache: "no-store",
-    headers: {
-      "cache-control": "no-cache",
-      pragma: "no-cache"
-    }
+    cache: "no-store"
   });
 
   if (!res.ok) throw new Error(`fetch fail: ${res.status}`);
@@ -177,45 +173,4 @@ function renderPicksCta() {
 
     <a class="picksBtn picksBtn--set" href="${NOTE_URLS.SET}" target="_blank" rel="noopener noreferrer">
       <div>
-        <div class="picksBtnMain">セット購入（800円）</div>
-        <div class="picksBtnSub">予想 + PRO（お得）</div>
-      </div>
-      <div class="picksBtnArrow">→</div>
-    </a>
-  `;
-}
-
-async function loadAll() {
-  if (isLoading) return;
-  isLoading = true;
-
-  try {
-    const json = await fetchJSON(SITE_VENUES_URL);
-    const venueList = normalizeVenueList(json);
-    render(venueList);
-    renderPicksEmpty();
-    renderPicksCta();
-  } catch (e) {
-    console.error(e);
-    if ($updatedAt) $updatedAt.textContent = "ERR";
-    alert(`開催一覧取得エラー: ${e.message || e}`);
-  } finally {
-    isLoading = false;
-  }
-}
-
-if ($btn) {
-  $btn.addEventListener("click", loadAll);
-}
-
-document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState === "visible") loadAll();
-});
-
-setInterval(() => {
-  if (document.visibilityState === "visible") loadAll();
-}, 5 * 60 * 1000);
-
-renderPicksCta();
-renderPicksEmpty();
-loadAll();
+        <div class="p
