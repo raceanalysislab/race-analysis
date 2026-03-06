@@ -23,12 +23,12 @@
 .card{
   display:flex;
   flex-direction:column;
-  justify-content:flex-start;
+  justify-content:space-between;
   text-decoration:none;
   border-radius: 9px;
   border: 2px solid var(--border);
   overflow:hidden;
-  padding: 10px 8px 8px;
+  padding: 8px 7px 8px;
   min-height: 0;
   position: relative;
   text-align: center;
@@ -134,26 +134,26 @@ html[data-theme="pro"] .card:active{
   -webkit-transform: translateZ(0) translateY(-1px);
 }
 
-/* ✅ 会場名行：中央固定、左に絵文字スペース確保 */
+/* ✅ 会場名行：中央固定、絵文字は左で重ならない */
 .card__nameRow{
   position: relative;
   display:flex;
   align-items:center;
   justify-content:center;
-  min-height: 34px;
+  min-height: 28px;
   width: 100%;
-  padding: 0 6px 0 28px;
+  padding: 0 6px 0 22px;
   box-sizing: border-box;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .card__nameIcon{
   position: absolute;
-  left: 6px;
+  left: 4px;
   top: 50%;
   transform: translateY(-50%);
-  width: 18px;
-  min-width: 18px;
+  width: 16px;
+  min-width: 16px;
   text-align: center;
   font-size: 15px;
   line-height: 1;
@@ -166,7 +166,7 @@ html[data-theme="pro"] .card:active{
 .card__name{
   font-weight: 900;
   font-size: 17px;
-  line-height: 1.02;
+  line-height: 1.04;
   letter-spacing: 0;
   color: var(--text);
   white-space: nowrap;
@@ -183,18 +183,18 @@ html[data-theme="pro"] .card__name{
     0 0 12px rgba(255,224,150,.10);
 }
 
-/* ✅ meta：下半分1段目 */
+/* ✅ meta：左に一般、右に◯日目 */
 .card__meta{
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap: 8px;
-  min-height: 14px;
+  min-height: 12px;
   width: 100%;
   padding: 0 2px;
   box-sizing: border-box;
-  margin-top: 2px;
-  margin-bottom: 8px;
+  margin-top: 0;
+  margin-bottom: 6px;
 }
 
 .metaLeft{
@@ -205,56 +205,30 @@ html[data-theme="pro"] .card__name{
   white-space: nowrap;
 }
 
-/* ✅ 一般 / ◯日目 / 時間を同サイズに寄せる */
 .gradeText,
-.day,
-.card__line--btm{
-  font-size: 12px;
+.day{
+  display:inline-block;
+  font-weight: 700;
+  font-size: 10px;
   line-height: 1;
   letter-spacing: 0;
-  font-weight: 700;
   color: #334155;
-}
-
-.gradeText{
-  display:inline-block;
   white-space: nowrap;
-  text-align: left;
 }
 
 .day{
-  display:inline-block;
-  white-space: nowrap;
-  word-break: keep-all;
   flex: 0 0 auto;
   text-align: right;
 }
 
-.card__line{
-  white-space: nowrap;
-  word-break: keep-all;
-  text-align: center;
-  color: #334155;
-}
-
-.card__line--btm{
-  display:block;
-  text-align:center;
-  margin-top: auto;
-  padding-top: 0;
-  padding-bottom: 0;
-}
-
 html[data-theme="pro"] .gradeText,
-html[data-theme="pro"] .day,
-html[data-theme="pro"] .card__line{
+html[data-theme="pro"] .day{
   color: rgba(255,252,244,.82);
 }
 
 .card--off .card__name,
 .card--off .gradeText,
-.card--off .day,
-.card--off .card__line{
+.card--off .day{
   color: #6b7280;
 }
 
@@ -264,9 +238,47 @@ html[data-theme="pro"] .card--off .card__name{
 }
 
 html[data-theme="pro"] .card--off .gradeText,
-html[data-theme="pro"] .card--off .day,
+html[data-theme="pro"] .card--off .day{
+  color: rgba(255,252,244,.06);
+}
+
+/* ✅ 時間は中央・切れない・下に落としすぎない */
+.card__line{
+  white-space: nowrap;
+  word-break: keep-all;
+  text-align: center;
+  color: #334155;
+}
+
+.card__line--btm{
+  display:block;
+  font-weight: 900;
+  font-size: 13px;
+  line-height: 1;
+  letter-spacing: 0;
+  margin-top: auto;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+html[data-theme="pro"] .card__line{
+  color: rgba(255,252,244,.82);
+}
+
+.card--off .card__line{
+  color: #6b7280;
+}
+
 html[data-theme="pro"] .card--off .card__line{
   color: rgba(255,252,244,.06);
+}
+
+/* ✅ OFFカードのダミーは少し弱く */
+.card--off .card__meta{
+  opacity: .9;
+}
+.card--off .card__line--btm{
+  opacity: .9;
 }
 
 .status--soldout{
