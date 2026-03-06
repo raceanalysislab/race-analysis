@@ -1,4 +1,4 @@
-/* js/app.js（完全置き換え：mbrace主導 + 会場一致修正 + next表示生成 + 並列fetch + キャッシュ回避） */
+/* js/app.js（完全置き換え：開催一覧安定版 / mbrace主導 + bot保険 + キャッシュ回避） */
 
 import { BOT_VENUES_URL, BOT_PICKS_URL, NOTE_URLS } from "./config.js";
 
@@ -23,9 +23,11 @@ const $btn = document.getElementById("btnRefresh");
 const $picks = document.getElementById("picks");
 const $picksUpdatedAt = document.getElementById("picksUpdatedAt");
 const $picksCta = document.getElementById("picksCta");
-const $btnPro = document.getElementById("btnPro");
 
 const pad2 = (n) => String(n).padStart(2, "0");
+
+/* ===== 状態 ===== */
+let isLoading = false;
 
 /* ===== 文字正規化 ===== */
 function normalizeVenueName(s) {
@@ -74,7 +76,7 @@ function minutesFromHHMM(hhmm) {
   return hh * 60 + mm;
 }
 
-/* ===== fetch（完全キャッシュ回避） ===== */
+/* ===== fetch ===== */
 async function fetchJSON(url) {
   const bust = url.includes("?") ? "&" : "?";
   const res = await fetch(url + bust + "t=" + Date.now(), {
@@ -88,7 +90,12 @@ async function fetchJSON(url) {
   return await res.json();
 }
 
-/* ===== cutoffs から next を作る ===== */
+/* ===== 会場リンク ===== */
+function venueHref(v) {
+  return `./race.html?jcd=${encodeURIComponent(v.jcd)}&name=${encodeURIComponent(v.name)}`;
+}
+
+/* ===== next表示 ===== */
 function computeNextDisplayFromCutoffs(cutoffs) {
   if (!Array.isArray(cutoffs) || !cutoffs.length) return "-- --";
 
@@ -110,37 +117,47 @@ function computeNextDisplayFromCutoffs(cutoffs) {
   return "終了";
 }
 
-/* ===== 会場リンク ===== */
-function venueHref(v) {
-  return `./race.html?jcd=${encodeURIComponent(v.jcd)}&name=${encodeURIComponent(v.name)}`;
+/* ===== 会場名 → ベース会場 ===== */
+function findVenueBaseByName(name) {
+  const raw = String(name || "").trim();
+  const norm = normalizeVenueName(raw);
+
+  return (
+    VENUES.find((v) => v.name === raw) ||
+    VENUES.find((v) => normalizeVenueName(v.name) === norm) ||
+    null
+  );
 }
 
-/* ===== mbrace → venues raw ===== */
+/* ===== mbrace → venues ===== */
 function buildHeldVenuesFromMbrace(mbrace) {
   const today = todayJSTStr();
+  const all = Array.isArray(mbrace?.venues) ? mbrace.venues : [];
+
+  /* 今日一致を優先、ゼロなら全件で保険 */
+  let sourceVenues = all.filter((v) => String(v?.date || "") === today);
+  if (!sourceVenues.length) sourceVenues = all;
+
   const venues = [];
 
-  for (const v of (mbrace?.venues || [])) {
-    const vDate = String(v?.date || "");
-    if (vDate && vDate !== today) continue;
-
-    const rawName = String(v?.venue || "");
-    const normalized = normalizeVenueName(rawName);
-
-    /* ✅ mapではなく直接findで一致させる */
-    const base = VENUES.find((x) => normalizeVenueName(x.name) === normalized);
+  for (const v of sourceVenues) {
+    const base = findVenueBaseByName(v?.venue || "");
     if (!base) continue;
 
+    const races = Array.isArray(v?.races) ? v.races : [];
     const cutoffs = [];
-    for (const r of (v?.races || [])) {
+
+    for (const r of races) {
       const rno = Number(r?.rno);
-      const t = String(r?.cutoff || "").trim();
-      const m = t.match(/^(\d{1,2}):(\d{2})$/);
+      const cutoff = String(r?.cutoff || "").trim();
+      const mm = cutoff.match(/^(\d{1,2}):(\d{2})$/);
+
       if (!Number.isFinite(rno) || rno < 1 || rno > 12) continue;
-      if (!m) continue;
+      if (!mm) continue;
+
       cutoffs.push({
         rno,
-        time: `${pad2(Number(m[1]))}:${pad2(Number(m[2]))}`
+        time: `${pad2(Number(mm[1]))}:${pad2(Number(mm[2]))}`
       });
     }
 
@@ -153,48 +170,58 @@ function buildHeldVenuesFromMbrace(mbrace) {
     });
   }
 
+  /* jcd重複除去 */
+  const uniq = [];
+  const seen = new Set();
+
+  for (const v of venues) {
+    if (seen.has(v.jcd)) continue;
+    seen.add(v.jcd);
+    uniq.push(v);
+  }
+
   return {
     date: today,
+    checked_at: new Date().toISOString(),
+    venues: uniq
+  };
+}
+
+/* ===== bot venues → venues ===== */
+function buildHeldVenuesFromBot(raw) {
+  const arr = Array.isArray(raw) ? raw : (Array.isArray(raw?.venues) ? raw.venues : []);
+  const venues = [];
+
+  for (const v of arr) {
+    const jcd = String(v?.jcd || "");
+    const base = VENUES.find((x) => x.jcd === jcd);
+    if (!base) continue;
+
+    venues.push({
+      jcd,
+      name: base.name,
+      held: true,
+      next_display: String(v?.next_display || "-- --")
+    });
+  }
+
+  return {
+    date: todayJSTStr(),
     checked_at: new Date().toISOString(),
     venues
   };
 }
 
-/* ===== venues配列 → map ===== */
-function toVenueMap(raw) {
-  const map = new Map();
-
-  /* botの data/site/venues.json は配列 */
-  if (Array.isArray(raw)) {
-    for (const v of raw) {
-      const jcd = String(v?.jcd || "");
-      if (!jcd) continue;
-      map.set(jcd, {
-        jcd,
-        name: String(v?.name || ""),
-        held: true,
-        next_display: String(v?.next_display || "-- --")
-      });
-    }
-    return map;
-  }
-
-  /* { venues:[...] } */
-  const arr = raw?.venues;
-  if (Array.isArray(arr)) {
-    for (const v of arr) {
-      const jcd = String(v?.jcd || "");
-      if (!jcd) continue;
-      map.set(jcd, v);
-    }
-  }
-
-  return map;
-}
-
 /* ===== render ===== */
 function render(raw) {
-  const map = toVenueMap(raw);
+  const arr = Array.isArray(raw?.venues) ? raw.venues : [];
+  const map = new Map();
+
+  for (const v of arr) {
+    const jcd = String(v?.jcd || "");
+    if (!jcd) continue;
+    map.set(jcd, v);
+  }
 
   const merged = VENUES.map((base) => {
     const v = map.get(base.jcd);
@@ -204,25 +231,27 @@ function render(raw) {
       jcd: base.jcd,
       name: base.name,
       held,
-      next_display: held ? (v?.next_display || "-- --") : "-- --"
+      next_display: held ? String(v?.next_display || "-- --") : "-- --"
     };
   });
 
   $grid.innerHTML = merged.map((v) => {
-    if (v.held) {
+    if (!v.held) {
       return `
-        <a class="card card--on" href="${venueHref(v)}">
+        <div class="card card--off" aria-disabled="true">
           <div class="card__name">${v.name}</div>
-          <div class="card__line">${v.next_display}</div>
-        </a>
+          <div class="card__line">-- --</div>
+          <div class="card__line">-- --</div>
+        </div>
       `;
     }
 
     return `
-      <div class="card card--off" aria-disabled="true">
+      <a class="card card--on" href="${venueHref(v)}">
         <div class="card__name">${v.name}</div>
-        <div class="card__line">-- --</div>
-      </div>
+        <div class="card__line">開催中</div>
+        <div class="card__line">${v.next_display}</div>
+      </a>
     `;
   }).join("");
 
@@ -235,9 +264,9 @@ function renderPicks(data) {
   const picks = Array.isArray(data?.picks) ? data.picks : [];
 
   $picks.innerHTML = picks.map((p) => `
-    <div class="pickCard">
+    <a class="pickCard" href="${p.url || "#"}" ${p.url ? "" : 'aria-disabled="true" onclick="return false;"'}>
       <div>${p.venue || ""} ${p.race || ""}</div>
-    </div>
+    </a>
   `).join("");
 
   const now = nowJST();
@@ -276,9 +305,7 @@ function renderPicksCta() {
 }
 
 /* ===== load ===== */
-let isLoading = false;
-
-async function loadAll(force = false) {
+async function loadAll() {
   if (isLoading) return;
   isLoading = true;
 
@@ -293,13 +320,11 @@ async function loadAll(force = false) {
 
     if (mbrace) {
       raw = buildHeldVenuesFromMbrace(mbrace);
+    }
 
-      /* mbraceが0件なら bot venues にフォールバック */
-      if (!raw?.venues?.length && botVenues) {
-        raw = botVenues;
-      }
-    } else {
-      raw = botVenues;
+    /* mbraceが空なら bot にフォールバック */
+    if ((!raw || !Array.isArray(raw.venues) || !raw.venues.length) && botVenues) {
+      raw = buildHeldVenuesFromBot(botVenues);
     }
 
     render(raw || { venues: [] });
@@ -315,16 +340,18 @@ async function loadAll(force = false) {
 
 /* ===== refresh ===== */
 if ($btn) {
-  $btn.addEventListener("click", () => loadAll(true));
+  $btn.addEventListener("click", () => loadAll());
 }
 
 /* ===== auto refresh ===== */
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") loadAll();
+});
+
 setInterval(() => {
-  if (document.visibilityState === "visible") {
-    loadAll(false);
-  }
+  if (document.visibilityState === "visible") loadAll();
 }, 5 * 60 * 1000);
 
 /* ===== boot ===== */
 renderPicksCta();
-loadAll(true);
+loadAll();
