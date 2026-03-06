@@ -1,4 +1,4 @@
-/* js/app.js（完全置き換え：開催一覧 / day_label / 発売終了対応 / 配列対応版） */
+/* js/app.js（完全置き換え：開催一覧 / day_label / 発売終了対応 / 配列対応版 / raw直読み版） */
 
 const SITE_VENUES_URL =
   "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/site/venues.json";
@@ -52,8 +52,15 @@ function normalizeVenueName(s) {
 }
 
 async function fetchJSON(url) {
-  const finalUrl = `${url}?t=${Date.now()}`;
-  const res = await fetch(finalUrl, { cache: "no-store" });
+  const finalUrl = `${url}${url.includes("?") ? "&" : "?"}t=${Date.now()}`;
+  const res = await fetch(finalUrl, {
+    cache: "no-store",
+    headers: {
+      "cache-control": "no-cache",
+      pragma: "no-cache"
+    }
+  });
+
   if (!res.ok) throw new Error(`fetch fail: ${res.status}`);
   return await res.json();
 }
@@ -93,7 +100,7 @@ function normalizeVenueList(raw) {
     out.push({
       jcd: base.jcd,
       name: base.name,
-      next_display: String(item?.next_display || "-- --"),
+      next_display: String(item?.next_display || "-- --").trim() || "-- --",
       day_label: String(item?.day_label || "").trim()
     });
   }
