@@ -1,7 +1,13 @@
-/* js/app.js（完全置き換え：開催一覧 / 中央完全固定版） */
+/* js/app.js（完全置き換え：開催一覧 / 中央揃え完成版 / 一般表記 / tone対応 / raw直読み版） */
 
 const SITE_VENUES_URL =
   "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/site/venues.json";
+
+const NOTE_URLS = {
+  YOSO_ONLY: "https://note.com/wsnndboat7/n/n1fdca8b0a7e3",
+  PRO_ONLY: "https://note.com/wsnndboat7/n/n8d805a4f27bf",
+  SET: "https://note.com/wsnndboat7/n/n6fcdb2a9db4f",
+};
 
 const VENUES = [
   { jcd: "01", name: "桐生" }, { jcd: "02", name: "戸田" }, { jcd: "03", name: "江戸川" }, { jcd: "04", name: "平和島" },
@@ -14,145 +20,266 @@ const VENUES = [
 
 const $grid = document.getElementById("grid");
 const $updatedAt = document.getElementById("updatedAt");
+const $btn = document.getElementById("btnRefresh");
+const $picks = document.getElementById("picks");
+const $picksUpdatedAt = document.getElementById("picksUpdatedAt");
+const $picksCta = document.getElementById("picksCta");
 
 const pad2 = (n) => String(n).padStart(2, "0");
+let isLoading = false;
 
-function nowJST(){
-  const d = new Date();
-  return {hh:d.getHours(),mm:d.getMinutes()}
+function nowJST() {
+  const parts = new Intl.DateTimeFormat("ja-JP", {
+    timeZone: "Asia/Tokyo",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false
+  }).formatToParts(new Date());
+
+  const get = (t) => parts.find((p) => p.type === t)?.value;
+  return {
+    hh: Number(get("hour")),
+    mm: Number(get("minute"))
+  };
 }
 
-function escapeHTML(s){
-  return String(s ?? "").replace(/[&<>"']/g,(c)=>({
-    "&":"&amp;",
-    "<":"&lt;",
-    ">":"&gt;",
-    '"':"&quot;",
-    "'":"&#39;"
+function normalizeVenueName(s) {
+  return String(s ?? "")
+    .normalize("NFKC")
+    .replace(/\u3000/g, " ")
+    .replace(/\s+/g, "")
+    .trim();
+}
+
+function escapeHTML(s) {
+  return String(s ?? "").replace(/[&<>"']/g, (c) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
   }[c]));
 }
 
-function toneIcon(tone){
-  if(tone==="morning") return "☀️";
-  if(tone==="night") return "🌙";
-  return "";
+async function fetchJSON(url) {
+  const finalUrl = `${url}${url.includes("?") ? "&" : "?"}t=${Date.now()}`;
+  const res = await fetch(finalUrl, { cache: "no-store" });
+  if (!res.ok) throw new Error(`fetch fail: ${res.status}`);
+  return await res.json();
 }
 
-function detectTone(time){
-  const m=time.match(/(\d+):(\d+)/);
-  if(!m) return "normal";
-
-  const t=Number(m[1])*60+Number(m[2]);
-
-  if(t>=510 && t<=540) return "morning";
-  if(t>=900 && t<=940) return "night";
-
-  return "normal";
-}
-
-async function fetchJSON(url){
-  const r=await fetch(url+"?t="+Date.now(),{cache:"no-store"});
-  if(!r.ok) throw new Error(r.status);
-  return r.json();
-}
-
-function venueHref(v){
+function venueHref(v) {
   return `./race.html?jcd=${encodeURIComponent(v.jcd)}&name=${encodeURIComponent(v.name)}`;
 }
 
-function normalizeList(raw){
+function findVenueBase(v) {
+  const jcd = String(v?.jcd || "").padStart(2, "0");
+  if (jcd) {
+    const byJcd = VENUES.find((x) => x.jcd === jcd);
+    if (byJcd) return byJcd;
+  }
 
-  const src = Array.isArray(raw)?raw:(raw?.venues||[]);
-  const map = new Map();
+  const name = normalizeVenueName(v?.name || v?.venue || "");
+  return VENUES.find((x) => normalizeVenueName(x.name) === name) || null;
+}
 
-  src.forEach(v=>{
-    const jcd=String(v.jcd).padStart(2,"0");
+function getVenueArray(raw) {
+  if (Array.isArray(raw)) return raw;
+  if (Array.isArray(raw?.venues)) return raw.venues;
+  return [];
+}
 
-    if(!VENUES.find(x=>x.jcd===jcd)) return;
+function normalizeToneClass(tone) {
+  const s = String(tone || "").trim().toLowerCase();
+  if (s === "morning") return "card--tone-morning";
+  if (s === "night") return "card--tone-night";
+  return "card--tone-normal";
+}
 
-    map.set(jcd,{
-      jcd,
-      next_display:v.next_display || "-- --",
-      grade_label:(v.grade_label||"一般").replace("戦",""),
-      day_label:v.day_label || ""
+function detectCardToneByTime(nextDisplay) {
+  const s = String(nextDisplay || "");
+  const m = s.match(/(\d{1,2}):(\d{2})/);
+  if (!m) return "normal";
+
+  const hh = Number(m[1]);
+  const mm = Number(m[2]);
+  const tmin = hh * 60 + mm;
+
+  if (tmin >= 8 * 60 + 30 && tmin <= 9 * 60) return "morning";
+  if (tmin >= 15 * 60 && tmin <= 15 * 60 + 40) return "night";
+  return "normal";
+}
+
+function toneIcon(tone) {
+  const s = String(tone || "").trim().toLowerCase();
+  if (s === "morning") return "☀️";
+  if (s === "night") return "🌙";
+  return "";
+}
+
+function normalizeGradeLabel(label) {
+  const s = String(label || "").trim();
+  if (!s) return "一般";
+  if (s === "一般戦") return "一般";
+  return s;
+}
+
+function getVenueMetaLine(v) {
+  const grade = normalizeGradeLabel(v?.grade_label);
+  const day = String(v?.day_label || "").trim();
+
+  return `
+    <div class="card__meta">
+      <span class="metaLeft">
+        <span class="gradeText">${escapeHTML(grade)}</span>
+      </span>
+      <span class="day">${day ? `${escapeHTML(day)} ` : "-- -- "}</span>
+    </div>
+  `;
+}
+
+function normalizeVenueList(raw) {
+  const src = getVenueArray(raw);
+  const out = [];
+  const seen = new Set();
+
+  for (const item of src) {
+    const base = findVenueBase(item);
+    if (!base) continue;
+    if (seen.has(base.jcd)) continue;
+    seen.add(base.jcd);
+
+    const nextDisplay = String(item?.next_display || "-- --").trim() || "-- --";
+    const tone = detectCardToneByTime(nextDisplay);
+
+    out.push({
+      jcd: base.jcd,
+      name: base.name,
+      next_display: nextDisplay,
+      day_label: String(item?.day_label || "").trim(),
+      grade_label: normalizeGradeLabel(item?.grade_label),
+      card_tone: tone
     });
+  }
+
+  return out;
+}
+
+function render(venueList) {
+  const map = new Map();
+  for (const v of venueList) map.set(String(v.jcd), v);
+
+  const merged = VENUES.map((base) => {
+    const v = map.get(base.jcd);
+    return {
+      jcd: base.jcd,
+      name: base.name,
+      exists: !!v,
+      next_display: v?.next_display || "-- --",
+      day_label: v?.day_label || "",
+      grade_label: v?.grade_label || "一般",
+      card_tone: v?.card_tone || "normal"
+    };
   });
 
-  return map;
-}
-
-function render(map){
-
-  $grid.innerHTML = VENUES.map(base=>{
-
-    const v = map.get(base.jcd);
-
-    if(!v){
+  $grid.innerHTML = merged.map((v) => {
+    if (!v.exists) {
       return `
-<div class="card card--off">
-
-  <div class="card__nameRow">
-    <span class="card__nameIcon"></span>
-    <div class="card__name">${base.name}</div>
-    <span class="card__nameIcon"></span>
-  </div>
-
-  <div class="card__meta">
-    <span>--</span>
-    <span>--</span>
-  </div>
-
-  <div class="card__line card__line--btm">--</div>
-
-</div>`;
+        <div class="card card--off" aria-disabled="true">
+          <div class="card__nameRow">
+            <span class="card__nameIcon card__nameIcon--empty"></span>
+            <div class="card__name">${escapeHTML(v.name)}</div>
+          </div>
+          <div class="card__meta">
+            <span class="metaLeft"><span class="gradeText">-- --</span></span>
+            <span class="day">-- -- </span>
+          </div>
+          <div class="card__line card__line--btm">-- --</div>
+        </div>
+      `;
     }
 
-    const tone = detectTone(v.next_display);
-
     return `
-<a class="card card--on card--tone-${tone}" href="${venueHref(base)}">
-
-  <div class="card__nameRow">
-
-    <span class="card__nameIcon">
-      ${toneIcon(tone)}
-    </span>
-
-    <div class="card__name">
-      ${escapeHTML(base.name)}
-    </div>
-
-    <span class="card__nameIcon"></span>
-
-  </div>
-
-  <div class="card__meta">
-    <span>${escapeHTML(v.grade_label)}</span>
-    <span>${escapeHTML(v.day_label)}</span>
-  </div>
-
-  <div class="card__line card__line--btm">
-    ${escapeHTML(v.next_display)}
-  </div>
-
-</a>
-`;
-
+      <a class="card card--on ${normalizeToneClass(v.card_tone)}" href="${venueHref(v)}">
+        <div class="card__nameRow">
+          <span class="card__nameIcon">${toneIcon(v.card_tone)}</span>
+          <div class="card__name">${escapeHTML(v.name)}</div>
+        </div>
+        ${getVenueMetaLine(v)}
+        <div class="card__line card__line--btm">${escapeHTML(v.next_display || "-- --")}</div>
+      </a>
+    `;
   }).join("");
 
-  const n=nowJST();
-  $updatedAt.textContent=`${pad2(n.hh)}:${pad2(n.mm)}`;
+  const now = nowJST();
+  $updatedAt.textContent = `${pad2(now.hh)}:${pad2(now.mm)}`;
 }
 
-async function load(){
-
-  const json = await fetchJSON(SITE_VENUES_URL);
-
-  const map = normalizeList(json);
-
-  render(map);
-
+function renderPicksEmpty() {
+  if ($picks) $picks.innerHTML = "";
+  const now = nowJST();
+  if ($picksUpdatedAt) $picksUpdatedAt.textContent = `${pad2(now.hh)}:${pad2(now.mm)}`;
 }
 
-load();
-setInterval(load,300000);
+function renderPicksCta() {
+  if (!$picksCta) return;
+
+  $picksCta.innerHTML = `
+    <a class="picksBtn" href="${NOTE_URLS.YOSO_ONLY}" target="_blank" rel="noopener noreferrer">
+      <div>
+        <div class="picksBtnMain">予想だけ購入（500円）</div>
+        <div class="picksBtnSub">noteで確認</div>
+      </div>
+      <div class="picksBtnArrow">→</div>
+    </a>
+
+    <a class="picksBtn" href="${NOTE_URLS.PRO_ONLY}" target="_blank" rel="noopener noreferrer">
+      <div>
+        <div class="picksBtnMain">PROだけ購入（500円）</div>
+        <div class="picksBtnSub">キー配布方式（購読者＝PRO扱い）</div>
+      </div>
+      <div class="picksBtnArrow">→</div>
+    </a>
+
+    <a class="picksBtn picksBtn--set" href="${NOTE_URLS.SET}" target="_blank" rel="noopener noreferrer">
+      <div>
+        <div class="picksBtnMain">セット購入（800円）</div>
+        <div class="picksBtnSub">予想 + PRO（お得）</div>
+      </div>
+      <div class="picksBtnArrow">→</div>
+    </a>
+  `;
+}
+
+async function loadAll() {
+  if (isLoading) return;
+  isLoading = true;
+
+  try {
+    const json = await fetchJSON(SITE_VENUES_URL);
+    const venueList = normalizeVenueList(json);
+    render(venueList);
+    renderPicksEmpty();
+    renderPicksCta();
+  } catch (e) {
+    console.error(e);
+    if ($updatedAt) $updatedAt.textContent = "ERR";
+    alert(`開催一覧取得エラー: ${e.message || e}`);
+  } finally {
+    isLoading = false;
+  }
+}
+
+if ($btn) $btn.addEventListener("click", loadAll);
+
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") loadAll();
+});
+
+setInterval(() => {
+  if (document.visibilityState === "visible") loadAll();
+}, 5 * 60 * 1000);
+
+renderPicksCta();
+renderPicksEmpty();
+loadAll();
