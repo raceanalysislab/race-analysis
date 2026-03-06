@@ -1,7 +1,7 @@
 /* js/app.js（完全置き換え：開催一覧 / day_label / 発売終了対応 / 配列対応版） */
 
 const SITE_VENUES_URL =
-  "https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/site/venues.json";
+  "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/site/venues.json";
 
 const NOTE_URLS = {
   YOSO_ONLY: "https://note.com/wsnndboat7/n/n1fdca8b0a7e3",
