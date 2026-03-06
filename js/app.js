@@ -1,4 +1,4 @@
-/* js/app.js（完全置き換え：開催一覧 / day_label / 終了対応 / 長期運用固定版） */
+/* js/app.js（完全置き換え：開催一覧 / day_label / 発売終了対応 / 配列対応版） */
 
 const SITE_VENUES_URL =
   "https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/site/venues.json";
@@ -73,8 +73,14 @@ function findVenueBase(v) {
   return VENUES.find((x) => normalizeVenueName(x.name) === name) || null;
 }
 
+function getVenueArray(raw) {
+  if (Array.isArray(raw)) return raw;
+  if (Array.isArray(raw?.venues)) return raw.venues;
+  return [];
+}
+
 function normalizeVenueList(raw) {
-  const src = Array.isArray(raw?.venues) ? raw.venues : [];
+  const src = getVenueArray(raw);
   const out = [];
   const seen = new Set();
 
