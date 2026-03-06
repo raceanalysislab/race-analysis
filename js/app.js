@@ -1,280 +1,285 @@
-/* ✅ ヘッダーと1段目カードの縁が被って見えるのを防ぐ */
-.gridWrap{
-  height: var(--gridH);
-  margin-top: 10px;
-  isolation: isolate;
-  contain: paint;
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
+/* js/app.js（完全置き換え：開催一覧 / 中央揃え固定 / 一般表記 / tone対応 / raw直読み版） */
+
+const SITE_VENUES_URL =
+  "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/site/venues.json";
+
+const NOTE_URLS = {
+  YOSO_ONLY: "https://note.com/wsnndboat7/n/n1fdca8b0a7e3",
+  PRO_ONLY: "https://note.com/wsnndboat7/n/n8d805a4f27bf",
+  SET: "https://note.com/wsnndboat7/n/n6fcdb2a9db4f",
+};
+
+const VENUES = [
+  { jcd: "01", name: "桐生" }, { jcd: "02", name: "戸田" }, { jcd: "03", name: "江戸川" }, { jcd: "04", name: "平和島" },
+  { jcd: "05", name: "多摩川" }, { jcd: "06", name: "浜名湖" }, { jcd: "07", name: "蒲郡" }, { jcd: "08", name: "常滑" },
+  { jcd: "09", name: "津" }, { jcd: "10", name: "三国" }, { jcd: "11", name: "びわこ" }, { jcd: "12", name: "住之江" },
+  { jcd: "13", name: "尼崎" }, { jcd: "14", name: "鳴門" }, { jcd: "15", name: "丸亀" }, { jcd: "16", name: "児島" },
+  { jcd: "17", name: "宮島" }, { jcd: "18", name: "徳山" }, { jcd: "19", name: "下関" }, { jcd: "20", name: "若松" },
+  { jcd: "21", name: "芦屋" }, { jcd: "22", name: "福岡" }, { jcd: "23", name: "唐津" }, { jcd: "24", name: "大村" }
+];
+
+const $grid = document.getElementById("grid");
+const $updatedAt = document.getElementById("updatedAt");
+const $btn = document.getElementById("btnRefresh");
+const $picks = document.getElementById("picks");
+const $picksUpdatedAt = document.getElementById("picksUpdatedAt");
+const $picksCta = document.getElementById("picksCta");
+
+const pad2 = (n) => String(n).padStart(2, "0");
+let isLoading = false;
+
+function nowJST() {
+  const parts = new Intl.DateTimeFormat("ja-JP", {
+    timeZone: "Asia/Tokyo",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false
+  }).formatToParts(new Date());
+
+  const get = (t) => parts.find((p) => p.type === t)?.value;
+  return {
+    hh: Number(get("hour")),
+    mm: Number(get("minute"))
+  };
 }
 
-/* ===== Grid ===== */
-.grid{
-  height: 100%;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(6, 1fr);
-  gap: 4px;
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
+function normalizeVenueName(s) {
+  return String(s ?? "")
+    .normalize("NFKC")
+    .replace(/\u3000/g, " ")
+    .replace(/\s+/g, "")
+    .trim();
 }
 
-/* ===== Cards ===== */
-.card{
-  display:flex;
-  flex-direction:column;
-  justify-content:space-between;
-  text-decoration:none;
-  border-radius: 9px;
-  border: 2px solid var(--border);
-  overflow:hidden;
-  padding: 8px 7px 6px;
-  min-height: 0;
-  position: relative;
-  text-align: center;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
-  -webkit-tap-highlight-color: transparent;
+function escapeHTML(s) {
+  return String(s ?? "").replace(/[&<>"']/g, (c) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  }[c]));
 }
 
-/* ✅ 上半分カラー */
-.card::before{
-  content:"";
-  position:absolute;
-  left:0;
-  right:0;
-  top:0;
-  height: 54%;
-  pointer-events:none;
-  opacity: .55;
-  background: var(--toneTop, rgba(15,23,42,.12));
-  border-top-left-radius: 7px;
-  border-top-right-radius: 7px;
-  z-index: 1;
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
+async function fetchJSON(url) {
+  const finalUrl = `${url}${url.includes("?") ? "&" : "?"}t=${Date.now()}`;
+  const res = await fetch(finalUrl, { cache: "no-store" });
+  if (!res.ok) throw new Error(`fetch fail: ${res.status}`);
+  return await res.json();
 }
 
-.card > *{
-  position: relative;
-  z-index: 2;
+function venueHref(v) {
+  return `./race.html?jcd=${encodeURIComponent(v.jcd)}&name=${encodeURIComponent(v.name)}`;
 }
 
-/* FREE：tone色 */
-.card--tone-normal{
-  --toneTop: linear-gradient(180deg, rgba(148,163,184,.45), rgba(148,163,184,0));
-}
-.card--tone-morning{
-  --toneTop: linear-gradient(180deg, rgba(251,191,36,.65), rgba(251,191,36,0));
-}
-.card--tone-night{
-  --toneTop: linear-gradient(180deg, rgba(96,165,250,.65), rgba(96,165,250,0));
+function findVenueBase(v) {
+  const jcd = String(v?.jcd || "").padStart(2, "0");
+  if (jcd) {
+    const byJcd = VENUES.find((x) => x.jcd === jcd);
+    if (byJcd) return byJcd;
+  }
+
+  const name = normalizeVenueName(v?.name || v?.venue || "");
+  return VENUES.find((x) => normalizeVenueName(x.name) === name) || null;
 }
 
-.card--off::before{
-  opacity: 0;
+function getVenueArray(raw) {
+  if (Array.isArray(raw)) return raw;
+  if (Array.isArray(raw?.venues)) return raw.venues;
+  return [];
 }
 
-.card--on{
-  background: var(--cardOn);
-  border-color: var(--borderOn);
+function normalizeToneClass(tone) {
+  const s = String(tone || "").trim().toLowerCase();
+  if (s === "morning") return "card--tone-morning";
+  if (s === "night") return "card--tone-night";
+  return "card--tone-normal";
 }
 
-.card--off{
-  background: var(--cardOff);
-  border-color: var(--border);
+function detectCardToneByTime(nextDisplay) {
+  const s = String(nextDisplay || "");
+  const m = s.match(/(\d{1,2}):(\d{2})/);
+  if (!m) return "normal";
+
+  const hh = Number(m[1]);
+  const mm = Number(m[2]);
+  const tmin = hh * 60 + mm;
+
+  if (tmin >= 8 * 60 + 30 && tmin <= 9 * 60) return "morning";
+  if (tmin >= 15 * 60 && tmin <= 15 * 60 + 40) return "night";
+  return "normal";
 }
 
-/* PRO */
-html[data-theme="pro"] .card{
-  border: 2px solid var(--gold);
-  background:
-    var(--proCardFace),
-    linear-gradient(var(--cardOff), var(--cardOff));
-  box-shadow: var(--proCardShadowStd);
+function toneIcon(tone) {
+  const s = String(tone || "").trim().toLowerCase();
+  if (s === "morning") return "☀️";
+  if (s === "night") return "🌙";
+  return "";
 }
 
-html[data-theme="pro"] .card::before{
-  opacity: .70;
-}
-html[data-theme="pro"] .card--tone-normal{
-  --toneTop: linear-gradient(180deg, rgba(255,255,255,.26), rgba(255,255,255,0));
-}
-html[data-theme="pro"] .card--tone-morning{
-  --toneTop: linear-gradient(180deg, rgba(255,224,150,.62), rgba(255,224,150,0));
-}
-html[data-theme="pro"] .card--tone-night{
-  --toneTop: linear-gradient(180deg, rgba(120,170,255,.60), rgba(120,170,255,0));
-}
-html[data-theme="pro"] .card--off::before{
-  opacity: 0;
+function normalizeGradeLabel(label) {
+  const s = String(label || "").trim();
+  if (!s) return "一般";
+  if (s === "一般戦") return "一般";
+  return s;
 }
 
-html[data-theme="pro"] .card--on{
-  border-color: var(--gold);
-  background:
-    var(--proCardFaceOn),
-    linear-gradient(var(--cardOn), var(--cardOn));
-  box-shadow: var(--proCardShadowOn);
+function getVenueMetaLine(v) {
+  const grade = normalizeGradeLabel(v?.grade_label);
+  const day = String(v?.day_label || "").trim();
+
+  return `
+    <div class="card__meta">
+      <span class="metaLeft">
+        <span class="gradeText">${escapeHTML(grade)}</span>
+      </span>
+      <span class="day">${day ? `${escapeHTML(day)} ` : "-- -- "}</span>
+    </div>
+  `;
 }
 
-html[data-theme="pro"] .card--off{
-  border-color: rgba(255,224,150,.10);
-  background: linear-gradient(#040509, #040509);
-  box-shadow: var(--proCardShadowOff);
-  filter: saturate(.65) brightness(.75);
-  opacity: .72;
+function normalizeVenueList(raw) {
+  const src = getVenueArray(raw);
+  const out = [];
+  const seen = new Set();
+
+  for (const item of src) {
+    const base = findVenueBase(item);
+    if (!base) continue;
+    if (seen.has(base.jcd)) continue;
+    seen.add(base.jcd);
+
+    const nextDisplay = String(item?.next_display || "-- --").trim() || "-- --";
+    const tone = detectCardToneByTime(nextDisplay);
+
+    out.push({
+      jcd: base.jcd,
+      name: base.name,
+      next_display: nextDisplay,
+      day_label: String(item?.day_label || "").trim(),
+      grade_label: normalizeGradeLabel(item?.grade_label),
+      card_tone: tone
+    });
+  }
+
+  return out;
 }
 
-html[data-theme="pro"] .card:active{
-  box-shadow: var(--proCardActiveShadow);
-  transform: translateZ(0) translateY(-1px);
-  -webkit-transform: translateZ(0) translateY(-1px);
+function render(venueList) {
+  const map = new Map();
+  for (const v of venueList) map.set(String(v.jcd), v);
+
+  const merged = VENUES.map((base) => {
+    const v = map.get(base.jcd);
+    return {
+      jcd: base.jcd,
+      name: base.name,
+      exists: !!v,
+      next_display: v?.next_display || "-- --",
+      day_label: v?.day_label || "",
+      grade_label: v?.grade_label || "一般",
+      card_tone: v?.card_tone || "normal"
+    };
+  });
+
+  $grid.innerHTML = merged.map((v) => {
+    if (!v.exists) {
+      return `
+        <div class="card card--off" aria-disabled="true">
+          <div class="card__nameRow">
+            <span class="card__nameIcon card__nameIcon--empty"></span>
+            <div class="card__name">${escapeHTML(v.name)}</div>
+          </div>
+          <div class="card__meta">
+            <span class="metaLeft"><span class="gradeText">-- --</span></span>
+            <span class="day">-- -- </span>
+          </div>
+          <div class="card__line card__line--btm">-- --</div>
+        </div>
+      `;
+    }
+
+    return `
+      <a class="card card--on ${normalizeToneClass(v.card_tone)}" href="${venueHref(v)}">
+        <div class="card__nameRow">
+          <span class="card__nameIcon">${toneIcon(v.card_tone)}</span>
+          <div class="card__name">${escapeHTML(v.name)}</div>
+        </div>
+        ${getVenueMetaLine(v)}
+        <div class="card__line card__line--btm">${escapeHTML(v.next_display || "-- --")}</div>
+      </a>
+    `;
+  }).join("");
+
+  const now = nowJST();
+  $updatedAt.textContent = `${pad2(now.hh)}:${pad2(now.mm)}`;
 }
 
-/* ✅ 会場名行：中央固定 */
-.card__nameRow{
-  position: relative;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  min-height: 26px;
-  width: 100%;
-  padding: 0 18px;
-  box-sizing: border-box;
+function renderPicksEmpty() {
+  if ($picks) $picks.innerHTML = "";
+  const now = nowJST();
+  if ($picksUpdatedAt) $picksUpdatedAt.textContent = `${pad2(now.hh)}:${pad2(now.mm)}`;
 }
 
-.card__nameIcon{
-  position: absolute;
-  left: 6px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 20px;
-  text-align: center;
-  font-size: 16px;
-  line-height: 1;
+function renderPicksCta() {
+  if (!$picksCta) return;
+
+  $picksCta.innerHTML = `
+    <a class="picksBtn" href="${NOTE_URLS.YOSO_ONLY}" target="_blank" rel="noopener noreferrer">
+      <div>
+        <div class="picksBtnMain">予想だけ購入（500円）</div>
+        <div class="picksBtnSub">noteで確認</div>
+      </div>
+      <div class="picksBtnArrow">→</div>
+    </a>
+
+    <a class="picksBtn" href="${NOTE_URLS.PRO_ONLY}" target="_blank" rel="noopener noreferrer">
+      <div>
+        <div class="picksBtnMain">PROだけ購入（500円）</div>
+        <div class="picksBtnSub">キー配布方式（購読者＝PRO扱い）</div>
+      </div>
+      <div class="picksBtnArrow">→</div>
+    </a>
+
+    <a class="picksBtn picksBtn--set" href="${NOTE_URLS.SET}" target="_blank" rel="noopener noreferrer">
+      <div>
+        <div class="picksBtnMain">セット購入（800円）</div>
+        <div class="picksBtnSub">予想 + PRO（お得）</div>
+      </div>
+      <div class="picksBtnArrow">→</div>
+    </a>
+  `;
 }
 
-.card__nameIcon--empty{
-  visibility: hidden;
+async function loadAll() {
+  if (isLoading) return;
+  isLoading = true;
+
+  try {
+    const json = await fetchJSON(SITE_VENUES_URL);
+    const venueList = normalizeVenueList(json);
+    render(venueList);
+    renderPicksEmpty();
+    renderPicksCta();
+  } catch (e) {
+    console.error(e);
+    if ($updatedAt) $updatedAt.textContent = "ERR";
+    alert(`開催一覧取得エラー: ${e.message || e}`);
+  } finally {
+    isLoading = false;
+  }
 }
 
-.card__name{
-  font-weight: 900;
-  font-size: 17px;
-  line-height: 1.02;
-  letter-spacing: 0;
-  color: var(--text);
-  white-space: nowrap;
-  overflow: visible;
-  text-overflow: clip;
-  margin: 0 auto;
-  text-align: center;
-}
+if ($btn) $btn.addEventListener("click", loadAll);
 
-html[data-theme="pro"] .card__name{
-  color: rgba(255,252,244,.99);
-  text-shadow:
-    0 1px 0 rgba(0,0,0,.86),
-    0 0 12px rgba(255,224,150,.10);
-}
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") loadAll();
+});
 
-/* ✅ 下段（時間） */
-.card__line{
-  font-weight: 900;
-  color: #334155;
-  line-height: 1.02;
-  white-space: nowrap;
-  word-break: keep-all;
-  text-align: center;
-}
+setInterval(() => {
+  if (document.visibilityState === "visible") loadAll();
+}, 5 * 60 * 1000);
 
-html[data-theme="pro"] .card__line{
-  color: rgba(255,252,244,.82);
-}
-
-.card--off .card__name,
-.card--off .card__line{
-  color: #6b7280;
-}
-
-html[data-theme="pro"] .card--off .card__name{
-  color: rgba(255,252,244,.12);
-  text-shadow: none;
-}
-
-html[data-theme="pro"] .card--off .card__line{
-  color: rgba(255,252,244,.06);
-}
-
-.card__line--btm{
-  font-size: 17px;
-  letter-spacing: 0;
-}
-
-/* ✅ meta：左に一般、右に◯日目 */
-.card__meta{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap: 8px;
-  margin-top: 9px;
-  margin-bottom: 2px;
-  min-height: 14px;
-  width: 100%;
-  padding: 0 2px;
-  box-sizing: border-box;
-}
-
-.metaLeft{
-  display:inline-flex;
-  align-items:center;
-  min-width: 0;
-  flex: 0 1 auto;
-  white-space: nowrap;
-}
-
-.gradeText{
-  display:inline-block;
-  font-weight: 500;
-  font-size: 10px;
-  line-height: 1;
-  letter-spacing: 0;
-  color: #334155;
-  white-space: nowrap;
-}
-
-.day{
-  display:inline-block;
-  white-space: nowrap;
-  word-break: keep-all;
-  font-weight: 500;
-  font-size: 10px;
-  line-height: 1;
-  letter-spacing: 0;
-  color: #334155;
-  flex: 0 0 auto;
-  text-align: right;
-}
-
-html[data-theme="pro"] .gradeText,
-html[data-theme="pro"] .day{
-  color: rgba(255,252,244,.82);
-}
-
-.card--off .gradeText,
-.card--off .day{
-  color: #6b7280;
-}
-
-html[data-theme="pro"] .card--off .gradeText,
-html[data-theme="pro"] .card--off .day{
-  color: rgba(255,252,244,.06);
-}
-
-.status--soldout{
-  font-weight: 900;
-  letter-spacing: .02em;
-}
+renderPicksCta();
+renderPicksEmpty();
+loadAll();
