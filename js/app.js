@@ -1,10 +1,14 @@
-/* js/app.js（完全置き換え：開催一覧安定版 / mbrace主導 + bot保険 + キャッシュ回避） */
+/* js/app.js（完全置き換え：開催一覧安定版 / ローカル優先 + CDN保険 + キャッシュ回避） */
 
 import { BOT_VENUES_URL, BOT_PICKS_URL, NOTE_URLS } from "./config.js";
 
-/* ===== mbrace JSON（CDN） ===== */
-const MBRACE_RACES_URL =
+/* ===== データURL（ローカル優先 / CDN保険） ===== */
+const LOCAL_MBRACE_RACES_URL = "./data/mbrace_races_today.json";
+const CDN_MBRACE_RACES_URL =
   "https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/mbrace_races_today.json";
+
+const LOCAL_VENUES_URL = "./data/venues_today.json";
+const LOCAL_PICKS_URL = "./data/picks_today.json";
 
 /* ===== 会場順（固定） ===== */
 const VENUES = [
@@ -78,15 +82,34 @@ function normalizeVenueName(s) {
 /* ===== fetch ===== */
 async function fetchJSON(url) {
   const bust = url.includes("?") ? "&" : "?";
-  const res = await fetch(url + bust + "t=" + Date.now(), {
+  const finalUrl = url + bust + "t=" + Date.now();
+
+  const res = await fetch(finalUrl, {
     cache: "no-store",
     headers: {
       pragma: "no-cache",
       "cache-control": "no-cache"
     }
   });
-  if (!res.ok) throw new Error(`fetch fail: ${url}`);
+
+  if (!res.ok) {
+    throw new Error(`fetch fail: ${res.status} ${finalUrl}`);
+  }
+
   return await res.json();
+}
+
+async function fetchFirstJSON(urls) {
+  for (const url of urls) {
+    try {
+      const data = await fetchJSON(url);
+      console.log("[fetch ok]", url);
+      return data;
+    } catch (e) {
+      console.warn("[fetch ng]", url, e);
+    }
+  }
+  return null;
 }
 
 /* ===== 会場リンク ===== */
@@ -124,8 +147,20 @@ function findVenueBaseByName(name) {
   return (
     VENUES.find((v) => v.name === raw) ||
     VENUES.find((v) => normalizeVenueName(v.name) === norm) ||
+    VENUES.find((v) => normalizeVenueName(v.name).includes(norm)) ||
+    VENUES.find((v) => norm.includes(normalizeVenueName(v.name))) ||
     null
   );
+}
+
+function findVenueBase(v) {
+  const jcd = String(v?.jcd ?? v?.stadium_code ?? v?.place_code ?? "").padStart(2, "0");
+  if (jcd) {
+    const byJcd = VENUES.find((x) => x.jcd === jcd);
+    if (byJcd) return byJcd;
+  }
+
+  return findVenueBaseByName(v?.name || v?.venue || v?.place || "");
 }
 
 /* ===== mbrace → venues ===== */
@@ -134,7 +169,7 @@ function buildHeldVenuesFromMbrace(mbrace) {
   const venues = [];
 
   for (const v of all) {
-    const base = findVenueBaseByName(v?.venue || "");
+    const base = findVenueBase(v);
     if (!base) continue;
 
     const races = Array.isArray(v?.races) ? v.races : [];
@@ -142,8 +177,8 @@ function buildHeldVenuesFromMbrace(mbrace) {
 
     for (const r of races) {
       const rno = Number(r?.rno);
-      const cutoff = String(r?.cutoff || "").trim();
-      const mm = cutoff.match(/^(\d{1,2}):(\d{2})$/);
+      const cutoffRaw = String(r?.cutoff || "").trim();
+      const mm = cutoffRaw.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
 
       if (!Number.isFinite(rno) || rno < 1 || rno > 12) continue;
       if (!mm) continue;
@@ -173,34 +208,65 @@ function buildHeldVenuesFromMbrace(mbrace) {
   }
 
   return {
-    date: todayJSTStr(),
-    checked_at: new Date().toISOString(),
+    date: String(mbrace?.date || todayJSTStr()),
+    checked_at: String(mbrace?.parsed_at || new Date().toISOString()),
     venues: uniq
   };
 }
 
-/* ===== bot venues → venues ===== */
+/* ===== held venues系 JSON → venues ===== */
 function buildHeldVenuesFromBot(raw) {
-  const arr = Array.isArray(raw) ? raw : (Array.isArray(raw?.venues) ? raw.venues : []);
+  const arr =
+    Array.isArray(raw) ? raw :
+    Array.isArray(raw?.venues) ? raw.venues :
+    Array.isArray(raw?.data) ? raw.data :
+    [];
+
   const venues = [];
 
   for (const v of arr) {
-    const jcd = String(v?.jcd || "");
-    const base = VENUES.find((x) => x.jcd === jcd);
+    const base = findVenueBase(v);
     if (!base) continue;
 
+    const explicitHeld =
+      v?.held === true ||
+      v?.is_open === true ||
+      v?.open === true ||
+      v?.status === "held" ||
+      v?.status === "open" ||
+      v?.status === "開催中";
+
+    const explicitOff =
+      v?.held === false ||
+      v?.is_open === false ||
+      v?.open === false ||
+      v?.status === "off" ||
+      v?.status === "closed" ||
+      v?.status === "中止";
+
+    if (explicitOff) continue;
+
     venues.push({
-      jcd,
+      jcd: base.jcd,
       name: base.name,
-      held: true,
-      next_display: String(v?.next_display || "-- --")
+      held: explicitHeld || true,
+      next_display: String(v?.next_display || v?.next || "-- --")
     });
   }
 
+  const uniq = [];
+  const seen = new Set();
+
+  for (const v of venues) {
+    if (seen.has(v.jcd)) continue;
+    seen.add(v.jcd);
+    uniq.push(v);
+  }
+
   return {
-    date: todayJSTStr(),
-    checked_at: new Date().toISOString(),
-    venues
+    date: String(raw?.date || todayJSTStr()),
+    checked_at: String(raw?.checked_at || raw?.updated_at || new Date().toISOString()),
+    venues: uniq
   };
 }
 
@@ -338,9 +404,9 @@ async function loadAll() {
 
   try {
     const [mbrace, botVenues, picks] = await Promise.all([
-      fetchJSON(MBRACE_RACES_URL).catch(() => null),
-      fetchJSON(BOT_VENUES_URL).catch(() => null),
-      fetchJSON(BOT_PICKS_URL).catch(() => null)
+      fetchFirstJSON([LOCAL_MBRACE_RACES_URL, CDN_MBRACE_RACES_URL]),
+      fetchFirstJSON([LOCAL_VENUES_URL, BOT_VENUES_URL]),
+      fetchFirstJSON([LOCAL_PICKS_URL, BOT_PICKS_URL])
     ]);
 
     const mbraceRaw = mbrace ? buildHeldVenuesFromMbrace(mbrace) : { venues: [] };
@@ -357,6 +423,10 @@ async function loadAll() {
     } else {
       raw = { venues: [] };
     }
+
+    console.log("[mbrace built]", mbraceRaw);
+    console.log("[bot built]", botRaw);
+    console.log("[merged raw]", raw);
 
     render(raw);
     renderPicks(picks || { picks: [] });
