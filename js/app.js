@@ -102,11 +102,40 @@ function normalizeGradeClass(label) {
   return "grade grade--ippan";
 }
 
+function detectCardToneByTime(nextDisplay) {
+  const s = String(nextDisplay || "");
+  const m = s.match(/(\d{1,2}):(\d{2})/);
+  if (!m) return "normal";
+
+  const hh = Number(m[1]);
+  const mm = Number(m[2]);
+  const tmin = hh * 60 + mm;
+
+  /* ☀️ 8:30〜9:00 開催1R */
+  if (tmin >= (8 * 60 + 30) && tmin <= (9 * 60 + 0)) {
+    return "morning";
+  }
+
+  /* 🌙 15:00〜15:40 開催1R */
+  if (tmin >= (15 * 60 + 0) && tmin <= (15 * 60 + 40)) {
+    return "night";
+  }
+
+  return "normal";
+}
+
 function normalizeToneClass(tone) {
   const s = String(tone || "").trim().toLowerCase();
   if (s === "morning") return "card--tone-morning";
   if (s === "night") return "card--tone-night";
   return "card--tone-normal";
+}
+
+function toneIcon(tone) {
+  const s = String(tone || "").trim().toLowerCase();
+  if (s === "morning") return "☀️";
+  if (s === "night") return "🌙";
+  return "";
 }
 
 function getVenueMetaLine(v) {
@@ -140,13 +169,16 @@ function normalizeVenueList(raw) {
     if (seen.has(base.jcd)) continue;
     seen.add(base.jcd);
 
+    const nextDisplay = String(item?.next_display || "-- --").trim() || "-- --";
+    const tone = detectCardToneByTime(nextDisplay);
+
     out.push({
       jcd: base.jcd,
       name: base.name,
-      next_display: String(item?.next_display || "-- --").trim() || "-- --",
+      next_display: nextDisplay,
       day_label: String(item?.day_label || "").trim(),
       grade_label: String(item?.grade_label || "").trim(),
-      card_tone: String(item?.card_tone || "normal").trim().toLowerCase()
+      card_tone: tone
     });
   }
 
@@ -187,6 +219,7 @@ function render(venueList) {
 
     return `
       <a class="card card--on ${normalizeToneClass(v.card_tone)}" href="${venueHref(v)}">
+        <div class="card__icon">${toneIcon(v.card_tone)}</div>
         <div class="card__name">${escapeHTML(v.name)}</div>
         ${getVenueMetaLine(v)}
         <div class="card__line card__line--btm">${escapeHTML(v.next_display || "-- --")}</div>
