@@ -1,10 +1,8 @@
-/* js/app.js（完全置き換え：bot repo の venues.json を直読み / 件数デバッグ付き） */
+/* js/app.js（完全置き換え：開催一覧のみ表示 / picks取得停止版） */
 
-/* ===== 直読みURL（config.jsを使わない） ===== */
+/* ===== 直読みURL ===== */
 const SITE_VENUES_URL =
   "https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/site/venues.json";
-const PICKS_URL =
-  "https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/picks_today.json";
 
 const NOTE_URLS = {
   YOSO_ONLY: "https://note.com/wsnndboat7/n/n1fdca8b0a7e3",
@@ -63,19 +61,11 @@ function normalizeVenueName(s) {
 
 /* ===== fetch ===== */
 async function fetchJSON(url) {
-  const bust = url.includes("?") ? "&" : "?";
-  const finalUrl = url + bust + "t=" + Date.now();
-
-  const res = await fetch(finalUrl, {
-    cache: "no-store",
-    headers: {
-      pragma: "no-cache",
-      "cache-control": "no-cache"
-    }
-  });
+  const finalUrl = `${url}?t=${Date.now()}`;
+  const res = await fetch(finalUrl, { cache: "no-store" });
 
   if (!res.ok) {
-    throw new Error(`fetch fail: ${res.status} ${finalUrl}`);
+    throw new Error(`fetch fail: ${res.status}`);
   }
 
   return await res.json();
@@ -179,17 +169,10 @@ function render(raw) {
 }
 
 /* ===== picks ===== */
-function renderPicks(data) {
-  const picks = Array.isArray(data?.picks) ? data.picks : [];
-
-  $picks.innerHTML = picks.map((p) => `
-    <a class="pickCard" href="${p.url || "#"}" ${p.url ? "" : 'aria-disabled="true" onclick="return false;"'}>
-      <div>${p.venue || ""} ${p.race || ""}</div>
-    </a>
-  `).join("");
-
+function renderPicksEmpty() {
+  if ($picks) $picks.innerHTML = "";
   const now = nowJST();
-  $picksUpdatedAt.textContent = `${pad2(now.hh)}:${pad2(now.mm)}`;
+  if ($picksUpdatedAt) $picksUpdatedAt.textContent = `${pad2(now.hh)}:${pad2(now.mm)}`;
 }
 
 /* ===== CTA ===== */
@@ -229,26 +212,16 @@ async function loadAll() {
   isLoading = true;
 
   try {
-    const [siteVenues, picks] = await Promise.all([
-      fetchJSON(SITE_VENUES_URL),
-      fetchJSON(PICKS_URL).catch(() => null)
-    ]);
-
+    const siteVenues = await fetchJSON(SITE_VENUES_URL);
     const raw = buildHeldVenuesFromSite(siteVenues);
 
-    alert(
-      `src=${Array.isArray(siteVenues) ? siteVenues.length : 0}\n` +
-      `built=${raw.venues.length}\n` +
-      `first=${raw.venues[0] ? `${raw.venues[0].jcd} ${raw.venues[0].name} ${raw.venues[0].next_display}` : "none"}`
-    );
-
     render(raw);
-    renderPicks(picks || { picks: [] });
+    renderPicksEmpty();
     renderPicksCta();
   } catch (e) {
-    alert(`ERR: ${e.message || e}`);
     console.error(e);
     if ($updatedAt) $updatedAt.textContent = "ERR";
+    alert(`開催一覧取得エラー: ${e.message || e}`);
   } finally {
     isLoading = false;
   }
@@ -270,4 +243,5 @@ setInterval(() => {
 
 /* ===== boot ===== */
 renderPicksCta();
+renderPicksEmpty();
 loadAll();
