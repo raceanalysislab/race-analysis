@@ -1,6 +1,7 @@
-/* js/app.js（完全置き換え：開催一覧 / day_label / 終了対応 / 同一オリジン安定版） */
+/* js/app.js（完全置き換え：開催一覧 / day_label / 終了対応 / 長期運用版） */
 
-const SITE_VENUES_URL = "./data/site/venues.json";
+const SITE_VENUES_URL =
+  "https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/site/venues.json";
 
 const NOTE_URLS = {
   YOSO_ONLY: "https://note.com/wsnndboat7/n/n1fdca8b0a7e3",
@@ -51,15 +52,8 @@ function normalizeVenueName(s) {
 }
 
 async function fetchJSON(url) {
-  const finalUrl = `${url}${url.includes("?") ? "&" : "?"}t=${Date.now()}`;
-  const res = await fetch(finalUrl, {
-    cache: "no-store",
-    headers: {
-      "cache-control": "no-cache",
-      pragma: "no-cache"
-    }
-  });
-
+  const finalUrl = `${url}?t=${Date.now()}`;
+  const res = await fetch(finalUrl, { cache: "no-store" });
   if (!res.ok) throw new Error(`fetch fail: ${res.status}`);
   return await res.json();
 }
@@ -79,13 +73,22 @@ function findVenueBase(v) {
   return VENUES.find((x) => normalizeVenueName(x.name) === name) || null;
 }
 
+function getVenueArray(raw) {
+  if (Array.isArray(raw)) return raw;
+  if (Array.isArray(raw?.venues)) return raw.venues;
+  return [];
+}
+
 function buildHeldVenuesFromSite(raw) {
-  const arr = Array.isArray(raw) ? raw : Array.isArray(raw?.venues) ? raw.venues : [];
+  const arr = getVenueArray(raw);
   const venues = [];
+  const seen = new Set();
 
   for (const v of arr) {
     const base = findVenueBase(v);
     if (!base) continue;
+    if (seen.has(base.jcd)) continue;
+    seen.add(base.jcd);
 
     venues.push({
       jcd: base.jcd,
@@ -96,20 +99,11 @@ function buildHeldVenuesFromSite(raw) {
     });
   }
 
-  const uniq = [];
-  const seen = new Set();
-
-  for (const v of venues) {
-    if (seen.has(v.jcd)) continue;
-    seen.add(v.jcd);
-    uniq.push(v);
-  }
-
-  return { venues: uniq };
+  return { venues };
 }
 
 function render(raw) {
-  const arr = Array.isArray(raw?.venues) ? raw.venues : [];
+  const arr = getVenueArray(raw);
   const map = new Map();
 
   for (const v of arr) {
