@@ -1,4 +1,4 @@
-/* js/app.js（完全置き換え：開催一覧 / day_label / 終了対応 / 長期運用版） */
+/* js/app.js（完全置き換え：開催一覧 / day_label / 終了対応 / 長期運用固定版） */
 
 const SITE_VENUES_URL =
   "https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/site/venues.json";
@@ -73,43 +73,32 @@ function findVenueBase(v) {
   return VENUES.find((x) => normalizeVenueName(x.name) === name) || null;
 }
 
-function getVenueArray(raw) {
-  if (Array.isArray(raw)) return raw;
-  if (Array.isArray(raw?.venues)) return raw.venues;
-  return [];
-}
-
-function buildHeldVenuesFromSite(raw) {
-  const arr = getVenueArray(raw);
-  const venues = [];
+function normalizeVenueList(raw) {
+  const src = Array.isArray(raw?.venues) ? raw.venues : [];
+  const out = [];
   const seen = new Set();
 
-  for (const v of arr) {
-    const base = findVenueBase(v);
+  for (const item of src) {
+    const base = findVenueBase(item);
     if (!base) continue;
     if (seen.has(base.jcd)) continue;
     seen.add(base.jcd);
 
-    venues.push({
+    out.push({
       jcd: base.jcd,
       name: base.name,
-      exists: true,
-      next_display: String(v?.next_display || "-- --"),
-      day_label: String(v?.day_label || "").trim()
+      next_display: String(item?.next_display || "-- --"),
+      day_label: String(item?.day_label || "").trim()
     });
   }
 
-  return { venues };
+  return out;
 }
 
-function render(raw) {
-  const arr = getVenueArray(raw);
+function render(venueList) {
   const map = new Map();
-
-  for (const v of arr) {
-    const jcd = String(v?.jcd || "");
-    if (!jcd) continue;
-    map.set(jcd, v);
+  for (const v of venueList) {
+    map.set(String(v.jcd), v);
   }
 
   const merged = VENUES.map((base) => {
@@ -124,15 +113,12 @@ function render(raw) {
   });
 
   $grid.innerHTML = merged.map((v) => {
-    const subLine = v.day_label || "-- --";
-    const bottomLine = v.next_display || "-- --";
-
     if (!v.exists) {
       return `
         <div class="card card--off" aria-disabled="true">
           <div class="card__name">${v.name}</div>
-          <div class="card__line card__line--sub">${subLine}</div>
-          <div class="card__line card__line--btm">${bottomLine}</div>
+          <div class="card__line card__line--sub">-- --</div>
+          <div class="card__line card__line--btm">-- --</div>
         </div>
       `;
     }
@@ -140,8 +126,8 @@ function render(raw) {
     return `
       <a class="card card--on card--tone-normal" href="${venueHref(v)}">
         <div class="card__name">${v.name}</div>
-        <div class="card__line card__line--sub">${subLine}</div>
-        <div class="card__line card__line--btm">${bottomLine}</div>
+        <div class="card__line card__line--sub">${v.day_label || "-- --"}</div>
+        <div class="card__line card__line--btm">${v.next_display || "-- --"}</div>
       </a>
     `;
   }).join("");
@@ -191,9 +177,9 @@ async function loadAll() {
   isLoading = true;
 
   try {
-    const siteVenues = await fetchJSON(SITE_VENUES_URL);
-    const raw = buildHeldVenuesFromSite(siteVenues);
-    render(raw);
+    const json = await fetchJSON(SITE_VENUES_URL);
+    const venueList = normalizeVenueList(json);
+    render(venueList);
     renderPicksEmpty();
     renderPicksCta();
   } catch (e) {
@@ -206,7 +192,7 @@ async function loadAll() {
 }
 
 if ($btn) {
-  $btn.addEventListener("click", () => loadAll());
+  $btn.addEventListener("click", loadAll);
 }
 
 document.addEventListener("visibilitychange", () => {
