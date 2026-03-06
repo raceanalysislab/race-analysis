@@ -153,8 +153,8 @@ function render(raw) {
       return `
         <div class="card card--off" aria-disabled="true">
           <div class="card__name">${v.name}</div>
-          <div class="card__line">-- --</div>
-          <div class="card__line">-- --</div>
+          <div class="card__line card__line--sub">-- --</div>
+          <div class="card__line card__line--btm">-- --</div>
         </div>
       `;
     }
@@ -162,10 +162,10 @@ function render(raw) {
     const subLine = v.day_label || "-- --";
 
     return `
-      <a class="card card--on" href="${venueHref(v)}">
+      <a class="card card--on card--tone-normal" href="${venueHref(v)}">
         <div class="card__name">${v.name}</div>
         <div class="card__line card__line--sub">${subLine}</div>
-        <div class="card__line">${v.next_display}</div>
+        <div class="card__line card__line--btm">${v.next_display}</div>
       </a>
     `;
   }).join("");
