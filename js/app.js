@@ -1,4 +1,4 @@
-/* js/app.js（完全置き換え：開催一覧 / 中央揃え固定 / 一般表記 / tone対応 / raw直読み版） */
+/* js/app.js（完全置き換え：開催一覧 / 中央揃え完成版 / 一般表記 / tone対応 / raw直読み版） */
 
 const SITE_VENUES_URL =
   "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/site/venues.json";
