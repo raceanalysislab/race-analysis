@@ -1,7 +1,7 @@
 /* js/app.js（デバッグ版：開催一覧 / bot repo の venues.json を直接確認） */
 
 import { BOT_VENUES_URL, BOT_PICKS_URL, NOTE_URLS } from "./config.js";
-
+alert("DEBUG APP JS 999");
 const SITE_VENUES_URL = BOT_VENUES_URL;
 const PICKS_URL = BOT_PICKS_URL;
 
