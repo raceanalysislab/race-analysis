@@ -1,4 +1,4 @@
-/* js/app.js（完全置き換え：bot repo の venues.json を直読み） */
+/* js/app.js（完全置き換え：bot repo の venues.json を直読み / 件数デバッグ付き） */
 
 /* ===== 直読みURL（config.jsを使わない） ===== */
 const SITE_VENUES_URL =
@@ -236,10 +236,17 @@ async function loadAll() {
 
     const raw = buildHeldVenuesFromSite(siteVenues);
 
+    alert(
+      `src=${Array.isArray(siteVenues) ? siteVenues.length : 0}\n` +
+      `built=${raw.venues.length}\n` +
+      `first=${raw.venues[0] ? `${raw.venues[0].jcd} ${raw.venues[0].name} ${raw.venues[0].next_display}` : "none"}`
+    );
+
     render(raw);
     renderPicks(picks || { picks: [] });
     renderPicksCta();
   } catch (e) {
+    alert(`ERR: ${e.message || e}`);
     console.error(e);
     if ($updatedAt) $updatedAt.textContent = "ERR";
   } finally {
