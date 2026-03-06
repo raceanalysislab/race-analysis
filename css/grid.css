@@ -128,31 +128,19 @@ html[data-theme="pro"] .card:active{
   -webkit-transform: translateZ(0) translateY(-1px);
 }
 
-/* 会場名行：左右対称で中央固定 */
+/* 開催場名は完全中央、絵文字は左固定 */
 .card__nameRow{
-  display:grid;
-  grid-template-columns: 18px 1fr 18px;
-  align-items:center;
-  width:100%;
-  min-height:28px;
-  margin-bottom:6px;
-}
-
-.card__nameIcon{
-  width:18px;
-  height:18px;
+  position: relative;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:15px;
-  line-height:1;
-}
-
-.card__nameIcon--empty{
-  visibility:hidden;
+  width:100%;
+  min-height:30px;
+  margin-bottom:6px;
 }
 
 .card__name{
+  width:100%;
   font-weight:900;
   font-size:17px;
   line-height:1.04;
@@ -161,8 +149,27 @@ html[data-theme="pro"] .card:active{
   white-space:nowrap;
   overflow:visible;
   text-overflow:clip;
-  margin:0 auto;
   text-align:center;
+  margin:0;
+}
+
+.card__nameIcon{
+  position:absolute;
+  left:6px;
+  top:50%;
+  transform:translateY(-50%);
+  width:18px;
+  height:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:15px;
+  line-height:1;
+  pointer-events:none;
+}
+
+.card__nameIcon--empty{
+  visibility:hidden;
 }
 
 html[data-theme="pro"] .card__name{
@@ -172,7 +179,6 @@ html[data-theme="pro"] .card__name{
     0 0 12px rgba(255,224,150,.10);
 }
 
-/* メタ行 */
 .card__meta{
   display:flex;
   align-items:center;
@@ -231,7 +237,6 @@ html[data-theme="pro"] .card--off .day{
   color: rgba(255,252,244,.06);
 }
 
-/* 時間 */
 .card__line{
   white-space:nowrap;
   word-break:keep-all;
