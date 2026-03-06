@@ -7,7 +7,8 @@ const LOCAL_MBRACE_RACES_URL = "./data/mbrace_races_today.json";
 const CDN_MBRACE_RACES_URL =
   "https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/mbrace_races_today.json";
 
-const LOCAL_VENUES_URL = "./data/venues_today.json";
+/* ここを修正：venues_today.json ではなく data/site/venues.json を使う */
+const LOCAL_VENUES_URL = "./data/site/venues.json";
 const LOCAL_PICKS_URL = "./data/picks_today.json";
 
 /* ===== 会場順（固定） ===== */
