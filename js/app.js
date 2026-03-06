@@ -1,4 +1,4 @@
-/* js/app.js（完全置き換え：開催一覧のみ表示 / picks取得停止版） */
+/* js/app.js（完全置き換え：開催一覧のみ表示 / day_label対応版） */
 
 /* ===== 直読みURL ===== */
 const SITE_VENUES_URL =
@@ -105,7 +105,10 @@ function buildHeldVenuesFromSite(raw) {
       jcd: base.jcd,
       name: base.name,
       held: true,
-      next_display: String(v?.next_display || "-- --")
+      next_display: String(v?.next_display || "-- --"),
+      day: v?.day ?? null,
+      total_days: v?.total_days ?? null,
+      day_label: String(v?.day_label || "").trim()
     });
   }
 
@@ -140,7 +143,8 @@ function render(raw) {
       jcd: base.jcd,
       name: base.name,
       held,
-      next_display: held ? String(v?.next_display || "-- --") : "-- --"
+      next_display: held ? String(v?.next_display || "-- --") : "-- --",
+      day_label: held ? String(v?.day_label || "") : ""
     };
   });
 
@@ -155,10 +159,12 @@ function render(raw) {
       `;
     }
 
+    const subLine = v.day_label || "-- --";
+
     return `
       <a class="card card--on" href="${venueHref(v)}">
         <div class="card__name">${v.name}</div>
-        <div class="card__line">開催中</div>
+        <div class="card__line card__line--sub">${subLine}</div>
         <div class="card__line">${v.next_display}</div>
       </a>
     `;
