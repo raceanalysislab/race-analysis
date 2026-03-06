@@ -28,7 +28,7 @@
   border-radius: 9px;
   border: 2px solid var(--border);
   overflow:hidden;
-  padding: 8px 7px 6px;
+  padding: 10px 8px 8px;
   min-height: 0;
   position: relative;
   text-align: center;
@@ -134,21 +134,22 @@ html[data-theme="pro"] .card:active{
   -webkit-transform: translateZ(0) translateY(-1px);
 }
 
-/* ✅ 会場名行：絵文字と重ならないように左スペース確保 */
+/* ✅ 会場名行：中央固定、左に絵文字スペース確保 */
 .card__nameRow{
   position: relative;
   display:flex;
   align-items:center;
   justify-content:center;
-  min-height: 30px;
+  min-height: 34px;
   width: 100%;
-  padding: 0 6px 0 24px; /* ← 左に絵文字分の余白 */
+  padding: 0 6px 0 28px;
   box-sizing: border-box;
+  margin-bottom: 8px;
 }
 
 .card__nameIcon{
   position: absolute;
-  left: 4px;
+  left: 6px;
   top: 50%;
   transform: translateY(-50%);
   width: 18px;
@@ -182,57 +183,18 @@ html[data-theme="pro"] .card__name{
     0 0 12px rgba(255,224,150,.10);
 }
 
-/* ✅ 下段（時間） */
-.card__line{
-  font-weight: 700;
-  color: #334155;
-  line-height: 1;
-  white-space: nowrap;
-  word-break: keep-all;
-  text-align: center;
-}
-
-html[data-theme="pro"] .card__line{
-  color: rgba(255,252,244,.82);
-}
-
-.card--off .card__name,
-.card--off .card__line{
-  color: #6b7280;
-}
-
-html[data-theme="pro"] .card--off .card__name{
-  color: rgba(255,252,244,.12);
-  text-shadow: none;
-}
-
-html[data-theme="pro"] .card--off .card__line{
-  color: rgba(255,252,244,.06);
-}
-
-/* ✅ 一般 / ◯日目 / 時間 を同系サイズに寄せる */
-.card__line--btm{
-  font-size: 12px;
-  letter-spacing: 0;
-  margin-top: 8px;
-}
-
-.card__line--mid{
-  font-size: 12px;
-  letter-spacing: 0.01em;
-}
-
-/* ✅ meta：下半分の1段目 */
+/* ✅ meta：下半分1段目 */
 .card__meta{
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap: 8px;
-  margin-top: 10px;
-  min-height: 12px;
+  min-height: 14px;
   width: 100%;
   padding: 0 2px;
   box-sizing: border-box;
+  margin-top: 2px;
+  margin-bottom: 8px;
 }
 
 .metaLeft{
@@ -243,41 +205,67 @@ html[data-theme="pro"] .card--off .card__line{
   white-space: nowrap;
 }
 
-.gradeText{
-  display:inline-block;
-  font-weight: 700;
+/* ✅ 一般 / ◯日目 / 時間を同サイズに寄せる */
+.gradeText,
+.day,
+.card__line--btm{
   font-size: 12px;
   line-height: 1;
   letter-spacing: 0;
+  font-weight: 700;
   color: #334155;
+}
+
+.gradeText{
+  display:inline-block;
   white-space: nowrap;
+  text-align: left;
 }
 
 .day{
   display:inline-block;
   white-space: nowrap;
   word-break: keep-all;
-  font-weight: 700;
-  font-size: 12px;
-  line-height: 1;
-  letter-spacing: 0;
-  color: #334155;
   flex: 0 0 auto;
   text-align: right;
 }
 
+.card__line{
+  white-space: nowrap;
+  word-break: keep-all;
+  text-align: center;
+  color: #334155;
+}
+
+.card__line--btm{
+  display:block;
+  text-align:center;
+  margin-top: auto;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
 html[data-theme="pro"] .gradeText,
-html[data-theme="pro"] .day{
+html[data-theme="pro"] .day,
+html[data-theme="pro"] .card__line{
   color: rgba(255,252,244,.82);
 }
 
+.card--off .card__name,
 .card--off .gradeText,
-.card--off .day{
+.card--off .day,
+.card--off .card__line{
   color: #6b7280;
 }
 
+html[data-theme="pro"] .card--off .card__name{
+  color: rgba(255,252,244,.12);
+  text-shadow: none;
+}
+
 html[data-theme="pro"] .card--off .gradeText,
-html[data-theme="pro"] .card--off .day{
+html[data-theme="pro"] .card--off .day,
+html[data-theme="pro"] .card--off .card__line{
   color: rgba(255,252,244,.06);
 }
 
