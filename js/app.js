@@ -1,4 +1,4 @@
-/* js/app.js（完全置き換え：開催一覧のみ表示 / day_label対応版） */
+/* js/app.js（完全置き換え：開催一覧のみ表示 / day_label・終了対応版） */
 
 /* ===== 直読みURL ===== */
 const SITE_VENUES_URL =
@@ -104,7 +104,7 @@ function buildHeldVenuesFromSite(raw) {
     venues.push({
       jcd: base.jcd,
       name: base.name,
-      held: true,
+      exists: true,
       next_display: String(v?.next_display || "-- --"),
       day: v?.day ?? null,
       total_days: v?.total_days ?? null,
@@ -137,35 +137,36 @@ function render(raw) {
 
   const merged = VENUES.map((base) => {
     const v = map.get(base.jcd);
-    const held = v?.held === true;
+    const exists = !!v;
 
     return {
       jcd: base.jcd,
       name: base.name,
-      held,
-      next_display: held ? String(v?.next_display || "-- --") : "-- --",
-      day_label: held ? String(v?.day_label || "") : ""
+      exists,
+      next_display: exists ? String(v?.next_display || "-- --") : "-- --",
+      day_label: exists ? String(v?.day_label || "") : ""
     };
   });
 
   $grid.innerHTML = merged.map((v) => {
-    if (!v.held) {
+    const subLine = v.day_label || "-- --";
+    const bottomLine = v.next_display || "-- --";
+
+    if (!v.exists) {
       return `
         <div class="card card--off" aria-disabled="true">
           <div class="card__name">${v.name}</div>
-          <div class="card__line card__line--sub">-- --</div>
-          <div class="card__line card__line--btm">-- --</div>
+          <div class="card__line card__line--sub">${subLine}</div>
+          <div class="card__line card__line--btm">${bottomLine}</div>
         </div>
       `;
     }
-
-    const subLine = v.day_label || "-- --";
 
     return `
       <a class="card card--on card--tone-normal" href="${venueHref(v)}">
         <div class="card__name">${v.name}</div>
         <div class="card__line card__line--sub">${subLine}</div>
-        <div class="card__line card__line--btm">${v.next_display}</div>
+        <div class="card__line card__line--btm">${bottomLine}</div>
       </a>
     `;
   }).join("");
