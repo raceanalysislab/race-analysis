@@ -1,4 +1,4 @@
-/* js/app.js（完全置き換え：開催一覧 / 中央揃え完成版 / 一般表記 / tone対応 / raw直読み版） */
+/* js/app.js（完全置き換え：開催一覧 / 安定版） */
 
 const SITE_VENUES_URL =
   "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/site/venues.json";
@@ -89,13 +89,6 @@ function getVenueArray(raw) {
   return [];
 }
 
-function normalizeToneClass(tone) {
-  const s = String(tone || "").trim().toLowerCase();
-  if (s === "morning") return "card--tone-morning";
-  if (s === "night") return "card--tone-night";
-  return "card--tone-normal";
-}
-
 function detectCardToneByTime(nextDisplay) {
   const s = String(nextDisplay || "");
   const m = s.match(/(\d{1,2}):(\d{2})/);
@@ -108,6 +101,13 @@ function detectCardToneByTime(nextDisplay) {
   if (tmin >= 8 * 60 + 30 && tmin <= 9 * 60) return "morning";
   if (tmin >= 15 * 60 && tmin <= 15 * 60 + 40) return "night";
   return "normal";
+}
+
+function normalizeToneClass(tone) {
+  const s = String(tone || "").trim().toLowerCase();
+  if (s === "morning") return "card--tone-morning";
+  if (s === "night") return "card--tone-night";
+  return "card--tone-normal";
 }
 
 function toneIcon(tone) {
@@ -167,7 +167,9 @@ function normalizeVenueList(raw) {
 
 function render(venueList) {
   const map = new Map();
-  for (const v of venueList) map.set(String(v.jcd), v);
+  for (const v of venueList) {
+    map.set(String(v.jcd), v);
+  }
 
   const merged = VENUES.map((base) => {
     const v = map.get(base.jcd);
@@ -189,6 +191,7 @@ function render(venueList) {
           <div class="card__nameRow">
             <span class="card__nameIcon card__nameIcon--empty"></span>
             <div class="card__name">${escapeHTML(v.name)}</div>
+            <span class="card__nameIcon card__nameIcon--empty"></span>
           </div>
           <div class="card__meta">
             <span class="metaLeft"><span class="gradeText">-- --</span></span>
@@ -204,6 +207,7 @@ function render(venueList) {
         <div class="card__nameRow">
           <span class="card__nameIcon">${toneIcon(v.card_tone)}</span>
           <div class="card__name">${escapeHTML(v.name)}</div>
+          <span class="card__nameIcon card__nameIcon--empty"></span>
         </div>
         ${getVenueMetaLine(v)}
         <div class="card__line card__line--btm">${escapeHTML(v.next_display || "-- --")}</div>
