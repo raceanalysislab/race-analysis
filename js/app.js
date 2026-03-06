@@ -1,4 +1,4 @@
-/* js/app.js（完全置き換え：開催一覧 / day_label / grade_label / tone対応 / raw直読み版） */
+/* js/app.js（完全置き換え：開催一覧 / 中央揃え固定 / 一般表記 / tone対応 / raw直読み版） */
 
 const SITE_VENUES_URL =
   "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/site/venues.json";
@@ -117,8 +117,15 @@ function toneIcon(tone) {
   return "";
 }
 
+function normalizeGradeLabel(label) {
+  const s = String(label || "").trim();
+  if (!s) return "一般";
+  if (s === "一般戦") return "一般";
+  return s;
+}
+
 function getVenueMetaLine(v) {
-  const grade = String(v?.grade_label || "").trim() || "一般";
+  const grade = normalizeGradeLabel(v?.grade_label);
   const day = String(v?.day_label || "").trim();
 
   return `
@@ -150,7 +157,7 @@ function normalizeVenueList(raw) {
       name: base.name,
       next_display: nextDisplay,
       day_label: String(item?.day_label || "").trim(),
-      grade_label: String(item?.grade_label || "").trim() || "一般",
+      grade_label: normalizeGradeLabel(item?.grade_label),
       card_tone: tone
     });
   }
@@ -180,7 +187,7 @@ function render(venueList) {
       return `
         <div class="card card--off" aria-disabled="true">
           <div class="card__nameRow">
-            <div class="card__nameIcon"></div>
+            <span class="card__nameIcon card__nameIcon--empty"></span>
             <div class="card__name">${escapeHTML(v.name)}</div>
           </div>
           <div class="card__meta">
@@ -195,7 +202,7 @@ function render(venueList) {
     return `
       <a class="card card--on ${normalizeToneClass(v.card_tone)}" href="${venueHref(v)}">
         <div class="card__nameRow">
-          <div class="card__nameIcon">${toneIcon(v.card_tone)}</div>
+          <span class="card__nameIcon">${toneIcon(v.card_tone)}</span>
           <div class="card__name">${escapeHTML(v.name)}</div>
         </div>
         ${getVenueMetaLine(v)}
