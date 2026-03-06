@@ -1,4 +1,4 @@
-/* js/app.js（完全置き換え：開催一覧 / day_label / 発売終了対応 / 配列対応版 / raw直読み版） */
+/* js/app.js（完全置き換え：開催一覧 / day_label / grade_label / tone対応 / raw直読み版） */
 
 const SITE_VENUES_URL =
   "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/site/venues.json";
@@ -51,6 +51,16 @@ function normalizeVenueName(s) {
     .trim();
 }
 
+function escapeHTML(s) {
+  return String(s ?? "").replace(/[&<>"']/g, (c) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  }[c]));
+}
+
 async function fetchJSON(url) {
   const finalUrl = `${url}${url.includes("?") ? "&" : "?"}t=${Date.now()}`;
   const res = await fetch(finalUrl, {
@@ -82,6 +92,43 @@ function getVenueArray(raw) {
   return [];
 }
 
+function normalizeGradeClass(label) {
+  const s = String(label || "").trim().toUpperCase();
+
+  if (s === "SG") return "grade grade--sg";
+  if (s === "PG1" || s === "G1") return "grade grade--g1";
+  if (s === "G2") return "grade grade--g2";
+  if (s === "G3") return "grade grade--g3";
+  return "grade grade--ippan";
+}
+
+function normalizeToneClass(tone) {
+  const s = String(tone || "").trim().toLowerCase();
+  if (s === "morning") return "card--tone-morning";
+  if (s === "night") return "card--tone-night";
+  return "card--tone-normal";
+}
+
+function getVenueMetaLine(v) {
+  const day = String(v?.day_label || "").trim();
+  const grade = String(v?.grade_label || "").trim();
+
+  if (!day && !grade) {
+    return `
+      <div class="card__meta">
+        <span class="day">-- --</span>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="card__meta">
+      ${day ? `<span class="day">${escapeHTML(day)}</span>` : ``}
+      ${grade ? `<span class="${normalizeGradeClass(grade)}">${escapeHTML(grade)}</span>` : ``}
+    </div>
+  `;
+}
+
 function normalizeVenueList(raw) {
   const src = getVenueArray(raw);
   const out = [];
@@ -97,7 +144,9 @@ function normalizeVenueList(raw) {
       jcd: base.jcd,
       name: base.name,
       next_display: String(item?.next_display || "-- --").trim() || "-- --",
-      day_label: String(item?.day_label || "").trim()
+      day_label: String(item?.day_label || "").trim(),
+      grade_label: String(item?.grade_label || "").trim(),
+      card_tone: String(item?.card_tone || "normal").trim().toLowerCase()
     });
   }
 
@@ -117,7 +166,9 @@ function render(venueList) {
       name: base.name,
       exists: !!v,
       next_display: v?.next_display || "-- --",
-      day_label: v?.day_label || ""
+      day_label: v?.day_label || "",
+      grade_label: v?.grade_label || "",
+      card_tone: v?.card_tone || "normal"
     };
   });
 
@@ -125,18 +176,20 @@ function render(venueList) {
     if (!v.exists) {
       return `
         <div class="card card--off" aria-disabled="true">
-          <div class="card__name">${v.name}</div>
-          <div class="card__line card__line--sub">-- --</div>
+          <div class="card__name">${escapeHTML(v.name)}</div>
+          <div class="card__meta">
+            <span class="day">-- --</span>
+          </div>
           <div class="card__line card__line--btm">-- --</div>
         </div>
       `;
     }
 
     return `
-      <a class="card card--on card--tone-normal" href="${venueHref(v)}">
-        <div class="card__name">${v.name}</div>
-        <div class="card__line card__line--sub">${v.day_label || "-- --"}</div>
-        <div class="card__line card__line--btm">${v.next_display || "-- --"}</div>
+      <a class="card card--on ${normalizeToneClass(v.card_tone)}" href="${venueHref(v)}">
+        <div class="card__name">${escapeHTML(v.name)}</div>
+        ${getVenueMetaLine(v)}
+        <div class="card__line card__line--btm">${escapeHTML(v.next_display || "-- --")}</div>
       </a>
     `;
   }).join("");
