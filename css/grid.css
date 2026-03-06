@@ -3,11 +3,9 @@
   height: var(--gridH);
   margin-top: 10px;
 
-  /* ✅ iOS合成バグ抑止：強すぎるcontain(layout)は外す */
   isolation: isolate;
   contain: paint;
 
-  /* ✅ ここで合成レイヤー固定（テーマ切替で崩れにくい） */
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
 }
@@ -18,11 +16,8 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(6, 1fr);
-
-  /* ✅ カード間を少し詰める */
   gap: 4px;
 
-  /* ✅ グリッド自体を別レイヤーに固定 */
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
 }
@@ -38,20 +33,16 @@
   border: 2px solid var(--border);
   overflow:hidden;
 
-  /* ✅ 少しだけ中身を広く見せる */
   padding: 8px 7px 6px;
   min-height: 0;
 
   position: relative;
   text-align: center;
 
-  /* ✅ iOSゴースト対策（最重要） */
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
-
-  /* ✅ 変な“押下残り”を抑える */
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -71,7 +62,6 @@
   border-top-right-radius: 7px;
   z-index: 1;
 
-  /* ✅ 擬似要素も合成固定 */
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
 }
@@ -79,6 +69,21 @@
 .card > *{
   position: relative;
   z-index: 2;
+}
+
+/* ✅ 時間帯アイコン */
+.card__icon{
+  position:absolute;
+  top:6px;
+  right:7px;
+  font-size: 12px;
+  line-height: 1;
+  opacity: .95;
+  pointer-events:none;
+}
+
+.card--off .card__icon{
+  display:none;
 }
 
 /* FREE：tone色 */
@@ -150,7 +155,6 @@ html[data-theme="pro"] .card--off{
   opacity: .72;
 }
 
-/* 押した時だけ浮かす（でもGPU固定済みなので崩れにくい） */
 html[data-theme="pro"] .card:active{
   box-shadow: var(--proCardActiveShadow);
   transform: translateZ(0) translateY(-1px);
@@ -204,14 +208,6 @@ html[data-theme="pro"] .card--off .card__line{
   color: rgba(255,252,244,.06);
 }
 
-/* ✅ day_label 用（app.js の card__line--sub に対応） */
-.card__line--sub{
-  font-size: 12px;
-  letter-spacing: 0.01em;
-  margin-top: 2px;
-  margin-bottom: 1px;
-}
-
 /* ✅ 下段の次レース表示 / 終了表示 */
 .card__line--btm{
   font-size: 16px;
@@ -224,26 +220,60 @@ html[data-theme="pro"] .card--off .card__line{
   letter-spacing: 0.01em;
 }
 
-/* meta（今後用） */
+/* meta */
 .card__meta{
   display:flex;
   align-items:center;
   justify-content:center;
-  gap: 8px;
-  margin-top: 2px;
+  gap: 6px;
+  margin-top: 4px;
+  min-height: 22px;
+  flex-wrap: nowrap;
 }
 
-.grade{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  height: 18px;
-  padding: 0 6px;
-  border-radius: 4px;
+/* ✅ 日目は絶対1行にする */
+.day{
+  display:inline-block;
+  white-space: nowrap;
+  word-break: keep-all;
   font-weight: 900;
   font-size: 12px;
   line-height: 1;
   letter-spacing: .02em;
+  color: #334155;
+  flex: 0 0 auto;
+}
+
+html[data-theme="pro"] .day{
+  color: rgba(255,252,244,.82);
+}
+
+.card--off .day{
+  color: #6b7280;
+}
+
+html[data-theme="pro"] .card--off .day{
+  color: rgba(255,252,244,.06);
+}
+
+/* ✅ グレードバッジは改行させない */
+.grade{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex: 0 0 auto;
+  min-width: 44px;
+  height: 20px;
+  padding: 0 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  word-break: keep-all;
+  overflow: hidden;
+
+  font-weight: 900;
+  font-size: 11px;
+  line-height: 1;
+  letter-spacing: .01em;
   color: #0b1220;
   background: rgba(148,163,184,.55);
 }
@@ -257,25 +287,6 @@ html[data-theme="pro"] .card--off .card__line{
 html[data-theme="pro"] .grade{
   color: rgba(255,252,244,.95);
   box-shadow: 0 1px 0 rgba(0,0,0,.45);
-}
-
-.day{
-  font-weight: 900;
-  font-size: 12px;
-  letter-spacing: .02em;
-  color: #334155;
-}
-
-html[data-theme="pro"] .day{
-  color: rgba(255,252,244,.82);
-}
-
-.card--off .day{
-  color: #6b7280;
-}
-
-html[data-theme="pro"] .card--off .day{
-  color: rgba(255,252,244,.06);
 }
 
 .status--soldout{
