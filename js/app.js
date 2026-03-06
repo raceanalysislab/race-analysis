@@ -1,8 +1,10 @@
-/* js/app.js（完全置き換え：開催一覧のみ表示 / day_label・終了対応版） */
+/* js/app.js（完全置き換え：開催一覧のみ表示 / day_label・終了対応 / raw優先版） */
 
-/* ===== 直読みURL ===== */
-const SITE_VENUES_URL =
-  "https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/site/venues.json";
+/* ===== 直読みURL（raw優先 / jsdelivr保険） ===== */
+const SITE_VENUES_URLS = [
+  "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/site/venues.json",
+  "https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/site/venues.json"
+];
 
 const NOTE_URLS = {
   YOSO_ONLY: "https://note.com/wsnndboat7/n/n1fdca8b0a7e3",
@@ -61,14 +63,37 @@ function normalizeVenueName(s) {
 
 /* ===== fetch ===== */
 async function fetchJSON(url) {
-  const finalUrl = `${url}?t=${Date.now()}`;
-  const res = await fetch(finalUrl, { cache: "no-store" });
+  const finalUrl = `${url}${url.includes("?") ? "&" : "?"}t=${Date.now()}`;
+  const res = await fetch(finalUrl, {
+    cache: "no-store",
+    headers: {
+      "cache-control": "no-cache",
+      pragma: "no-cache"
+    }
+  });
 
   if (!res.ok) {
-    throw new Error(`fetch fail: ${res.status}`);
+    throw new Error(`fetch fail: ${res.status} ${url}`);
   }
 
   return await res.json();
+}
+
+async function fetchFirstJSON(urls) {
+  let lastError = null;
+
+  for (const url of urls) {
+    try {
+      const data = await fetchJSON(url);
+      console.log("[venues fetch ok]", url, data?.[0] || data?.venues?.[0] || null);
+      return data;
+    } catch (e) {
+      console.warn("[venues fetch ng]", url, e);
+      lastError = e;
+    }
+  }
+
+  throw lastError || new Error("all fetch failed");
 }
 
 /* ===== 会場リンク ===== */
@@ -219,7 +244,7 @@ async function loadAll() {
   isLoading = true;
 
   try {
-    const siteVenues = await fetchJSON(SITE_VENUES_URL);
+    const siteVenues = await fetchFirstJSON(SITE_VENUES_URLS);
     const raw = buildHeldVenuesFromSite(siteVenues);
 
     render(raw);
