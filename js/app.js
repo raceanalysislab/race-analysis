@@ -124,7 +124,6 @@ function getVenueMetaLine(v) {
   return `
     <div class="card__meta">
       <span class="metaLeft">
-        ${toneIcon(v.card_tone) ? `<span class="metaIcon">${toneIcon(v.card_tone)}</span>` : ``}
         <span class="gradeText">${escapeHTML(grade)}</span>
       </span>
       <span class="day">${day ? `${escapeHTML(day)} ` : "-- -- "}</span>
@@ -180,7 +179,10 @@ function render(venueList) {
     if (!v.exists) {
       return `
         <div class="card card--off" aria-disabled="true">
-          <div class="card__name">${escapeHTML(v.name)}</div>
+          <div class="card__nameRow">
+            <div class="card__nameIcon"></div>
+            <div class="card__name">${escapeHTML(v.name)}</div>
+          </div>
           <div class="card__meta">
             <span class="metaLeft"><span class="gradeText">-- --</span></span>
             <span class="day">-- -- </span>
@@ -192,7 +194,10 @@ function render(venueList) {
 
     return `
       <a class="card card--on ${normalizeToneClass(v.card_tone)}" href="${venueHref(v)}">
-        <div class="card__name">${escapeHTML(v.name)}</div>
+        <div class="card__nameRow">
+          <div class="card__nameIcon">${toneIcon(v.card_tone)}</div>
+          <div class="card__name">${escapeHTML(v.name)}</div>
+        </div>
         ${getVenueMetaLine(v)}
         <div class="card__line card__line--btm">${escapeHTML(v.next_display || "-- --")}</div>
       </a>
