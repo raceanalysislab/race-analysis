@@ -24,7 +24,6 @@
     }
     body{ margin:0; background:var(--bg); color:#fff; }
 
-    /* 上部固定（少し圧縮） */
     .raceTop{
       position:sticky; top:0; z-index:50;
       background:linear-gradient(180deg, rgba(11,18,32,1) 0%, rgba(11,18,32,.96) 60%, rgba(11,18,32,.0) 100%);
@@ -43,13 +42,15 @@
       font-weight:900; letter-spacing:.02em; font-size:15px;
       white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
     }
-    .raceMeta{ font-size:12px; color:var(--muted); display:flex; gap:10px; align-items:center; }
+    .raceMeta{
+      font-size:12px; color:var(--muted);
+      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+    }
     .raceBtn{
       appearance:none; border:none; border-radius:12px; padding:9px 12px;
       font-weight:900; background:rgba(255,255,255,.08); color:#fff;
     }
 
-    /* タブ */
     .raceTabs{
       margin-top:8px;
       display:flex; gap:8px; overflow-x:auto;
@@ -70,7 +71,6 @@
     }
     .tab.is-active{ background:var(--accent); color:#000; border-color:transparent; }
 
-    /* 本文（1画面で6人見せたいので余白を詰める） */
     .raceBody{
       height:calc(100dvh - var(--raceTopH));
       overflow:auto;
@@ -85,7 +85,6 @@
       padding:10px;
     }
 
-    /* カード（コンパクト） */
     .table{ display:flex; flex-direction:column; gap:8px; }
     .row{
       display:grid;
@@ -156,7 +155,6 @@
       word-break:break-word;
     }
 
-    /* 画面が低い端末はさらに詰める */
     @media (max-height: 740px){
       .raceTop{ padding:9px 12px 7px; }
       .raceHead{ padding:8px 10px; }
@@ -174,6 +172,7 @@
         <div class="raceMeta">
           <span id="raceNoLabel">—R</span>
           <span id="timeLabel">締切: --:--</span>
+          <span id="dayLabel">—</span>
         </div>
       </div>
       <button class="raceBtn" type="button" id="btnBack">戻る</button>
@@ -184,7 +183,6 @@
 
   <div class="raceBody" id="raceBody">
     <section class="section">
-      <!-- ✅ ② タイトルは消した -->
       <div class="table" id="table"></div>
       <div class="note" id="note">
         ※無料版は「各選手データの確認」専用です。予想は表示しません。
@@ -193,31 +191,30 @@
   </div>
 
   <script>
-    // ======================
-    // 受け取り
-    // ======================
     const qs = new URLSearchParams(location.search);
     const venueNameRaw = qs.get("name") || "会場";
     const venueName = decodeURIComponent(venueNameRaw);
+    const jcd = String(qs.get("jcd") || "").padStart(2, "0");
+
     document.getElementById("venueName").textContent = venueName;
 
     const $tabs = document.getElementById("tabs");
     const $table = document.getElementById("table");
     const $raceNoLabel = document.getElementById("raceNoLabel");
     const $timeLabel = document.getElementById("timeLabel");
+    const $dayLabel = document.getElementById("dayLabel");
     const $raceTop = document.getElementById("raceTop");
 
-    // ✅ bot repo の race json 直読み（ここが正）
     const BOT_RACES_BASE_URL =
-      "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/site/races/";
+      "https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/site/races/";
 
-    function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
+    function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
 
     function toHM(x){
       const s = String(x || "");
       const m = s.match(/(\d{1,2}):(\d{2})/);
       if (!m) return "--:--";
-      const hh = String(m[1]).padStart(2,"0");
+      const hh = String(m[1]).padStart(2, "0");
       return `${hh}:${m[2]}`;
     }
 
@@ -225,15 +222,15 @@
       const h = $raceTop.getBoundingClientRect().height || 120;
       document.documentElement.style.setProperty("--raceTopH", `${Math.ceil(h)}px`);
     }
-    addEventListener("resize", () => setTopHeight(), {passive:true});
+    addEventListener("resize", () => setTopHeight(), { passive:true });
     requestAnimationFrame(() => setTopHeight());
 
     function makeTabs(active){
       $tabs.innerHTML = "";
-      for(let r=1; r<=12; r++){
+      for(let r = 1; r <= 12; r++){
         const b = document.createElement("button");
         b.type = "button";
-        b.className = "tab" + (r===active ? " is-active" : "");
+        b.className = "tab" + (r === active ? " is-active" : "");
         b.textContent = r + "R";
         b.addEventListener("click", () => setRace(r));
         $tabs.appendChild(b);
@@ -242,7 +239,11 @@
 
     function escapeHTML(s){
       return String(s ?? "").replace(/[&<>"']/g, (c) => ({
-        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+        "&":"&amp;",
+        "<":"&lt;",
+        ">":"&gt;",
+        '"':"&quot;",
+        "'":"&#39;"
       }[c]));
     }
 
@@ -253,11 +254,9 @@
       return await res.json();
     }
 
-    // ✅ ③ 枠ズレ/欠落対策：必ず1〜6を埋める
     function normalizeBoatsTo6(boats){
       const byWaku = new Map();
 
-      // まず waku で入れる
       for (const b of boats){
         const w = Number(b?.waku);
         if (w >= 1 && w <= 6 && !byWaku.has(w)){
@@ -265,23 +264,36 @@
         }
       }
 
-      // waku が欠けてる場合、残りを順番に埋める（「データの取り方が悪い」で抜けても6人は出す）
-      const rest = boats.filter(b => {
+      const rest = boats.filter((b) => {
         const w = Number(b?.waku);
         return !(w >= 1 && w <= 6 && byWaku.get(w) === b);
       });
 
-      for (let w=1; w<=6; w++){
+      for (let w = 1; w <= 6; w++){
         if (!byWaku.has(w) && rest.length){
           const b = rest.shift();
           byWaku.set(w, { ...b, waku: w });
         }
       }
 
-      // それでも足りない時はプレースホルダ
       const out = [];
-      for (let w=1; w<=6; w++){
-        out.push(byWaku.get(w) || { waku:w, name:"—", regno:"", branch:"", age:"", grade:"", nat_win:null, nat_2:null, motor_no:"", motor_2:"", boat_no:"", boat_2:"" });
+      for (let w = 1; w <= 6; w++){
+        out.push(
+          byWaku.get(w) || {
+            waku:w,
+            name:"—",
+            regno:"",
+            branch:"",
+            age:"",
+            grade:"",
+            nat_win:null,
+            nat_2:null,
+            motor_no:"",
+            motor_2:"",
+            boat_no:"",
+            boat_2:""
+          }
+        );
       }
       return out;
     }
@@ -339,15 +351,16 @@
       const close = json?.race?.cutoff || json?.cutoff || "";
       $timeLabel.textContent = "締切: " + toHM(close);
 
+      const dayLabel = String(json?.day_label || "").trim();
+      $dayLabel.textContent = dayLabel || "—";
+
       const boatsRaw = Array.isArray(json?.race?.boats) ? json.race.boats : [];
       if (!boatsRaw.length){
         $table.innerHTML = `<div class="err">出走表が空です。<br>（race.boats が見つかりません）</div>`;
         return;
       }
 
-      // ✅ ③ 必ず1〜6を作る
       const boats6 = normalizeBoatsTo6(boatsRaw);
-
       $table.innerHTML = boats6.map(rowHTML).join("");
       requestAnimationFrame(() => setTopHeight());
     }
@@ -358,30 +371,53 @@
       history.replaceState(null, "", next.toString());
     }
 
+    function buildCandidateUrls(r){
+      const urls = [];
+
+      if (jcd && jcd !== "00"){
+        urls.push(`${BOT_RACES_BASE_URL}${encodeURIComponent(`${jcd}_${r}R.json`)}`);
+      }
+
+      urls.push(`${BOT_RACES_BASE_URL}${encodeURIComponent(`${venueName}_${r}R.json`)}`);
+      return urls;
+    }
+
+    async function fetchRaceJSON(r){
+      const urls = buildCandidateUrls(r);
+      let lastErr = null;
+
+      for (const url of urls){
+        try{
+          return await fetchJSON(url);
+        }catch(e){
+          lastErr = e;
+        }
+      }
+
+      throw lastErr || new Error("race json not found");
+    }
+
     async function setRace(r){
-      r = clamp(Number(r)||1, 1, 12);
+      r = clamp(Number(r) || 1, 1, 12);
       makeTabs(r);
       syncURLRace(r);
 
       $raceNoLabel.textContent = `${r}R`;
       $timeLabel.textContent = "締切: --:--";
+      $dayLabel.textContent = "—";
       $table.innerHTML = `<div class="err">データを読み込み中…</div>`;
 
       if (!venueName || venueName === "会場"){
-        $table.innerHTML = `<div class="err">name が指定されていません。<br>例：race.html?name=若松</div>`;
+        $table.innerHTML = `<div class="err">name が指定されていません。<br>例：race.html?jcd=20&name=若松</div>`;
         return;
       }
 
-      // ✅ 日本語ファイル名はURLでエンコード必須（ここが前の不具合の元）
-      // 例: 若松_1R.json → %E8%8B%A5%E6%9D%BE_1R.json
-      const filename = `${venueName}_${r}R.json`;
-      const url = BOT_RACES_BASE_URL + encodeURIComponent(filename);
-
       try{
-        const json = await fetchJSON(url);
+        const json = await fetchRaceJSON(r);
         renderRaceJSON(r, json);
       }catch(e){
-        $table.innerHTML = `<div class="err">JSONの取得に失敗しました。<br>${escapeHTML(url)}<br>（ファイル未生成 or URL違い）</div>`;
+        const urls = buildCandidateUrls(r).map(escapeHTML).join("<br>");
+        $table.innerHTML = `<div class="err">JSONの取得に失敗しました。<br>${urls}<br>（ファイル未生成 or URL違い）</div>`;
       }
     }
 
