@@ -74,11 +74,11 @@
 /* ✅ 時間帯アイコン */
 .card__icon{
   position:absolute;
-  top:6px;
-  right:7px;
+  top:7px;
+  right:8px;
   font-size: 12px;
   line-height: 1;
-  opacity: .95;
+  opacity: .96;
   pointer-events:none;
 }
 
@@ -225,13 +225,14 @@ html[data-theme="pro"] .card--off .card__line{
   display:flex;
   align-items:center;
   justify-content:center;
-  gap: 6px;
-  margin-top: 4px;
+  gap: 10px;
+  margin-top: 8px;   /* ← 縁に当たらないよう少し下げる */
+  margin-bottom: 2px;
   min-height: 22px;
   flex-wrap: nowrap;
 }
 
-/* ✅ 日目は絶対1行にする */
+/* ✅ 日目は絶対1行・上枠と少し隙間 */
 .day{
   display:inline-block;
   white-space: nowrap;
@@ -256,16 +257,16 @@ html[data-theme="pro"] .card--off .day{
   color: rgba(255,252,244,.06);
 }
 
-/* ✅ グレードバッジは改行させない */
+/* ✅ グレードバッジは1行固定・背景はカード面に同期 */
 .grade{
   display:inline-flex;
   align-items:center;
   justify-content:center;
   flex: 0 0 auto;
-  min-width: 44px;
+  min-width: 50px;
   height: 20px;
-  padding: 0 8px;
-  border-radius: 6px;
+  padding: 0 10px;
+  border-radius: 999px;
   white-space: nowrap;
   word-break: keep-all;
   overflow: hidden;
@@ -274,19 +275,44 @@ html[data-theme="pro"] .card--off .day{
   font-size: 11px;
   line-height: 1;
   letter-spacing: .01em;
-  color: #0b1220;
-  background: rgba(148,163,184,.55);
+  color: #334155;
+
+  /* ← いまのカード背景に同期 */
+  background: rgba(148,163,184,.20);
+  border: 1px solid rgba(148,163,184,.18);
+  backdrop-filter: blur(1px);
 }
 
-.grade--g1{ background: rgba(251,146,60,.90); }
-.grade--sg{ background: rgba(239,68,68,.92); }
-.grade--g2{ background: rgba(59,130,246,.90); }
-.grade--g3{ background: rgba(34,197,94,.90); }
-.grade--ippan{ background: rgba(148,163,184,.55); }
+/* ✅ グレードごとの文字色だけ少し変える（背景は同期） */
+.grade--sg{
+  color: #b91c1c;
+}
+.grade--g1{
+  color: #c2410c;
+}
+.grade--g2{
+  color: #1d4ed8;
+}
+.grade--g3{
+  color: #15803d;
+}
+.grade--ippan{
+  color: #334155;
+}
 
 html[data-theme="pro"] .grade{
-  color: rgba(255,252,244,.95);
-  box-shadow: 0 1px 0 rgba(0,0,0,.45);
+  color: rgba(255,252,244,.92);
+  background: rgba(255,255,255,.08);
+  border-color: rgba(255,224,150,.16);
+  box-shadow: 0 1px 0 rgba(0,0,0,.35);
+}
+
+html[data-theme="pro"] .grade--sg,
+html[data-theme="pro"] .grade--g1,
+html[data-theme="pro"] .grade--g2,
+html[data-theme="pro"] .grade--g3,
+html[data-theme="pro"] .grade--ippan{
+  color: rgba(255,252,244,.92);
 }
 
 .status--soldout{
