@@ -1,7 +1,7 @@
 /* ✅ ヘッダーと1段目カードの縁が被って見えるのを防ぐ */
 .gridWrap{
   height: var(--gridH);
-  margin-top: 8px;
+  margin-top: 10px;
 
   /* ✅ iOS合成バグ抑止：強すぎるcontain(layout)は外す */
   isolation: isolate;
@@ -18,7 +18,9 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(6, 1fr);
-  gap: 6px;
+
+  /* ✅ カード間を少し詰める */
+  gap: 4px;
 
   /* ✅ グリッド自体を別レイヤーに固定 */
   transform: translateZ(0);
@@ -32,11 +34,12 @@
   justify-content:space-between;
   text-decoration:none;
 
-  border-radius: 8px;
+  border-radius: 9px;
   border: 2px solid var(--border);
   overflow:hidden;
 
-  padding: 7px 7px 5px;
+  /* ✅ 少しだけ中身を広く見せる */
+  padding: 8px 7px 6px;
   min-height: 0;
 
   position: relative;
@@ -57,13 +60,13 @@
   content:"";
   position:absolute;
   left:0; right:0; top:0;
-  height: 52%;
+  height: 54%;
   pointer-events:none;
 
   opacity: .55;
   background: var(--toneTop, rgba(15,23,42,.12));
-  border-top-left-radius: 6px;
-  border-top-right-radius: 6px;
+  border-top-left-radius: 7px;
+  border-top-right-radius: 7px;
   z-index: 1;
 
   /* ✅ 擬似要素も合成固定 */
@@ -138,8 +141,8 @@ html[data-theme="pro"] .card:active{
 /* ✅ 会場名 */
 .card__name{
   font-weight: 900;
-  font-size: 18px;
-  line-height: 1.05;
+  font-size: 19px;
+  line-height: 1.04;
   letter-spacing: 0.01em;
   color: var(--text);
   white-space: nowrap;
@@ -158,7 +161,7 @@ html[data-theme="pro"] .card__name{
 .card__line{
   font-weight: 800;
   color: #334155;
-  line-height: 1.05;
+  line-height: 1.06;
   white-space: nowrap;
   word-break: keep-all;
 }
@@ -175,8 +178,25 @@ html[data-theme="pro"] .card--off .card__line{
   color: rgba(255,252,244,.06);
 }
 
-.card__line--mid{ font-size: 12px; letter-spacing: 0.01em; }
-.card__line--btm{ font-size: 16px; letter-spacing: 0.02em; }
+/* ✅ day_label 用（app.js の card__line--sub に対応） */
+.card__line--sub{
+  font-size: 12px;
+  letter-spacing: 0.01em;
+  margin-top: 2px;
+  margin-bottom: 1px;
+}
+
+/* ✅ 下段の次レース表示 */
+.card__line--btm{
+  font-size: 16px;
+  letter-spacing: 0.02em;
+}
+
+/* 互換用 */
+.card__line--mid{
+  font-size: 12px;
+  letter-spacing: 0.01em;
+}
 
 /* meta（今後用） */
 .card__meta{
