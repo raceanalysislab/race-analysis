@@ -87,7 +87,7 @@
   border-color: var(--border);
 }
 
-/* PRO base */
+/* PRO */
 html[data-theme="pro"] .card{
   border: 2px solid var(--gold);
   background:
@@ -134,7 +134,27 @@ html[data-theme="pro"] .card:active{
   -webkit-transform: translateZ(0) translateY(-1px);
 }
 
-/* ✅ 会場名 */
+/* ✅ 会場名行 */
+.card__nameRow{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap: 4px;
+  min-height: 24px;
+}
+
+.card__nameIcon{
+  width: 18px;
+  min-width: 18px;
+  text-align:center;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.card--off .card__nameIcon{
+  visibility:hidden;
+}
+
 .card__name{
   font-weight: 900;
   font-size: 19px;
@@ -144,7 +164,7 @@ html[data-theme="pro"] .card:active{
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin: 0 auto;
+  margin: 0;
 }
 
 html[data-theme="pro"] .card__name{
@@ -154,11 +174,11 @@ html[data-theme="pro"] .card__name{
     0 0 12px rgba(255,224,150,.10);
 }
 
-/* 下段 */
+/* ✅ 下段（時間） */
 .card__line{
   font-weight: 800;
   color: #334155;
-  line-height: 1.06;
+  line-height: 1.04;
   white-space: nowrap;
   word-break: keep-all;
 }
@@ -182,16 +202,12 @@ html[data-theme="pro"] .card--off .card__line{
 }
 
 .card__line--btm{
-  font-size: 16px;
-  letter-spacing: 0.02em;
+  font-weight: 900;
+  font-size: 17px;
+  letter-spacing: 0;
 }
 
-.card__line--mid{
-  font-size: 12px;
-  letter-spacing: 0.01em;
-}
-
-/* ✅ meta：左に「☀️ 一般」、右に「◯日目 」 */
+/* ✅ meta：左に一般、右に◯日目 */
 .card__meta{
   display:flex;
   align-items:center;
@@ -199,7 +215,7 @@ html[data-theme="pro"] .card--off .card__line{
   gap: 8px;
   margin-top: 8px;
   margin-bottom: 2px;
-  min-height: 20px;
+  min-height: 16px;
   width: 100%;
   padding: 0 2px;
   box-sizing: border-box;
@@ -208,16 +224,9 @@ html[data-theme="pro"] .card--off .card__line{
 .metaLeft{
   display:inline-flex;
   align-items:center;
-  gap: 3px;
   min-width: 0;
   flex: 0 1 auto;
   white-space: nowrap;
-}
-
-.metaIcon{
-  display:inline-block;
-  font-size: 15px;
-  line-height: 1;
 }
 
 .gradeText{
@@ -225,7 +234,7 @@ html[data-theme="pro"] .card--off .card__line{
   font-weight: 500;
   font-size: 11px;
   line-height: 1;
-  letter-spacing: .01em;
+  letter-spacing: 0;
   color: #334155;
   white-space: nowrap;
 }
@@ -237,7 +246,7 @@ html[data-theme="pro"] .card--off .card__line{
   font-weight: 500;
   font-size: 11px;
   line-height: 1;
-  letter-spacing: .01em;
+  letter-spacing: 0;
   color: #334155;
   flex: 0 0 auto;
   text-align: right;
