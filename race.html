@@ -222,12 +222,11 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      font-size:24px;
+      font-size:23px;
       font-weight:1000;
       letter-spacing:-.03em;
       flex:0 0 auto;
       align-self:center;
-      margin-top:2px;
       box-shadow:
         inset 0 1px 0 rgba(255,255,255,.45),
         0 1px 2px rgba(15,23,42,.08);
@@ -243,7 +242,7 @@
 
     .info{
       min-width:0;
-      flex:1 1 0;
+      flex:1 1 auto;
       display:flex;
       flex-direction:column;
       justify-content:center;
@@ -269,19 +268,20 @@
 
     .name{
       min-width:0;
-      font-size:24px;
+      max-width:100%;
+      font-size:clamp(18px, 2.35vw, 22px);
       line-height:1;
-      font-weight:800;
+      font-weight:700;
       color:#0f172a;
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
-      letter-spacing:0;
+      letter-spacing:-.01em;
     }
 
     .metric{
       flex:0 0 40%;
-      min-width:160px;
+      min-width:164px;
       display:grid;
       grid-template-columns:1fr 1fr;
       column-gap:14px;
@@ -313,7 +313,7 @@
     }
 
     .metricVal{
-      font-size:17px;
+      font-size:20px;
       line-height:1;
       font-weight:900;
       color:#0f172a;
@@ -323,7 +323,7 @@
     }
 
     .metricSub{
-      font-size:15px;
+      font-size:16px;
       line-height:1;
       font-weight:900;
       color:#0f172a;
@@ -356,21 +356,20 @@
       .waku{
         width:38px;
         height:38px;
-        font-size:22px;
+        font-size:21px;
         border-radius:12px;
       }
 
-      .name{ font-size:21px; }
       .sub{ font-size:9px; }
 
       .metric{
-        min-width:144px;
+        min-width:146px;
         column-gap:10px;
       }
 
       .metricHead{ font-size:10px; }
-      .metricVal{ font-size:15px; }
-      .metricSub{ font-size:13px; }
+      .metricVal{ font-size:18px; }
+      .metricSub{ font-size:14px; }
     }
   </style>
 </head>
