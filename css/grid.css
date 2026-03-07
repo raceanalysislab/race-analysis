@@ -225,7 +225,7 @@ html[data-theme="pro"] .card__name{
 .day{
   display:inline-block;
   font-weight:700;
-  font-size:10px;
+  font-size:11px;
   line-height:1;
   letter-spacing:0;
   color:#334155;
@@ -268,9 +268,9 @@ html[data-theme="pro"] .card--off .day{
 .card__line--btm{
   display:block;
   font-weight:700;
-  font-size:12px;
+  font-size:13px;
   line-height:1;
-  letter-spacing:0;
+  letter-spacing:.02em;
   margin-top:auto;
   padding-top:0;
   padding-bottom:0;
