@@ -60,12 +60,12 @@
 
 /* 1R 08:00〜09:00 */
 .card--tone-morning{
-  --toneTop: linear-gradient(180deg, rgba(251,191,36,.78), rgba(251,191,36,0));
+  --toneTop: linear-gradient(180deg, rgba(251,191,36,.74), rgba(251,191,36,0));
 }
 
 /* 1R 10:00〜12:00 */
 .card--tone-day{
-  --toneTop: linear-gradient(180deg, rgba(125,211,252,.78), rgba(125,211,252,0));
+  --toneTop: linear-gradient(180deg, rgba(125,211,252,.72), rgba(125,211,252,0));
 }
 
 /* 1R 15:00〜16:00 */
@@ -74,9 +74,8 @@
 }
 
 /* 1R 17:00〜18:00 */
-/* 若松が重く見えないように、夜帯は少し薄め・抜け強め */
 .card--tone-night{
-  --toneTop: linear-gradient(180deg, rgba(124,58,237,.48), rgba(124,58,237,0));
+  --toneTop: linear-gradient(180deg, rgba(109,40,217,.58), rgba(109,40,217,0));
 }
 
 .card--tone-normal{
@@ -110,16 +109,16 @@ html[data-theme="pro"] .card::before{
 }
 
 html[data-theme="pro"] .card--tone-morning{
-  --toneTop: linear-gradient(180deg, rgba(255,224,150,.80), rgba(255,224,150,0));
+  --toneTop: linear-gradient(180deg, rgba(255,224,150,.78), rgba(255,224,150,0));
 }
 html[data-theme="pro"] .card--tone-day{
-  --toneTop: linear-gradient(180deg, rgba(153,246,228,.72), rgba(153,246,228,0));
+  --toneTop: linear-gradient(180deg, rgba(153,246,228,.68), rgba(153,246,228,0));
 }
 html[data-theme="pro"] .card--tone-evening{
   --toneTop: linear-gradient(180deg, rgba(165,180,252,.82), rgba(165,180,252,0));
 }
 html[data-theme="pro"] .card--tone-night{
-  --toneTop: linear-gradient(180deg, rgba(139,92,246,.52), rgba(139,92,246,0));
+  --toneTop: linear-gradient(180deg, rgba(139,92,246,.60), rgba(139,92,246,0));
 }
 html[data-theme="pro"] .card--tone-normal{
   --toneTop: linear-gradient(180deg, rgba(255,255,255,.24), rgba(255,255,255,0));
