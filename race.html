@@ -10,8 +10,7 @@
     :root{
       --safe-top: env(safe-area-inset-top, 0px);
       --safe-bottom: env(safe-area-inset-bottom, 0px);
-
-      --raceTopH: 118px;
+      --raceTopH: 112px;
 
       --bg:#f3f5f9;
       --panel:#ffffff;
@@ -24,9 +23,7 @@
       --muted-2:#94a3b8;
       --accent:#2563eb;
 
-      --shadow:
-        0 8px 24px rgba(15,23,42,.06),
-        0 1px 0 rgba(255,255,255,.9) inset;
+      --shadow:0 2px 8px rgba(15,23,42,.06);
     }
 
     *{ box-sizing:border-box; }
@@ -46,10 +43,9 @@
       position:sticky;
       top:0;
       z-index:50;
-      padding:10px 12px 8px;
-      background:rgba(246,247,251,.94);
-      backdrop-filter:blur(12px) saturate(120%);
-      border-bottom:1px solid rgba(226,232,240,.9);
+      padding:8px 10px 6px;
+      background:rgba(246,247,251,.98);
+      border-bottom:1px solid rgba(226,232,240,.92);
     }
 
     .raceHead{
@@ -59,8 +55,8 @@
       gap:10px;
       background:var(--panel);
       border:1px solid var(--line);
-      border-radius:18px;
-      padding:12px;
+      border-radius:16px;
+      padding:10px;
       box-shadow:var(--shadow);
     }
 
@@ -72,8 +68,8 @@
     }
 
     .raceVenue{
-      font-size:24px;
-      line-height:1.02;
+      font-size:22px;
+      line-height:1;
       font-weight:1000;
       letter-spacing:.01em;
       white-space:nowrap;
@@ -95,7 +91,7 @@
     .metaChip{
       display:inline-flex;
       align-items:center;
-      min-height:26px;
+      min-height:24px;
       padding:0 9px;
       border-radius:999px;
       border:1px solid var(--line);
@@ -109,9 +105,9 @@
       border:1px solid var(--line);
       background:var(--panel-soft);
       color:var(--text);
-      min-width:68px;
-      height:40px;
-      border-radius:12px;
+      min-width:64px;
+      height:38px;
+      border-radius:11px;
       padding:0 12px;
       font-size:13px;
       font-weight:900;
@@ -119,9 +115,9 @@
     }
 
     .raceTabs{
-      margin-top:10px;
+      margin-top:8px;
       display:flex;
-      gap:7px;
+      gap:6px;
       overflow-x:auto;
       -webkit-overflow-scrolling:touch;
       scrollbar-width:none;
@@ -133,14 +129,14 @@
     .tab{
       flex:0 0 auto;
       appearance:none;
-      min-width:54px;
-      height:36px;
-      padding:0 11px;
+      min-width:52px;
+      height:34px;
+      padding:0 10px;
       border-radius:999px;
       border:1px solid var(--line);
       background:#fff;
       color:#334155;
-      font-size:13px;
+      font-size:12px;
       font-weight:900;
       line-height:1;
     }
@@ -149,13 +145,13 @@
       background:linear-gradient(180deg, #2f7cff 0%, #2563eb 100%);
       color:#fff;
       border-color:transparent;
-      box-shadow:0 8px 18px rgba(37,99,235,.18);
+      box-shadow:0 4px 10px rgba(37,99,235,.14);
     }
 
     .raceBody{
       height:calc(100dvh - var(--raceTopH));
       overflow:hidden;
-      padding:8px 12px calc(10px + var(--safe-bottom));
+      padding:6px 10px calc(8px + var(--safe-bottom));
     }
 
     .section{
@@ -164,8 +160,8 @@
       flex-direction:column;
       background:var(--panel);
       border:1px solid var(--line);
-      border-radius:20px;
-      padding:10px;
+      border-radius:18px;
+      padding:8px;
       box-shadow:var(--shadow);
       overflow:hidden;
     }
@@ -175,8 +171,8 @@
       align-items:center;
       justify-content:space-between;
       gap:10px;
-      margin-bottom:8px;
-      padding-bottom:8px;
+      margin-bottom:6px;
+      padding-bottom:6px;
       border-bottom:1px solid var(--line-soft);
       flex:0 0 auto;
     }
@@ -190,7 +186,7 @@
 
     .sectionMeta{
       font-size:10px;
-      line-height:1.35;
+      line-height:1.3;
       color:var(--muted-2);
       text-align:right;
       white-space:nowrap;
@@ -201,34 +197,34 @@
       min-height:0;
       display:flex;
       flex-direction:column;
-      gap:7px;
+      gap:6px;
       justify-content:space-between;
     }
 
     .row{
       flex:1 1 0;
       min-height:0;
-      display:grid;
-      grid-template-columns: 40px minmax(0, 1fr) minmax(188px, 49%);
-      gap:10px;
+      display:flex;
       align-items:center;
-      border-radius:16px;
+      gap:8px;
+      border-radius:15px;
       background:linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
       border:1px solid #e5eaf2;
-      padding:8px;
+      padding:7px;
     }
 
     .waku{
-      width:40px;
-      height:40px;
-      border-radius:13px;
+      width:34px;
+      height:34px;
+      border-radius:10px;
       display:flex;
       align-items:center;
       justify-content:center;
-      font-size:22px;
+      font-size:18px;
       font-weight:1000;
       letter-spacing:-.03em;
       border:1px solid rgba(15,23,42,.08);
+      flex:0 0 auto;
     }
     .waku.w1{ background:#ffffff; color:#111827; }
     .waku.w2{ background:#1f2937; color:#ffffff; }
@@ -239,15 +235,16 @@
 
     .info{
       min-width:0;
+      flex:1 1 auto;
       display:flex;
       flex-direction:column;
       justify-content:center;
-      gap:4px;
+      gap:3px;
     }
 
     .sub{
-      font-size:10px;
-      line-height:1.15;
+      font-size:9px;
+      line-height:1.1;
       color:#64748b;
       white-space:nowrap;
       overflow:hidden;
@@ -257,7 +254,7 @@
 
     .name{
       min-width:0;
-      font-size:22px;
+      font-size:18px;
       line-height:1;
       font-weight:1000;
       color:#0f172a;
@@ -267,53 +264,64 @@
       letter-spacing:.01em;
     }
 
+    .leftRate{
+      font-size:10px;
+      line-height:1.1;
+      color:#475569;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      font-weight:900;
+      font-variant-numeric: tabular-nums;
+    }
+
     .metric{
+      flex:0 0 48%;
+      min-width:160px;
+      display:flex;
+      gap:8px;
+      justify-content:space-between;
+      align-items:stretch;
+    }
+
+    .metricCard{
+      flex:1 1 0;
       min-width:0;
-      width:100%;
-      display:grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      grid-template-rows: repeat(3, auto);
-      column-gap:14px;
-      row-gap:5px;
-      align-content:center;
-      justify-items:center;
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:10px;
+      padding:6px 4px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:4px;
       text-align:center;
       font-variant-numeric: tabular-nums;
     }
 
     .metricHead{
-      width:100%;
-      font-size:11px;
-      line-height:1.05;
+      font-size:10px;
+      line-height:1;
       font-weight:1000;
       color:#475569;
       white-space:nowrap;
     }
 
-    .metricSub{
-      width:100%;
-      font-size:9px;
-      line-height:1;
-      font-weight:900;
-      color:#94a3b8;
-      white-space:nowrap;
-    }
-
     .metricVal{
-      width:100%;
-      font-size:13px;
-      line-height:1.05;
+      font-size:12px;
+      line-height:1;
       font-weight:1000;
       color:#0f172a;
       white-space:nowrap;
     }
 
     .note{
-      margin-top:8px;
+      margin-top:6px;
       padding:0 2px;
       color:var(--muted);
-      font-size:11px;
-      line-height:1.45;
+      font-size:10px;
+      line-height:1.4;
       flex:0 0 auto;
     }
 
@@ -329,76 +337,17 @@
     }
 
     @media (max-width: 390px){
-      :root{ --raceTopH: 112px; }
-
-      .raceTop{ padding:8px 10px 7px; }
-      .raceHead{ padding:10px; }
-      .raceVenue{ font-size:22px; }
-
-      .raceBody{
-        padding-left:10px;
-        padding-right:10px;
+      .metric{
+        min-width:152px;
+        gap:6px;
       }
-
-      .section{ padding:9px; }
-
-      .row{
-        grid-template-columns: 36px minmax(0, 1fr) minmax(164px, 48%);
-        gap:8px;
-        padding:7px;
-        border-radius:15px;
+      .metricCard{
+        padding:5px 3px;
       }
-
-      .waku{
-        width:36px;
-        height:36px;
-        font-size:20px;
-        border-radius:11px;
-      }
-
+      .metricHead{ font-size:9px; }
+      .metricVal{ font-size:11px; }
+      .name{ font-size:17px; }
       .sub{ font-size:9px; }
-      .name{ font-size:19px; }
-      .metric{ column-gap:10px; row-gap:4px; }
-      .metricHead{ font-size:10px; }
-      .metricSub{ font-size:8px; }
-      .metricVal{ font-size:12px; }
-    }
-
-    @media (max-height: 760px){
-      :root{ --raceTopH: 108px; }
-
-      .raceTop{ padding:7px 10px 6px; }
-      .raceHead{ padding:10px; }
-      .raceTabs{ margin-top:8px; }
-      .raceBody{ padding-top:6px; }
-
-      .section{ padding:8px; }
-      .sectionHead{
-        margin-bottom:6px;
-        padding-bottom:6px;
-      }
-
-      .table{ gap:6px; }
-
-      .row{
-        padding:6px 7px;
-        grid-template-columns: 34px minmax(0, 1fr) minmax(156px, 48%);
-      }
-
-      .waku{
-        width:34px;
-        height:34px;
-        font-size:18px;
-        border-radius:10px;
-      }
-
-      .sub{ font-size:9px; }
-      .name{ font-size:18px; }
-      .metric{ column-gap:10px; row-gap:4px; }
-      .metricHead{ font-size:10px; }
-      .metricSub{ font-size:8px; }
-      .metricVal{ font-size:12px; }
-      .note{ font-size:10px; margin-top:6px; }
     }
   </style>
 </head>
@@ -420,7 +369,7 @@
     <div class="raceTabs" id="tabs" aria-label="レース番号"></div>
   </div>
 
-  <div class="raceBody" id="raceBody">
+  <div class="raceBody">
     <section class="section">
       <div class="sectionHead">
         <div class="sectionTitle">出走表</div>
@@ -429,7 +378,7 @@
 
       <div class="table" id="table"></div>
 
-      <div class="note" id="note">
+      <div class="note">
         ※無料版は「各選手データの確認」専用です。予想は表示しません。
       </div>
     </section>
@@ -465,7 +414,7 @@
       return m ? `${String(m[1]).padStart(2, "0")}:${m[2]}` : "--:--";
     };
     const setTopHeight = () => {
-      const h = $raceTop.getBoundingClientRect().height || 118;
+      const h = $raceTop.getBoundingClientRect().height || 112;
       document.documentElement.style.setProperty("--raceTopH", `${Math.ceil(h)}px`);
     };
     const fetchJSON = async (url) => {
@@ -516,55 +465,19 @@
           age:"",
           grade:"",
           nat_win:null,
-          nat_2:null,
-          nat_3:null,
           loc_win:null,
-          loc_2:null,
-          loc_3:null,
-          motor_no:null,
           motor_2:null,
-          motor_3:null,
-          boat_no:null,
           boat_2:null,
-          boat_3:null
+          nat_2:null
         };
       });
     }
 
-    const metricHeadHTML = () => `
-      <div class="metricHead">全国</div>
-      <div class="metricHead">当地</div>
-      <div class="metricHead">モーター</div>
-      <div class="metricHead">ボート</div>
-    `;
-
-    const metricRowHTML = (label, values) => `
-      <div class="metricSub">${label}</div>
-      ${values.map((v) => `<div class="metricVal">${esc(v)}</div>`).join("")}
-    `;
-
-    function metricHTML(p){
+    function metricCardHTML(label, value){
       return `
-        <div class="metric">
-          ${metricHeadHTML()}
-          ${metricRowHTML("勝率", [
-            safeNum(p.nat_win),
-            safeNum(p.loc_win),
-            safeNum(p.motor_no),
-            safeNum(p.boat_no)
-          ])}
-          ${metricRowHTML("2連率", [
-            safeNum(p.nat_2),
-            safeNum(p.loc_2),
-            safeNum(p.motor_2),
-            safeNum(p.boat_2)
-          ])}
-          ${metricRowHTML("3連率", [
-            safeNum(p.nat_3),
-            safeNum(p.loc_3),
-            safeNum(p.motor_3),
-            safeNum(p.boat_3)
-          ])}
+        <div class="metricCard">
+          <div class="metricHead">${label}</div>
+          <div class="metricVal">${esc(value)}</div>
         </div>
       `;
     }
@@ -582,9 +495,15 @@
           <div class="info">
             <div class="sub">${esc(regno)} / ${esc(grade)} / ${esc(branch)} / ${esc(age)}</div>
             <div class="name">${esc(p.name || "—")}</div>
+            <div class="leftRate">全国2連対率 ${esc(safeNum(p.nat_2))}</div>
           </div>
 
-          ${metricHTML(p)}
+          <div class="metric">
+            ${metricCardHTML("全国", safeNum(p.nat_win))}
+            ${metricCardHTML("当地", safeNum(p.loc_win))}
+            ${metricCardHTML("モーター", safeNum(p.motor_2))}
+            ${metricCardHTML("ボート", safeNum(p.boat_2))}
+          </div>
         </div>
       `;
     }
