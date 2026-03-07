@@ -24,8 +24,6 @@
       --accent:#2563eb;
 
       --shadow:0 2px 8px rgba(15,23,42,.06);
-      --card-radius:18px;
-      --block-radius:12px;
     }
 
     *{ box-sizing:border-box; }
@@ -208,7 +206,7 @@
       flex:1 1 0;
       min-height:0;
       display:flex;
-      align-items:stretch;
+      align-items:center;
       gap:8px;
       border-radius:15px;
       background:linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
@@ -272,10 +270,10 @@
 
     .metric{
       flex:0 0 50%;
-      min-width:176px;
+      min-width:178px;
       display:grid;
       grid-template-columns:repeat(4, minmax(0, 1fr));
-      gap:6px;
+      gap:10px;
       align-items:stretch;
     }
 
@@ -284,12 +282,12 @@
       border:1px solid var(--line);
       background:linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
       border-radius:11px;
-      padding:6px 4px;
+      padding:7px 4px 6px;
       display:flex;
       flex-direction:column;
       justify-content:center;
       align-items:center;
-      gap:4px;
+      gap:6px;
       text-align:center;
       font-variant-numeric: tabular-nums;
     }
@@ -302,24 +300,8 @@
       white-space:nowrap;
     }
 
-    .mline{
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      gap:2px;
-      min-width:0;
-    }
-
-    .mlabel{
-      font-size:7px;
-      line-height:1;
-      font-weight:900;
-      color:#94a3b8;
-      white-space:nowrap;
-    }
-
     .mval{
-      font-size:11px;
+      font-size:13px;
       line-height:1;
       font-weight:1000;
       color:#0f172a;
@@ -348,15 +330,14 @@
 
     @media (max-width: 390px){
       .metric{
-        min-width:172px;
-        gap:5px;
+        min-width:170px;
+        gap:8px;
       }
       .mblock{
-        padding:5px 3px;
+        padding:6px 3px 5px;
       }
       .mhead{ font-size:9px; }
-      .mlabel{ font-size:7px; }
-      .mval{ font-size:10px; }
+      .mval{ font-size:11px; }
       .name{ font-size:17px; }
       .sub{ font-size:8px; }
     }
@@ -502,18 +483,12 @@
       });
     }
 
-    function metricBlock(title, topLabel, topValue, bottomLabel, bottomValue){
+    function metricBlock(title, topValue, bottomValue){
       return `
         <div class="mblock">
           <div class="mhead">${title}</div>
-          <div class="mline">
-            <div class="mlabel">${topLabel}</div>
-            <div class="mval">${esc(topValue)}</div>
-          </div>
-          <div class="mline">
-            <div class="mlabel">${bottomLabel}</div>
-            <div class="mval">${esc(bottomValue)}</div>
-          </div>
+          <div class="mval">${esc(topValue)}</div>
+          <div class="mval">${esc(bottomValue)}</div>
         </div>
       `;
     }
@@ -521,10 +496,10 @@
     function metricHTML(p){
       return `
         <div class="metric">
-          ${metricBlock("全国", "勝率", safeNum(p.nat_win), "2連対率", safeNum(p.nat_2))}
-          ${metricBlock("当地", "勝率", safeNum(p.loc_win), "2連対率", safeNum(p.loc_2))}
-          ${metricBlock("モーター", "No.", safeInt(p.motor_no), "2連対率", safeNum(p.motor_2))}
-          ${metricBlock("ボート", "No.", safeInt(p.boat_no), "2連対率", safeNum(p.boat_2))}
+          ${metricBlock("全国", safeNum(p.nat_win), safeNum(p.nat_2))}
+          ${metricBlock("当地", safeNum(p.loc_win), safeNum(p.loc_2))}
+          ${metricBlock(`M${safeInt(p.motor_no)}`, safeNum(p.motor_2), "")}
+          ${metricBlock(`B${safeInt(p.boat_no)}`, safeNum(p.boat_2), "")}
         </div>
       `;
     }
@@ -535,13 +510,15 @@
       const branch = p.branch || "—";
       const age = (p.age !== undefined && p.age !== null && p.age !== "") ? `${p.age}歳` : "—";
 
+      const displayName = String(p.name || "—").replace(/(?<=.{2})(?=.)/g, " ");
+
       return `
         <div class="row">
           <div class="waku w${Number(p.waku) || 0}">${Number(p.waku) || ""}</div>
 
           <div class="info">
             <div class="sub">${esc(regno)} / ${esc(grade)} / ${esc(branch)} / ${esc(age)}</div>
-            <div class="name">${esc(p.name || "—")}</div>
+            <div class="name">${esc(displayName)}</div>
           </div>
 
           ${metricHTML(p)}
