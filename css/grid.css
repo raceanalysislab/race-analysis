@@ -107,7 +107,6 @@ html[data-theme="pro"] .card::before{
   opacity: .84;
 }
 
-/* PROでも時間帯カラーはFREE寄りではっきり見せる */
 html[data-theme="pro"] .card--tone-morning{
   --toneTop: linear-gradient(180deg, rgba(251,191,36,.70), rgba(251,191,36,0));
 }
@@ -266,7 +265,10 @@ html[data-theme="pro"] .card--off .day{
 }
 
 .card__line--btm{
-  display:block;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap: 6px;
   font-weight:700;
   font-size:13px;
   line-height:1;
@@ -274,6 +276,21 @@ html[data-theme="pro"] .card--off .day{
   margin-top:auto;
   padding-top:0;
   padding-bottom:0;
+}
+
+.raceNo{
+  color: inherit;
+  font-weight:700;
+}
+
+.raceTime{
+  color: inherit;
+  font-weight:700;
+}
+
+.raceTime--danger{
+  color:#ef4444 !important;
+  font-weight:900;
 }
 
 .card__line--danger{
