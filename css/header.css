@@ -1,8 +1,8 @@
 /* ===== Header ===== */
-/* 白 × 金 PROテーマ 120点版 / BOAT CORE対応 */
+/* 白 × 金 PROテーマ 120点版 / BOAT CORE対応 / 余白調整版 */
 
 .top{
-  padding: 16px 14px 10px;
+  padding: 16px 14px 12px;
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -50,7 +50,7 @@ html[data-theme="pro"] .top__title{
 }
 
 .top__subtitle{
-  margin-top: 4px;
+  margin-top: 6px;
   font-size: 13px;
   line-height: 1.2;
   color: var(--muted);
@@ -141,7 +141,7 @@ html[data-theme="pro"] .top__proDot{
 }
 
 .top__sub{
-  margin-top: 8px;
+  margin-top: 10px;
   display:flex;
   align-items:center;
   justify-content:space-between;
@@ -160,7 +160,7 @@ html[data-theme="pro"] .top__sub{
 
 @media (max-width: 390px){
   .top{
-    padding: 14px 12px 10px;
+    padding: 14px 12px 12px;
   }
 
   .top__title{
@@ -168,7 +168,12 @@ html[data-theme="pro"] .top__sub{
   }
 
   .top__subtitle{
+    margin-top: 5px;
     font-size: 12px;
+  }
+
+  .top__sub{
+    margin-top: 9px;
   }
 
   .top__actions{
