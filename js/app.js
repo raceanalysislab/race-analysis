@@ -1,4 +1,4 @@
-/* js/app.js（完全置き換え：開催一覧 / 安定版） */
+/* js/app.js（完全置き換え：開催一覧 / 中央固定安定版） */
 
 const SITE_VENUES_URL =
   "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/site/venues.json";
@@ -17,6 +17,12 @@ const VENUES = [
   { jcd: "17", name: "宮島" }, { jcd: "18", name: "徳山" }, { jcd: "19", name: "下関" }, { jcd: "20", name: "若松" },
   { jcd: "21", name: "芦屋" }, { jcd: "22", name: "福岡" }, { jcd: "23", name: "唐津" }, { jcd: "24", name: "大村" }
 ];
+
+/* モーニング / ナイターの補完
+   本来は backend の card_tone を使うのが理想だが、
+   next_display が 2R 以降に進むと ☀️ が消えるため front でも補完する */
+const MORNING_JCDS = new Set(["10", "14", "21", "23"]);
+const NIGHT_JCDS   = new Set(["01", "07", "12", "15", "19", "20", "24"]);
 
 const $grid = document.getElementById("grid");
 const $updatedAt = document.getElementById("updatedAt");
@@ -89,7 +95,14 @@ function getVenueArray(raw) {
   return [];
 }
 
-function detectCardToneByTime(nextDisplay) {
+function normalizeGradeLabel(label) {
+  const s = String(label || "").trim();
+  if (!s) return "一般";
+  if (s === "一般戦") return "一般";
+  return s;
+}
+
+function detectToneByTime(nextDisplay) {
   const s = String(nextDisplay || "");
   const m = s.match(/(\d{1,2}):(\d{2})/);
   if (!m) return "normal";
@@ -103,25 +116,26 @@ function detectCardToneByTime(nextDisplay) {
   return "normal";
 }
 
+function detectTone(item, jcd) {
+  const jsonTone = String(item?.card_tone || "").trim().toLowerCase();
+  if (jsonTone === "morning" || jsonTone === "night") return jsonTone;
+
+  if (MORNING_JCDS.has(jcd)) return "morning";
+  if (NIGHT_JCDS.has(jcd)) return "night";
+
+  return detectToneByTime(item?.next_display || "");
+}
+
 function normalizeToneClass(tone) {
-  const s = String(tone || "").trim().toLowerCase();
-  if (s === "morning") return "card--tone-morning";
-  if (s === "night") return "card--tone-night";
+  if (tone === "morning") return "card--tone-morning";
+  if (tone === "night") return "card--tone-night";
   return "card--tone-normal";
 }
 
 function toneIcon(tone) {
-  const s = String(tone || "").trim().toLowerCase();
-  if (s === "morning") return "☀️";
-  if (s === "night") return "🌙";
+  if (tone === "morning") return "☀️";
+  if (tone === "night") return "🌙";
   return "";
-}
-
-function normalizeGradeLabel(label) {
-  const s = String(label || "").trim();
-  if (!s) return "一般";
-  if (s === "一般戦") return "一般";
-  return s;
 }
 
 function getVenueMetaLine(v) {
@@ -150,7 +164,7 @@ function normalizeVenueList(raw) {
     seen.add(base.jcd);
 
     const nextDisplay = String(item?.next_display || "-- --").trim() || "-- --";
-    const tone = detectCardToneByTime(nextDisplay);
+    const tone = detectTone(item, base.jcd);
 
     out.push({
       jcd: base.jcd,
