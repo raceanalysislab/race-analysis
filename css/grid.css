@@ -93,35 +93,35 @@
   border-color: var(--border);
 }
 
-/* ===== PRO : 白金テーマ / 視認性優先 ===== */
+/* ===== PRO : 白金テーマ / FREEの背景を活かす版 ===== */
 html[data-theme="pro"] .card{
-  border: 2px solid rgba(212,175,55,.34);
-  background:
-    linear-gradient(180deg, rgba(255,255,255,.985), rgba(250,247,240,.965));
+  border: 2px solid rgba(205,165,45,.28);
+  background: var(--cardOn);
   box-shadow:
     0 1px 0 rgba(255,255,255,.92) inset,
-    0 0 0 1px rgba(212,175,55,.06),
-    0 6px 14px rgba(15,23,42,.08);
+    0 0 0 1px rgba(205,165,45,.05),
+    0 5px 12px rgba(15,23,42,.06);
 }
 
 html[data-theme="pro"] .card::before{
-  opacity: .90;
+  opacity: .84;
 }
 
+/* PROでも時間帯カラーはFREE寄りでしっかり見せる */
 html[data-theme="pro"] .card--tone-morning{
-  --toneTop: linear-gradient(180deg, rgba(255,224,150,.70), rgba(255,224,150,0));
+  --toneTop: linear-gradient(180deg, rgba(251,191,36,.62), rgba(251,191,36,0));
 }
 html[data-theme="pro"] .card--tone-day{
-  --toneTop: linear-gradient(180deg, rgba(186,230,253,.72), rgba(186,230,253,0));
+  --toneTop: linear-gradient(180deg, rgba(125,211,252,.66), rgba(125,211,252,0));
 }
 html[data-theme="pro"] .card--tone-evening{
-  --toneTop: linear-gradient(180deg, rgba(199,210,254,.74), rgba(199,210,254,0));
+  --toneTop: linear-gradient(180deg, rgba(129,140,248,.72), rgba(129,140,248,0));
 }
 html[data-theme="pro"] .card--tone-night{
-  --toneTop: linear-gradient(180deg, rgba(221,214,254,.72), rgba(221,214,254,0));
+  --toneTop: linear-gradient(180deg, rgba(109,40,217,.50), rgba(109,40,217,0));
 }
 html[data-theme="pro"] .card--tone-normal{
-  --toneTop: linear-gradient(180deg, rgba(226,232,240,.46), rgba(226,232,240,0));
+  --toneTop: linear-gradient(180deg, rgba(148,163,184,.26), rgba(148,163,184,0));
 }
 
 html[data-theme="pro"] .card--off::before{
@@ -129,32 +129,30 @@ html[data-theme="pro"] .card--off::before{
 }
 
 html[data-theme="pro"] .card--on{
-  border-color: rgba(200,160,40,.78);
-  background:
-    linear-gradient(180deg, rgba(255,255,255,.99), rgba(248,245,236,.98));
+  border-color: rgba(190,150,30,.88);
+  background: var(--cardOn);
   box-shadow:
-    0 1px 0 rgba(255,255,255,.94) inset,
-    0 0 0 1px rgba(212,175,55,.10),
-    0 6px 14px rgba(15,23,42,.08),
-    0 0 8px rgba(212,175,55,.06);
+    0 1px 0 rgba(255,255,255,.95) inset,
+    0 0 0 1px rgba(205,165,45,.08),
+    0 6px 14px rgba(15,23,42,.07),
+    0 0 8px rgba(205,165,45,.05);
 }
 
 html[data-theme="pro"] .card--off{
-  border-color: rgba(212,175,55,.14);
-  background:
-    linear-gradient(180deg, rgba(245,244,240,.92), rgba(238,236,231,.92));
+  border-color: rgba(205,165,45,.10);
+  background: var(--cardOff);
   box-shadow:
-    0 1px 0 rgba(255,255,255,.76) inset,
-    0 3px 10px rgba(15,23,42,.04);
+    0 1px 0 rgba(255,255,255,.72) inset,
+    0 2px 8px rgba(15,23,42,.03);
   filter: none;
   opacity: 1;
 }
 
 html[data-theme="pro"] .card:active{
   box-shadow:
-    0 1px 0 rgba(255,255,255,.94) inset,
-    0 0 0 1px rgba(212,175,55,.14),
-    0 8px 18px rgba(15,23,42,.10);
+    0 1px 0 rgba(255,255,255,.95) inset,
+    0 0 0 1px rgba(205,165,45,.12),
+    0 8px 16px rgba(15,23,42,.09);
   transform: translateZ(0) translateY(-1px);
   -webkit-transform: translateZ(0) translateY(-1px);
 }
@@ -199,8 +197,8 @@ html[data-theme="pro"] .card:active{
 html[data-theme="pro"] .card__name{
   color: #111827;
   text-shadow:
-    0 1px 0 rgba(255,255,255,.86),
-    0 0 6px rgba(212,175,55,.03);
+    0 1px 0 rgba(255,255,255,.82),
+    0 0 4px rgba(205,165,45,.02);
 }
 
 .card__meta{
