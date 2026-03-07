@@ -3,41 +3,31 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#0a1020" />
+  <meta name="theme-color" content="#f6f7fb" />
   <title>レース詳細</title>
-
-  <link rel="stylesheet" href="./style.css" />
-  <link rel="stylesheet" href="./css/base.css" />
-  <link rel="stylesheet" href="./css/layout.css" />
-  <link rel="stylesheet" href="./css/header.css" />
-  <link rel="stylesheet" href="./css/grid.css" />
 
   <style>
     :root{
       --safe-top: env(safe-area-inset-top, 0px);
       --safe-bottom: env(safe-area-inset-bottom, 0px);
 
-      --raceTopH: 138px;
+      --raceTopH: 118px;
 
-      --bg:#07101f;
-      --bg2:#0d1a33;
-      --panel:#101b33;
-      --panel2:#162442;
-      --line:rgba(255,255,255,.08);
-      --line-soft:rgba(255,255,255,.05);
+      --bg:#f3f5f9;
+      --panel:#ffffff;
+      --panel-soft:#f8fafc;
+      --line:#e2e8f0;
+      --line-soft:#eef2f7;
 
-      --text:#eef4ff;
-      --muted:#95a5c2;
-      --accent:#ffb100;
+      --text:#0f172a;
+      --muted:#64748b;
+      --muted-2:#94a3b8;
+      --accent:#2563eb;
+      --accent-soft:#dbeafe;
 
-      --card:#ffffff;
-      --cardText:#0f172a;
-      --cardMuted:#64748b;
-      --shadow:0 14px 34px rgba(0,0,0,.28);
-
-      --good:#16a34a;
-      --mid:#d97706;
-      --low:#64748b;
+      --shadow:
+        0 8px 24px rgba(15,23,42,.06),
+        0 1px 0 rgba(255,255,255,.9) inset;
     }
 
     *{ box-sizing:border-box; }
@@ -45,12 +35,10 @@
     html, body{
       margin:0;
       min-height:100%;
-      background:
-        radial-gradient(900px 520px at 50% -12%, rgba(84,140,255,.18), transparent 42%),
-        linear-gradient(180deg, var(--bg) 0%, #050d1b 100%);
+      background:linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
       color:var(--text);
-      overscroll-behavior-y:none;
       font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP","Segoe UI",sans-serif;
+      overscroll-behavior-y:none;
     }
 
     body{
@@ -61,23 +49,21 @@
       position:sticky;
       top:0;
       z-index:50;
-      padding:10px 14px 8px;
-      background:
-        linear-gradient(180deg, rgba(7,16,31,.98) 0%, rgba(7,16,31,.94) 74%, rgba(7,16,31,0) 100%);
-      backdrop-filter: blur(10px) saturate(120%);
+      padding:10px 12px 8px;
+      background:rgba(246,247,251,.94);
+      backdrop-filter:blur(12px) saturate(120%);
+      border-bottom:1px solid rgba(226,232,240,.9);
     }
 
     .raceHead{
       display:flex;
       align-items:flex-start;
       justify-content:space-between;
-      gap:12px;
-      padding:14px;
-      border-radius:20px;
-      background:
-        linear-gradient(135deg, rgba(255,255,255,.05), rgba(255,255,255,.02)),
-        linear-gradient(180deg, var(--panel2) 0%, var(--panel) 100%);
+      gap:10px;
+      background:var(--panel);
       border:1px solid var(--line);
+      border-radius:18px;
+      padding:12px;
       box-shadow:var(--shadow);
     }
 
@@ -85,63 +71,64 @@
       min-width:0;
       display:flex;
       flex-direction:column;
-      gap:8px;
+      gap:6px;
     }
 
     .raceVenue{
       font-size:24px;
       line-height:1.02;
       font-weight:1000;
-      letter-spacing:.02em;
+      letter-spacing:.01em;
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
+      color:#0f172a;
     }
 
     .raceMeta{
       display:flex;
-      align-items:center;
-      gap:8px;
+      gap:6px;
       flex-wrap:wrap;
-      color:var(--muted);
-      font-size:12px;
+      align-items:center;
+      font-size:11px;
       line-height:1;
+      color:var(--muted);
     }
 
     .metaChip{
       display:inline-flex;
       align-items:center;
-      min-height:28px;
-      padding:0 10px;
+      min-height:26px;
+      padding:0 9px;
       border-radius:999px;
-      background:rgba(255,255,255,.05);
-      border:1px solid var(--line-soft);
+      border:1px solid var(--line);
+      background:var(--panel-soft);
       white-space:nowrap;
+      font-weight:700;
     }
 
     .raceBtn{
       appearance:none;
-      border:none;
-      min-width:74px;
-      height:44px;
-      padding:0 14px;
-      border-radius:14px;
-      background:linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.06));
-      color:#fff;
-      font-size:14px;
+      border:1px solid var(--line);
+      background:var(--panel-soft);
+      color:var(--text);
+      min-width:68px;
+      height:40px;
+      border-radius:12px;
+      padding:0 12px;
+      font-size:13px;
       font-weight:900;
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.10);
       flex:0 0 auto;
     }
 
     .raceTabs{
-      margin-top:12px;
+      margin-top:10px;
       display:flex;
-      gap:8px;
+      gap:7px;
       overflow-x:auto;
       -webkit-overflow-scrolling:touch;
       scrollbar-width:none;
-      padding-bottom:3px;
+      padding-bottom:2px;
       scroll-behavior:smooth;
     }
 
@@ -150,123 +137,124 @@
     .tab{
       flex:0 0 auto;
       appearance:none;
-      min-width:58px;
-      height:40px;
-      padding:0 12px;
+      min-width:54px;
+      height:36px;
+      padding:0 11px;
       border-radius:999px;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(255,255,255,.04);
-      color:#dce8fb;
-      font-size:14px;
+      border:1px solid var(--line);
+      background:#fff;
+      color:#334155;
+      font-size:13px;
       font-weight:900;
       line-height:1;
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
     }
 
     .tab.is-active{
-      background:linear-gradient(180deg, #ffd34f 0%, #ffb000 100%);
-      color:#08111e;
+      background:linear-gradient(180deg, #2f7cff 0%, #2563eb 100%);
+      color:#fff;
       border-color:transparent;
-      box-shadow:
-        0 8px 20px rgba(255,176,0,.20),
-        inset 0 1px 0 rgba(255,255,255,.42);
+      box-shadow:0 8px 18px rgba(37,99,235,.18);
     }
 
     .raceBody{
       height:calc(100dvh - var(--raceTopH));
-      overflow:auto;
-      -webkit-overflow-scrolling:touch;
-      padding:8px 14px calc(16px + var(--safe-bottom));
+      overflow:hidden;
+      padding:8px 12px calc(10px + var(--safe-bottom));
     }
 
     .section{
-      padding:12px;
-      border-radius:22px;
-      background:
-        linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      height:100%;
+      display:flex;
+      flex-direction:column;
+      background:var(--panel);
       border:1px solid var(--line);
+      border-radius:20px;
+      padding:10px;
       box-shadow:var(--shadow);
+      overflow:hidden;
     }
 
     .sectionHead{
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:12px;
-      margin-bottom:10px;
-      padding-bottom:10px;
-      border-bottom:1px solid rgba(255,255,255,.06);
+      gap:10px;
+      margin-bottom:8px;
+      padding-bottom:8px;
+      border-bottom:1px solid var(--line-soft);
+      flex:0 0 auto;
     }
 
     .sectionTitle{
-      font-size:14px;
+      font-size:13px;
       font-weight:1000;
       letter-spacing:.03em;
-      color:#dce9ff;
+      color:#0f172a;
     }
 
     .sectionMeta{
-      font-size:11px;
-      line-height:1.45;
-      color:var(--muted);
+      font-size:10px;
+      line-height:1.35;
+      color:var(--muted-2);
       text-align:right;
       white-space:nowrap;
     }
 
     .table{
+      flex:1 1 auto;
+      min-height:0;
       display:flex;
       flex-direction:column;
-      gap:10px;
+      gap:7px;
+      justify-content:space-between;
     }
 
     .row{
+      flex:1 1 0;
+      min-height:0;
       display:grid;
-      grid-template-columns: 52px 1fr 128px;
-      gap:10px;
+      grid-template-columns: 40px 1fr 112px;
+      gap:8px;
       align-items:center;
-      min-height:80px;
-      padding:10px;
-      border-radius:18px;
-      background:
-        linear-gradient(180deg, rgba(255,255,255,.985), rgba(242,247,252,.96));
-      color:var(--cardText);
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,.95),
-        0 6px 16px rgba(0,0,0,.10);
+      border-radius:16px;
+      background:linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+      border:1px solid #e5eaf2;
+      padding:8px;
     }
 
     .waku{
-      width:52px;
-      height:52px;
-      border-radius:16px;
+      width:40px;
+      height:40px;
+      border-radius:13px;
       display:flex;
       align-items:center;
       justify-content:center;
-      font-size:28px;
+      font-size:22px;
       font-weight:1000;
       letter-spacing:-.03em;
       border:1px solid rgba(15,23,42,.08);
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.30);
     }
+
     .waku.w1{ background:#ffffff; color:#111827; }
     .waku.w2{ background:#1f2937; color:#ffffff; }
-    .waku.w3{ background:#f35a5a; color:#ffffff; }
-    .waku.w4{ background:#4e89ff; color:#ffffff; }
-    .waku.w5{ background:#f7d94c; color:#111827; }
-    .waku.w6{ background:#44c66f; color:#111827; }
+    .waku.w3{ background:#ef4444; color:#ffffff; }
+    .waku.w4{ background:#2563eb; color:#ffffff; }
+    .waku.w5{ background:#facc15; color:#111827; }
+    .waku.w6{ background:#22c55e; color:#111827; }
 
     .info{
       min-width:0;
       display:flex;
       flex-direction:column;
       justify-content:center;
-      gap:4px;
+      gap:3px;
     }
 
     .name{
-      font-size:17px;
-      line-height:1.14;
+      font-size:15px;
+      line-height:1.08;
       font-weight:1000;
+      color:#0f172a;
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
@@ -275,21 +263,20 @@
 
     .sub{
       display:flex;
-      gap:8px 10px;
+      gap:6px 8px;
       flex-wrap:wrap;
-      font-size:12px;
-      line-height:1.2;
-      color:var(--cardMuted);
+      font-size:11px;
+      line-height:1.15;
+      color:#64748b;
     }
 
     .metric{
       min-width:0;
-      align-self:stretch;
       display:flex;
       flex-direction:column;
       justify-content:center;
       align-items:flex-end;
-      gap:5px;
+      gap:3px;
       text-align:right;
     }
 
@@ -298,8 +285,8 @@
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
-      font-size:13px;
-      line-height:1.2;
+      font-size:11px;
+      line-height:1.15;
       font-weight:900;
       color:#0f172a;
     }
@@ -309,67 +296,104 @@
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
-      font-size:11px;
-      line-height:1.25;
+      font-size:10px;
+      line-height:1.15;
       color:#64748b;
     }
 
-    .rate-high{ color:var(--good); }
-    .rate-mid{ color:var(--mid); }
-    .rate-low{ color:var(--low); }
+    .rate-high{ color:#16a34a; }
+    .rate-mid{ color:#d97706; }
+    .rate-low{ color:#64748b; }
 
     .muted{ color:#64748b; }
 
     .note{
-      margin-top:10px;
-      padding:10px 12px 2px;
-      color:rgba(255,255,255,.72);
-      font-size:12px;
-      line-height:1.6;
+      margin-top:8px;
+      padding:0 2px;
+      color:var(--muted);
+      font-size:11px;
+      line-height:1.45;
+      flex:0 0 auto;
     }
 
     .err{
       padding:12px 14px;
-      border-radius:16px;
-      border:1px dashed rgba(255,255,255,.16);
-      background:rgba(255,255,255,.04);
-      color:#dbeafe;
+      border-radius:14px;
+      border:1px dashed #cbd5e1;
+      background:#f8fafc;
+      color:#475569;
       font-size:12px;
       line-height:1.7;
       word-break:break-word;
     }
 
     @media (max-width: 390px){
-      :root{ --raceTopH: 134px; }
-      .raceTop{ padding:8px 12px 7px; }
-      .raceHead{ padding:12px; }
+      :root{ --raceTopH: 112px; }
+
+      .raceTop{ padding:8px 10px 7px; }
+      .raceHead{ padding:10px; }
       .raceVenue{ font-size:22px; }
+
+      .raceBody{
+        padding-left:10px;
+        padding-right:10px;
+      }
+
+      .section{ padding:9px; }
+
       .row{
-        grid-template-columns: 48px 1fr 112px;
-        min-height:74px;
-        padding:9px;
+        grid-template-columns: 36px 1fr 102px;
+        gap:7px;
+        padding:7px;
+        border-radius:15px;
       }
+
       .waku{
-        width:48px;
-        height:48px;
-        font-size:26px;
+        width:36px;
+        height:36px;
+        font-size:20px;
+        border-radius:11px;
       }
-      .name{ font-size:16px; }
-      .sub{ font-size:11px; }
-      .st{ font-size:12px; }
-      .win{ font-size:10px; }
+
+      .name{ font-size:14px; }
+      .sub{ font-size:10px; }
+      .st{ font-size:10px; }
+      .win{ font-size:9px; }
     }
 
-    @media (max-height: 740px){
-      .raceTop{ padding:8px 14px 6px; }
-      .raceHead{ padding:12px; }
-      .raceTabs{ margin-top:10px; }
+    @media (max-height: 760px){
+      :root{ --raceTopH: 108px; }
+
+      .raceTop{ padding:7px 10px 6px; }
+      .raceHead{ padding:10px; }
+      .raceTabs{ margin-top:8px; }
       .raceBody{ padding-top:6px; }
-      .row{
-        min-height:74px;
-        padding:9px;
+
+      .section{ padding:8px; }
+      .sectionHead{
+        margin-bottom:6px;
+        padding-bottom:6px;
       }
-      .name{ font-size:16px; }
+
+      .table{ gap:6px; }
+
+      .row{
+        padding:6px 7px;
+        grid-template-columns: 34px 1fr 98px;
+      }
+
+      .waku{
+        width:34px;
+        height:34px;
+        font-size:18px;
+        border-radius:10px;
+      }
+
+      .name{ font-size:13px; }
+      .sub{ font-size:10px; gap:5px 7px; }
+      .st{ font-size:10px; }
+      .win{ font-size:9px; }
+      .note{ font-size:10px; margin-top:6px; }
     }
   </style>
 </head>
@@ -395,7 +419,7 @@
     <section class="section">
       <div class="sectionHead">
         <div class="sectionTitle">出走表</div>
-        <div class="sectionMeta">開催場タップ後に<br>6選手を確認</div>
+        <div class="sectionMeta">無料版は<br>選手データ確認のみ</div>
       </div>
 
       <div class="table" id="table"></div>
@@ -435,7 +459,7 @@
     }
 
     function setTopHeight(){
-      const h = $raceTop.getBoundingClientRect().height || 138;
+      const h = $raceTop.getBoundingClientRect().height || 118;
       document.documentElement.style.setProperty("--raceTopH", `${Math.ceil(h)}px`);
     }
 
