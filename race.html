@@ -209,7 +209,7 @@
       flex:1 1 0;
       min-height:0;
       display:grid;
-      grid-template-columns: 40px minmax(0, 1fr) minmax(176px, 47%);
+      grid-template-columns: 40px minmax(0, 1fr) minmax(188px, 49%);
       gap:10px;
       align-items:center;
       border-radius:16px;
@@ -255,23 +255,6 @@
       font-weight:700;
     }
 
-    .nameRow{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      min-width:0;
-    }
-
-    .nameWaku{
-      flex:0 0 auto;
-      font-size:22px;
-      line-height:1;
-      font-weight:1000;
-      color:#0f172a;
-      width:16px;
-      text-align:center;
-    }
-
     .name{
       min-width:0;
       font-size:22px;
@@ -286,14 +269,16 @@
 
     .metric{
       min-width:0;
+      width:100%;
       display:grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-rows: repeat(3, auto);
       column-gap:14px;
-      row-gap:6px;
+      row-gap:5px;
       align-content:center;
       justify-items:center;
       text-align:center;
-      width:100%;
+      font-variant-numeric: tabular-nums;
     }
 
     .metricHead{
@@ -305,9 +290,18 @@
       white-space:nowrap;
     }
 
+    .metricSub{
+      width:100%;
+      font-size:9px;
+      line-height:1;
+      font-weight:900;
+      color:#94a3b8;
+      white-space:nowrap;
+    }
+
     .metricVal{
       width:100%;
-      font-size:14px;
+      font-size:13px;
       line-height:1.05;
       font-weight:1000;
       color:#0f172a;
@@ -349,7 +343,7 @@
       .section{ padding:9px; }
 
       .row{
-        grid-template-columns: 36px minmax(0, 1fr) minmax(152px, 46%);
+        grid-template-columns: 36px minmax(0, 1fr) minmax(164px, 48%);
         gap:8px;
         padding:7px;
         border-radius:15px;
@@ -363,10 +357,10 @@
       }
 
       .sub{ font-size:9px; }
-      .nameWaku{ font-size:20px; width:14px; }
       .name{ font-size:19px; }
-      .metric{ column-gap:10px; row-gap:5px; }
+      .metric{ column-gap:10px; row-gap:4px; }
       .metricHead{ font-size:10px; }
+      .metricSub{ font-size:8px; }
       .metricVal{ font-size:12px; }
     }
 
@@ -388,7 +382,7 @@
 
       .row{
         padding:6px 7px;
-        grid-template-columns: 34px minmax(0, 1fr) minmax(148px, 46%);
+        grid-template-columns: 34px minmax(0, 1fr) minmax(156px, 48%);
       }
 
       .waku{
@@ -399,10 +393,10 @@
       }
 
       .sub{ font-size:9px; }
-      .nameWaku{ font-size:18px; width:14px; }
       .name{ font-size:18px; }
       .metric{ column-gap:10px; row-gap:4px; }
       .metricHead{ font-size:10px; }
+      .metricSub{ font-size:8px; }
       .metricVal{ font-size:12px; }
       .note{ font-size:10px; margin-top:6px; }
     }
@@ -522,9 +516,17 @@
           age:"",
           grade:"",
           nat_win:null,
+          nat_2:null,
+          nat_3:null,
           loc_win:null,
+          loc_2:null,
+          loc_3:null,
+          motor_no:null,
           motor_2:null,
-          boat_2:null
+          motor_3:null,
+          boat_no:null,
+          boat_2:null,
+          boat_3:null
         };
       });
     }
@@ -536,15 +538,38 @@
       <div class="metricHead">ボート</div>
     `;
 
-    const metricValHTML = (p) => `
-      <div class="metricVal">${esc(safeNum(p.nat_win))}</div>
-      <div class="metricVal">${esc(safeNum(p.loc_win))}</div>
-      <div class="metricVal">${esc(safeNum(p.motor_2))}</div>
-      <div class="metricVal">${esc(safeNum(p.boat_2))}</div>
+    const metricRowHTML = (label, values) => `
+      <div class="metricSub">${label}</div>
+      ${values.map((v) => `<div class="metricVal">${esc(v)}</div>`).join("")}
     `;
 
+    function metricHTML(p){
+      return `
+        <div class="metric">
+          ${metricHeadHTML()}
+          ${metricRowHTML("勝率", [
+            safeNum(p.nat_win),
+            safeNum(p.loc_win),
+            safeNum(p.motor_no),
+            safeNum(p.boat_no)
+          ])}
+          ${metricRowHTML("2連率", [
+            safeNum(p.nat_2),
+            safeNum(p.loc_2),
+            safeNum(p.motor_2),
+            safeNum(p.boat_2)
+          ])}
+          ${metricRowHTML("3連率", [
+            safeNum(p.nat_3),
+            safeNum(p.loc_3),
+            safeNum(p.motor_3),
+            safeNum(p.boat_3)
+          ])}
+        </div>
+      `;
+    }
+
     function rowHTML(p){
-      const waku = Number(p.waku) || 0;
       const regno = p.regno || p.id || "—";
       const grade = p.grade || "—";
       const branch = p.branch || "—";
@@ -552,20 +577,14 @@
 
       return `
         <div class="row">
-          <div class="waku w${waku}">${waku || ""}</div>
+          <div class="waku w${Number(p.waku) || 0}">${Number(p.waku) || ""}</div>
 
           <div class="info">
             <div class="sub">${esc(regno)} / ${esc(grade)} / ${esc(branch)} / ${esc(age)}</div>
-            <div class="nameRow">
-              <div class="nameWaku">${waku || ""}</div>
-              <div class="name">${esc(p.name || "—")}</div>
-            </div>
+            <div class="name">${esc(p.name || "—")}</div>
           </div>
 
-          <div class="metric">
-            ${metricHeadHTML()}
-            ${metricValHTML(p)}
-          </div>
+          ${metricHTML(p)}
         </div>
       `;
     }
