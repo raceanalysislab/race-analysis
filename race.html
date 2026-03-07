@@ -207,44 +207,47 @@
       min-height:0;
       display:flex;
       align-items:stretch;
-      gap:8px;
+      gap:10px;
       border-radius:15px;
       background:linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
       border:1px solid #e5eaf2;
-      padding:7px;
+      padding:8px;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.75);
     }
 
     .waku{
-      width:34px;
-      height:34px;
-      border-radius:10px;
+      width:42px;
+      height:42px;
+      border-radius:14px;
       display:flex;
       align-items:center;
       justify-content:center;
       font-size:24px;
       font-weight:1000;
       letter-spacing:-.03em;
-      border:1px solid rgba(15,23,42,.08);
       flex:0 0 auto;
       align-self:center;
       margin-top:2px;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.45),
+        0 1px 2px rgba(15,23,42,.08);
+      border:1px solid rgba(15,23,42,.08);
     }
 
-    .waku.w1{ background:#ffffff; color:#111827; }
-    .waku.w2{ background:#1f2937; color:#ffffff; }
-    .waku.w3{ background:#ef4444; color:#ffffff; }
-    .waku.w4{ background:#2563eb; color:#ffffff; }
-    .waku.w5{ background:#facc15; color:#111827; }
-    .waku.w6{ background:#22c55e; color:#111827; }
+    .waku.w1{ background:linear-gradient(180deg, #ffffff 0%, #f8fafc 100%); color:#111827; }
+    .waku.w2{ background:linear-gradient(180deg, #1f2a44 0%, #162033 100%); color:#ffffff; }
+    .waku.w3{ background:linear-gradient(180deg, #f16459 0%, #df4b41 100%); color:#ffffff; }
+    .waku.w4{ background:linear-gradient(180deg, #4a82ff 0%, #3468ea 100%); color:#ffffff; }
+    .waku.w5{ background:linear-gradient(180deg, #f6d94b 0%, #efc93b 100%); color:#111827; }
+    .waku.w6{ background:linear-gradient(180deg, #62cf71 0%, #4fc25f 100%); color:#0f172a; }
 
     .info{
       min-width:0;
       flex:1 1 0;
       display:flex;
       flex-direction:column;
-      justify-content:flex-start;
+      justify-content:center;
       gap:5px;
-      padding-top:2px;
       padding-right:2px;
     }
 
@@ -260,8 +263,7 @@
 
     .nameRow{
       display:flex;
-      align-items:flex-start;
-      gap:8px;
+      align-items:center;
       min-width:0;
     }
 
@@ -279,30 +281,29 @@
 
     .metric{
       flex:0 0 40%;
-      min-width:148px;
+      min-width:160px;
       display:grid;
       grid-template-columns:1fr 1fr;
-      column-gap:12px;
-      row-gap:4px;
+      column-gap:14px;
       align-self:stretch;
-      align-items:start;
+      align-items:center;
       justify-items:center;
       font-variant-numeric:tabular-nums;
-      padding-top:2px;
     }
 
     .metricCol{
       width:100%;
+      height:100%;
       display:flex;
       flex-direction:column;
       align-items:center;
-      justify-content:flex-start;
+      justify-content:center;
       text-align:center;
-      gap:5px;
+      gap:6px;
     }
 
     .metricHead{
-      font-size:12px;
+      font-size:11px;
       line-height:1;
       font-weight:900;
       color:#475569;
@@ -353,27 +354,23 @@
 
     @media (max-width: 390px){
       .waku{
+        width:38px;
+        height:38px;
         font-size:22px;
-        margin-top:2px;
-      }
-
-      .info{
-        padding-top:2px;
-        gap:4px;
+        border-radius:12px;
       }
 
       .name{ font-size:21px; }
       .sub{ font-size:9px; }
 
       .metric{
-        min-width:136px;
+        min-width:144px;
         column-gap:10px;
-        padding-top:2px;
       }
 
-      .metricHead{ font-size:11px; }
+      .metricHead{ font-size:10px; }
       .metricVal{ font-size:15px; }
-      .metricSub{ font-size:12px; }
+      .metricSub{ font-size:13px; }
     }
   </style>
 </head>
@@ -516,7 +513,7 @@
       return `
         <div class="metric">
           <div class="metricCol">
-            <div class="metricHead">全国</div>
+            <div class="metricHead">全国勝率</div>
             <div class="metricVal">${esc(safeNum(p.nat_win))}</div>
           </div>
 
