@@ -206,7 +206,7 @@
       flex:1 1 0;
       min-height:0;
       display:flex;
-      align-items:center;
+      align-items:stretch;
       gap:8px;
       border-radius:15px;
       background:linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
@@ -227,6 +227,7 @@
       border:1px solid rgba(15,23,42,.08);
       flex:0 0 auto;
       align-self:center;
+      margin-top:4px;
     }
 
     .waku.w1{ background:#ffffff; color:#111827; }
@@ -241,8 +242,9 @@
       flex:1 1 0;
       display:flex;
       flex-direction:column;
-      justify-content:center;
-      gap:4px;
+      justify-content:flex-start;
+      gap:6px;
+      padding-top:4px;
       padding-right:2px;
     }
 
@@ -258,7 +260,7 @@
 
     .nameRow{
       display:flex;
-      align-items:center;
+      align-items:flex-start;
       gap:8px;
       min-width:0;
     }
@@ -282,9 +284,11 @@
       grid-template-columns:1fr 1fr;
       column-gap:12px;
       row-gap:4px;
-      align-items:center;
+      align-self:stretch;
+      align-items:start;
       justify-items:center;
-      font-variant-numeric: tabular-nums;
+      font-variant-numeric:tabular-nums;
+      padding-top:4px;
     }
 
     .metricCol{
@@ -292,9 +296,9 @@
       display:flex;
       flex-direction:column;
       align-items:center;
-      justify-content:center;
+      justify-content:flex-start;
       text-align:center;
-      gap:4px;
+      gap:6px;
     }
 
     .metricHead{
@@ -342,13 +346,25 @@
     }
 
     @media (max-width: 390px){
-      .waku{ font-size:25px; }
+      .waku{
+        font-size:25px;
+        margin-top:3px;
+      }
+
+      .info{
+        padding-top:3px;
+        gap:5px;
+      }
+
       .name{ font-size:24px; }
       .sub{ font-size:9px; }
+
       .metric{
         min-width:136px;
         column-gap:10px;
+        padding-top:3px;
       }
+
       .metricHead{ font-size:11px; }
       .metricVal{ font-size:16px; }
       .metricSub{ font-size:13px; }
