@@ -1,8 +1,7 @@
 /* js/app.js（完全置き換え：開催一覧 / 多重フェッチ / 強制キャッシュ回避 / 3秒後切替 / 締切5分前は時間だけ赤表示 / PRO切替対応） */
 
 const SITE_VENUES_URLS = [
-  "./data/site/venues.json",
-  "https://raceanalysislab.github.io/race-data-bot/data/site/venues.json",
+  "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/site/venues.json",
   "https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/site/venues.json"
 ];
 
