@@ -74,8 +74,9 @@
 }
 
 /* 1R 17:00〜18:00 */
+/* 若松が重く見えないように、夜帯は少し薄め・抜け強め */
 .card--tone-night{
-  --toneTop: linear-gradient(180deg, rgba(88,28,135,.88), rgba(30,41,59,.18));
+  --toneTop: linear-gradient(180deg, rgba(124,58,237,.48), rgba(124,58,237,0));
 }
 
 .card--tone-normal{
@@ -118,7 +119,7 @@ html[data-theme="pro"] .card--tone-evening{
   --toneTop: linear-gradient(180deg, rgba(165,180,252,.82), rgba(165,180,252,0));
 }
 html[data-theme="pro"] .card--tone-night{
-  --toneTop: linear-gradient(180deg, rgba(107,33,168,.88), rgba(15,23,42,.24));
+  --toneTop: linear-gradient(180deg, rgba(139,92,246,.52), rgba(139,92,246,0));
 }
 html[data-theme="pro"] .card--tone-normal{
   --toneTop: linear-gradient(180deg, rgba(255,255,255,.24), rgba(255,255,255,0));
