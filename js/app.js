@@ -1,4 +1,4 @@
-/* js/app.js（完全置き換え：開催一覧 / 3秒後切替 / 締切5分前赤表示 / PRO切替対応） */
+/* js/app.js（完全置き換え：開催一覧 / 3秒後切替 / 締切5分前は時間だけ赤表示 / PRO切替対応） */
 
 const SITE_VENUES_URL =
   "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/site/venues.json";
@@ -213,6 +213,33 @@ function computeNextDisplayFromRaceTimes(raceTimes) {
   };
 }
 
+function splitNextDisplay(nextDisplay) {
+  const s = String(nextDisplay || "-- --").trim();
+
+  if (s === "発売終了") {
+    return {
+      left: "発売終了",
+      time: "",
+      isSoldout: true
+    };
+  }
+
+  const m = s.match(/^(\d+R)\s+(\d{2}:\d{2})$/);
+  if (m) {
+    return {
+      left: m[1],
+      time: m[2],
+      isSoldout: false
+    };
+  }
+
+  return {
+    left: s,
+    time: "",
+    isSoldout: false
+  };
+}
+
 function getVenueMetaLine(v) {
   const grade = normalizeGradeLabel(v?.grade_label);
   const day = String(v?.day_label || "").trim();
@@ -361,7 +388,22 @@ function render(venueList) {
       `;
     }
 
-    const dangerClass = v.is_danger ? " card__line--danger" : "";
+    const split = splitNextDisplay(v.next_display);
+    const timeDangerClass = v.is_danger && split.time ? " raceTime--danger" : "";
+
+    if (split.isSoldout) {
+      return `
+        <a class="card card--on ${normalizeToneClass(v.card_band)}" href="${venueHref(v)}">
+          <div class="card__nameRow">
+            <span class="card__nameIcon">${toneIcon(v.card_band)}</span>
+            <div class="card__name">${escapeHTML(v.name)}</div>
+            <span class="card__nameIcon card__nameIcon--empty"></span>
+          </div>
+          ${getVenueMetaLine(v)}
+          <div class="card__line card__line--btm">${escapeHTML(split.left)}</div>
+        </a>
+      `;
+    }
 
     return `
       <a class="card card--on ${normalizeToneClass(v.card_band)}" href="${venueHref(v)}">
@@ -371,7 +413,10 @@ function render(venueList) {
           <span class="card__nameIcon card__nameIcon--empty"></span>
         </div>
         ${getVenueMetaLine(v)}
-        <div class="card__line card__line--btm${dangerClass}">${escapeHTML(v.next_display || "-- --")}</div>
+        <div class="card__line card__line--btm">
+          <span class="raceNo">${escapeHTML(split.left)}</span>
+          ${split.time ? `<span class="raceTime${timeDangerClass}">${escapeHTML(split.time)}</span>` : ""}
+        </div>
       </a>
     `;
   }).join("");
