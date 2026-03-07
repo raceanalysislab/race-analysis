@@ -276,6 +276,11 @@ html[data-theme="pro"] .card--off .day{
   padding-bottom:0;
 }
 
+.card__line--danger{
+  color:#ef4444 !important;
+  font-weight:900;
+}
+
 html[data-theme="pro"] .card__line{
   color: #374151;
 }
