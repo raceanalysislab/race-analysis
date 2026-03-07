@@ -1,4 +1,4 @@
-/* js/app.js（完全置き換え：開催一覧 / card_band対応版 / 絵文字なし / PRO切替対応） */
+/* js/app.js（完全置き換え：開催一覧 / card_band対応版 / 絵文字なし / PRO切替対応 / next_displayリアルタイム切替版） */
 
 const SITE_VENUES_URL =
   "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/site/venues.json";
@@ -18,12 +18,7 @@ const VENUES = [
   { jcd: "21", name: "芦屋" }, { jcd: "22", name: "福岡" }, { jcd: "23", name: "唐津" }, { jcd: "24", name: "大村" }
 ];
 
-/* ===== PRO設定 =====
-   - 下の PRO_PASSWORD を好きな文字列に変えて使う
-   - PROボタンを押すとパス入力
-   - 正解なら data-theme="pro" を付与
-   - もう一度押すと通常表示に戻す
-*/
+/* ===== PRO設定 ===== */
 const PRO_PASSWORD = "pro123";
 const PRO_STORAGE_KEY = "boatlab_pro_mode";
 
@@ -34,7 +29,6 @@ const $picks = document.getElementById("picks");
 const $picksUpdatedAt = document.getElementById("picksUpdatedAt");
 const $picksCta = document.getElementById("picksCta");
 
-/* id は環境差が出やすいので複数候補を見る */
 const $btnPro =
   document.getElementById("btnPro") ||
   document.getElementById("proBtn") ||
@@ -43,7 +37,9 @@ const $btnPro =
   document.querySelector(".btnPro");
 
 const pad2 = (n) => String(n).padStart(2, "0");
+
 let isLoading = false;
+let latestVenueList = [];
 
 function nowJST() {
   const parts = new Intl.DateTimeFormat("ja-JP", {
@@ -115,7 +111,6 @@ function normalizeGradeLabel(label) {
 
 function normalizeBand(item) {
   const s = String(item?.card_band || "").trim().toLowerCase();
-
   if (s === "morning") return "morning";
   if (s === "day") return "day";
   if (s === "evening") return "evening";
@@ -133,6 +128,66 @@ function normalizeToneClass(band) {
 
 function toneIcon() {
   return "";
+}
+
+function parseHHMM(hhmm) {
+  const s = String(hhmm || "").trim();
+  const m = s.match(/^(\d{1,2}):(\d{2})$/);
+  if (!m) return null;
+
+  const hh = Number(m[1]);
+  const mm = Number(m[2]);
+  if (!Number.isInteger(hh) || !Number.isInteger(mm)) return null;
+  if (hh < 0 || hh > 23 || mm < 0 || mm > 59) return null;
+
+  return { hh, mm };
+}
+
+function toMinutes(hh, mm) {
+  return hh * 60 + mm;
+}
+
+function normalizeRaceTimes(raceTimes) {
+  if (!Array.isArray(raceTimes)) return [];
+
+  const out = [];
+  for (const item of raceTimes) {
+    const rno = Number(item?.rno);
+    const cutoff = String(item?.cutoff || "").trim();
+    const hm = parseHHMM(cutoff);
+    if (!Number.isInteger(rno) || rno <= 0 || !hm) continue;
+
+    out.push({
+      rno,
+      cutoff: `${pad2(hm.hh)}:${pad2(hm.mm)}`
+    });
+  }
+
+  out.sort((a, b) => a.rno - b.rno);
+  return out;
+}
+
+function computeNextDisplayFromRaceTimes(raceTimes) {
+  const now = nowJST();
+  const nowMin = toMinutes(now.hh, now.mm);
+
+  for (const race of raceTimes) {
+    const hm = parseHHMM(race.cutoff);
+    if (!hm) continue;
+
+    const cutoffMin = toMinutes(hm.hh, hm.mm);
+    if (cutoffMin > nowMin) {
+      return {
+        next_race: race.rno,
+        next_display: `${race.rno}R ${race.cutoff}`
+      };
+    }
+  }
+
+  return {
+    next_race: null,
+    next_display: "発売終了"
+  };
 }
 
 function getVenueMetaLine(v) {
@@ -160,18 +215,37 @@ function normalizeVenueList(raw) {
     if (seen.has(base.jcd)) continue;
     seen.add(base.jcd);
 
+    const raceTimes = normalizeRaceTimes(item?.race_times);
+    const computed = computeNextDisplayFromRaceTimes(raceTimes);
+
     out.push({
       jcd: base.jcd,
       name: base.name,
-      next_display: String(item?.next_display || "-- --").trim() || "-- --",
+      next_race: computed.next_race,
+      next_display: computed.next_display || String(item?.next_display || "-- --").trim() || "-- --",
       day_label: String(item?.day_label || "").trim(),
       grade_label: normalizeGradeLabel(item?.grade_label),
       first_race_time: String(item?.first_race_time || "").trim(),
-      card_band: normalizeBand(item)
+      card_band: normalizeBand(item),
+      race_times: raceTimes
     });
   }
 
   return out;
+}
+
+function recalcVenueList(venueList) {
+  return (venueList || []).map((v) => {
+    const raceTimes = normalizeRaceTimes(v?.race_times);
+    const computed = computeNextDisplayFromRaceTimes(raceTimes);
+
+    return {
+      ...v,
+      race_times: raceTimes,
+      next_race: computed.next_race,
+      next_display: computed.next_display
+    };
+  });
 }
 
 function isProMode() {
@@ -236,7 +310,8 @@ function render(venueList) {
       day_label: v?.day_label || "",
       grade_label: v?.grade_label || "一般",
       first_race_time: v?.first_race_time || "",
-      card_band: v?.card_band || "normal"
+      card_band: v?.card_band || "normal",
+      race_times: v?.race_times || []
     };
   });
 
@@ -311,6 +386,14 @@ function renderPicksCta() {
   `;
 }
 
+function rerenderFromCurrentTime() {
+  if (!latestVenueList.length) return;
+  const recalculated = recalcVenueList(latestVenueList);
+  latestVenueList = recalculated;
+  render(recalculated);
+  applyThemeFromStorage();
+}
+
 async function loadAll() {
   if (isLoading) return;
   isLoading = true;
@@ -318,7 +401,9 @@ async function loadAll() {
   try {
     const json = await fetchJSON(SITE_VENUES_URL);
     const venueList = normalizeVenueList(json);
-    render(venueList);
+    latestVenueList = venueList;
+
+    render(latestVenueList);
     renderPicksEmpty();
     renderPicksCta();
     applyThemeFromStorage();
@@ -340,12 +425,25 @@ if ($btnPro) {
 }
 
 document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState === "visible") loadAll();
+  if (document.visibilityState === "visible") {
+    rerenderFromCurrentTime();
+    loadAll();
+  }
 });
 
+/* JSON自体は5分ごとに再取得 */
 setInterval(() => {
-  if (document.visibilityState === "visible") loadAll();
+  if (document.visibilityState === "visible") {
+    loadAll();
+  }
 }, 5 * 60 * 1000);
+
+/* 表示だけは1分ごとに現在時刻で再計算 */
+setInterval(() => {
+  if (document.visibilityState === "visible") {
+    rerenderFromCurrentTime();
+  }
+}, 60 * 1000);
 
 applyThemeFromStorage();
 renderPicksCta();
