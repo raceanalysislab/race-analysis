@@ -1,4 +1,4 @@
-/* js/app.js（完全置き換え：開催一覧 / card_band対応版 / 絵文字なし） */
+/* js/app.js（完全置き換え：開催一覧 / card_band対応版 / 絵文字なし / PRO切替対応） */
 
 const SITE_VENUES_URL =
   "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/site/venues.json";
@@ -18,12 +18,29 @@ const VENUES = [
   { jcd: "21", name: "芦屋" }, { jcd: "22", name: "福岡" }, { jcd: "23", name: "唐津" }, { jcd: "24", name: "大村" }
 ];
 
+/* ===== PRO設定 =====
+   - 下の PRO_PASSWORD を好きな文字列に変えて使う
+   - PROボタンを押すとパス入力
+   - 正解なら data-theme="pro" を付与
+   - もう一度押すと通常表示に戻す
+*/
+const PRO_PASSWORD = "pro123";
+const PRO_STORAGE_KEY = "boatlab_pro_mode";
+
 const $grid = document.getElementById("grid");
 const $updatedAt = document.getElementById("updatedAt");
 const $btn = document.getElementById("btnRefresh");
 const $picks = document.getElementById("picks");
 const $picksUpdatedAt = document.getElementById("picksUpdatedAt");
 const $picksCta = document.getElementById("picksCta");
+
+/* id は環境差が出やすいので複数候補を見る */
+const $btnPro =
+  document.getElementById("btnPro") ||
+  document.getElementById("proBtn") ||
+  document.querySelector("[data-role='pro-toggle']") ||
+  document.querySelector(".top__pro") ||
+  document.querySelector(".btnPro");
 
 const pad2 = (n) => String(n).padStart(2, "0");
 let isLoading = false;
@@ -157,6 +174,52 @@ function normalizeVenueList(raw) {
   return out;
 }
 
+function isProMode() {
+  return localStorage.getItem(PRO_STORAGE_KEY) === "1";
+}
+
+function applyThemeFromStorage() {
+  if (isProMode()) {
+    document.documentElement.setAttribute("data-theme", "pro");
+  } else {
+    document.documentElement.removeAttribute("data-theme");
+  }
+  syncProButtonState();
+}
+
+function syncProButtonState() {
+  if (!$btnPro) return;
+  const on = isProMode();
+  $btnPro.setAttribute("aria-pressed", on ? "true" : "false");
+  $btnPro.classList.toggle("is-active", on);
+}
+
+function enableProMode() {
+  localStorage.setItem(PRO_STORAGE_KEY, "1");
+  applyThemeFromStorage();
+}
+
+function disableProMode() {
+  localStorage.removeItem(PRO_STORAGE_KEY);
+  applyThemeFromStorage();
+}
+
+function toggleProMode() {
+  if (isProMode()) {
+    disableProMode();
+    return;
+  }
+
+  const pass = window.prompt("PROパスワード");
+  if (pass === null) return;
+
+  if (pass === PRO_PASSWORD) {
+    enableProMode();
+  } else {
+    window.alert("パスワードが違います");
+  }
+}
+
 function render(venueList) {
   const map = new Map();
   for (const v of venueList) {
@@ -258,6 +321,7 @@ async function loadAll() {
     render(venueList);
     renderPicksEmpty();
     renderPicksCta();
+    applyThemeFromStorage();
   } catch (e) {
     console.error(e);
     if ($updatedAt) $updatedAt.textContent = "ERR";
@@ -267,7 +331,13 @@ async function loadAll() {
   }
 }
 
-if ($btn) $btn.addEventListener("click", loadAll);
+if ($btn) {
+  $btn.addEventListener("click", loadAll);
+}
+
+if ($btnPro) {
+  $btnPro.addEventListener("click", toggleProMode);
+}
 
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible") loadAll();
@@ -277,6 +347,7 @@ setInterval(() => {
   if (document.visibilityState === "visible") loadAll();
 }, 5 * 60 * 1000);
 
+applyThemeFromStorage();
 renderPicksCta();
 renderPicksEmpty();
 loadAll();
