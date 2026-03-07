@@ -209,8 +209,8 @@
       flex:1 1 0;
       min-height:0;
       display:grid;
-      grid-template-columns: 40px minmax(0, 1fr) 176px;
-      gap:8px;
+      grid-template-columns: 40px minmax(0, 1fr) minmax(176px, 47%);
+      gap:10px;
       align-items:center;
       border-radius:16px;
       background:linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
@@ -252,11 +252,30 @@
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
+      font-weight:700;
+    }
+
+    .nameRow{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+    }
+
+    .nameWaku{
+      flex:0 0 auto;
+      font-size:22px;
+      line-height:1;
+      font-weight:1000;
+      color:#0f172a;
+      width:16px;
+      text-align:center;
     }
 
     .name{
-      font-size:18px;
-      line-height:1.04;
+      min-width:0;
+      font-size:22px;
+      line-height:1;
       font-weight:1000;
       color:#0f172a;
       white-space:nowrap;
@@ -269,30 +288,26 @@
       min-width:0;
       display:grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
-      column-gap:6px;
-      row-gap:3px;
-      text-align:right;
+      column-gap:14px;
+      row-gap:6px;
       align-content:center;
+      justify-items:center;
+      text-align:center;
+      width:100%;
     }
 
     .metricHead{
-      font-size:9px;
+      width:100%;
+      font-size:11px;
       line-height:1.05;
-      font-weight:900;
-      color:#64748b;
-      white-space:nowrap;
-    }
-
-    .metricSub{
-      font-size:8px;
-      line-height:1;
-      font-weight:800;
-      color:#94a3b8;
+      font-weight:1000;
+      color:#475569;
       white-space:nowrap;
     }
 
     .metricVal{
-      font-size:11px;
+      width:100%;
+      font-size:14px;
       line-height:1.05;
       font-weight:1000;
       color:#0f172a;
@@ -334,8 +349,8 @@
       .section{ padding:9px; }
 
       .row{
-        grid-template-columns: 36px minmax(0, 1fr) 162px;
-        gap:7px;
+        grid-template-columns: 36px minmax(0, 1fr) minmax(152px, 46%);
+        gap:8px;
         padding:7px;
         border-radius:15px;
       }
@@ -348,10 +363,11 @@
       }
 
       .sub{ font-size:9px; }
-      .name{ font-size:17px; }
-      .metricHead{ font-size:8px; }
-      .metricSub{ font-size:7px; }
-      .metricVal{ font-size:10px; }
+      .nameWaku{ font-size:20px; width:14px; }
+      .name{ font-size:19px; }
+      .metric{ column-gap:10px; row-gap:5px; }
+      .metricHead{ font-size:10px; }
+      .metricVal{ font-size:12px; }
     }
 
     @media (max-height: 760px){
@@ -372,7 +388,7 @@
 
       .row{
         padding:6px 7px;
-        grid-template-columns: 34px minmax(0, 1fr) 156px;
+        grid-template-columns: 34px minmax(0, 1fr) minmax(148px, 46%);
       }
 
       .waku{
@@ -383,10 +399,11 @@
       }
 
       .sub{ font-size:9px; }
-      .name{ font-size:16px; }
-      .metricHead{ font-size:8px; }
-      .metricSub{ font-size:7px; }
-      .metricVal{ font-size:10px; }
+      .nameWaku{ font-size:18px; width:14px; }
+      .name{ font-size:18px; }
+      .metric{ column-gap:10px; row-gap:4px; }
+      .metricHead{ font-size:10px; }
+      .metricVal{ font-size:12px; }
       .note{ font-size:10px; margin-top:6px; }
     }
   </style>
@@ -498,44 +515,56 @@
       return Array.from({ length: 6 }, (_, i) => {
         const w = i + 1;
         return byWaku.get(w) || {
-          waku:w, name:"—", regno:"", branch:"", age:"", grade:"",
-          nat_win:null, nat_2:null, loc_win:null, loc_2:null, motor_2:null, boat_2:null
+          waku:w,
+          name:"—",
+          regno:"",
+          branch:"",
+          age:"",
+          grade:"",
+          nat_win:null,
+          loc_win:null,
+          motor_2:null,
+          boat_2:null
         };
       });
     }
 
-    function metricCell(head, sub, val){
-      return `
-        <div class="metricHead">${head}</div>
-        <div class="metricSub">${sub}</div>
-        <div class="metricVal">${esc(val)}</div>
-      `;
-    }
+    const metricHeadHTML = () => `
+      <div class="metricHead">全国</div>
+      <div class="metricHead">当地</div>
+      <div class="metricHead">モーター</div>
+      <div class="metricHead">ボート</div>
+    `;
+
+    const metricValHTML = (p) => `
+      <div class="metricVal">${esc(safeNum(p.nat_win))}</div>
+      <div class="metricVal">${esc(safeNum(p.loc_win))}</div>
+      <div class="metricVal">${esc(safeNum(p.motor_2))}</div>
+      <div class="metricVal">${esc(safeNum(p.boat_2))}</div>
+    `;
 
     function rowHTML(p){
+      const waku = Number(p.waku) || 0;
       const regno = p.regno || p.id || "—";
       const grade = p.grade || "—";
       const branch = p.branch || "—";
       const age = (p.age !== undefined && p.age !== null && p.age !== "") ? `${p.age}歳` : "—";
 
-      const metrics = [
-        ["全国", "勝率", safeNum(p.nat_win)],
-        ["当地", "勝率", safeNum(p.loc_win)],
-        ["M", "2連率", safeNum(p.motor_2)],
-        ["B", "2連率", safeNum(p.boat_2)]
-      ];
-
       return `
         <div class="row">
-          <div class="waku w${Number(p.waku) || 0}">${Number(p.waku) || ""}</div>
+          <div class="waku w${waku}">${waku || ""}</div>
 
           <div class="info">
             <div class="sub">${esc(regno)} / ${esc(grade)} / ${esc(branch)} / ${esc(age)}</div>
-            <div class="name">${esc(p.name || "—")}</div>
+            <div class="nameRow">
+              <div class="nameWaku">${waku || ""}</div>
+              <div class="name">${esc(p.name || "—")}</div>
+            </div>
           </div>
 
           <div class="metric">
-            ${metrics.map(([h, s, v]) => metricCell(h, s, v)).join("")}
+            ${metricHeadHTML()}
+            ${metricValHTML(p)}
           </div>
         </div>
       `;
