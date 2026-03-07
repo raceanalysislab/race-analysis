@@ -212,7 +212,9 @@
       background:linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
       border:1px solid #e5eaf2;
       padding:8px;
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.75);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.78),
+        0 1px 2px rgba(15,23,42,.03);
     }
 
     .waku{
@@ -222,23 +224,24 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      font-size:23px;
+      font-size:22px;
       font-weight:1000;
       letter-spacing:-.03em;
       flex:0 0 auto;
       align-self:center;
       box-shadow:
-        inset 0 1px 0 rgba(255,255,255,.45),
-        0 1px 2px rgba(15,23,42,.08);
+        inset 0 1px 0 rgba(255,255,255,.38),
+        0 2px 6px rgba(15,23,42,.08);
       border:1px solid rgba(15,23,42,.08);
+      text-shadow:0 1px 0 rgba(255,255,255,.18);
     }
 
-    .waku.w1{ background:linear-gradient(180deg, #ffffff 0%, #f8fafc 100%); color:#111827; }
-    .waku.w2{ background:linear-gradient(180deg, #1f2a44 0%, #162033 100%); color:#ffffff; }
-    .waku.w3{ background:linear-gradient(180deg, #f16459 0%, #df4b41 100%); color:#ffffff; }
-    .waku.w4{ background:linear-gradient(180deg, #4a82ff 0%, #3468ea 100%); color:#ffffff; }
-    .waku.w5{ background:linear-gradient(180deg, #f6d94b 0%, #efc93b 100%); color:#111827; }
-    .waku.w6{ background:linear-gradient(180deg, #62cf71 0%, #4fc25f 100%); color:#0f172a; }
+    .waku.w1{ background:linear-gradient(180deg, #ffffff 0%, #f7fafc 100%); color:#111827; }
+    .waku.w2{ background:linear-gradient(180deg, #253251 0%, #162033 100%); color:#ffffff; }
+    .waku.w3{ background:linear-gradient(180deg, #f06f63 0%, #dd564b 100%); color:#ffffff; }
+    .waku.w4{ background:linear-gradient(180deg, #568cff 0%, #376ceb 100%); color:#ffffff; }
+    .waku.w5{ background:linear-gradient(180deg, #f7dd58 0%, #edca3f 100%); color:#111827; }
+    .waku.w6{ background:linear-gradient(180deg, #6fd275 0%, #55c561 100%); color:#0f172a; }
 
     .info{
       min-width:0;
@@ -269,7 +272,7 @@
     .name{
       min-width:0;
       max-width:100%;
-      font-size:clamp(18px, 2.35vw, 22px);
+      font-size:clamp(20px, 2.5vw, 24px);
       line-height:1;
       font-weight:700;
       color:#0f172a;
@@ -281,7 +284,7 @@
 
     .metric{
       flex:0 0 40%;
-      min-width:164px;
+      min-width:166px;
       display:grid;
       grid-template-columns:1fr 1fr;
       column-gap:14px;
@@ -299,7 +302,16 @@
       align-items:center;
       justify-content:center;
       text-align:center;
+    }
+
+    .metricCol--nat{
+      gap:8px;
+      padding-top:2px;
+    }
+
+    .metricCol--motor{
       gap:6px;
+      padding-top:1px;
     }
 
     .metricHead{
@@ -313,7 +325,7 @@
     }
 
     .metricVal{
-      font-size:20px;
+      font-size:22px;
       line-height:1;
       font-weight:900;
       color:#0f172a;
@@ -323,13 +335,19 @@
     }
 
     .metricSub{
-      font-size:16px;
+      font-size:17px;
       line-height:1;
       font-weight:900;
       color:#0f172a;
       white-space:nowrap;
       text-align:center;
       width:100%;
+      margin-top:-1px;
+    }
+
+    .metricVal--motor{
+      font-size:18px;
+      margin-top:-2px;
     }
 
     .note{
@@ -356,20 +374,21 @@
       .waku{
         width:38px;
         height:38px;
-        font-size:21px;
+        font-size:20px;
         border-radius:12px;
       }
 
       .sub{ font-size:9px; }
 
       .metric{
-        min-width:146px;
+        min-width:148px;
         column-gap:10px;
       }
 
       .metricHead{ font-size:10px; }
-      .metricVal{ font-size:18px; }
-      .metricSub{ font-size:14px; }
+      .metricVal{ font-size:19px; }
+      .metricSub{ font-size:15px; }
+      .metricVal--motor{ font-size:16px; }
     }
   </style>
 </head>
@@ -511,15 +530,15 @@
     function metricHTML(p){
       return `
         <div class="metric">
-          <div class="metricCol">
+          <div class="metricCol metricCol--nat">
             <div class="metricHead">全国勝率</div>
             <div class="metricVal">${esc(safeNum(p.nat_win))}</div>
           </div>
 
-          <div class="metricCol">
+          <div class="metricCol metricCol--motor">
             <div class="metricHead">モーターNo.</div>
             <div class="metricSub">${esc(safeInt(p.motor_no))}</div>
-            <div class="metricVal">${esc(safeNum(p.motor_2))}</div>
+            <div class="metricVal metricVal--motor">${esc(safeNum(p.motor_2))}</div>
           </div>
         </div>
       `;
