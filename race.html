@@ -1,171 +1,638 @@
-/* js/app.js（軽量安定版 / JST日付安全 / CDN固定） */
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#f6f7fb" />
+  <title>レース詳細</title>
 
-const SITE_VENUES_URL =
-"https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/site/venues.json";
+  <style>
+    :root{
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --raceTopH: 112px;
 
-const NEXT_RACE_DELAY_MS = 3000;
-const DANGER_MS = 5 * 60 * 1000;
+      --bg:#f3f5f9;
+      --panel:#ffffff;
+      --panel-soft:#f8fafc;
+      --line:#e2e8f0;
+      --line-soft:#eef2f7;
 
-const VENUES = [
-{jcd:"01",name:"桐生"},{jcd:"02",name:"戸田"},{jcd:"03",name:"江戸川"},{jcd:"04",name:"平和島"},
-{jcd:"05",name:"多摩川"},{jcd:"06",name:"浜名湖"},{jcd:"07",name:"蒲郡"},{jcd:"08",name:"常滑"},
-{jcd:"09",name:"津"},{jcd:"10",name:"三国"},{jcd:"11",name:"びわこ"},{jcd:"12",name:"住之江"},
-{jcd:"13",name:"尼崎"},{jcd:"14",name:"鳴門"},{jcd:"15",name:"丸亀"},{jcd:"16",name:"児島"},
-{jcd:"17",name:"宮島"},{jcd:"18",name:"徳山"},{jcd:"19",name:"下関"},{jcd:"20",name:"若松"},
-{jcd:"21",name:"芦屋"},{jcd:"22",name:"福岡"},{jcd:"23",name:"唐津"},{jcd:"24",name:"大村"}
-];
+      --text:#0f172a;
+      --muted:#64748b;
+      --muted-2:#94a3b8;
+      --accent:#2563eb;
 
-const $grid=document.getElementById("grid");
-const $updated=document.getElementById("updatedAt");
-const $btn=document.getElementById("btnRefresh");
+      --shadow:0 2px 8px rgba(15,23,42,.06);
+    }
 
-let latestVenueList=[];
-let currentDate="";
+    *{ box-sizing:border-box; }
 
-function pad(n){return String(n).padStart(2,"0")}
+    html, body{
+      margin:0;
+      min-height:100%;
+      background:linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+      color:var(--text);
+      font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP","Segoe UI",sans-serif;
+      overscroll-behavior-y:none;
+    }
 
-function now(){
-const d=new Date();
-return{hh:d.getHours(),mm:d.getMinutes()}
-}
+    body{ padding-top:var(--safe-top); }
 
-function today(){
-const d=new Date();
-return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
-}
+    .raceTop{
+      position:sticky;
+      top:0;
+      z-index:50;
+      padding:8px 10px 6px;
+      background:rgba(246,247,251,.98);
+      border-bottom:1px solid rgba(226,232,240,.92);
+    }
 
-function fetchJSON(){
-const url=SITE_VENUES_URL+"?t="+Date.now();
-return fetch(url,{cache:"no-store"}).then(r=>{
-if(!r.ok)throw new Error("fetch");
-return r.json();
-});
-}
+    .raceHead{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:10px;
+      box-shadow:var(--shadow);
+    }
 
-function parseHHMM(t){
-const m=t.match(/^(\d+):(\d+)/);
-if(!m)return null;
-return{hh:Number(m[1]),mm:Number(m[2])}
-}
+    .raceHead__left{
+      min-width:0;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
 
-function cutoffTime(hhmm){
-const hm=parseHHMM(hhmm);
-if(!hm)return null;
-const d=new Date();
-d.setHours(hm.hh,hm.mm,0,0);
-return d.getTime();
-}
+    .raceVenue{
+      font-size:22px;
+      line-height:1;
+      font-weight:1000;
+      letter-spacing:.01em;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      color:#0f172a;
+    }
 
-function computeNext(races){
+    .raceMeta{
+      display:flex;
+      gap:6px;
+      flex-wrap:wrap;
+      align-items:center;
+      font-size:11px;
+      line-height:1;
+      color:var(--muted);
+    }
 
-const now=Date.now();
+    .metaChip{
+      display:inline-flex;
+      align-items:center;
+      min-height:24px;
+      padding:0 9px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:var(--panel-soft);
+      white-space:nowrap;
+      font-weight:700;
+    }
 
-for(const r of races){
+    .raceBtn{
+      appearance:none;
+      border:1px solid var(--line);
+      background:var(--panel-soft);
+      color:var(--text);
+      min-width:64px;
+      height:38px;
+      border-radius:11px;
+      padding:0 12px;
+      font-size:13px;
+      font-weight:900;
+      flex:0 0 auto;
+    }
 
-const cutoff=cutoffTime(r.cutoff);
-if(!cutoff)continue;
+    .raceTabs{
+      margin-top:8px;
+      display:flex;
+      gap:6px;
+      overflow-x:auto;
+      -webkit-overflow-scrolling:touch;
+      scrollbar-width:none;
+      padding-bottom:2px;
+      scroll-behavior:smooth;
+    }
+    .raceTabs::-webkit-scrollbar{ display:none; }
 
-const switchAt=cutoff+NEXT_RACE_DELAY_MS;
-const remain=cutoff-now;
+    .tab{
+      flex:0 0 auto;
+      appearance:none;
+      min-width:52px;
+      height:34px;
+      padding:0 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:#fff;
+      color:#334155;
+      font-size:12px;
+      font-weight:900;
+      line-height:1;
+    }
 
-if(now<switchAt){
-return{
-text:r.rno+"R "+r.cutoff,
-danger:remain<DANGER_MS && remain>0
-}
-}
-}
+    .tab.is-active{
+      background:linear-gradient(180deg, #2f7cff 0%, #2563eb 100%);
+      color:#fff;
+      border-color:transparent;
+      box-shadow:0 4px 10px rgba(37,99,235,.14);
+    }
 
-return{text:"発売終了",danger:false}
+    .raceBody{
+      height:calc(100dvh - var(--raceTopH));
+      overflow:hidden;
+      padding:6px 10px calc(8px + var(--safe-bottom));
+    }
 
-}
+    .section{
+      height:100%;
+      display:flex;
+      flex-direction:column;
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:8px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
 
-function render(list){
+    .sectionHead{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:6px;
+      padding-bottom:6px;
+      border-bottom:1px solid var(--line-soft);
+      flex:0 0 auto;
+    }
 
-const map=new Map();
-list.forEach(v=>map.set(v.jcd,v));
+    .sectionTitle{
+      font-size:13px;
+      font-weight:1000;
+      letter-spacing:.03em;
+      color:#0f172a;
+    }
 
-$grid.innerHTML=VENUES.map(base=>{
+    .sectionMeta{
+      font-size:10px;
+      line-height:1.3;
+      color:var(--muted-2);
+      text-align:right;
+      white-space:nowrap;
+    }
 
-const v=map.get(base.jcd);
+    .table{
+      flex:1 1 auto;
+      min-height:0;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      justify-content:space-between;
+    }
 
-if(!v){
-return`
-<div class="card card--off">
-<div class="card__name">${base.name}</div>
-<div class="card__line">-- --</div>
-</div>`;
-}
+    .row{
+      flex:1 1 0;
+      min-height:0;
+      display:flex;
+      align-items:stretch;
+      gap:10px;
+      border-radius:15px;
+      background:linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+      border:1px solid #e5eaf2;
+      padding:8px;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.75);
+    }
 
-const next=computeNext(v.race_times);
+    .waku{
+      width:42px;
+      height:42px;
+      border-radius:14px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:24px;
+      font-weight:1000;
+      letter-spacing:-.03em;
+      flex:0 0 auto;
+      align-self:center;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.45),
+        0 1px 2px rgba(15,23,42,.08);
+      border:1px solid rgba(15,23,42,.08);
+    }
 
-const sp=next.text.split(" ");
-const race=sp[0]||"";
-const time=sp[1]||"";
+    .waku.w1{ background:linear-gradient(180deg, #ffffff 0%, #f7fafc 100%); color:#111827; }
+    .waku.w2{ background:linear-gradient(180deg, #253251 0%, #162033 100%); color:#ffffff; }
+    .waku.w3{ background:linear-gradient(180deg, #f06f63 0%, #dd564b 100%); color:#ffffff; }
+    .waku.w4{ background:linear-gradient(180deg, #568cff 0%, #376ceb 100%); color:#ffffff; }
+    .waku.w5{ background:linear-gradient(180deg, #f7dd58 0%, #edca3f 100%); color:#111827; }
+    .waku.w6{ background:linear-gradient(180deg, #6fd275 0%, #55c561 100%); color:#0f172a; }
 
-return`
-<a class="card card--on" href="./race.html?jcd=${v.jcd}&name=${v.name}">
-<div class="card__name">${v.name}</div>
-<div class="card__line">
-<span>${race}</span>
-<span class="${next.danger?"raceTime--danger":""}">
-${time}
-</span>
-</div>
-</a>
-`;
+    .info{
+      min-width:0;
+      flex:1 1 0;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      gap:5px;
+      padding-right:2px;
+    }
 
-}).join("");
+    .sub{
+      font-size:10px;
+      line-height:1.1;
+      color:#64748b;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      font-weight:700;
+    }
 
-const t=now();
-$updated.textContent=pad(t.hh)+":"+pad(t.mm);
+    .nameRow{
+      display:flex;
+      align-items:center;
+      min-width:0;
+    }
 
-}
+    .name{
+      min-width:0;
+      max-width:100%;
+      font-size:clamp(20px, 2.5vw, 24px);
+      line-height:1;
+      font-weight:700;
+      color:#0f172a;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      letter-spacing:-.01em;
+    }
 
-async function load(){
+    .metric{
+      flex:0 0 40%;
+      min-width:166px;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      column-gap:14px;
+      align-self:stretch;
+      align-items:center;
+      justify-items:center;
+      font-variant-numeric:tabular-nums;
+    }
 
-try{
+    .metricCol{
+      width:100%;
+      height:100%;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+    }
 
-const json=await fetchJSON();
-latestVenueList=(json.venues||json);
+    .metricCol--nat{
+      gap:8px;
+    }
 
-render(latestVenueList);
+    .metricCol--motor{
+      gap:5px;
+    }
 
-}catch(e){
+    .metricHead{
+      font-size:11px;
+      line-height:1;
+      font-weight:900;
+      color:#475569;
+      white-space:nowrap;
+      text-align:center;
+      width:100%;
+    }
 
-console.error(e);
-alert("開催一覧取得エラー");
+    .metricVal{
+      font-size:22px;
+      line-height:1;
+      font-weight:900;
+      color:#0f172a;
+      white-space:nowrap;
+      text-align:center;
+      width:100%;
+    }
 
-}
+    .metricSub{
+      font-size:17px;
+      line-height:1;
+      font-weight:900;
+      color:#0f172a;
+      white-space:nowrap;
+      text-align:center;
+      width:100%;
+      margin-top:-1px;
+    }
 
-}
+    .metricVal--motor{
+      font-size:18px;
+      margin-top:-1px;
+    }
 
-function rerender(){
+    .note{
+      margin-top:6px;
+      padding:0 2px;
+      color:var(--muted);
+      font-size:10px;
+      line-height:1.4;
+      flex:0 0 auto;
+    }
 
-if(!latestVenueList.length)return;
+    .err{
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px dashed #cbd5e1;
+      background:#f8fafc;
+      color:#475569;
+      font-size:12px;
+      line-height:1.7;
+      word-break:break-word;
+    }
 
-render(latestVenueList);
+    @media (max-width: 390px){
+      .waku{
+        width:38px;
+        height:38px;
+        font-size:20px;
+        border-radius:12px;
+      }
 
-}
+      .sub{ font-size:9px; }
 
-/* 日付変わったら再取得 */
+      .metric{
+        min-width:148px;
+        column-gap:10px;
+      }
 
-function checkDateChange(){
+      .metricHead{ font-size:10px; }
+      .metricVal{ font-size:19px; }
+      .metricSub{ font-size:15px; }
+      .metricVal--motor{ font-size:16px; }
+    }
+  </style>
+</head>
 
-const d=today();
+<body>
+  <div class="raceTop" id="raceTop">
+    <div class="raceHead">
+      <div class="raceHead__left">
+        <div id="venueName" class="raceVenue">—</div>
+        <div class="raceMeta">
+          <span class="metaChip" id="raceNoLabel">—R</span>
+          <span class="metaChip" id="timeLabel">締切: --:--</span>
+          <span class="metaChip" id="dayLabel">—</span>
+        </div>
+      </div>
+      <button class="raceBtn" type="button" id="btnBack">戻る</button>
+    </div>
 
-if(currentDate!==d){
-currentDate=d;
-load();
-}
+    <div class="raceTabs" id="tabs" aria-label="レース番号"></div>
+  </div>
 
-}
+  <div class="raceBody">
+    <section class="section">
+      <div class="sectionHead">
+        <div class="sectionTitle">出走表</div>
+        <div class="sectionMeta">無料版は<br>選手データ確認のみ</div>
+      </div>
 
-if($btn)$btn.onclick=load;
+      <div class="table" id="table"></div>
 
-setInterval(rerender,1000);
-setInterval(load,300000);
-setInterval(checkDateChange,60000);
+      <div class="note">
+        ※無料版は「各選手データの確認」専用です。予想は表示しません。
+      </div>
+    </section>
+  </div>
 
-currentDate=today();
-load();
+  <script>
+    const qs = new URLSearchParams(location.search);
+    const venueName = decodeURIComponent(qs.get("name") || "会場");
+    const jcd = String(qs.get("jcd") || "").padStart(2, "0");
+
+    const $ = (id) => document.getElementById(id);
+    const $tabs = $("tabs");
+    const $table = $("table");
+    const $raceNoLabel = $("raceNoLabel");
+    const $timeLabel = $("timeLabel");
+    const $dayLabel = $("dayLabel");
+    const $raceTop = $("raceTop");
+
+    const BOT_RACES_BASE_URL =
+      "https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/site/races/";
+
+    $("venueName").textContent = venueName;
+
+    const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+    const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+    }[c]));
+
+    const safeNum = (v) => {
+      if (v === undefined || v === null || v === "") return "—";
+      const n = Number(v);
+      return Number.isFinite(n) ? n.toFixed(2) : "—";
+    };
+
+    const safeInt = (v) => {
+      if (v === undefined || v === null || v === "") return "—";
+      const n = Number(v);
+      return Number.isFinite(n) ? String(Math.trunc(n)) : "—";
+    };
+
+    const toHM = (x) => {
+      const m = String(x || "").match(/(\d{1,2}):(\d{2})/);
+      return m ? `${String(m[1]).padStart(2, "0")}:${m[2]}` : "--:--";
+    };
+
+    const setTopHeight = () => {
+      const h = $raceTop.getBoundingClientRect().height || 112;
+      document.documentElement.style.setProperty("--raceTopH", `${Math.ceil(h)}px`);
+    };
+
+    const fetchJSON = async (url) => {
+      const bust = url.includes("?") ? `&t=${Date.now()}` : `?t=${Date.now()}`;
+      const res = await fetch(url + bust, { cache:"no-store" });
+      if (!res.ok) throw new Error(`failed: ${url}`);
+      return res.json();
+    };
+
+    const centerActiveTab = () => {
+      const active = $tabs.querySelector(".tab.is-active");
+      if (!active) return;
+      const offset = active.offsetLeft - ($tabs.clientWidth / 2) + (active.clientWidth / 2);
+      $tabs.scrollTo({ left: Math.max(0, offset), behavior: "smooth" });
+    };
+
+    function makeTabs(active){
+      $tabs.innerHTML = Array.from({ length: 12 }, (_, i) => {
+        const r = i + 1;
+        return `<button type="button" class="tab${r === active ? " is-active" : ""}" data-race="${r}">${r}R</button>`;
+      }).join("");
+
+      $tabs.querySelectorAll(".tab").forEach((btn) => {
+        btn.addEventListener("click", () => setRace(Number(btn.dataset.race)));
+      });
+
+      requestAnimationFrame(centerActiveTab);
+    }
+
+    function normalizeBoatsTo6(boats){
+      const byWaku = new Map();
+      const rest = [];
+
+      boats.forEach((b) => {
+        const w = Number(b?.waku);
+        if (w >= 1 && w <= 6 && !byWaku.has(w)) byWaku.set(w, b);
+        else rest.push(b);
+      });
+
+      for (let w = 1; w <= 6; w++){
+        if (!byWaku.has(w) && rest.length) byWaku.set(w, { ...rest.shift(), waku: w });
+      }
+
+      return Array.from({ length: 6 }, (_, i) => {
+        const w = i + 1;
+        return byWaku.get(w) || {
+          waku:w,
+          name:"—",
+          regno:"",
+          branch:"",
+          age:"",
+          grade:"",
+          nat_win:null,
+          motor_no:null,
+          motor_2:null
+        };
+      });
+    }
+
+    function metricHTML(p){
+      return `
+        <div class="metric">
+          <div class="metricCol metricCol--nat">
+            <div class="metricHead">全国勝率</div>
+            <div class="metricVal">${esc(safeNum(p.nat_win))}</div>
+          </div>
+
+          <div class="metricCol metricCol--motor">
+            <div class="metricHead">モーターNo.</div>
+            <div class="metricSub">${esc(safeInt(p.motor_no))}</div>
+            <div class="metricVal metricVal--motor">${esc(safeNum(p.motor_2))}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function rowHTML(p){
+      const regno = p.regno || p.id || "—";
+      const grade = p.grade || "—";
+      const branch = p.branch || "—";
+      const age = (p.age !== undefined && p.age !== null && p.age !== "") ? `${p.age}歳` : "—";
+
+      return `
+        <div class="row">
+          <div class="waku w${Number(p.waku) || 0}">${Number(p.waku) || ""}</div>
+
+          <div class="info">
+            <div class="sub">${esc(regno)} / ${esc(grade)} / ${esc(branch)} / ${esc(age)}</div>
+            <div class="nameRow">
+              <div class="name">${esc(p.name || "—")}</div>
+            </div>
+          </div>
+
+          ${metricHTML(p)}
+        </div>
+      `;
+    }
+
+    function renderRaceJSON(r, json){
+      $raceNoLabel.textContent = `${r}R`;
+      $timeLabel.textContent = `締切: ${toHM(json?.race?.cutoff || json?.cutoff || "")}`;
+      $dayLabel.textContent = String(json?.day_label || "").trim() || "—";
+
+      const boatsRaw = Array.isArray(json?.race?.boats) ? json.race.boats : [];
+      if (!boatsRaw.length){
+        $table.innerHTML = `<div class="err">出走表が空です。<br>（race.boats が見つかりません）</div>`;
+        return;
+      }
+
+      $table.innerHTML = normalizeBoatsTo6(boatsRaw).map(rowHTML).join("");
+      requestAnimationFrame(setTopHeight);
+    }
+
+    function syncURLRace(r){
+      const next = new URL(location.href);
+      next.searchParams.set("race", String(r));
+      history.replaceState(null, "", next.toString());
+    }
+
+    function buildCandidateUrls(r){
+      return [
+        ...(jcd && jcd !== "00" ? [`${BOT_RACES_BASE_URL}${encodeURIComponent(`${jcd}_${r}R.json`)}`] : []),
+        `${BOT_RACES_BASE_URL}${encodeURIComponent(`${venueName}_${r}R.json`)}`
+      ];
+    }
+
+    async function fetchRaceJSON(r){
+      let lastErr = null;
+      for (const url of buildCandidateUrls(r)){
+        try { return await fetchJSON(url); }
+        catch (e) { lastErr = e; }
+      }
+      throw lastErr || new Error("race json not found");
+    }
+
+    async function setRace(r){
+      r = clamp(Number(r) || 1, 1, 12);
+      makeTabs(r);
+      syncURLRace(r);
+
+      $raceNoLabel.textContent = `${r}R`;
+      $timeLabel.textContent = "締切: --:--";
+      $dayLabel.textContent = "—";
+      $table.innerHTML = `<div class="err">データを読み込み中…</div>`;
+
+      if (!venueName || venueName === "会場"){
+        $table.innerHTML = `<div class="err">name が指定されていません。<br>例：race.html?jcd=20&name=若松</div>`;
+        return;
+      }
+
+      try {
+        renderRaceJSON(r, await fetchRaceJSON(r));
+      } catch (e) {
+        $table.innerHTML = `<div class="err">JSONの取得に失敗しました。<br>${buildCandidateUrls(r).map(esc).join("<br>")}<br>（ファイル未生成 or URL違い）</div>`;
+      }
+    }
+
+    async function boot(){
+      const initialRace = clamp(Number(qs.get("race") || 1) || 1, 1, 12);
+      makeTabs(initialRace);
+      await setRace(initialRace);
+      requestAnimationFrame(() => {
+        setTopHeight();
+        centerActiveTab();
+      });
+    }
+
+    addEventListener("resize", setTopHeight, { passive:true });
+    $("btnBack").addEventListener("click", () => history.back());
+    requestAnimationFrame(setTopHeight);
+    boot();
+  </script>
+</body>
+</html>
