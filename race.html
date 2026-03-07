@@ -34,6 +34,10 @@
       --cardText:#0f172a;
       --cardMuted:#64748b;
       --shadow:0 14px 34px rgba(0,0,0,.28);
+
+      --good:#16a34a;
+      --mid:#d97706;
+      --low:#64748b;
     }
 
     *{ box-sizing:border-box; }
@@ -138,6 +142,7 @@
       -webkit-overflow-scrolling:touch;
       scrollbar-width:none;
       padding-bottom:3px;
+      scroll-behavior:smooth;
     }
 
     .raceTabs::-webkit-scrollbar{ display:none; }
@@ -309,6 +314,10 @@
       color:#64748b;
     }
 
+    .rate-high{ color:var(--good); }
+    .rate-mid{ color:var(--mid); }
+    .rate-low{ color:var(--low); }
+
     .muted{ color:#64748b; }
 
     .note{
@@ -433,6 +442,17 @@
     addEventListener("resize", () => setTopHeight(), { passive:true });
     requestAnimationFrame(() => setTopHeight());
 
+    function centerActiveTab(){
+      const active = $tabs.querySelector(".tab.is-active");
+      if (!active) return;
+
+      const offset = active.offsetLeft - ($tabs.clientWidth / 2) + (active.clientWidth / 2);
+      $tabs.scrollTo({
+        left: Math.max(0, offset),
+        behavior: "smooth"
+      });
+    }
+
     function makeTabs(active){
       $tabs.innerHTML = "";
       for(let r = 1; r <= 12; r++){
@@ -443,6 +463,7 @@
         b.addEventListener("click", () => setRace(r));
         $tabs.appendChild(b);
       }
+      requestAnimationFrame(centerActiveTab);
     }
 
     function escapeHTML(s){
@@ -506,6 +527,22 @@
       return out;
     }
 
+    function rateClass(value){
+      const n = Number(value);
+      if (!Number.isFinite(n)) return "";
+      if (n >= 6.0) return "rate-high";
+      if (n >= 5.0) return "rate-mid";
+      return "rate-low";
+    }
+
+    function percentClass(value){
+      const n = Number(value);
+      if (!Number.isFinite(n)) return "";
+      if (n >= 45) return "rate-high";
+      if (n >= 30) return "rate-mid";
+      return "rate-low";
+    }
+
     function rowHTML(p){
       const w = Number(p.waku ?? 0) || 0;
 
@@ -514,11 +551,11 @@
       const ageText = (p.age !== undefined && p.age !== null && p.age !== "") ? `年齢 ${p.age}` : "";
       const gradeText = p.grade ? String(p.grade) : "";
 
-      const natWin = (p.nat_win !== undefined && p.nat_win !== null && p.nat_win !== "")
-        ? `勝率 ${Number(p.nat_win).toFixed(2)}`
+      const natWinVal = (p.nat_win !== undefined && p.nat_win !== null && p.nat_win !== "")
+        ? Number(p.nat_win).toFixed(2)
         : "";
-      const nat2 = (p.nat_2 !== undefined && p.nat_2 !== null && p.nat_2 !== "")
-        ? `2連 ${Number(p.nat_2).toFixed(2)}%`
+      const nat2Val = (p.nat_2 !== undefined && p.nat_2 !== null && p.nat_2 !== "")
+        ? Number(p.nat_2).toFixed(2)
         : "";
 
       const motor = (p.motor_no !== undefined && p.motor_no !== null && p.motor_no !== "")
@@ -528,7 +565,18 @@
         ? `B${p.boat_no} (${p.boat_2 ?? ""}%)`
         : "";
 
-      const rightTop = (natWin || nat2) ? [natWin, nat2].filter(Boolean).join(" / ") : "—";
+      const winHTML = natWinVal
+        ? `<span class="${rateClass(natWinVal)}">勝率 ${escapeHTML(natWinVal)}</span>`
+        : "";
+
+      const nat2HTML = nat2Val
+        ? `<span class="${percentClass(nat2Val)}">2連 ${escapeHTML(nat2Val)}%</span>`
+        : "";
+
+      const rightTop = (winHTML || nat2HTML)
+        ? [winHTML, nat2HTML].filter(Boolean).join(" / ")
+        : "—";
+
       const rightBtm = [motor, boat].filter(Boolean).join(" / ");
 
       return `
@@ -546,7 +594,7 @@
           </div>
 
           <div class="metric">
-            <div class="st">${escapeHTML(rightTop)}</div>
+            <div class="st">${rightTop}</div>
             <div class="win">${escapeHTML(rightBtm || "")}</div>
           </div>
         </div>
@@ -633,7 +681,10 @@
       const initialRace = clamp(Number(qs.get("race") || 1) || 1, 1, 12);
       makeTabs(initialRace);
       await setRace(initialRace);
-      requestAnimationFrame(() => setTopHeight());
+      requestAnimationFrame(() => {
+        setTopHeight();
+        centerActiveTab();
+      });
     }
 
     document.getElementById("btnBack").addEventListener("click", () => history.back());
