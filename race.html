@@ -23,7 +23,6 @@
       --muted:#64748b;
       --muted-2:#94a3b8;
       --accent:#2563eb;
-      --accent-soft:#dbeafe;
 
       --shadow:
         0 8px 24px rgba(15,23,42,.06),
@@ -41,9 +40,7 @@
       overscroll-behavior-y:none;
     }
 
-    body{
-      padding-top:var(--safe-top);
-    }
+    body{ padding-top:var(--safe-top); }
 
     .raceTop{
       position:sticky;
@@ -131,7 +128,6 @@
       padding-bottom:2px;
       scroll-behavior:smooth;
     }
-
     .raceTabs::-webkit-scrollbar{ display:none; }
 
     .tab{
@@ -213,7 +209,7 @@
       flex:1 1 0;
       min-height:0;
       display:grid;
-      grid-template-columns: 40px 1fr 130px;
+      grid-template-columns: 40px minmax(0, 1fr) 176px;
       gap:8px;
       align-items:center;
       border-radius:16px;
@@ -234,7 +230,6 @@
       letter-spacing:-.03em;
       border:1px solid rgba(15,23,42,.08);
     }
-
     .waku.w1{ background:#ffffff; color:#111827; }
     .waku.w2{ background:#1f2937; color:#ffffff; }
     .waku.w3{ background:#ef4444; color:#ffffff; }
@@ -247,7 +242,7 @@
       display:flex;
       flex-direction:column;
       justify-content:center;
-      gap:3px;
+      gap:4px;
     }
 
     .sub{
@@ -260,8 +255,8 @@
     }
 
     .name{
-      font-size:17px;
-      line-height:1.05;
+      font-size:18px;
+      line-height:1.04;
       font-weight:1000;
       color:#0f172a;
       white-space:nowrap;
@@ -273,25 +268,35 @@
     .metric{
       min-width:0;
       display:grid;
-      grid-template-columns: 40px 40px;
-      column-gap:10px;
-      row-gap:2px;
-      justify-content:end;
-      align-content:center;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      column-gap:6px;
+      row-gap:3px;
       text-align:right;
-      font-size:10px;
-      line-height:1.15;
-      color:#475569;
+      align-content:center;
     }
 
     .metricHead{
+      font-size:9px;
+      line-height:1.05;
       font-weight:900;
       color:#64748b;
+      white-space:nowrap;
+    }
+
+    .metricSub{
+      font-size:8px;
+      line-height:1;
+      font-weight:800;
+      color:#94a3b8;
+      white-space:nowrap;
     }
 
     .metricVal{
+      font-size:11px;
+      line-height:1.05;
+      font-weight:1000;
       color:#0f172a;
-      font-weight:900;
+      white-space:nowrap;
     }
 
     .note{
@@ -329,7 +334,7 @@
       .section{ padding:9px; }
 
       .row{
-        grid-template-columns: 36px 1fr 116px;
+        grid-template-columns: 36px minmax(0, 1fr) 162px;
         gap:7px;
         padding:7px;
         border-radius:15px;
@@ -343,12 +348,10 @@
       }
 
       .sub{ font-size:9px; }
-      .name{ font-size:16px; }
-      .metric{
-        grid-template-columns: 36px 36px;
-        column-gap:8px;
-        font-size:9px;
-      }
+      .name{ font-size:17px; }
+      .metricHead{ font-size:8px; }
+      .metricSub{ font-size:7px; }
+      .metricVal{ font-size:10px; }
     }
 
     @media (max-height: 760px){
@@ -369,7 +372,7 @@
 
       .row{
         padding:6px 7px;
-        grid-template-columns: 34px 1fr 112px;
+        grid-template-columns: 34px minmax(0, 1fr) 156px;
       }
 
       .waku{
@@ -380,13 +383,10 @@
       }
 
       .sub{ font-size:9px; }
-      .name{ font-size:15px; }
-      .metric{
-        grid-template-columns: 34px 34px;
-        column-gap:8px;
-        font-size:9px;
-      }
-
+      .name{ font-size:16px; }
+      .metricHead{ font-size:8px; }
+      .metricSub{ font-size:7px; }
+      .metricVal{ font-size:10px; }
       .note{ font-size:10px; margin-top:6px; }
     }
   </style>
@@ -426,163 +426,116 @@
 
   <script>
     const qs = new URLSearchParams(location.search);
-    const venueNameRaw = qs.get("name") || "会場";
-    const venueName = decodeURIComponent(venueNameRaw);
+    const venueName = decodeURIComponent(qs.get("name") || "会場");
     const jcd = String(qs.get("jcd") || "").padStart(2, "0");
 
-    document.getElementById("venueName").textContent = venueName;
-
-    const $tabs = document.getElementById("tabs");
-    const $table = document.getElementById("table");
-    const $raceNoLabel = document.getElementById("raceNoLabel");
-    const $timeLabel = document.getElementById("timeLabel");
-    const $dayLabel = document.getElementById("dayLabel");
-    const $raceTop = document.getElementById("raceTop");
+    const $ = (id) => document.getElementById(id);
+    const $tabs = $("tabs");
+    const $table = $("table");
+    const $raceNoLabel = $("raceNoLabel");
+    const $timeLabel = $("timeLabel");
+    const $dayLabel = $("dayLabel");
+    const $raceTop = $("raceTop");
 
     const BOT_RACES_BASE_URL =
       "https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/site/races/";
 
-    function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
+    $("venueName").textContent = venueName;
 
-    function toHM(x){
-      const s = String(x || "");
-      const m = s.match(/(\d{1,2}):(\d{2})/);
-      if (!m) return "--:--";
-      const hh = String(m[1]).padStart(2, "0");
-      return `${hh}:${m[2]}`;
-    }
-
-    function setTopHeight(){
+    const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+    const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+    const safeNum = (v) => {
+      if (v === undefined || v === null || v === "") return "—";
+      const n = Number(v);
+      return Number.isFinite(n) ? n.toFixed(2) : "—";
+    };
+    const toHM = (x) => {
+      const m = String(x || "").match(/(\d{1,2}):(\d{2})/);
+      return m ? `${String(m[1]).padStart(2, "0")}:${m[2]}` : "--:--";
+    };
+    const setTopHeight = () => {
       const h = $raceTop.getBoundingClientRect().height || 118;
       document.documentElement.style.setProperty("--raceTopH", `${Math.ceil(h)}px`);
-    }
-
-    addEventListener("resize", () => setTopHeight(), { passive:true });
-    requestAnimationFrame(() => setTopHeight());
-
-    function centerActiveTab(){
-      const active = $tabs.querySelector(".tab.is-active");
-      if (!active) return;
-
-      const offset = active.offsetLeft - ($tabs.clientWidth / 2) + (active.clientWidth / 2);
-      $tabs.scrollTo({
-        left: Math.max(0, offset),
-        behavior: "smooth"
-      });
-    }
-
-    function makeTabs(active){
-      $tabs.innerHTML = "";
-      for(let r = 1; r <= 12; r++){
-        const b = document.createElement("button");
-        b.type = "button";
-        b.className = "tab" + (r === active ? " is-active" : "");
-        b.textContent = r + "R";
-        b.addEventListener("click", () => setRace(r));
-        $tabs.appendChild(b);
-      }
-      requestAnimationFrame(centerActiveTab);
-    }
-
-    function escapeHTML(s){
-      return String(s ?? "").replace(/[&<>"']/g, (c) => ({
-        "&":"&amp;",
-        "<":"&lt;",
-        ">":"&gt;",
-        '"':"&quot;",
-        "'":"&#39;"
-      }[c]));
-    }
-
-    async function fetchJSON(url){
+    };
+    const fetchJSON = async (url) => {
       const bust = url.includes("?") ? `&t=${Date.now()}` : `?t=${Date.now()}`;
       const res = await fetch(url + bust, { cache:"no-store" });
       if (!res.ok) throw new Error(`failed: ${url}`);
-      return await res.json();
+      return res.json();
+    };
+    const centerActiveTab = () => {
+      const active = $tabs.querySelector(".tab.is-active");
+      if (!active) return;
+      const offset = active.offsetLeft - ($tabs.clientWidth / 2) + (active.clientWidth / 2);
+      $tabs.scrollTo({ left: Math.max(0, offset), behavior: "smooth" });
+    };
+
+    function makeTabs(active){
+      $tabs.innerHTML = Array.from({ length: 12 }, (_, i) => {
+        const r = i + 1;
+        return `<button type="button" class="tab${r === active ? " is-active" : ""}" data-race="${r}">${r}R</button>`;
+      }).join("");
+      $tabs.querySelectorAll(".tab").forEach((btn) => {
+        btn.addEventListener("click", () => setRace(Number(btn.dataset.race)));
+      });
+      requestAnimationFrame(centerActiveTab);
     }
 
     function normalizeBoatsTo6(boats){
       const byWaku = new Map();
+      const rest = [];
 
-      for (const b of boats){
+      boats.forEach((b) => {
         const w = Number(b?.waku);
-        if (w >= 1 && w <= 6 && !byWaku.has(w)){
-          byWaku.set(w, b);
-        }
-      }
-
-      const rest = boats.filter((b) => {
-        const w = Number(b?.waku);
-        return !(w >= 1 && w <= 6 && byWaku.get(w) === b);
+        if (w >= 1 && w <= 6 && !byWaku.has(w)) byWaku.set(w, b);
+        else rest.push(b);
       });
 
       for (let w = 1; w <= 6; w++){
-        if (!byWaku.has(w) && rest.length){
-          const b = rest.shift();
-          byWaku.set(w, { ...b, waku: w });
-        }
+        if (!byWaku.has(w) && rest.length) byWaku.set(w, { ...rest.shift(), waku: w });
       }
 
-      const out = [];
-      for (let w = 1; w <= 6; w++){
-        out.push(
-          byWaku.get(w) || {
-            waku:w,
-            name:"—",
-            regno:"",
-            branch:"",
-            age:"",
-            grade:"",
-            nat_win:null,
-            nat_2:null,
-            nat_3:null,
-            loc_win:null,
-            loc_2:null,
-            loc_3:null
-          }
-        );
-      }
-      return out;
+      return Array.from({ length: 6 }, (_, i) => {
+        const w = i + 1;
+        return byWaku.get(w) || {
+          waku:w, name:"—", regno:"", branch:"", age:"", grade:"",
+          nat_win:null, nat_2:null, loc_win:null, loc_2:null, motor_2:null, boat_2:null
+        };
+      });
     }
 
-    function safeNum(value){
-      if (value === undefined || value === null || value === "") return "—";
-      const n = Number(value);
-      if (!Number.isFinite(n)) return "—";
-      return n.toFixed(2);
+    function metricCell(head, sub, val){
+      return `
+        <div class="metricHead">${head}</div>
+        <div class="metricSub">${sub}</div>
+        <div class="metricVal">${esc(val)}</div>
+      `;
     }
 
     function rowHTML(p){
-      const w = Number(p.waku ?? 0) || 0;
-
       const regno = p.regno || p.id || "—";
       const grade = p.grade || "—";
       const branch = p.branch || "—";
       const age = (p.age !== undefined && p.age !== null && p.age !== "") ? `${p.age}歳` : "—";
 
+      const metrics = [
+        ["全国", "勝率", safeNum(p.nat_win)],
+        ["当地", "勝率", safeNum(p.loc_win)],
+        ["M", "2連率", safeNum(p.motor_2)],
+        ["B", "2連率", safeNum(p.boat_2)]
+      ];
+
       return `
         <div class="row">
-          <div class="waku w${w}">${w || ""}</div>
+          <div class="waku w${Number(p.waku) || 0}">${Number(p.waku) || ""}</div>
 
           <div class="info">
-            <div class="sub">
-              ${escapeHTML(String(regno))} / ${escapeHTML(String(grade))} / ${escapeHTML(String(branch))} / ${escapeHTML(String(age))}
-            </div>
-            <div class="name">${escapeHTML(p.name || "—")}</div>
+            <div class="sub">${esc(regno)} / ${esc(grade)} / ${esc(branch)} / ${esc(age)}</div>
+            <div class="name">${esc(p.name || "—")}</div>
           </div>
 
           <div class="metric">
-            <div class="metricHead">全国</div>
-            <div class="metricHead">当地</div>
-
-            <div class="metricVal">${escapeHTML(safeNum(p.nat_win))}</div>
-            <div class="metricVal">${escapeHTML(safeNum(p.loc_win))}</div>
-
-            <div class="metricVal">${escapeHTML(safeNum(p.nat_2))}</div>
-            <div class="metricVal">${escapeHTML(safeNum(p.loc_2))}</div>
-
-            <div class="metricVal">${escapeHTML(safeNum(p.nat_3))}</div>
-            <div class="metricVal">${escapeHTML(safeNum(p.loc_3))}</div>
+            ${metrics.map(([h, s, v]) => metricCell(h, s, v)).join("")}
           </div>
         </div>
       `;
@@ -590,12 +543,8 @@
 
     function renderRaceJSON(r, json){
       $raceNoLabel.textContent = `${r}R`;
-
-      const close = json?.race?.cutoff || json?.cutoff || "";
-      $timeLabel.textContent = "締切: " + toHM(close);
-
-      const dayLabel = String(json?.day_label || "").trim();
-      $dayLabel.textContent = dayLabel || "—";
+      $timeLabel.textContent = `締切: ${toHM(json?.race?.cutoff || json?.cutoff || "")}`;
+      $dayLabel.textContent = String(json?.day_label || "").trim() || "—";
 
       const boatsRaw = Array.isArray(json?.race?.boats) ? json.race.boats : [];
       if (!boatsRaw.length){
@@ -603,9 +552,8 @@
         return;
       }
 
-      const boats6 = normalizeBoatsTo6(boatsRaw);
-      $table.innerHTML = boats6.map(rowHTML).join("");
-      requestAnimationFrame(() => setTopHeight());
+      $table.innerHTML = normalizeBoatsTo6(boatsRaw).map(rowHTML).join("");
+      requestAnimationFrame(setTopHeight);
     }
 
     function syncURLRace(r){
@@ -615,28 +563,18 @@
     }
 
     function buildCandidateUrls(r){
-      const urls = [];
-
-      if (jcd && jcd !== "00"){
-        urls.push(`${BOT_RACES_BASE_URL}${encodeURIComponent(`${jcd}_${r}R.json`)}`);
-      }
-
-      urls.push(`${BOT_RACES_BASE_URL}${encodeURIComponent(`${venueName}_${r}R.json`)}`);
-      return urls;
+      return [
+        ...(jcd && jcd !== "00" ? [`${BOT_RACES_BASE_URL}${encodeURIComponent(`${jcd}_${r}R.json`)}`] : []),
+        `${BOT_RACES_BASE_URL}${encodeURIComponent(`${venueName}_${r}R.json`)}`
+      ];
     }
 
     async function fetchRaceJSON(r){
-      const urls = buildCandidateUrls(r);
       let lastErr = null;
-
-      for (const url of urls){
-        try{
-          return await fetchJSON(url);
-        }catch(e){
-          lastErr = e;
-        }
+      for (const url of buildCandidateUrls(r)){
+        try { return await fetchJSON(url); }
+        catch (e) { lastErr = e; }
       }
-
       throw lastErr || new Error("race json not found");
     }
 
@@ -655,12 +593,10 @@
         return;
       }
 
-      try{
-        const json = await fetchRaceJSON(r);
-        renderRaceJSON(r, json);
-      }catch(e){
-        const urls = buildCandidateUrls(r).map(escapeHTML).join("<br>");
-        $table.innerHTML = `<div class="err">JSONの取得に失敗しました。<br>${urls}<br>（ファイル未生成 or URL違い）</div>`;
+      try {
+        renderRaceJSON(r, await fetchRaceJSON(r));
+      } catch (e) {
+        $table.innerHTML = `<div class="err">JSONの取得に失敗しました。<br>${buildCandidateUrls(r).map(esc).join("<br>")}<br>（ファイル未生成 or URL違い）</div>`;
       }
     }
 
@@ -674,7 +610,9 @@
       });
     }
 
-    document.getElementById("btnBack").addEventListener("click", () => history.back());
+    addEventListener("resize", setTopHeight, { passive:true });
+    $("btnBack").addEventListener("click", () => history.back());
+    requestAnimationFrame(setTopHeight);
     boot();
   </script>
 </body>
