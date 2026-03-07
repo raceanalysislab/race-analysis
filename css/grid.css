@@ -44,7 +44,7 @@
   top:0;
   height: 56%;
   pointer-events:none;
-  opacity: .72;
+  opacity: .78;
   background: var(--toneTop, rgba(15,23,42,.12));
   border-top-left-radius: 7px;
   border-top-right-radius: 7px;
@@ -58,14 +58,28 @@
   z-index: 2;
 }
 
+/* 1R 08:00〜09:00 */
+.card--tone-morning{
+  --toneTop: linear-gradient(180deg, rgba(251,191,36,.78), rgba(251,191,36,0));
+}
+
+/* 1R 10:00〜12:00 */
+.card--tone-day{
+  --toneTop: linear-gradient(180deg, rgba(125,211,252,.78), rgba(125,211,252,0));
+}
+
+/* 1R 15:00〜16:00 */
+.card--tone-evening{
+  --toneTop: linear-gradient(180deg, rgba(129,140,248,.82), rgba(129,140,248,0));
+}
+
+/* 1R 17:00〜18:00 */
+.card--tone-night{
+  --toneTop: linear-gradient(180deg, rgba(88,28,135,.88), rgba(30,41,59,.18));
+}
+
 .card--tone-normal{
   --toneTop: linear-gradient(180deg, rgba(148,163,184,.35), rgba(148,163,184,0));
-}
-.card--tone-morning{
-  --toneTop: linear-gradient(180deg, rgba(251,191,36,.70), rgba(251,191,36,0));
-}
-.card--tone-night{
-  --toneTop: linear-gradient(180deg, rgba(96,165,250,.72), rgba(96,165,250,0));
 }
 
 .card--off::before{
@@ -91,16 +105,23 @@ html[data-theme="pro"] .card{
 }
 
 html[data-theme="pro"] .card::before{
-  opacity: .78;
+  opacity: .84;
+}
+
+html[data-theme="pro"] .card--tone-morning{
+  --toneTop: linear-gradient(180deg, rgba(255,224,150,.80), rgba(255,224,150,0));
+}
+html[data-theme="pro"] .card--tone-day{
+  --toneTop: linear-gradient(180deg, rgba(153,246,228,.72), rgba(153,246,228,0));
+}
+html[data-theme="pro"] .card--tone-evening{
+  --toneTop: linear-gradient(180deg, rgba(165,180,252,.82), rgba(165,180,252,0));
+}
+html[data-theme="pro"] .card--tone-night{
+  --toneTop: linear-gradient(180deg, rgba(107,33,168,.88), rgba(15,23,42,.24));
 }
 html[data-theme="pro"] .card--tone-normal{
   --toneTop: linear-gradient(180deg, rgba(255,255,255,.24), rgba(255,255,255,0));
-}
-html[data-theme="pro"] .card--tone-morning{
-  --toneTop: linear-gradient(180deg, rgba(255,224,150,.70), rgba(255,224,150,0));
-}
-html[data-theme="pro"] .card--tone-night{
-  --toneTop: linear-gradient(180deg, rgba(120,170,255,.70), rgba(120,170,255,0));
 }
 html[data-theme="pro"] .card--off::before{
   opacity: 0;
@@ -128,10 +149,10 @@ html[data-theme="pro"] .card:active{
   -webkit-transform: translateZ(0) translateY(-1px);
 }
 
-/* 左アイコン固定・中央文字 */
+/* 左アイコン固定・開催場は中央 */
 .card__nameRow{
   display:grid;
-  grid-template-columns: 24px minmax(0, 1fr) 24px;
+  grid-template-columns: 30px minmax(0, 1fr) 30px;
   align-items:center;
   width:100%;
   min-height:30px;
@@ -139,14 +160,14 @@ html[data-theme="pro"] .card:active{
 }
 
 .card__nameIcon{
-  width:24px;
-  height:24px;
+  width:30px;
+  height:30px;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:18px;
+  font-size:20px;
   line-height:1;
-  transform: translateX(-2px);
+  transform: translateX(-1px);
 }
 
 .card__nameIcon--empty{
