@@ -1,4 +1,4 @@
-/* js/app.js（完全置き換え：開催一覧 / card_band対応版 / 絵文字なし / PRO切替対応 / next_displayリアルタイム切替版） */
+/* js/app.js（完全置き換え：開催一覧 / 3秒後切替 / 締切5分前赤表示 / PRO切替対応） */
 
 const SITE_VENUES_URL =
   "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/site/venues.json";
@@ -22,6 +22,11 @@ const VENUES = [
 const PRO_PASSWORD = "pro123";
 const PRO_STORAGE_KEY = "boatlab_pro_mode";
 
+/* 締切超過後に次レースへ切り替える秒数 */
+const NEXT_RACE_DELAY_MS = 3000;
+/* 締切5分前 */
+const DANGER_MS = 5 * 60 * 1000;
+
 const $grid = document.getElementById("grid");
 const $updatedAt = document.getElementById("updatedAt");
 const $btn = document.getElementById("btnRefresh");
@@ -41,19 +46,27 @@ const pad2 = (n) => String(n).padStart(2, "0");
 let isLoading = false;
 let latestVenueList = [];
 
-function nowJST() {
+function nowJSTParts() {
   const parts = new Intl.DateTimeFormat("ja-JP", {
     timeZone: "Asia/Tokyo",
     hour: "2-digit",
     minute: "2-digit",
+    second: "2-digit",
     hour12: false
   }).formatToParts(new Date());
 
   const get = (t) => parts.find((p) => p.type === t)?.value;
+
   return {
     hh: Number(get("hour")),
-    mm: Number(get("minute"))
+    mm: Number(get("minute")),
+    ss: Number(get("second"))
   };
+}
+
+function nowJST() {
+  const { hh, mm } = nowJSTParts();
+  return { hh, mm };
 }
 
 function normalizeVenueName(s) {
@@ -143,10 +156,6 @@ function parseHHMM(hhmm) {
   return { hh, mm };
 }
 
-function toMinutes(hh, mm) {
-  return hh * 60 + mm;
-}
-
 function normalizeRaceTimes(raceTimes) {
   if (!Array.isArray(raceTimes)) return [];
 
@@ -167,26 +176,40 @@ function normalizeRaceTimes(raceTimes) {
   return out;
 }
 
+function getRaceCutoffTimestamp(hhmm) {
+  const hm = parseHHMM(hhmm);
+  if (!hm) return null;
+
+  const now = new Date();
+  now.setHours(hm.hh, hm.mm, 0, 0);
+  return now.getTime();
+}
+
 function computeNextDisplayFromRaceTimes(raceTimes) {
-  const now = nowJST();
-  const nowMin = toMinutes(now.hh, now.mm);
+  const nowMs = Date.now();
 
   for (const race of raceTimes) {
-    const hm = parseHHMM(race.cutoff);
-    if (!hm) continue;
+    const cutoffAt = getRaceCutoffTimestamp(race.cutoff);
+    if (cutoffAt == null) continue;
 
-    const cutoffMin = toMinutes(hm.hh, hm.mm);
-    if (cutoffMin > nowMin) {
+    const switchAt = cutoffAt + NEXT_RACE_DELAY_MS;
+    const remainMs = cutoffAt - nowMs;
+
+    if (nowMs < switchAt) {
       return {
         next_race: race.rno,
-        next_display: `${race.rno}R ${race.cutoff}`
+        next_display: `${race.rno}R ${race.cutoff}`,
+        cutoff_at: cutoffAt,
+        is_danger: remainMs <= DANGER_MS && remainMs >= 0
       };
     }
   }
 
   return {
     next_race: null,
-    next_display: "発売終了"
+    next_display: "発売終了",
+    cutoff_at: null,
+    is_danger: false
   };
 }
 
@@ -227,7 +250,9 @@ function normalizeVenueList(raw) {
       grade_label: normalizeGradeLabel(item?.grade_label),
       first_race_time: String(item?.first_race_time || "").trim(),
       card_band: normalizeBand(item),
-      race_times: raceTimes
+      race_times: raceTimes,
+      cutoff_at: computed.cutoff_at,
+      is_danger: computed.is_danger
     });
   }
 
@@ -243,7 +268,9 @@ function recalcVenueList(venueList) {
       ...v,
       race_times: raceTimes,
       next_race: computed.next_race,
-      next_display: computed.next_display
+      next_display: computed.next_display,
+      cutoff_at: computed.cutoff_at,
+      is_danger: computed.is_danger
     };
   });
 }
@@ -311,7 +338,8 @@ function render(venueList) {
       grade_label: v?.grade_label || "一般",
       first_race_time: v?.first_race_time || "",
       card_band: v?.card_band || "normal",
-      race_times: v?.race_times || []
+      race_times: v?.race_times || [],
+      is_danger: !!v?.is_danger
     };
   });
 
@@ -333,6 +361,8 @@ function render(venueList) {
       `;
     }
 
+    const dangerClass = v.is_danger ? " card__line--danger" : "";
+
     return `
       <a class="card card--on ${normalizeToneClass(v.card_band)}" href="${venueHref(v)}">
         <div class="card__nameRow">
@@ -341,7 +371,7 @@ function render(venueList) {
           <span class="card__nameIcon card__nameIcon--empty"></span>
         </div>
         ${getVenueMetaLine(v)}
-        <div class="card__line card__line--btm">${escapeHTML(v.next_display || "-- --")}</div>
+        <div class="card__line card__line--btm${dangerClass}">${escapeHTML(v.next_display || "-- --")}</div>
       </a>
     `;
   }).join("");
@@ -388,9 +418,8 @@ function renderPicksCta() {
 
 function rerenderFromCurrentTime() {
   if (!latestVenueList.length) return;
-  const recalculated = recalcVenueList(latestVenueList);
-  latestVenueList = recalculated;
-  render(recalculated);
+  latestVenueList = recalcVenueList(latestVenueList);
+  render(latestVenueList);
   applyThemeFromStorage();
 }
 
@@ -400,8 +429,7 @@ async function loadAll() {
 
   try {
     const json = await fetchJSON(SITE_VENUES_URL);
-    const venueList = normalizeVenueList(json);
-    latestVenueList = venueList;
+    latestVenueList = normalizeVenueList(json);
 
     render(latestVenueList);
     renderPicksEmpty();
@@ -438,12 +466,12 @@ setInterval(() => {
   }
 }, 5 * 60 * 1000);
 
-/* 表示だけは1分ごとに現在時刻で再計算 */
+/* 表示だけは1秒ごとに再計算 */
 setInterval(() => {
   if (document.visibilityState === "visible") {
     rerenderFromCurrentTime();
   }
-}, 60 * 1000);
+}, 1000);
 
 applyThemeFromStorage();
 renderPicksCta();
