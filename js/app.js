@@ -1,4 +1,4 @@
-/* js/app.js（完全置き換え：開催一覧 / card_band対応版） */
+/* js/app.js（完全置き換え：開催一覧 / card_band対応版 / 絵文字なし） */
 
 const SITE_VENUES_URL =
   "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/site/venues.json";
@@ -99,10 +99,10 @@ function normalizeGradeLabel(label) {
 function normalizeBand(item) {
   const s = String(item?.card_band || "").trim().toLowerCase();
 
-  if (s === "morning") return "morning";   // 1R 08:00〜09:00
-  if (s === "day") return "day";           // 1R 10:00〜12:00
-  if (s === "evening") return "evening";   // 1R 15:00〜16:00
-  if (s === "night") return "night";       // 1R 17:00〜18:00
+  if (s === "morning") return "morning";
+  if (s === "day") return "day";
+  if (s === "evening") return "evening";
+  if (s === "night") return "night";
   return "normal";
 }
 
@@ -114,9 +114,7 @@ function normalizeToneClass(band) {
   return "card--tone-normal";
 }
 
-function toneIcon(band) {
-  if (band === "morning") return "☀️";
-  if (band === "evening") return "🌙";
+function toneIcon() {
   return "";
 }
 
