@@ -1,9 +1,7 @@
-/* js/app.js（完全置き換え：開催一覧 / 多重フェッチ / 強制キャッシュ回避 / 3秒後切替 / 締切5分前は時間だけ赤表示 / PRO切替対応） */
+/* js/app.js（完全置き換え：軽量安定版 / JSON配列・venues両対応 / jsDelivr固定 / キャッシュ回避 / JST日付切替対応 / 3秒後切替 / 締切5分前は時間だけ赤表示 / PRO対応） */
 
-const SITE_VENUES_URLS = [
-  "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/site/venues.json",
-  "https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/site/venues.json"
-];
+const SITE_VENUES_URL =
+  "https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/site/venues.json";
 
 const NOTE_URLS = {
   YOSO_ONLY: "https://note.com/wsnndboat7/n/n1fdca8b0a7e3",
@@ -28,6 +26,12 @@ const PRO_STORAGE_KEY = "boatlab_pro_mode";
 const NEXT_RACE_DELAY_MS = 3000;
 /* 締切5分前 */
 const DANGER_MS = 5 * 60 * 1000;
+/* 通信タイムアウト */
+const FETCH_TIMEOUT_MS = 10000;
+/* JSON再取得間隔 */
+const REFRESH_INTERVAL_MS = 5 * 60 * 1000;
+/* 表示再計算間隔 */
+const RERENDER_INTERVAL_MS = 1000;
 
 const $grid = document.getElementById("grid");
 const $updatedAt = document.getElementById("updatedAt");
@@ -47,10 +51,18 @@ const pad2 = (n) => String(n).padStart(2, "0");
 
 let isLoading = false;
 let latestVenueList = [];
+let latestSourceDate = "";
+let currentJstDate = "";
+let lastLoadedAt = 0;
+
+/* ===================== 時刻系 ===================== */
 
 function nowJSTParts() {
   const parts = new Intl.DateTimeFormat("ja-JP", {
     timeZone: "Asia/Tokyo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
@@ -60,6 +72,9 @@ function nowJSTParts() {
   const get = (t) => parts.find((p) => p.type === t)?.value;
 
   return {
+    yyyy: Number(get("year")),
+    mo: Number(get("month")),
+    dd: Number(get("day")),
     hh: Number(get("hour")),
     mm: Number(get("minute")),
     ss: Number(get("second"))
@@ -70,6 +85,13 @@ function nowJST() {
   const { hh, mm } = nowJSTParts();
   return { hh, mm };
 }
+
+function todayJSTString() {
+  const { yyyy, mo, dd } = nowJSTParts();
+  return `${yyyy}-${pad2(mo)}-${pad2(dd)}`;
+}
+
+/* ===================== 共通 ===================== */
 
 function normalizeVenueName(s) {
   return String(s ?? "")
@@ -90,37 +112,32 @@ function escapeHTML(s) {
 }
 
 function buildNoCacheUrl(url) {
-  const t = Date.now();
-  return `${url}${url.includes("?") ? "&" : "?"}t=${t}`;
+  return `${url}${url.includes("?") ? "&" : "?"}t=${Date.now()}`;
 }
 
-async function fetchJSONSingle(url) {
-  const finalUrl = buildNoCacheUrl(url);
-  const res = await fetch(finalUrl, {
-    cache: "no-store",
-    headers: {
-      "Cache-Control": "no-cache, no-store, max-age=0",
-      "Pragma": "no-cache"
-    }
-  });
-  if (!res.ok) throw new Error(`fetch fail: ${res.status} @ ${url}`);
-  return await res.json();
-}
+async function fetchJSON(url) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
 
-async function fetchJSONWithFallback(urls) {
-  let lastError = null;
+  try {
+    const res = await fetch(buildNoCacheUrl(url), {
+      cache: "no-store",
+      signal: controller.signal
+    });
 
-  for (const url of urls) {
-    try {
-      const json = await fetchJSONSingle(url);
-      return json;
-    } catch (e) {
-      console.warn("venues fetch failed:", url, e);
-      lastError = e;
+    if (!res.ok) {
+      throw new Error(`fetch fail: ${res.status}`);
     }
+
+    return await res.json();
+  } catch (e) {
+    if (e?.name === "AbortError") {
+      throw new Error("fetch timeout");
+    }
+    throw e;
+  } finally {
+    clearTimeout(timer);
   }
-
-  throw lastError || new Error("all venues fetch failed");
 }
 
 function venueHref(v) {
@@ -172,6 +189,8 @@ function toneIcon() {
   return "";
 }
 
+/* ===================== 時刻解析 ===================== */
+
 function parseHHMM(hhmm) {
   const s = String(hhmm || "").trim();
   const m = s.match(/^(\d{1,2}):(\d{2})$/);
@@ -179,6 +198,7 @@ function parseHHMM(hhmm) {
 
   const hh = Number(m[1]);
   const mm = Number(m[2]);
+
   if (!Number.isInteger(hh) || !Number.isInteger(mm)) return null;
   if (hh < 0 || hh > 23 || mm < 0 || mm > 59) return null;
 
@@ -209,9 +229,9 @@ function getRaceCutoffTimestamp(hhmm) {
   const hm = parseHHMM(hhmm);
   if (!hm) return null;
 
-  const now = new Date();
-  now.setHours(hm.hh, hm.mm, 0, 0);
-  return now.getTime();
+  const d = new Date();
+  d.setHours(hm.hh, hm.mm, 0, 0);
+  return d.getTime();
 }
 
 function computeNextDisplayFromRaceTimes(raceTimes) {
@@ -268,6 +288,8 @@ function splitNextDisplay(nextDisplay) {
     isSoldout: false
   };
 }
+
+/* ===================== 表示系 ===================== */
 
 function getVenueMetaLine(v) {
   const grade = normalizeGradeLabel(v?.grade_label);
@@ -329,52 +351,6 @@ function recalcVenueList(venueList) {
       is_danger: computed.is_danger
     };
   });
-}
-
-function isProMode() {
-  return localStorage.getItem(PRO_STORAGE_KEY) === "1";
-}
-
-function applyThemeFromStorage() {
-  if (isProMode()) {
-    document.documentElement.setAttribute("data-theme", "pro");
-  } else {
-    document.documentElement.removeAttribute("data-theme");
-  }
-  syncProButtonState();
-}
-
-function syncProButtonState() {
-  if (!$btnPro) return;
-  const on = isProMode();
-  $btnPro.setAttribute("aria-pressed", on ? "true" : "false");
-  $btnPro.classList.toggle("is-active", on);
-}
-
-function enableProMode() {
-  localStorage.setItem(PRO_STORAGE_KEY, "1");
-  applyThemeFromStorage();
-}
-
-function disableProMode() {
-  localStorage.removeItem(PRO_STORAGE_KEY);
-  applyThemeFromStorage();
-}
-
-function toggleProMode() {
-  if (isProMode()) {
-    disableProMode();
-    return;
-  }
-
-  const pass = window.prompt("PROパスワード");
-  if (pass === null) return;
-
-  if (pass === PRO_PASSWORD) {
-    enableProMode();
-  } else {
-    window.alert("パスワードが違います");
-  }
 }
 
 function render(venueList) {
@@ -490,6 +466,56 @@ function renderPicksCta() {
   `;
 }
 
+/* ===================== PRO ===================== */
+
+function isProMode() {
+  return localStorage.getItem(PRO_STORAGE_KEY) === "1";
+}
+
+function applyThemeFromStorage() {
+  if (isProMode()) {
+    document.documentElement.setAttribute("data-theme", "pro");
+  } else {
+    document.documentElement.removeAttribute("data-theme");
+  }
+  syncProButtonState();
+}
+
+function syncProButtonState() {
+  if (!$btnPro) return;
+  const on = isProMode();
+  $btnPro.setAttribute("aria-pressed", on ? "true" : "false");
+  $btnPro.classList.toggle("is-active", on);
+}
+
+function enableProMode() {
+  localStorage.setItem(PRO_STORAGE_KEY, "1");
+  applyThemeFromStorage();
+}
+
+function disableProMode() {
+  localStorage.removeItem(PRO_STORAGE_KEY);
+  applyThemeFromStorage();
+}
+
+function toggleProMode() {
+  if (isProMode()) {
+    disableProMode();
+    return;
+  }
+
+  const pass = window.prompt("PROパスワード");
+  if (pass === null) return;
+
+  if (pass === PRO_PASSWORD) {
+    enableProMode();
+  } else {
+    window.alert("パスワードが違います");
+  }
+}
+
+/* ===================== 読み込み ===================== */
+
 function rerenderFromCurrentTime() {
   if (!latestVenueList.length) return;
   latestVenueList = recalcVenueList(latestVenueList);
@@ -497,13 +523,46 @@ function rerenderFromCurrentTime() {
   applyThemeFromStorage();
 }
 
-async function loadAll() {
+function jstDateChanged() {
+  const today = todayJSTString();
+  if (!currentJstDate) {
+    currentJstDate = today;
+    return false;
+  }
+  if (currentJstDate !== today) {
+    currentJstDate = today;
+    return true;
+  }
+  return false;
+}
+
+function sourceIsToday() {
+  return !!latestSourceDate && latestSourceDate === todayJSTString();
+}
+
+async function loadAll(force = false) {
   if (isLoading) return;
+
+  const now = Date.now();
+  const tooSoon = now - lastLoadedAt < 15000;
+
+  if (!force && tooSoon && latestVenueList.length) {
+    rerenderFromCurrentTime();
+    return;
+  }
+
   isLoading = true;
 
   try {
-    const json = await fetchJSONWithFallback(SITE_VENUES_URLS);
+    const json = await fetchJSON(SITE_VENUES_URL);
+
+    latestSourceDate = String(json?.date || "").trim();
     latestVenueList = normalizeVenueList(json);
+    lastLoadedAt = Date.now();
+
+    if (!latestVenueList.length) {
+      throw new Error("venue data empty");
+    }
 
     render(latestVenueList);
     renderPicksEmpty();
@@ -511,15 +570,24 @@ async function loadAll() {
     applyThemeFromStorage();
   } catch (e) {
     console.error(e);
-    if ($updatedAt) $updatedAt.textContent = "ERR";
-    alert(`開催一覧取得エラー: ${e.message || e}`);
+
+    if (latestVenueList.length) {
+      rerenderFromCurrentTime();
+      const nowJ = nowJST();
+      if ($updatedAt) $updatedAt.textContent = `${pad2(nowJ.hh)}:${pad2(nowJ.mm)}`;
+    } else {
+      if ($updatedAt) $updatedAt.textContent = "ERR";
+      alert(`開催一覧取得エラー: ${e.message || e}`);
+    }
   } finally {
     isLoading = false;
   }
 }
 
+/* ===================== イベント ===================== */
+
 if ($btn) {
-  $btn.addEventListener("click", loadAll);
+  $btn.addEventListener("click", () => loadAll(true));
 }
 
 if ($btnPro) {
@@ -528,26 +596,28 @@ if ($btnPro) {
 
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible") {
+    const force = jstDateChanged();
     rerenderFromCurrentTime();
-    loadAll();
+    loadAll(force);
   }
 });
 
-/* JSON自体は5分ごとに再取得 */
 setInterval(() => {
   if (document.visibilityState === "visible") {
-    loadAll();
+    const force = jstDateChanged() || !sourceIsToday();
+    loadAll(force);
   }
-}, 5 * 60 * 1000);
+}, REFRESH_INTERVAL_MS);
 
-/* 表示だけは1秒ごとに再計算 */
 setInterval(() => {
   if (document.visibilityState === "visible") {
     rerenderFromCurrentTime();
   }
-}, 1000);
+}, RERENDER_INTERVAL_MS);
 
+/* 初回 */
+currentJstDate = todayJSTString();
 applyThemeFromStorage();
 renderPicksCta();
 renderPicksEmpty();
-loadAll();
+loadAll(true);
