@@ -213,7 +213,7 @@
       flex:1 1 0;
       min-height:0;
       display:grid;
-      grid-template-columns: 40px 1fr 112px;
+      grid-template-columns: 40px 1fr 130px;
       gap:8px;
       align-items:center;
       border-radius:16px;
@@ -250,9 +250,18 @@
       gap:3px;
     }
 
+    .sub{
+      font-size:10px;
+      line-height:1.15;
+      color:#64748b;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
     .name{
-      font-size:15px;
-      line-height:1.08;
+      font-size:17px;
+      line-height:1.05;
       font-weight:1000;
       color:#0f172a;
       white-space:nowrap;
@@ -261,51 +270,29 @@
       letter-spacing:.01em;
     }
 
-    .sub{
-      display:flex;
-      gap:6px 8px;
-      flex-wrap:wrap;
-      font-size:11px;
-      line-height:1.15;
-      color:#64748b;
-    }
-
     .metric{
       min-width:0;
-      display:flex;
-      flex-direction:column;
-      justify-content:center;
-      align-items:flex-end;
-      gap:3px;
+      display:grid;
+      grid-template-columns: 40px 40px;
+      column-gap:10px;
+      row-gap:2px;
+      justify-content:end;
+      align-content:center;
       text-align:right;
-    }
-
-    .st{
-      max-width:100%;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      font-size:11px;
-      line-height:1.15;
-      font-weight:900;
-      color:#0f172a;
-    }
-
-    .win{
-      max-width:100%;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
       font-size:10px;
       line-height:1.15;
+      color:#475569;
+    }
+
+    .metricHead{
+      font-weight:900;
       color:#64748b;
     }
 
-    .rate-high{ color:#16a34a; }
-    .rate-mid{ color:#d97706; }
-    .rate-low{ color:#64748b; }
-
-    .muted{ color:#64748b; }
+    .metricVal{
+      color:#0f172a;
+      font-weight:900;
+    }
 
     .note{
       margin-top:8px;
@@ -342,7 +329,7 @@
       .section{ padding:9px; }
 
       .row{
-        grid-template-columns: 36px 1fr 102px;
+        grid-template-columns: 36px 1fr 116px;
         gap:7px;
         padding:7px;
         border-radius:15px;
@@ -355,10 +342,13 @@
         border-radius:11px;
       }
 
-      .name{ font-size:14px; }
-      .sub{ font-size:10px; }
-      .st{ font-size:10px; }
-      .win{ font-size:9px; }
+      .sub{ font-size:9px; }
+      .name{ font-size:16px; }
+      .metric{
+        grid-template-columns: 36px 36px;
+        column-gap:8px;
+        font-size:9px;
+      }
     }
 
     @media (max-height: 760px){
@@ -379,7 +369,7 @@
 
       .row{
         padding:6px 7px;
-        grid-template-columns: 34px 1fr 98px;
+        grid-template-columns: 34px 1fr 112px;
       }
 
       .waku{
@@ -389,10 +379,14 @@
         border-radius:10px;
       }
 
-      .name{ font-size:13px; }
-      .sub{ font-size:10px; gap:5px 7px; }
-      .st{ font-size:10px; }
-      .win{ font-size:9px; }
+      .sub{ font-size:9px; }
+      .name{ font-size:15px; }
+      .metric{
+        grid-template-columns: 34px 34px;
+        column-gap:8px;
+        font-size:9px;
+      }
+
       .note{ font-size:10px; margin-top:6px; }
     }
   </style>
@@ -541,85 +535,54 @@
             grade:"",
             nat_win:null,
             nat_2:null,
-            motor_no:"",
-            motor_2:"",
-            boat_no:"",
-            boat_2:""
+            nat_3:null,
+            loc_win:null,
+            loc_2:null,
+            loc_3:null
           }
         );
       }
       return out;
     }
 
-    function rateClass(value){
+    function safeNum(value){
+      if (value === undefined || value === null || value === "") return "—";
       const n = Number(value);
-      if (!Number.isFinite(n)) return "";
-      if (n >= 6.0) return "rate-high";
-      if (n >= 5.0) return "rate-mid";
-      return "rate-low";
-    }
-
-    function percentClass(value){
-      const n = Number(value);
-      if (!Number.isFinite(n)) return "";
-      if (n >= 45) return "rate-high";
-      if (n >= 30) return "rate-mid";
-      return "rate-low";
+      if (!Number.isFinite(n)) return "—";
+      return n.toFixed(2);
     }
 
     function rowHTML(p){
       const w = Number(p.waku ?? 0) || 0;
 
-      const idText = (p.regno || p.id) ? `登録 ${p.regno || p.id}` : "";
-      const branchText = p.branch ? String(p.branch) : "";
-      const ageText = (p.age !== undefined && p.age !== null && p.age !== "") ? `年齢 ${p.age}` : "";
-      const gradeText = p.grade ? String(p.grade) : "";
-
-      const natWinVal = (p.nat_win !== undefined && p.nat_win !== null && p.nat_win !== "")
-        ? Number(p.nat_win).toFixed(2)
-        : "";
-      const nat2Val = (p.nat_2 !== undefined && p.nat_2 !== null && p.nat_2 !== "")
-        ? Number(p.nat_2).toFixed(2)
-        : "";
-
-      const motor = (p.motor_no !== undefined && p.motor_no !== null && p.motor_no !== "")
-        ? `M${p.motor_no} (${p.motor_2 ?? ""}%)`
-        : "";
-      const boat = (p.boat_no !== undefined && p.boat_no !== null && p.boat_no !== "")
-        ? `B${p.boat_no} (${p.boat_2 ?? ""}%)`
-        : "";
-
-      const winHTML = natWinVal
-        ? `<span class="${rateClass(natWinVal)}">勝率 ${escapeHTML(natWinVal)}</span>`
-        : "";
-
-      const nat2HTML = nat2Val
-        ? `<span class="${percentClass(nat2Val)}">2連 ${escapeHTML(nat2Val)}%</span>`
-        : "";
-
-      const rightTop = (winHTML || nat2HTML)
-        ? [winHTML, nat2HTML].filter(Boolean).join(" / ")
-        : "—";
-
-      const rightBtm = [motor, boat].filter(Boolean).join(" / ");
+      const regno = p.regno || p.id || "—";
+      const grade = p.grade || "—";
+      const branch = p.branch || "—";
+      const age = (p.age !== undefined && p.age !== null && p.age !== "") ? `${p.age}歳` : "—";
 
       return `
         <div class="row">
           <div class="waku w${w}">${w || ""}</div>
 
           <div class="info">
-            <div class="name">${escapeHTML(p.name || "—")}</div>
             <div class="sub">
-              ${gradeText ? `<span>${escapeHTML(gradeText)}</span>` : ``}
-              ${branchText ? `<span>${escapeHTML(branchText)}</span>` : ``}
-              ${idText ? `<span class="muted">${escapeHTML(idText)}</span>` : ``}
-              ${ageText ? `<span class="muted">${escapeHTML(ageText)}</span>` : ``}
+              ${escapeHTML(String(regno))} / ${escapeHTML(String(grade))} / ${escapeHTML(String(branch))} / ${escapeHTML(String(age))}
             </div>
+            <div class="name">${escapeHTML(p.name || "—")}</div>
           </div>
 
           <div class="metric">
-            <div class="st">${rightTop}</div>
-            <div class="win">${escapeHTML(rightBtm || "")}</div>
+            <div class="metricHead">全国</div>
+            <div class="metricHead">当地</div>
+
+            <div class="metricVal">${escapeHTML(safeNum(p.nat_win))}</div>
+            <div class="metricVal">${escapeHTML(safeNum(p.loc_win))}</div>
+
+            <div class="metricVal">${escapeHTML(safeNum(p.nat_2))}</div>
+            <div class="metricVal">${escapeHTML(safeNum(p.loc_2))}</div>
+
+            <div class="metricVal">${escapeHTML(safeNum(p.nat_3))}</div>
+            <div class="metricVal">${escapeHTML(safeNum(p.loc_3))}</div>
           </div>
         </div>
       `;
