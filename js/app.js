@@ -1,4 +1,4 @@
-/* js/app.js（完全置き換え：開催一覧 / 中央固定安定版） */
+/* js/app.js（完全置き換え：開催一覧 / card_band対応版） */
 
 const SITE_VENUES_URL =
   "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/site/venues.json";
@@ -17,12 +17,6 @@ const VENUES = [
   { jcd: "17", name: "宮島" }, { jcd: "18", name: "徳山" }, { jcd: "19", name: "下関" }, { jcd: "20", name: "若松" },
   { jcd: "21", name: "芦屋" }, { jcd: "22", name: "福岡" }, { jcd: "23", name: "唐津" }, { jcd: "24", name: "大村" }
 ];
-
-/* モーニング / ナイターの補完
-   本来は backend の card_tone を使うのが理想だが、
-   next_display が 2R 以降に進むと ☀️ が消えるため front でも補完する */
-const MORNING_JCDS = new Set(["10", "14", "21", "23"]);
-const NIGHT_JCDS   = new Set(["01", "07", "12", "15", "19", "20", "24"]);
 
 const $grid = document.getElementById("grid");
 const $updatedAt = document.getElementById("updatedAt");
@@ -102,39 +96,27 @@ function normalizeGradeLabel(label) {
   return s;
 }
 
-function detectToneByTime(nextDisplay) {
-  const s = String(nextDisplay || "");
-  const m = s.match(/(\d{1,2}):(\d{2})/);
-  if (!m) return "normal";
+function normalizeBand(item) {
+  const s = String(item?.card_band || "").trim().toLowerCase();
 
-  const hh = Number(m[1]);
-  const mm = Number(m[2]);
-  const tmin = hh * 60 + mm;
-
-  if (tmin >= 8 * 60 + 30 && tmin <= 9 * 60) return "morning";
-  if (tmin >= 15 * 60 && tmin <= 15 * 60 + 40) return "night";
+  if (s === "morning") return "morning";   // 1R 08:00〜09:00
+  if (s === "day") return "day";           // 1R 10:00〜12:00
+  if (s === "evening") return "evening";   // 1R 15:00〜16:00
+  if (s === "night") return "night";       // 1R 17:00〜18:00
   return "normal";
 }
 
-function detectTone(item, jcd) {
-  const jsonTone = String(item?.card_tone || "").trim().toLowerCase();
-  if (jsonTone === "morning" || jsonTone === "night") return jsonTone;
-
-  if (MORNING_JCDS.has(jcd)) return "morning";
-  if (NIGHT_JCDS.has(jcd)) return "night";
-
-  return detectToneByTime(item?.next_display || "");
-}
-
-function normalizeToneClass(tone) {
-  if (tone === "morning") return "card--tone-morning";
-  if (tone === "night") return "card--tone-night";
+function normalizeToneClass(band) {
+  if (band === "morning") return "card--tone-morning";
+  if (band === "day") return "card--tone-day";
+  if (band === "evening") return "card--tone-evening";
+  if (band === "night") return "card--tone-night";
   return "card--tone-normal";
 }
 
-function toneIcon(tone) {
-  if (tone === "morning") return "☀️";
-  if (tone === "night") return "🌙";
+function toneIcon(band) {
+  if (band === "morning") return "☀️";
+  if (band === "evening") return "🌙";
   return "";
 }
 
@@ -163,16 +145,14 @@ function normalizeVenueList(raw) {
     if (seen.has(base.jcd)) continue;
     seen.add(base.jcd);
 
-    const nextDisplay = String(item?.next_display || "-- --").trim() || "-- --";
-    const tone = detectTone(item, base.jcd);
-
     out.push({
       jcd: base.jcd,
       name: base.name,
-      next_display: nextDisplay,
+      next_display: String(item?.next_display || "-- --").trim() || "-- --",
       day_label: String(item?.day_label || "").trim(),
       grade_label: normalizeGradeLabel(item?.grade_label),
-      card_tone: tone
+      first_race_time: String(item?.first_race_time || "").trim(),
+      card_band: normalizeBand(item)
     });
   }
 
@@ -194,7 +174,8 @@ function render(venueList) {
       next_display: v?.next_display || "-- --",
       day_label: v?.day_label || "",
       grade_label: v?.grade_label || "一般",
-      card_tone: v?.card_tone || "normal"
+      first_race_time: v?.first_race_time || "",
+      card_band: v?.card_band || "normal"
     };
   });
 
@@ -217,9 +198,9 @@ function render(venueList) {
     }
 
     return `
-      <a class="card card--on ${normalizeToneClass(v.card_tone)}" href="${venueHref(v)}">
+      <a class="card card--on ${normalizeToneClass(v.card_band)}" href="${venueHref(v)}">
         <div class="card__nameRow">
-          <span class="card__nameIcon">${toneIcon(v.card_tone)}</span>
+          <span class="card__nameIcon">${toneIcon(v.card_band)}</span>
           <div class="card__name">${escapeHTML(v.name)}</div>
           <span class="card__nameIcon card__nameIcon--empty"></span>
         </div>
