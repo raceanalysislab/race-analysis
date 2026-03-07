@@ -2,7 +2,7 @@
 
 const SITE_VENUES_URLS = [
   "./data/site/venues.json",
-  "https://raceanalysislab.github.io/data/site/venues.json",
+  "https://raceanalysislab.github.io/race-data-bot/data/site/venues.json",
   "https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/site/venues.json"
 ];
 
