@@ -24,6 +24,8 @@
       --accent:#2563eb;
 
       --shadow:0 2px 8px rgba(15,23,42,.06);
+      --card-radius:18px;
+      --block-radius:12px;
     }
 
     *{ box-sizing:border-box; }
@@ -124,6 +126,7 @@
       padding-bottom:2px;
       scroll-behavior:smooth;
     }
+
     .raceTabs::-webkit-scrollbar{ display:none; }
 
     .tab{
@@ -205,7 +208,7 @@
       flex:1 1 0;
       min-height:0;
       display:flex;
-      align-items:center;
+      align-items:stretch;
       gap:8px;
       border-radius:15px;
       background:linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
@@ -225,7 +228,9 @@
       letter-spacing:-.03em;
       border:1px solid rgba(15,23,42,.08);
       flex:0 0 auto;
+      align-self:center;
     }
+
     .waku.w1{ background:#ffffff; color:#111827; }
     .waku.w2{ background:#1f2937; color:#ffffff; }
     .waku.w3{ background:#ef4444; color:#ffffff; }
@@ -235,11 +240,12 @@
 
     .info{
       min-width:0;
-      flex:1 1 auto;
+      flex:1 1 0;
       display:flex;
       flex-direction:column;
       justify-content:center;
-      gap:3px;
+      gap:4px;
+      padding-right:2px;
     }
 
     .sub{
@@ -264,43 +270,31 @@
       letter-spacing:.01em;
     }
 
-    .leftRate{
-      font-size:10px;
-      line-height:1.1;
-      color:#475569;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      font-weight:900;
-      font-variant-numeric: tabular-nums;
-    }
-
     .metric{
-      flex:0 0 48%;
-      min-width:160px;
-      display:flex;
-      gap:8px;
-      justify-content:space-between;
+      flex:0 0 50%;
+      min-width:176px;
+      display:grid;
+      grid-template-columns:repeat(4, minmax(0, 1fr));
+      gap:6px;
       align-items:stretch;
     }
 
-    .metricCard{
-      flex:1 1 0;
+    .mblock{
       min-width:0;
       border:1px solid var(--line);
-      background:#fff;
-      border-radius:10px;
+      background:linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+      border-radius:11px;
       padding:6px 4px;
       display:flex;
       flex-direction:column;
-      align-items:center;
       justify-content:center;
+      align-items:center;
       gap:4px;
       text-align:center;
       font-variant-numeric: tabular-nums;
     }
 
-    .metricHead{
+    .mhead{
       font-size:10px;
       line-height:1;
       font-weight:1000;
@@ -308,8 +302,24 @@
       white-space:nowrap;
     }
 
-    .metricVal{
-      font-size:12px;
+    .mline{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:2px;
+      min-width:0;
+    }
+
+    .mlabel{
+      font-size:7px;
+      line-height:1;
+      font-weight:900;
+      color:#94a3b8;
+      white-space:nowrap;
+    }
+
+    .mval{
+      font-size:11px;
       line-height:1;
       font-weight:1000;
       color:#0f172a;
@@ -338,16 +348,17 @@
 
     @media (max-width: 390px){
       .metric{
-        min-width:152px;
-        gap:6px;
+        min-width:172px;
+        gap:5px;
       }
-      .metricCard{
+      .mblock{
         padding:5px 3px;
       }
-      .metricHead{ font-size:9px; }
-      .metricVal{ font-size:11px; }
+      .mhead{ font-size:9px; }
+      .mlabel{ font-size:7px; }
+      .mval{ font-size:10px; }
       .name{ font-size:17px; }
-      .sub{ font-size:9px; }
+      .sub{ font-size:8px; }
     }
   </style>
 </head>
@@ -403,26 +414,39 @@
     $("venueName").textContent = venueName;
 
     const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
-    const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+    const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+    }[c]));
+
     const safeNum = (v) => {
       if (v === undefined || v === null || v === "") return "—";
       const n = Number(v);
       return Number.isFinite(n) ? n.toFixed(2) : "—";
     };
+
+    const safeInt = (v) => {
+      if (v === undefined || v === null || v === "") return "—";
+      const n = Number(v);
+      return Number.isFinite(n) ? String(Math.trunc(n)) : "—";
+    };
+
     const toHM = (x) => {
       const m = String(x || "").match(/(\d{1,2}):(\d{2})/);
       return m ? `${String(m[1]).padStart(2, "0")}:${m[2]}` : "--:--";
     };
+
     const setTopHeight = () => {
       const h = $raceTop.getBoundingClientRect().height || 112;
       document.documentElement.style.setProperty("--raceTopH", `${Math.ceil(h)}px`);
     };
+
     const fetchJSON = async (url) => {
       const bust = url.includes("?") ? `&t=${Date.now()}` : `?t=${Date.now()}`;
       const res = await fetch(url + bust, { cache:"no-store" });
       if (!res.ok) throw new Error(`failed: ${url}`);
       return res.json();
     };
+
     const centerActiveTab = () => {
       const active = $tabs.querySelector(".tab.is-active");
       if (!active) return;
@@ -435,9 +459,11 @@
         const r = i + 1;
         return `<button type="button" class="tab${r === active ? " is-active" : ""}" data-race="${r}">${r}R</button>`;
       }).join("");
+
       $tabs.querySelectorAll(".tab").forEach((btn) => {
         btn.addEventListener("click", () => setRace(Number(btn.dataset.race)));
       });
+
       requestAnimationFrame(centerActiveTab);
     }
 
@@ -465,19 +491,40 @@
           age:"",
           grade:"",
           nat_win:null,
+          nat_2:null,
           loc_win:null,
+          loc_2:null,
+          motor_no:null,
           motor_2:null,
-          boat_2:null,
-          nat_2:null
+          boat_no:null,
+          boat_2:null
         };
       });
     }
 
-    function metricCardHTML(label, value){
+    function metricBlock(title, topLabel, topValue, bottomLabel, bottomValue){
       return `
-        <div class="metricCard">
-          <div class="metricHead">${label}</div>
-          <div class="metricVal">${esc(value)}</div>
+        <div class="mblock">
+          <div class="mhead">${title}</div>
+          <div class="mline">
+            <div class="mlabel">${topLabel}</div>
+            <div class="mval">${esc(topValue)}</div>
+          </div>
+          <div class="mline">
+            <div class="mlabel">${bottomLabel}</div>
+            <div class="mval">${esc(bottomValue)}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function metricHTML(p){
+      return `
+        <div class="metric">
+          ${metricBlock("全国", "勝率", safeNum(p.nat_win), "2連対率", safeNum(p.nat_2))}
+          ${metricBlock("当地", "勝率", safeNum(p.loc_win), "2連対率", safeNum(p.loc_2))}
+          ${metricBlock("モーター", "No.", safeInt(p.motor_no), "2連対率", safeNum(p.motor_2))}
+          ${metricBlock("ボート", "No.", safeInt(p.boat_no), "2連対率", safeNum(p.boat_2))}
         </div>
       `;
     }
@@ -495,15 +542,9 @@
           <div class="info">
             <div class="sub">${esc(regno)} / ${esc(grade)} / ${esc(branch)} / ${esc(age)}</div>
             <div class="name">${esc(p.name || "—")}</div>
-            <div class="leftRate">全国2連対率 ${esc(safeNum(p.nat_2))}</div>
           </div>
 
-          <div class="metric">
-            ${metricCardHTML("全国", safeNum(p.nat_win))}
-            ${metricCardHTML("当地", safeNum(p.loc_win))}
-            ${metricCardHTML("モーター", safeNum(p.motor_2))}
-            ${metricCardHTML("ボート", safeNum(p.boat_2))}
-          </div>
+          ${metricHTML(p)}
         </div>
       `;
     }
