@@ -1,4 +1,4 @@
-/* js/app.js（軽量安定版 / CDN固定 / キャッシュ回避 / 3秒後切替 / 締切5分前赤表示 / PRO対応） */
+/* js/app.js（軽量安定版 / JST日付安全 / CDN固定） */
 
 const SITE_VENUES_URL =
 "https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/site/venues.json";
@@ -7,12 +7,12 @@ const NEXT_RACE_DELAY_MS = 3000;
 const DANGER_MS = 5 * 60 * 1000;
 
 const VENUES = [
-{ jcd:"01",name:"桐生"},{ jcd:"02",name:"戸田"},{ jcd:"03",name:"江戸川"},{ jcd:"04",name:"平和島"},
-{ jcd:"05",name:"多摩川"},{ jcd:"06",name:"浜名湖"},{ jcd:"07",name:"蒲郡"},{ jcd:"08",name:"常滑"},
-{ jcd:"09",name:"津"},{ jcd:"10",name:"三国"},{ jcd:"11",name:"びわこ"},{ jcd:"12",name:"住之江"},
-{ jcd:"13",name:"尼崎"},{ jcd:"14",name:"鳴門"},{ jcd:"15",name:"丸亀"},{ jcd:"16",name:"児島"},
-{ jcd:"17",name:"宮島"},{ jcd:"18",name:"徳山"},{ jcd:"19",name:"下関"},{ jcd:"20",name:"若松"},
-{ jcd:"21",name:"芦屋"},{ jcd:"22",name:"福岡"},{ jcd:"23",name:"唐津"},{ jcd:"24",name:"大村"}
+{jcd:"01",name:"桐生"},{jcd:"02",name:"戸田"},{jcd:"03",name:"江戸川"},{jcd:"04",name:"平和島"},
+{jcd:"05",name:"多摩川"},{jcd:"06",name:"浜名湖"},{jcd:"07",name:"蒲郡"},{jcd:"08",name:"常滑"},
+{jcd:"09",name:"津"},{jcd:"10",name:"三国"},{jcd:"11",name:"びわこ"},{jcd:"12",name:"住之江"},
+{jcd:"13",name:"尼崎"},{jcd:"14",name:"鳴門"},{jcd:"15",name:"丸亀"},{jcd:"16",name:"児島"},
+{jcd:"17",name:"宮島"},{jcd:"18",name:"徳山"},{jcd:"19",name:"下関"},{jcd:"20",name:"若松"},
+{jcd:"21",name:"芦屋"},{jcd:"22",name:"福岡"},{jcd:"23",name:"唐津"},{jcd:"24",name:"大村"}
 ];
 
 const $grid=document.getElementById("grid");
@@ -20,12 +20,18 @@ const $updated=document.getElementById("updatedAt");
 const $btn=document.getElementById("btnRefresh");
 
 let latestVenueList=[];
+let currentDate="";
 
 function pad(n){return String(n).padStart(2,"0")}
 
 function now(){
 const d=new Date();
 return{hh:d.getHours(),mm:d.getMinutes()}
+}
+
+function today(){
+const d=new Date();
+return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
 }
 
 function fetchJSON(){
@@ -51,6 +57,7 @@ return d.getTime();
 }
 
 function computeNext(races){
+
 const now=Date.now();
 
 for(const r of races){
@@ -70,6 +77,7 @@ danger:remain<DANGER_MS && remain>0
 }
 
 return{text:"発売終了",danger:false}
+
 }
 
 function render(list){
@@ -92,7 +100,6 @@ return`
 const next=computeNext(v.race_times);
 
 const sp=next.text.split(" ");
-
 const race=sp[0]||"";
 const time=sp[1]||"";
 
@@ -120,13 +127,13 @@ async function load(){
 try{
 
 const json=await fetchJSON();
-
 latestVenueList=(json.venues||json);
 
 render(latestVenueList);
 
 }catch(e){
 
+console.error(e);
 alert("開催一覧取得エラー");
 
 }
@@ -141,9 +148,24 @@ render(latestVenueList);
 
 }
 
+/* 日付変わったら再取得 */
+
+function checkDateChange(){
+
+const d=today();
+
+if(currentDate!==d){
+currentDate=d;
+load();
+}
+
+}
+
 if($btn)$btn.onclick=load;
 
 setInterval(rerender,1000);
 setInterval(load,300000);
+setInterval(checkDateChange,60000);
 
+currentDate=today();
 load();
