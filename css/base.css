@@ -17,7 +17,7 @@
   --gridH: 520px;
 }
 
-/* ===== PRO THEME : 白金（最終調整版） ===== */
+/* ===== PRO THEME : 白金（背景はFREEと同じ白基調） ===== */
 html[data-theme="pro"]{
   --bg: #f8f7f3;
 
@@ -25,7 +25,7 @@ html[data-theme="pro"]{
   --muted: #6b7280;
 
   --cardOff: #ece8df;
-  --cardOn: #fffdf8;
+  --cardOn: #ffffff;
 
   --gold: rgba(205,165,45,.95);
   --goldSoft: rgba(205,165,45,.18);
@@ -89,7 +89,7 @@ html[data-theme="pro"]{
 *{ box-sizing: border-box; }
 
 /* iOSのゴム伸び由来の崩れを抑える */
-html, body {
+html, body{
   height: 100%;
   overscroll-behavior-y: none;
 }
