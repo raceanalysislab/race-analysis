@@ -1,7 +1,8 @@
 /* ===== Header ===== */
-/* 白 × 金 PROテーマ 120点版 */
+/* 白 × 金 PROテーマ 120点版 / BOAT CORE対応 */
+
 .top{
-  padding: 14px 14px 10px;
+  padding: 16px 14px 10px;
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -26,17 +27,39 @@ html[data-theme="pro"] .top{
   gap: 12px;
 }
 
+.top__titleWrap{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  min-width: 0;
+}
+
 .top__title{
   margin: 0;
   font-size: 30px;
-  line-height: 1.05;
-  letter-spacing: 0.02em;
-  font-weight: 900;
+  line-height: 1.02;
+  letter-spacing: .04em;
+  font-weight: 700;
+  font-family: "Yuji Syuku", serif;
+  white-space: nowrap;
 }
 
 html[data-theme="pro"] .top__title{
   color: #111827;
   text-shadow: 0 1px 0 rgba(255,255,255,.78);
+}
+
+.top__subtitle{
+  margin-top: 4px;
+  font-size: 13px;
+  line-height: 1.2;
+  color: var(--muted);
+  letter-spacing: .02em;
+  white-space: nowrap;
+}
+
+html[data-theme="pro"] .top__subtitle{
+  color: #6b7280;
 }
 
 .top__actions{
@@ -133,4 +156,28 @@ html[data-theme="pro"] .top__sub{
 
 .top__updated{
   white-space: nowrap;
+}
+
+@media (max-width: 390px){
+  .top{
+    padding: 14px 12px 10px;
+  }
+
+  .top__title{
+    font-size: 27px;
+  }
+
+  .top__subtitle{
+    font-size: 12px;
+  }
+
+  .top__actions{
+    gap: 8px;
+  }
+
+  .top__btn,
+  .top__pro{
+    padding: 9px 12px;
+    font-size: 13px;
+  }
 }
