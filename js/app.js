@@ -1,8 +1,8 @@
-/* js/app.js（完全置き換え：軽量安定版 / jsDelivr優先+rawフォールバック / JSON配列・venues両対応 / キャッシュ回避 / JST日付切替対応 / 3秒後切替 / 締切5分前は時間だけ赤表示 / PRO対応） */
+/* js/app.js（完全置き換え：軽量安定版 / ローカルJSON優先 / data/site/venues.jsonは読まない / JST日付切替対応 / 3秒後切替 / 締切5分前は時間だけ赤表示 / PRO対応） */
 
 const SITE_VENUES_URLS = [
-  "https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/site/venues.json",
-  "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/site/venues.json"
+  "./data/today.json",
+  "./data/venues_today.json"
 ];
 
 const NOTE_URLS = {
@@ -29,11 +29,11 @@ const NEXT_RACE_DELAY_MS = 3000;
 /* 締切5分前 */
 const DANGER_MS = 5 * 60 * 1000;
 /* 通信タイムアウト */
-const FETCH_TIMEOUT_MS = 10000;
+const FETCH_TIMEOUT_MS = 8000;
 /* JSON再取得間隔 */
 const REFRESH_INTERVAL_MS = 5 * 60 * 1000;
 /* 表示再計算間隔 */
-const RERENDER_INTERVAL_MS = 1000;
+const RERENDER_INTERVAL_MS = 5000;
 
 const $grid = document.getElementById("grid");
 const $updatedAt = document.getElementById("updatedAt");
@@ -124,12 +124,7 @@ async function fetchJSON(url) {
   try {
     const res = await fetch(buildNoCacheUrl(url), {
       cache: "no-store",
-      mode: "cors",
-      signal: controller.signal,
-      headers: {
-        "Cache-Control": "no-cache, no-store, max-age=0",
-        "Pragma": "no-cache"
-      }
+      signal: controller.signal
     });
 
     if (!res.ok) {
@@ -139,7 +134,7 @@ async function fetchJSON(url) {
     return await res.json();
   } catch (e) {
     if (e?.name === "AbortError") {
-      throw new Error("fetch timeout");
+      throw new Error(`fetch timeout: ${url}`);
     }
     throw e;
   } finally {
@@ -339,13 +334,20 @@ function normalizeVenueList(raw) {
     seen.add(base.jcd);
 
     const raceTimes = normalizeRaceTimes(item?.race_times);
-    const computed = computeNextDisplayFromRaceTimes(raceTimes);
+    const computed = raceTimes.length
+      ? computeNextDisplayFromRaceTimes(raceTimes)
+      : {
+          next_race: Number(item?.next_race) || null,
+          next_display: String(item?.next_display || "-- --").trim() || "-- --",
+          cutoff_at: null,
+          is_danger: false
+        };
 
     out.push({
       jcd: base.jcd,
       name: base.name,
       next_race: computed.next_race,
-      next_display: computed.next_display || String(item?.next_display || "-- --").trim() || "-- --",
+      next_display: computed.next_display,
       day_label: String(item?.day_label || "").trim(),
       grade_label: normalizeGradeLabel(item?.grade_label),
       first_race_time: String(item?.first_race_time || "").trim(),
@@ -362,6 +364,8 @@ function normalizeVenueList(raw) {
 function recalcVenueList(venueList) {
   return (venueList || []).map((v) => {
     const raceTimes = normalizeRaceTimes(v?.race_times);
+    if (!raceTimes.length) return v;
+
     const computed = computeNextDisplayFromRaceTimes(raceTimes);
 
     return {
@@ -559,7 +563,7 @@ function jstDateChanged() {
 }
 
 function sourceIsToday() {
-  return !!latestSourceDate && latestSourceDate === todayJSTString();
+  return !latestSourceDate || latestSourceDate === todayJSTString();
 }
 
 async function loadAll(force = false) {
@@ -578,7 +582,9 @@ async function loadAll(force = false) {
   try {
     const json = await fetchJSONWithFallback(SITE_VENUES_URLS);
 
-    latestSourceDate = String(json?.date || "").trim();
+    latestSourceDate =
+      String(json?.date || json?.time || "").trim().slice(0, 10);
+
     latestVenueList = normalizeVenueList(json);
     lastLoadedAt = Date.now();
 
@@ -643,6 +649,3 @@ applyThemeFromStorage();
 renderPicksCta();
 renderPicksEmpty();
 loadAll(true);
-
-修正して
-完全置き換え
