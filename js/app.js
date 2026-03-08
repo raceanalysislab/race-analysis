@@ -1,4 +1,4 @@
-/* js/app.js（完全置き換え：24場固定 / 開催のみ色付き / 非開催グレー） */
+/* js/app.js（完全置き換え：24場固定 / リアルタイム切替版） */
 
 const DATA_URL = "./data/site/venues.json";
 
@@ -35,12 +35,20 @@ const VENUES = [
   { jcd: "24", name: "大村" }
 ];
 
+const NEXT_RACE_DELAY_MS = 3000;
+const DANGER_MS = 5 * 60 * 1000;
+const RERENDER_INTERVAL_MS = 1000;
+const REFRESH_INTERVAL_MS = 5 * 60 * 1000;
+
 const $grid = document.getElementById("grid");
 const $updatedAt = document.getElementById("updatedAt");
 const $btn = document.getElementById("btnRefresh");
 const $picks = document.getElementById("picks");
 const $picksUpdatedAt = document.getElementById("picksUpdatedAt");
 const $picksCta = document.getElementById("picksCta");
+
+let venueList = [];
+let isLoading = false;
 
 function esc(s) {
   return String(s ?? "").replace(/[&<>"']/g, (c) => ({
@@ -71,6 +79,60 @@ function normalizeBand(v) {
   if (s === "evening") return "evening";
   if (s === "night") return "night";
   return "normal";
+}
+
+function parseHHMM(s) {
+  const m = String(s ?? "").trim().match(/^(\d{1,2}):(\d{2})$/);
+  if (!m) return null;
+
+  const hh = Number(m[1]);
+  const mm = Number(m[2]);
+
+  if (!Number.isInteger(hh) || !Number.isInteger(mm)) return null;
+  if (hh < 0 || hh > 23 || mm < 0 || mm > 59) return null;
+
+  return { hh, mm };
+}
+
+function getCutoffTime(hhmm) {
+  const t = parseHHMM(hhmm);
+  if (!t) return null;
+
+  const d = new Date();
+  d.setHours(t.hh, t.mm, 0, 0);
+  return d.getTime();
+}
+
+function computeNextDisplay(v) {
+  const raceTimes = Array.isArray(v?.race_times) ? v.race_times : [];
+  const now = Date.now();
+
+  for (const r of raceTimes) {
+    const cutoffAt = getCutoffTime(r?.cutoff);
+    if (cutoffAt == null) continue;
+
+    const switchAt = cutoffAt + NEXT_RACE_DELAY_MS;
+    const remainMs = cutoffAt - now;
+
+    if (now < switchAt) {
+      return {
+        text: `${r.rno}R ${r.cutoff}`,
+        danger: remainMs <= DANGER_MS && remainMs >= 0
+      };
+    }
+  }
+
+  if (String(v?.next_display || "").trim()) {
+    return {
+      text: String(v.next_display).trim(),
+      danger: false
+    };
+  }
+
+  return {
+    text: "発売終了",
+    danger: false
+  };
 }
 
 function buildVenueMap(list) {
@@ -105,6 +167,19 @@ function renderOffCard(base) {
 }
 
 function renderOnCard(base, v) {
+  const next = computeNextDisplay(v);
+  const m = String(next.text).match(/^(\d+R)\s+(\d{2}:\d{2})$/);
+
+  let raceText = next.text;
+  let timeText = "";
+  let timeClass = "";
+
+  if (m) {
+    raceText = m[1];
+    timeText = m[2];
+    timeClass = next.danger ? " raceTime--danger" : "";
+  }
+
   return `
     <a class="card card--on card--tone-${esc(normalizeBand(v.card_band))}"
        href="./race.html?jcd=${encodeURIComponent(base.jcd)}&name=${encodeURIComponent(base.name)}">
@@ -120,7 +195,8 @@ function renderOnCard(base, v) {
       </div>
 
       <div class="card__line card__line--btm">
-        ${esc(v.next_display || "-- --")}
+        <span class="raceNo">${esc(raceText)}</span>
+        ${timeText ? `<span class="raceTime${timeClass}">${esc(timeText)}</span>` : ""}
       </div>
     </a>
   `;
@@ -133,6 +209,8 @@ function renderGrid(list) {
     const item = map.get(base.jcd);
     return item ? renderOnCard(base, item) : renderOffCard(base);
   }).join("");
+
+  if ($updatedAt) $updatedAt.textContent = nowHM();
 }
 
 function renderPicksCta() {
@@ -171,6 +249,9 @@ function renderPicksEmpty() {
 }
 
 async function load() {
+  if (isLoading) return;
+  isLoading = true;
+
   try {
     const res = await fetch(DATA_URL, { cache: "no-store" });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -178,18 +259,38 @@ async function load() {
     const json = await res.json();
     if (!Array.isArray(json)) throw new Error("venues.json is not array");
 
-    renderGrid(json);
-    if ($updatedAt) $updatedAt.textContent = nowHM();
+    venueList = json;
+    renderGrid(venueList);
   } catch (e) {
     console.error(e);
     renderGrid([]);
     if ($updatedAt) $updatedAt.textContent = "ERR";
+  } finally {
+    isLoading = false;
   }
 }
 
 if ($btn) {
   $btn.addEventListener("click", load);
 }
+
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") {
+    renderGrid(venueList);
+  }
+});
+
+setInterval(() => {
+  if (document.visibilityState === "visible") {
+    renderGrid(venueList);
+  }
+}, RERENDER_INTERVAL_MS);
+
+setInterval(() => {
+  if (document.visibilityState === "visible") {
+    load();
+  }
+}, REFRESH_INTERVAL_MS);
 
 renderPicksCta();
 renderPicksEmpty();
