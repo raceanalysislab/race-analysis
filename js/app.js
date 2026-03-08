@@ -1,4 +1,4 @@
-/* js/app.js（完全置き換え：24場固定 / リアルタイム切替 / PRO切替対応） */
+/* js/app.js（完全置き換え：24場固定 / リアルタイム切替 / PRO切替強化版） */
 
 const DATA_URL = "./data/site/venues.json";
 
@@ -178,31 +178,48 @@ function isProUnlocked() {
   return localStorage.getItem(PRO_STORAGE_KEY) === "1";
 }
 
+function setModalVisible(visible) {
+  if (!$proModal) return;
+  $proModal.setAttribute("aria-hidden", visible ? "false" : "true");
+  $proModal.style.display = visible ? "flex" : "none";
+  $proModal.style.pointerEvents = visible ? "auto" : "none";
+}
+
 function applyProTheme() {
   const unlocked = isProUnlocked();
 
   if (unlocked) {
     document.documentElement.setAttribute("data-theme", "pro");
-    if ($btnPro) $btnPro.setAttribute("aria-pressed", "true");
+    if ($btnPro) {
+      $btnPro.setAttribute("aria-pressed", "true");
+      $btnPro.classList.add("is-active");
+    }
   } else {
     document.documentElement.removeAttribute("data-theme");
-    if ($btnPro) $btnPro.setAttribute("aria-pressed", "false");
+    if ($btnPro) {
+      $btnPro.setAttribute("aria-pressed", "false");
+      $btnPro.classList.remove("is-active");
+    }
   }
 }
 
 function openProModal() {
   if (!$proModal) return;
-  $proModal.setAttribute("aria-hidden", "false");
-  if (proInputs[0]) proInputs[0].focus();
+  setModalVisible(true);
+  requestAnimationFrame(() => {
+    if (proInputs[0]) proInputs[0].focus();
+  });
 }
 
 function closeProModal() {
   if (!$proModal) return;
-  $proModal.setAttribute("aria-hidden", "true");
+  setModalVisible(false);
 }
 
 function clearProInputs() {
-  proInputs.forEach((input) => { input.value = ""; });
+  proInputs.forEach((input) => {
+    input.value = "";
+  });
   if (proInputs[0]) proInputs[0].focus();
 }
 
@@ -228,16 +245,16 @@ function setupProInputs() {
   if (!proInputs.length) return;
 
   proInputs.forEach((input, idx) => {
-    input.addEventListener("input", (e) => {
+    input.oninput = (e) => {
       const v = String(e.target.value || "").replace(/\D/g, "");
       e.target.value = v.slice(0, 1);
 
       if (e.target.value && idx < proInputs.length - 1) {
         proInputs[idx + 1].focus();
       }
-    });
+    };
 
-    input.addEventListener("keydown", (e) => {
+    input.onkeydown = (e) => {
       if (e.key === "Backspace" && !input.value && idx > 0) {
         proInputs[idx - 1].focus();
       }
@@ -245,11 +262,19 @@ function setupProInputs() {
       if (e.key === "Enter") {
         unlockPro();
       }
-    });
 
-    input.addEventListener("paste", (e) => {
+      if (e.key === "Escape") {
+        closeProModal();
+      }
+    };
+
+    input.onpaste = (e) => {
       e.preventDefault();
-      const pasted = (e.clipboardData || window.clipboardData).getData("text").replace(/\D/g, "").slice(0, 6);
+      const pasted = (e.clipboardData || window.clipboardData)
+        .getData("text")
+        .replace(/\D/g, "")
+        .slice(0, 6);
+
       if (!pasted) return;
 
       proInputs.forEach((el, i) => {
@@ -260,31 +285,41 @@ function setupProInputs() {
       if (lastFilled >= 0) {
         proInputs[lastFilled].focus();
       }
-    });
+    };
   });
 }
 
 function setupProButton() {
   if ($btnPro) {
-    $btnPro.addEventListener("click", () => {
+    $btnPro.onclick = () => {
       if (isProUnlocked()) {
         localStorage.removeItem(PRO_STORAGE_KEY);
         applyProTheme();
       } else {
         openProModal();
       }
-    });
+    };
   }
 
-  if ($proUnlock) $proUnlock.addEventListener("click", unlockPro);
-  if ($proCancel) $proCancel.addEventListener("click", closeProModal);
-  if ($proClear) $proClear.addEventListener("click", clearProInputs);
+  if ($proUnlock) $proUnlock.onclick = unlockPro;
+  if ($proCancel) $proCancel.onclick = closeProModal;
+  if ($proClear) $proClear.onclick = clearProInputs;
 
   if ($proModal) {
-    $proModal.addEventListener("click", (e) => {
+    $proModal.onclick = (e) => {
       if (e.target === $proModal) closeProModal();
-    });
+    };
   }
+
+  document.onkeydown = (e) => {
+    if (e.key === "Escape" && $proModal && $proModal.getAttribute("aria-hidden") === "false") {
+      closeProModal();
+    }
+  };
+}
+
+function initProModal() {
+  setModalVisible(false);
 }
 
 /* ===== card render ===== */
@@ -442,6 +477,7 @@ setInterval(() => {
   }
 }, REFRESH_INTERVAL_MS);
 
+initProModal();
 setupProInputs();
 setupProButton();
 applyProTheme();
