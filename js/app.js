@@ -1,4 +1,4 @@
-/* js/app.js（完全置き換え：24場固定 / リアルタイム切替 / 発売終了グレー対応） */
+/* js/app.js（完全置き換え：24場固定 / リアルタイム切替 / 発売終了アプリ寄せ） */
 
 const DATA_URL = "./data/site/venues.json";
 
@@ -183,6 +183,7 @@ function renderOnCard(base, v) {
   const m = String(next.text).match(/^(\d+R)\s+(\d{2}:\d{2})$/);
 
   let bottomHTML = "";
+  let soldoutClass = "";
 
   if (m) {
     const raceText = m[1];
@@ -194,6 +195,7 @@ function renderOnCard(base, v) {
       <span class="raceTime${timeClass}">${esc(timeText)}</span>
     `;
   } else if (next.soldout) {
+    soldoutClass = " card__line--soldout";
     bottomHTML = `<span class="status--soldout">発売終了</span>`;
   } else {
     bottomHTML = esc(next.text);
@@ -213,7 +215,7 @@ function renderOnCard(base, v) {
         <span class="day">${esc(v.day_label || "-- --")}</span>
       </div>
 
-      <div class="card__line card__line--btm">
+      <div class="card__line card__line--btm${soldoutClass}">
         ${bottomHTML}
       </div>
     </a>
