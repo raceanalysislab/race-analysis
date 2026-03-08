@@ -1,5 +1,4 @@
 .gridWrap{
-  height: var(--gridH);
   margin-top: 10px;
   isolation: isolate;
   contain: paint;
@@ -8,10 +7,8 @@
 }
 
 .grid{
-  height: 100%;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(6, 1fr);
   gap: 4px;
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
@@ -23,10 +20,10 @@
   justify-content:space-between;
   text-decoration:none;
   border-radius: 9px;
-  border: 2px solid var(--border);
+  border: 2px solid var(--border, #cbd5e1);
   overflow:hidden;
   padding: 8px 7px 8px;
-  min-height: 0;
+  min-height: 168px;
   position: relative;
   text-align: center;
   backface-visibility: hidden;
@@ -84,13 +81,13 @@
 }
 
 .card--on{
-  background: var(--cardOn);
-  border-color: var(--borderOn);
+  background: var(--cardOn, #ffffff);
+  border-color: var(--borderOn, #4f83ff);
 }
 
 .card--off{
-  background: var(--cardOff);
-  border-color: var(--border);
+  background: var(--cardOff, #f3f4f6);
+  border-color: var(--border, #cbd5e1);
 }
 
 /* ===== PRO : 白金テーマ / 背景はFREE同様 ===== */
@@ -138,7 +135,7 @@ html[data-theme="pro"] .card--on{
 
 html[data-theme="pro"] .card--off{
   border-color: rgba(205,165,45,.10);
-  background: var(--cardOff);
+  background: var(--cardOff, #f3f4f6);
   box-shadow:
     0 1px 0 rgba(255,255,255,.70) inset,
     0 2px 8px rgba(15,23,42,.03);
@@ -184,7 +181,7 @@ html[data-theme="pro"] .card:active{
   font-size:17px;
   line-height:1.04;
   letter-spacing:0;
-  color:var(--text);
+  color:var(--text, #0f172a);
   white-space:nowrap;
   overflow:visible;
   text-overflow:clip;
@@ -321,4 +318,40 @@ html[data-theme="pro"] .card--off .card__line{
 .status--soldout{
   font-weight:900;
   letter-spacing:.02em;
+}
+
+@media (max-width: 860px){
+  .grid{
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+
+  .card{
+    min-height: 160px;
+  }
+}
+
+@media (max-width: 640px){
+  .grid{
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+
+  .card{
+    min-height: 148px;
+    padding: 8px 6px;
+  }
+
+  .card__name{
+    font-size: 16px;
+  }
+
+  .gradeText,
+  .day{
+    font-size: 10px;
+  }
+
+  .card__line--btm{
+    font-size: 12px;
+  }
 }
