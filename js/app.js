@@ -1,4 +1,4 @@
-/* js/app.js（完全置き換え：24場固定 / リアルタイム切替修正版） */
+/* js/app.js（完全置き換え：24場固定 / リアルタイム切替 / 発売終了表示対応） */
 
 const DATA_URL = "./data/site/venues.json";
 
@@ -118,14 +118,16 @@ function computeNextDisplay(v) {
       if (now < switchAt) {
         return {
           text: `${r.rno}R ${r.cutoff}`,
-          danger: remainMs <= DANGER_MS && remainMs >= 0
+          danger: remainMs <= DANGER_MS && remainMs >= 0,
+          soldout: false
         };
       }
     }
 
     return {
       text: "発売終了",
-      danger: false
+      danger: false,
+      soldout: true
     };
   }
 
@@ -133,13 +135,15 @@ function computeNextDisplay(v) {
   if (nextDisplay) {
     return {
       text: nextDisplay,
-      danger: false
+      danger: false,
+      soldout: nextDisplay === "発売終了"
     };
   }
 
   return {
     text: "発売終了",
-    danger: false
+    danger: false,
+    soldout: true
   };
 }
 
@@ -178,14 +182,21 @@ function renderOnCard(base, v) {
   const next = computeNextDisplay(v);
   const m = String(next.text).match(/^(\d+R)\s+(\d{2}:\d{2})$/);
 
-  let raceText = next.text;
-  let timeText = "";
-  let timeClass = "";
+  let bottomHTML = "";
 
   if (m) {
-    raceText = m[1];
-    timeText = m[2];
-    timeClass = next.danger ? " raceTime--danger" : "";
+    const raceText = m[1];
+    const timeText = m[2];
+    const timeClass = next.danger ? " raceTime--danger" : "";
+
+    bottomHTML = `
+      <span class="raceNo">${esc(raceText)}</span>
+      <span class="raceTime${timeClass}">${esc(timeText)}</span>
+    `;
+  } else if (next.soldout) {
+    bottomHTML = `<span class="status--soldout">発売終了</span>`;
+  } else {
+    bottomHTML = esc(next.text);
   }
 
   return `
@@ -203,8 +214,7 @@ function renderOnCard(base, v) {
       </div>
 
       <div class="card__line card__line--btm">
-        <span class="raceNo">${esc(raceText)}</span>
-        ${timeText ? `<span class="raceTime${timeClass}">${esc(timeText)}</span>` : ""}
+        ${bottomHTML}
       </div>
     </a>
   `;
