@@ -1,4 +1,4 @@
-/* js/app.js（完全置き換え：24場固定 / リアルタイム切替 / 発売終了アプリ寄せ） */
+/* js/app.js（完全置き換え：24場固定 / リアルタイム切替 / PRO切替対応） */
 
 const DATA_URL = "./data/site/venues.json";
 
@@ -40,12 +40,25 @@ const DANGER_MS = 5 * 60 * 1000;
 const RERENDER_INTERVAL_MS = 1000;
 const REFRESH_INTERVAL_MS = 5 * 60 * 1000;
 
+/* PROキー */
+const PRO_KEY = "123456";
+const PRO_STORAGE_KEY = "boatcore_pro_unlocked";
+
 const $grid = document.getElementById("grid");
 const $updatedAt = document.getElementById("updatedAt");
 const $btn = document.getElementById("btnRefresh");
 const $picks = document.getElementById("picks");
 const $picksUpdatedAt = document.getElementById("picksUpdatedAt");
 const $picksCta = document.getElementById("picksCta");
+
+/* PRO UI */
+const $btnPro = document.getElementById("btnPro");
+const $proModal = document.getElementById("proModal");
+const $proInputsWrap = document.getElementById("proInputs");
+const $proUnlock = document.getElementById("proUnlock");
+const $proCancel = document.getElementById("proCancel");
+const $proClear = document.getElementById("proClear");
+const proInputs = $proInputsWrap ? Array.from($proInputsWrap.querySelectorAll("input")) : [];
 
 let venueList = [];
 let isLoading = false;
@@ -158,6 +171,123 @@ function buildVenueMap(list) {
 
   return map;
 }
+
+/* ===== PRO functions ===== */
+
+function isProUnlocked() {
+  return localStorage.getItem(PRO_STORAGE_KEY) === "1";
+}
+
+function applyProTheme() {
+  const unlocked = isProUnlocked();
+
+  if (unlocked) {
+    document.documentElement.setAttribute("data-theme", "pro");
+    if ($btnPro) $btnPro.setAttribute("aria-pressed", "true");
+  } else {
+    document.documentElement.removeAttribute("data-theme");
+    if ($btnPro) $btnPro.setAttribute("aria-pressed", "false");
+  }
+}
+
+function openProModal() {
+  if (!$proModal) return;
+  $proModal.setAttribute("aria-hidden", "false");
+  if (proInputs[0]) proInputs[0].focus();
+}
+
+function closeProModal() {
+  if (!$proModal) return;
+  $proModal.setAttribute("aria-hidden", "true");
+}
+
+function clearProInputs() {
+  proInputs.forEach((input) => { input.value = ""; });
+  if (proInputs[0]) proInputs[0].focus();
+}
+
+function getProInputValue() {
+  return proInputs.map((input) => input.value.trim()).join("");
+}
+
+function unlockPro() {
+  const code = getProInputValue();
+
+  if (code !== PRO_KEY) {
+    alert("PROキーが違います");
+    clearProInputs();
+    return;
+  }
+
+  localStorage.setItem(PRO_STORAGE_KEY, "1");
+  applyProTheme();
+  closeProModal();
+}
+
+function setupProInputs() {
+  if (!proInputs.length) return;
+
+  proInputs.forEach((input, idx) => {
+    input.addEventListener("input", (e) => {
+      const v = String(e.target.value || "").replace(/\D/g, "");
+      e.target.value = v.slice(0, 1);
+
+      if (e.target.value && idx < proInputs.length - 1) {
+        proInputs[idx + 1].focus();
+      }
+    });
+
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Backspace" && !input.value && idx > 0) {
+        proInputs[idx - 1].focus();
+      }
+
+      if (e.key === "Enter") {
+        unlockPro();
+      }
+    });
+
+    input.addEventListener("paste", (e) => {
+      e.preventDefault();
+      const pasted = (e.clipboardData || window.clipboardData).getData("text").replace(/\D/g, "").slice(0, 6);
+      if (!pasted) return;
+
+      proInputs.forEach((el, i) => {
+        el.value = pasted[i] || "";
+      });
+
+      const lastFilled = Math.min(pasted.length, proInputs.length) - 1;
+      if (lastFilled >= 0) {
+        proInputs[lastFilled].focus();
+      }
+    });
+  });
+}
+
+function setupProButton() {
+  if ($btnPro) {
+    $btnPro.addEventListener("click", () => {
+      if (isProUnlocked()) {
+        localStorage.removeItem(PRO_STORAGE_KEY);
+        applyProTheme();
+      } else {
+        openProModal();
+      }
+    });
+  }
+
+  if ($proUnlock) $proUnlock.addEventListener("click", unlockPro);
+  if ($proCancel) $proCancel.addEventListener("click", closeProModal);
+  if ($proClear) $proClear.addEventListener("click", clearProInputs);
+
+  if ($proModal) {
+    $proModal.addEventListener("click", (e) => {
+      if (e.target === $proModal) closeProModal();
+    });
+  }
+}
+
+/* ===== card render ===== */
 
 function renderOffCard(base) {
   return `
@@ -312,6 +442,9 @@ setInterval(() => {
   }
 }, REFRESH_INTERVAL_MS);
 
+setupProInputs();
+setupProButton();
+applyProTheme();
 renderPicksCta();
 renderPicksEmpty();
 load();
