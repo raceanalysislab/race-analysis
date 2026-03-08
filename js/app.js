@@ -1,4 +1,4 @@
-/* js/app.js（完全置き換え：24場固定 / リアルタイム切替 / 発売終了表示対応） */
+/* js/app.js（完全置き換え：24場固定 / リアルタイム切替 / 発売終了グレー対応） */
 
 const DATA_URL = "./data/site/venues.json";
 
@@ -200,7 +200,7 @@ function renderOnCard(base, v) {
   }
 
   return `
-    <a class="card card--on card--tone-${esc(normalizeBand(v.card_band))}"
+    <a class="card card--on ${next.soldout ? "card--soldout" : ""} card--tone-${esc(normalizeBand(v.card_band))}"
        href="./race.html?jcd=${encodeURIComponent(base.jcd)}&name=${encodeURIComponent(base.name)}">
       <div class="card__nameRow">
         <span class="card__nameIcon card__nameIcon--empty"></span>
