@@ -93,6 +93,27 @@
   border-color: var(--border);
 }
 
+/* 発売終了カード */
+.card--soldout{
+  background:#d1d5db !important;
+  border-color:#9ca3af !important;
+  box-shadow:none !important;
+}
+
+.card--soldout::before{
+  opacity:0 !important;
+}
+
+.card--soldout .card__name,
+.card--soldout .gradeText,
+.card--soldout .day,
+.card--soldout .card__line,
+.card--soldout .raceNo,
+.card--soldout .raceTime,
+.card--soldout .status--soldout{
+  color:#374151 !important;
+}
+
 /* ===== PRO : 白金テーマ / 背景はFREE同様 ===== */
 html[data-theme="pro"] .card{
   border: 2px solid rgba(200,160,40,.78);
@@ -144,6 +165,27 @@ html[data-theme="pro"] .card--off{
     0 2px 8px rgba(15,23,42,.03);
   filter: none;
   opacity: 1;
+}
+
+html[data-theme="pro"] .card--soldout{
+  background:#d1d5db !important;
+  border-color:#9ca3af !important;
+  box-shadow:none !important;
+}
+
+html[data-theme="pro"] .card--soldout::before{
+  opacity:0 !important;
+}
+
+html[data-theme="pro"] .card--soldout .card__name,
+html[data-theme="pro"] .card--soldout .gradeText,
+html[data-theme="pro"] .card--soldout .day,
+html[data-theme="pro"] .card--soldout .card__line,
+html[data-theme="pro"] .card--soldout .raceNo,
+html[data-theme="pro"] .card--soldout .raceTime,
+html[data-theme="pro"] .card--soldout .status--soldout{
+  color:#374151 !important;
+  text-shadow:none !important;
 }
 
 html[data-theme="pro"] .card:active{
@@ -321,4 +363,5 @@ html[data-theme="pro"] .card--off .card__line{
 .status--soldout{
   font-weight:900;
   letter-spacing:.02em;
+  color:#374151;
 }
