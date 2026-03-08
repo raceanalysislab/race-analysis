@@ -49,16 +49,10 @@
   border-top-left-radius: 7px;
   border-top-right-radius: 7px;
   z-index: 1;
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
-}
-
-.card > *{
-  position: relative;
-  z-index: 2;
 }
 
 /* ===== FREE ===== */
+
 .card--tone-morning{
   --toneTop: linear-gradient(180deg, rgba(251,191,36,.74), rgba(251,191,36,0));
 }
@@ -93,7 +87,8 @@
   border-color: var(--border);
 }
 
-/* 発売終了カード */
+/* ===== 発売終了 ===== */
+
 .card--soldout{
   background: linear-gradient(
     180deg,
@@ -103,7 +98,6 @@
     #eef1f4 100%
   ) !important;
   border-color:#8f96a3 !important;
-  box-shadow:none !important;
 }
 
 .card--soldout::before{
@@ -112,121 +106,12 @@
 
 .card--soldout .card__name,
 .card--soldout .gradeText,
-.card--soldout .day,
-.card--soldout .raceNo,
-.card--soldout .raceTime,
-.card--soldout .status--soldout{
+.card--soldout .day{
   color:#374151 !important;
-  text-shadow:none !important;
 }
 
-.card--soldout .card__meta{
-  margin-bottom:8px;
-}
+/* ===== 名前 ===== */
 
-.card__line--soldout{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  width:calc(100% + 14px);
-  margin-left:-7px;
-  margin-right:-7px;
-  margin-bottom:-8px;
-  min-height:28px;
-  padding:6px 0 8px;
-  background:transparent;
-  border-top:1px solid rgba(143,150,163,.35);
-}
-
-/* ===== PRO : 白金テーマ / 背景はFREE同様 ===== */
-html[data-theme="pro"] .card{
-  border: 2px solid rgba(200,160,40,.78);
-  background: #ffffff;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.95),
-    0 4px 10px rgba(15,23,42,.08),
-    0 0 0 1px rgba(200,160,40,.10);
-}
-
-html[data-theme="pro"] .card::before{
-  opacity: .84;
-}
-
-html[data-theme="pro"] .card--tone-morning{
-  --toneTop: linear-gradient(180deg, rgba(251,191,36,.70), rgba(251,191,36,0));
-}
-html[data-theme="pro"] .card--tone-day{
-  --toneTop: linear-gradient(180deg, rgba(125,211,252,.72), rgba(125,211,252,0));
-}
-html[data-theme="pro"] .card--tone-evening{
-  --toneTop: linear-gradient(180deg, rgba(129,140,248,.78), rgba(129,140,248,0));
-}
-html[data-theme="pro"] .card--tone-night{
-  --toneTop: linear-gradient(180deg, rgba(109,40,217,.54), rgba(109,40,217,0));
-}
-html[data-theme="pro"] .card--tone-normal{
-  --toneTop: linear-gradient(180deg, rgba(148,163,184,.30), rgba(148,163,184,0));
-}
-
-html[data-theme="pro"] .card--off::before{
-  opacity: 0;
-}
-
-html[data-theme="pro"] .card--on{
-  border-color: rgba(190,150,30,.92);
-  background: #ffffff;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.95),
-    0 4px 10px rgba(15,23,42,.08),
-    0 0 0 1px rgba(200,160,40,.10);
-}
-
-html[data-theme="pro"] .card--off{
-  border-color: rgba(205,165,45,.10);
-  background: var(--cardOff);
-  box-shadow:
-    0 1px 0 rgba(255,255,255,.70) inset,
-    0 2px 8px rgba(15,23,42,.03);
-  filter: none;
-  opacity: 1;
-}
-
-html[data-theme="pro"] .card--soldout{
-  background: linear-gradient(
-    180deg,
-    #c9ced6 0%,
-    #c9ced6 48%,
-    #eef1f4 48%,
-    #eef1f4 100%
-  ) !important;
-  border-color:#8f96a3 !important;
-  box-shadow:none !important;
-}
-
-html[data-theme="pro"] .card--soldout::before{
-  display:none !important;
-}
-
-html[data-theme="pro"] .card--soldout .card__name,
-html[data-theme="pro"] .card--soldout .gradeText,
-html[data-theme="pro"] .card--soldout .day,
-html[data-theme="pro"] .card--soldout .raceNo,
-html[data-theme="pro"] .card--soldout .raceTime,
-html[data-theme="pro"] .card--soldout .status--soldout{
-  color:#374151 !important;
-  text-shadow:none !important;
-}
-
-html[data-theme="pro"] .card:active{
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.95),
-    0 6px 14px rgba(15,23,42,.10),
-    0 0 0 1px rgba(200,160,40,.12);
-  transform: translateZ(0) translateY(-1px);
-  -webkit-transform: translateZ(0) translateY(-1px);
-}
-
-/* 左右ダミーで中央維持 */
 .card__nameRow{
   display:grid;
   grid-template-columns: 12px minmax(0, 1fr) 12px;
@@ -239,11 +124,6 @@ html[data-theme="pro"] .card:active{
 .card__nameIcon{
   width:12px;
   height:12px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:1px;
-  line-height:1;
 }
 
 .card__nameIcon--empty{
@@ -256,19 +136,10 @@ html[data-theme="pro"] .card:active{
   line-height:1.04;
   letter-spacing:0;
   color:var(--text);
-  white-space:nowrap;
-  overflow:visible;
-  text-overflow:clip;
   text-align:center;
-  margin:0;
 }
 
-html[data-theme="pro"] .card__name{
-  color: #111827;
-  text-shadow:
-    0 1px 0 rgba(255,255,255,.82),
-    0 0 4px rgba(205,165,45,.02);
-}
+/* ===== メタ情報 ===== */
 
 .card__meta{
   display:flex;
@@ -278,17 +149,7 @@ html[data-theme="pro"] .card__name{
   min-height:12px;
   width:100%;
   padding:0 2px;
-  box-sizing:border-box;
-  margin-top:0;
-  margin-bottom:6px;
-}
-
-.metaLeft{
-  display:inline-flex;
-  align-items:center;
-  min-width:0;
-  flex:0 1 auto;
-  white-space:nowrap;
+  margin-bottom:2px;
 }
 
 .gradeText,
@@ -297,19 +158,11 @@ html[data-theme="pro"] .card__name{
   font-weight:700;
   font-size:11px;
   line-height:1;
-  letter-spacing:0;
   color:#334155;
-  white-space:nowrap;
 }
 
 .day{
-  flex:0 0 auto;
   text-align:right;
-}
-
-html[data-theme="pro"] .gradeText,
-html[data-theme="pro"] .day{
-  color: #4b5563;
 }
 
 .card--off .card__name,
@@ -318,19 +171,10 @@ html[data-theme="pro"] .day{
   color:#6b7280;
 }
 
-html[data-theme="pro"] .card--off .card__name{
-  color: #9ca3af;
-  text-shadow:none;
-}
-
-html[data-theme="pro"] .card--off .gradeText,
-html[data-theme="pro"] .card--off .day{
-  color: #9ca3af;
-}
+/* ===== 下段 ===== */
 
 .card__line{
   white-space:nowrap;
-  word-break:keep-all;
   text-align:center;
   color:#334155;
 }
@@ -339,23 +183,18 @@ html[data-theme="pro"] .card--off .day{
   display:flex;
   align-items:center;
   justify-content:center;
-  gap: 6px;
+  gap:6px;
   font-weight:700;
   font-size:13px;
   line-height:1;
-  letter-spacing:.02em;
   margin-top:auto;
-  padding-top:0;
-  padding-bottom:0;
 }
 
 .raceNo{
-  color: inherit;
   font-weight:700;
 }
 
 .raceTime{
-  color: inherit;
   font-weight:700;
 }
 
@@ -364,35 +203,25 @@ html[data-theme="pro"] .card--off .day{
   font-weight:900;
 }
 
-.card__line--danger{
-  color:#ef4444 !important;
-  font-weight:900;
-}
+/* ===== 発売終了文字 ===== */
 
-html[data-theme="pro"] .card__line{
-  color: #374151;
-}
-
-.card--off .card__line{
-  color:#6b7280;
-}
-
-html[data-theme="pro"] .card--off .card__line{
-  color: #9ca3af;
-}
-
-.card--off .card__meta{
-  opacity:.9;
-}
-
-.card--off .card__line--btm{
-  opacity:.9;
+.card__line--soldout{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:calc(100% + 14px);
+  margin-left:-7px;
+  margin-right:-7px;
+  margin-bottom:-8px;
+  min-height:24px;
+  padding:2px 0 4px;
+  border-top:1px solid rgba(143,150,163,.35);
 }
 
 .status--soldout{
   font-weight:700;
   font-size:13px;
   line-height:1;
-  letter-spacing:0;
-  color:#374151 !important;
+  color:#374151;
+  transform: translateY(-1px);
 }
