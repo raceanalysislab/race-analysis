@@ -1,4 +1,4 @@
-/* js/app.js（完全置き換え：site venues.json専用 / 一覧安定版） */
+/* js/app.js（完全置き換え：venues.json を jcd で直結） */
 
 const SITE_VENUES_URL = "./data/site/venues.json";
 
@@ -36,11 +36,11 @@ const pad2 = (n) => String(n).padStart(2, "0");
 
 function escapeHTML(s) {
   return String(s ?? "").replace(/[&<>"']/g, (c) => ({
-    "&":"&amp;",
-    "<":"&lt;",
-    ">":"&gt;",
-    '"':"&quot;",
-    "'":"&#39;"
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
   }[c]));
 }
 
@@ -52,30 +52,19 @@ function nowHM() {
 function parseHHMM(s) {
   const m = String(s ?? "").trim().match(/^(\d{1,2}):(\d{2})$/);
   if (!m) return null;
-
   const h = Number(m[1]);
   const mm = Number(m[2]);
   if (!Number.isInteger(h) || !Number.isInteger(mm)) return null;
   if (h < 0 || h > 23 || mm < 0 || mm > 59) return null;
-
   return { h, m: mm };
 }
 
 function getCutoffTime(hhmm) {
   const t = parseHHMM(hhmm);
   if (!t) return null;
-
   const d = new Date();
   d.setHours(t.h, t.m, 0, 0);
   return d.getTime();
-}
-
-function normalizeVenueName(s) {
-  return String(s ?? "")
-    .normalize("NFKC")
-    .replace(/\u3000/g, " ")
-    .replace(/\s+/g, "")
-    .trim();
 }
 
 function normalizeGradeLabel(label) {
@@ -177,25 +166,16 @@ function renderPicksEmpty() {
 function render() {
   if ($updatedAt) $updatedAt.textContent = nowHM();
 
-  const liveMap = new Map();
+  const map = new Map();
+
   for (const item of venueList) {
     const jcd = String(item?.jcd || "").padStart(2, "0");
-    const name = String(item?.name || "").trim();
-
-    let key = "";
-    if (jcd) {
-      key = jcd;
-    } else if (name) {
-      const found = VENUES.find((v) => normalizeVenueName(v.name) === normalizeVenueName(name));
-      if (found) key = found.jcd;
-    }
-
-    if (!key) continue;
-    liveMap.set(key, item);
+    if (!jcd) continue;
+    map.set(jcd, item);
   }
 
   $grid.innerHTML = VENUES.map((base) => {
-    const v = liveMap.get(base.jcd);
+    const v = map.get(base.jcd);
 
     if (!v) {
       return `
@@ -233,7 +213,7 @@ function render() {
 
     return `
       <a class="card card--on card--tone-${escapeHTML(normalizeBand(v))}"
-         href="${venueHref({ jcd: base.jcd, name: base.name })}">
+         href="${venueHref(base)}">
         <div class="card__nameRow">
           <span class="card__nameIcon card__nameIcon--empty"></span>
           <div class="card__name">${escapeHTML(base.name)}</div>
