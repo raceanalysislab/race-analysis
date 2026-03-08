@@ -1,6 +1,6 @@
 /* js/app.js（完全置き換え：24場固定 / リアルタイム切替 / PRO切替強化版） */
 
-const DATA_URL = "./data/site/venues.json";
+const DATA_URL = "https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/site/venues.json";
 
 const NOTE_URLS = {
   YOSO_ONLY: "https://note.com/wsnndboat7/n/n1fdca8b0a7e3",
