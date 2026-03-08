@@ -432,7 +432,6 @@
     const $dayLabel = $("dayLabel");
     const $raceTop = $("raceTop");
 
-    const LOCAL_RACES_BASE_URL = "./data/site/races/";
     const BOT_RACES_BASE_URL =
       "https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/site/races/";
 
@@ -584,8 +583,6 @@
 
     function buildCandidateUrls(r){
       return [
-        ...(jcd && jcd !== "00" ? [`${LOCAL_RACES_BASE_URL}${encodeURIComponent(`${jcd}_${r}R.json`)}`] : []),
-        `${LOCAL_RACES_BASE_URL}${encodeURIComponent(`${venueName}_${r}R.json`)}`,
         ...(jcd && jcd !== "00" ? [`${BOT_RACES_BASE_URL}${encodeURIComponent(`${jcd}_${r}R.json`)}`] : []),
         `${BOT_RACES_BASE_URL}${encodeURIComponent(`${venueName}_${r}R.json`)}`
       ];
