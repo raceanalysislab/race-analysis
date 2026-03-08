@@ -1,4 +1,4 @@
-/* js/app.js（完全置き換え：長期運用版 / site JSON専用 / 一覧安定表示版） */
+/* js/app.js（完全置き換え：site venues.json専用 / 一覧安定版） */
 
 const SITE_VENUES_URL = "./data/site/venues.json";
 
@@ -21,7 +21,6 @@ const NEXT_RACE_DELAY_MS = 3000;
 const DANGER_MS = 5 * 60 * 1000;
 const REFRESH_INTERVAL_MS = 5 * 60 * 1000;
 const RERENDER_INTERVAL_MS = 1000;
-const FETCH_TIMEOUT_MS = 8000;
 
 const $grid = document.getElementById("grid");
 const $updatedAt = document.getElementById("updatedAt");
@@ -30,20 +29,18 @@ const $picks = document.getElementById("picks");
 const $picksUpdatedAt = document.getElementById("picksUpdatedAt");
 const $picksCta = document.getElementById("picksCta");
 
-const pad2 = (n) => String(n).padStart(2, "0");
-
 let venueList = [];
 let isLoading = false;
 
-/* ======================= util ======================= */
+const pad2 = (n) => String(n).padStart(2, "0");
 
 function escapeHTML(s) {
   return String(s ?? "").replace(/[&<>"']/g, (c) => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;"
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
   }[c]));
 }
 
@@ -58,7 +55,6 @@ function parseHHMM(s) {
 
   const h = Number(m[1]);
   const mm = Number(m[2]);
-
   if (!Number.isInteger(h) || !Number.isInteger(mm)) return null;
   if (h < 0 || h > 23 || mm < 0 || mm > 59) return null;
 
@@ -82,15 +78,6 @@ function normalizeVenueName(s) {
     .trim();
 }
 
-function normalizeBand(v) {
-  const s = String(v?.card_band || "").trim().toLowerCase();
-  if (s === "morning") return "morning";
-  if (s === "day") return "day";
-  if (s === "evening") return "evening";
-  if (s === "night") return "night";
-  return "normal";
-}
-
 function normalizeGradeLabel(label) {
   const s = String(label || "").trim();
   if (!s) return "一般";
@@ -98,15 +85,22 @@ function normalizeGradeLabel(label) {
   return s;
 }
 
-function venueHref(v) {
-  return `./race.html?jcd=${encodeURIComponent(v.jcd)}&name=${encodeURIComponent(v.name)}`;
+function normalizeBand(item) {
+  const s = String(item?.card_band || "").trim().toLowerCase();
+  if (s === "morning") return "morning";
+  if (s === "day") return "day";
+  if (s === "evening") return "evening";
+  if (s === "night") return "night";
+  return "normal";
 }
 
 function buildNoCacheUrl(url) {
   return `${url}${url.includes("?") ? "&" : "?"}t=${Date.now()}`;
 }
 
-/* ======================= next race ======================= */
+function venueHref(v) {
+  return `./race.html?jcd=${encodeURIComponent(v.jcd)}&name=${encodeURIComponent(v.name)}`;
+}
 
 function computeNext(raceTimes) {
   const now = Date.now();
@@ -132,66 +126,18 @@ function computeNext(raceTimes) {
   };
 }
 
-/* ======================= fetch ======================= */
-
 async function fetchVenues() {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+  const res = await fetch(buildNoCacheUrl(SITE_VENUES_URL), {
+    cache: "no-store"
+  });
 
-  try {
-    const res = await fetch(buildNoCacheUrl(SITE_VENUES_URL), {
-      cache: "no-store",
-      signal: controller.signal
-    });
+  if (!res.ok) throw new Error(`fetch error: ${res.status}`);
 
-    if (!res.ok) throw new Error(`fetch error: ${res.status}`);
+  const json = await res.json();
+  if (!Array.isArray(json)) throw new Error("venues.json is not array");
 
-    const json = await res.json();
-    if (!Array.isArray(json)) throw new Error("venues.json is not array");
-
-    return json;
-  } finally {
-    clearTimeout(timer);
-  }
+  return json;
 }
-
-/* ======================= normalize ======================= */
-
-function normalizeVenueList(list) {
-  const src = Array.isArray(list) ? list : [];
-  const map = new Map();
-
-  for (const item of src) {
-    const jcd = String(item?.jcd || "").padStart(2, "0");
-    const name = String(item?.name || "").trim();
-
-    let base = null;
-
-    if (jcd) {
-      base = VENUES.find((v) => v.jcd === jcd) || null;
-    }
-
-    if (!base && name) {
-      base = VENUES.find((v) => normalizeVenueName(v.name) === normalizeVenueName(name)) || null;
-    }
-
-    if (!base) continue;
-
-    map.set(base.jcd, {
-      jcd: base.jcd,
-      name: base.name,
-      day_label: String(item?.day_label || "").trim(),
-      grade_label: normalizeGradeLabel(item?.grade_label),
-      card_band: normalizeBand(item),
-      race_times: Array.isArray(item?.race_times) ? item.race_times : [],
-      next_display: String(item?.next_display || "").trim()
-    });
-  }
-
-  return map;
-}
-
-/* ======================= render ======================= */
 
 function renderPicksCta() {
   if (!$picksCta) return;
@@ -231,16 +177,33 @@ function renderPicksEmpty() {
 function render() {
   if ($updatedAt) $updatedAt.textContent = nowHM();
 
-  const venueMap = normalizeVenueList(venueList);
+  const liveMap = new Map();
+  for (const item of venueList) {
+    const jcd = String(item?.jcd || "").padStart(2, "0");
+    const name = String(item?.name || "").trim();
+
+    let key = "";
+    if (jcd) {
+      key = jcd;
+    } else if (name) {
+      const found = VENUES.find((v) => normalizeVenueName(v.name) === normalizeVenueName(name));
+      if (found) key = found.jcd;
+    }
+
+    if (!key) continue;
+    liveMap.set(key, item);
+  }
 
   $grid.innerHTML = VENUES.map((base) => {
-    const v = venueMap.get(base.jcd);
+    const v = liveMap.get(base.jcd);
 
     if (!v) {
       return `
         <div class="card card--off" aria-disabled="true">
           <div class="card__nameRow">
+            <span class="card__nameIcon card__nameIcon--empty"></span>
             <div class="card__name">${escapeHTML(base.name)}</div>
+            <span class="card__nameIcon card__nameIcon--empty"></span>
           </div>
 
           <div class="card__meta">
@@ -269,15 +232,16 @@ function render() {
     const dangerClass = next.danger ? " raceTime--danger" : "";
 
     return `
-      <a class="card card--on card--tone-${escapeHTML(v.card_band || "normal")}"
-         href="${venueHref(v)}">
-
+      <a class="card card--on card--tone-${escapeHTML(normalizeBand(v))}"
+         href="${venueHref({ jcd: base.jcd, name: base.name })}">
         <div class="card__nameRow">
-          <div class="card__name">${escapeHTML(v.name)}</div>
+          <span class="card__nameIcon card__nameIcon--empty"></span>
+          <div class="card__name">${escapeHTML(base.name)}</div>
+          <span class="card__nameIcon card__nameIcon--empty"></span>
         </div>
 
         <div class="card__meta">
-          <span class="gradeText">${escapeHTML(v.grade_label || "")}</span>
+          <span class="gradeText">${escapeHTML(normalizeGradeLabel(v.grade_label))}</span>
           <span class="day">${escapeHTML(v.day_label || "")}</span>
         </div>
 
@@ -285,13 +249,10 @@ function render() {
           <span class="raceNo">${escapeHTML(race)}</span>
           ${time ? `<span class="raceTime${dangerClass}">${escapeHTML(time)}</span>` : ""}
         </div>
-
       </a>
     `;
   }).join("");
 }
-
-/* ======================= load ======================= */
 
 async function load() {
   if (isLoading) return;
@@ -309,8 +270,6 @@ async function load() {
     isLoading = false;
   }
 }
-
-/* ======================= events ======================= */
 
 if ($btn) {
   $btn.addEventListener("click", load);
@@ -334,8 +293,6 @@ setInterval(() => {
     load();
   }
 }, REFRESH_INTERVAL_MS);
-
-/* start */
 
 renderPicksCta();
 renderPicksEmpty();
