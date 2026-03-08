@@ -1,4 +1,4 @@
-/* js/app.js（完全置き換え：24場固定 / リアルタイム切替版） */
+/* js/app.js（完全置き換え：24場固定 / リアルタイム切替修正版） */
 
 const DATA_URL = "./data/site/venues.json";
 
@@ -107,24 +107,32 @@ function computeNextDisplay(v) {
   const raceTimes = Array.isArray(v?.race_times) ? v.race_times : [];
   const now = Date.now();
 
-  for (const r of raceTimes) {
-    const cutoffAt = getCutoffTime(r?.cutoff);
-    if (cutoffAt == null) continue;
+  if (raceTimes.length > 0) {
+    for (const r of raceTimes) {
+      const cutoffAt = getCutoffTime(r?.cutoff);
+      if (cutoffAt == null) continue;
 
-    const switchAt = cutoffAt + NEXT_RACE_DELAY_MS;
-    const remainMs = cutoffAt - now;
+      const switchAt = cutoffAt + NEXT_RACE_DELAY_MS;
+      const remainMs = cutoffAt - now;
 
-    if (now < switchAt) {
-      return {
-        text: `${r.rno}R ${r.cutoff}`,
-        danger: remainMs <= DANGER_MS && remainMs >= 0
-      };
+      if (now < switchAt) {
+        return {
+          text: `${r.rno}R ${r.cutoff}`,
+          danger: remainMs <= DANGER_MS && remainMs >= 0
+        };
+      }
     }
+
+    return {
+      text: "発売終了",
+      danger: false
+    };
   }
 
-  if (String(v?.next_display || "").trim()) {
+  const nextDisplay = String(v?.next_display || "").trim();
+  if (nextDisplay) {
     return {
-      text: String(v.next_display).trim(),
+      text: nextDisplay,
       danger: false
     };
   }
