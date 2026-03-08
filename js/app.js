@@ -1,8 +1,8 @@
-/* js/app.js（完全置き換え：軽量安定版 / raw優先+jsDelivrフォールバック / JSON配列・venues両対応 / キャッシュ回避 / JST日付切替対応 / 3秒後切替 / 締切5分前は時間だけ赤表示 / PRO対応） */
+/* js/app.js（完全置き換え：軽量安定版 / jsDelivr優先+rawフォールバック / JSON配列・venues両対応 / キャッシュ回避 / JST日付切替対応 / 3秒後切替 / 締切5分前は時間だけ赤表示 / PRO対応） */
 
 const SITE_VENUES_URLS = [
-  "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/site/venues.json",
-  "https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/site/venues.json"
+  "https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/site/venues.json",
+  "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/site/venues.json"
 ];
 
 const NOTE_URLS = {
@@ -124,6 +124,7 @@ async function fetchJSON(url) {
   try {
     const res = await fetch(buildNoCacheUrl(url), {
       cache: "no-store",
+      mode: "cors",
       signal: controller.signal,
       headers: {
         "Cache-Control": "no-cache, no-store, max-age=0",
@@ -642,3 +643,6 @@ applyThemeFromStorage();
 renderPicksCta();
 renderPicksEmpty();
 loadAll(true);
+
+修正して
+完全置き換え
