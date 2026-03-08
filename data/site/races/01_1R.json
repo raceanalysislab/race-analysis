@@ -2,6 +2,8 @@
   "venue": "桐生",
   "jcd": "01",
   "race": {
-    "rno": 1
+    "rno": 1,
+    "cutoff": "",
+    "boats": []
   }
 }
