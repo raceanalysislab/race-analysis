@@ -1,137 +1,364 @@
-*{
-box-sizing:border-box;
+:root{
+  --safe-top: env(safe-area-inset-top,0px);
+  --safe-bottom: env(safe-area-inset-bottom,0px);
+  --raceTopH:112px;
+
+  --bg:#f3f5f9;
+  --panel:#ffffff;
+  --panel-soft:#f8fafc;
+  --line:#e2e8f0;
+  --line-soft:#eef2f7;
+
+  --text:#0f172a;
+  --muted:#64748b;
+  --muted-2:#94a3b8;
+  --accent:#2563eb;
+
+  --shadow:0 2px 8px rgba(15,23,42,.06);
 }
 
-body{
-margin:0;
-font-family:-apple-system;
-background:#f3f5f9;
+*{box-sizing:border-box}
+
+html,body{
+  margin:0;
+  min-height:100%;
+  background:linear-gradient(180deg,#f8fafc 0%,#f1f5f9 100%);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP","Segoe UI",sans-serif;
+  overscroll-behavior-y:none;
 }
+
+body{padding-top:var(--safe-top)}
+
+/* ===== 上部 ===== */
 
 .raceTop{
-position:sticky;
-top:0;
-background:#fff;
-padding:10px;
-border-bottom:1px solid #e5e7eb;
+  position:sticky;
+  top:0;
+  z-index:50;
+  padding:8px 10px 6px;
+  background:rgba(246,247,251,.98);
+  border-bottom:1px solid rgba(226,232,240,.92);
 }
 
 .raceHead{
-display:flex;
-justify-content:space-between;
-align-items:center;
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:10px;
+  box-shadow:var(--shadow);
+}
+
+.raceHead__left{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  min-width:0;
 }
 
 .raceVenue{
-font-size:22px;
-font-weight:900;
+  font-size:22px;
+  font-weight:1000;
+  line-height:1;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.raceMeta{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+  align-items:center;
+  font-size:11px;
+  color:var(--muted);
 }
 
 .metaChip{
-background:#f1f5f9;
-padding:4px 10px;
-border-radius:999px;
-font-size:12px;
+  display:inline-flex;
+  align-items:center;
+  min-height:24px;
+  padding:0 9px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:var(--panel-soft);
+  font-weight:700;
 }
 
+.raceBtn{
+  border:1px solid var(--line);
+  background:var(--panel-soft);
+  min-width:64px;
+  height:38px;
+  border-radius:11px;
+  font-size:13px;
+  font-weight:900;
+}
+
+/* ===== レース番号タブ ===== */
+
 .raceTabs{
-display:flex;
-gap:6px;
-overflow:auto;
-margin-top:8px;
+  margin-top:8px;
+  display:flex;
+  gap:6px;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
 }
 
 .tab{
-background:#fff;
-border:1px solid #e5e7eb;
-padding:6px 10px;
-border-radius:999px;
-font-size:12px;
+  flex:0 0 auto;
+  min-width:52px;
+  height:34px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:#fff;
+  font-size:12px;
+  font-weight:900;
 }
 
 .tab.is-active{
-background:#2563eb;
-color:#fff;
-border:none;
+  background:linear-gradient(180deg,#2f7cff 0%,#2563eb 100%);
+  color:#fff;
+  border-color:transparent;
+}
+
+/* ===== 本体 ===== */
+
+.raceBody{
+  height:calc(100dvh - var(--raceTopH));
+  padding:6px 10px calc(8px + var(--safe-bottom));
 }
 
 .section{
-background:#fff;
-margin:10px;
-padding:10px;
-border-radius:14px;
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:8px;
+  box-shadow:var(--shadow);
+  overflow:hidden;
 }
+
+/* ===== タイトル ===== */
 
 .sectionHead{
-display:flex;
-justify-content:space-between;
-margin-bottom:10px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:6px;
+  padding-bottom:6px;
+  border-bottom:1px solid var(--line-soft);
 }
 
+.sectionTitle{
+  font-size:13px;
+  font-weight:1000;
+}
+
+.sectionMeta{
+  font-size:10px;
+  color:var(--muted-2);
+  text-align:right;
+}
+
+/* ===== 上部タブ ===== */
+
 .viewTabs{
-display:flex;
-gap:8px;
-margin-bottom:10px;
+  display:flex;
+  gap:8px;
+  margin-bottom:8px;
+  overflow-x:auto;
 }
 
 .viewTab{
-padding:6px 12px;
-border-radius:999px;
-border:1px solid #e5e7eb;
-background:#fff;
-font-size:12px;
+  border:1px solid var(--line);
+  background:#fff;
+  height:36px;
+  padding:0 14px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:900;
 }
 
 .viewTab.is-active{
-background:#2563eb;
-color:#fff;
+  background:linear-gradient(180deg,#2f7cff 0%,#2563eb 100%);
+  color:#fff;
+  border-color:transparent;
 }
 
+/* ===== 横スワイプ ===== */
+
+.viewPager{
+  flex:1;
+  overflow:hidden;
+}
+
+.viewTrack{
+  height:100%;
+  display:flex;
+  transition:transform .22s ease;
+}
+
+.viewPage{
+  width:100%;
+  min-width:100%;
+  height:100%;
+  display:flex;
+  flex-direction:column;
+}
+
+/* ===== 出走表 ===== */
+
 .table{
-display:flex;
-flex-direction:column;
-gap:8px;
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  overflow:auto;
 }
 
 .row{
-display:flex;
-gap:10px;
-padding:8px;
-border:1px solid #e5e7eb;
-border-radius:10px;
-background:#fff;
+  display:flex;
+  gap:10px;
+  border-radius:15px;
+  background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%);
+  border:1px solid #e5eaf2;
+  padding:8px;
 }
 
 .waku{
-width:36px;
-height:36px;
-display:flex;
-align-items:center;
-justify-content:center;
-font-weight:900;
-border-radius:8px;
+  width:42px;
+  height:42px;
+  border-radius:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:24px;
+  font-weight:1000;
 }
 
-.w1{background:#fff;}
-.w2{background:#111;color:#fff;}
-.w3{background:#f87171;color:#fff;}
-.w4{background:#60a5fa;color:#fff;}
-.w5{background:#fde047;}
-.w6{background:#4ade80;}
+.w1{background:#fff;color:#111}
+.w2{background:#111;color:#fff}
+.w3{background:#f06f63;color:#fff}
+.w4{background:#568cff;color:#fff}
+.w5{background:#f7dd58;color:#111}
+.w6{background:#6fd275;color:#111}
+
+.info{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:5px;
+}
+
+.sub{
+  font-size:10px;
+  color:#64748b;
+  font-weight:700;
+}
 
 .name{
-font-weight:900;
-font-size:18px;
+  font-size:22px;
+  font-weight:700;
 }
 
+/* ===== プレースホルダー ===== */
+
 .panelPlaceholder{
-padding:40px;
-text-align:center;
-color:#64748b;
+  flex:1;
+  border:1px solid #e5eaf2;
+  border-radius:16px;
+  background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%);
+  padding:18px 14px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+}
+
+.panelPlaceholder__title{
+  font-size:18px;
+  font-weight:1000;
+  margin-bottom:10px;
+}
+
+.panelPlaceholder__text{
+  font-size:12px;
+  color:#64748b;
+  text-align:center;
+}
+
+/* ===== コースデータ ===== */
+
+.courseWrap{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+}
+
+.courseInnerTabs{
+  display:flex;
+  gap:8px;
+  margin-bottom:10px;
+}
+
+.courseInnerTab{
+  border:1px solid var(--line);
+  background:#fff;
+  height:34px;
+  padding:0 12px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:900;
+}
+
+.courseInnerTab.is-active{
+  background:linear-gradient(180deg,#2f7cff,#2563eb);
+  color:#fff;
+}
+
+.courseScroll{
+  display:flex;
+  gap:10px;
+  overflow-x:auto;
+}
+
+.courseCard{
+  min-width:220px;
+  border:1px solid #e5eaf2;
+  border-radius:14px;
+  padding:10px;
+  background:#fff;
+}
+
+.courseTitle{
+  font-size:13px;
+  font-weight:900;
+  margin-bottom:6px;
+}
+
+.cdRow{
+  display:flex;
+  justify-content:space-between;
+  font-size:11px;
+  padding:2px 0;
+}
+
+.cdHint{
+  font-size:10px;
+  color:#64748b;
+  margin-top:8px;
 }
 
 .note{
-font-size:11px;
-margin-top:8px;
-color:#64748b;
+  margin-top:6px;
+  font-size:10px;
+  color:var(--muted);
 }
