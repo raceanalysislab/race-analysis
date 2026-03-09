@@ -149,7 +149,7 @@
   align-items:center;
   justify-content:space-between;
   gap:8px;
-  min-height:20px;
+  min-height:12px;
   width:100%;
   padding:0 2px;
   margin-bottom:2px;
@@ -173,59 +173,50 @@
 /* ===== グレード表示 ===== */
 
 .gradeText{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  min-width:34px;
-  height:18px;
-  padding:0 6px;
-  border-radius:999px;
-  border:1px solid transparent;
-  font-size:10px;
-  font-weight:800;
-  letter-spacing:.01em;
+  display:inline-block;
+  font-weight:700;
+  font-size:11px;
+  line-height:1;
+  color:#334155;
   white-space:nowrap;
 }
 
+/* 一般は前のまま */
 .gradeText--general{
-  color:#475569;
-  background:#f8fafc;
-  border-color:#dbe2ea;
+  color:#334155;
+  background:transparent;
+  border:none;
+  padding:0;
+  border-radius:0;
+  font-size:11px;
+  font-weight:700;
 }
 
+/* グレードレースだけ色分け */
 .gradeText--sg{
-  color:#ffffff;
-  background:#dc2626;
-  border-color:#b91c1c;
+  color:#dc2626;
+  font-weight:900;
 }
 
 .gradeText--g1{
-  color:#111827;
-  background:#facc15;
-  border-color:#eab308;
+  color:#eab308;
+  font-weight:900;
 }
 
 .gradeText--g2{
-  color:#ffffff;
-  background:#16a34a;
-  border-color:#15803d;
+  color:#16a34a;
+  font-weight:900;
 }
 
 .gradeText--g3{
-  color:#ffffff;
-  background:#2563eb;
-  border-color:#1d4ed8;
+  color:#2563eb;
+  font-weight:900;
 }
 
 .card--off .card__name,
 .card--off .gradeText,
 .card--off .day{
   color:#6b7280;
-}
-
-.card--off .gradeText{
-  background:transparent;
-  border-color:transparent;
 }
 
 /* ===== 下段 ===== */
