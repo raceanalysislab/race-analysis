@@ -64,8 +64,84 @@
               <div id="courseYearView">
                 <div class="courseBlock">
                   <div class="courseBlockTitle">コース別直近1年</div>
-                  <div class="courseBlockSub">平均ST と 今節平均ST を並べて比較できます。</div>
-                  <div class="courseScroll" id="courseYearScroll"></div>
+                  <div class="courseBlockSub">枠番を縦、比較データを横並びで表示します。</div>
+
+                  <div class="courseScroll" id="courseYearScroll">
+                    <div class="courseTable">
+                      <div class="courseHeadRow">
+                        <div class="courseHeadCell courseHeadCell--waku">枠</div>
+                        <div class="courseHeadCell">平均ST</div>
+                        <div class="courseHeadCell">今節平均ST</div>
+                        <div class="courseHeadCell">コース勝率</div>
+                        <div class="courseHeadCell">差/捲/捲差</div>
+                        <div class="courseHeadCell">2着内率</div>
+                        <div class="courseHeadCell">3着内率</div>
+                      </div>
+
+                      <div class="courseBody" id="courseYearBody">
+                        <div class="courseRow">
+                          <div class="courseWakuCell w1">1</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—/—/—</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—</div>
+                        </div>
+
+                        <div class="courseRow">
+                          <div class="courseWakuCell w2">2</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—/—/—</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—</div>
+                        </div>
+
+                        <div class="courseRow">
+                          <div class="courseWakuCell w3">3</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—/—/—</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—</div>
+                        </div>
+
+                        <div class="courseRow">
+                          <div class="courseWakuCell w4">4</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—/—/—</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—</div>
+                        </div>
+
+                        <div class="courseRow">
+                          <div class="courseWakuCell w5">5</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—/—/—</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—</div>
+                        </div>
+
+                        <div class="courseRow">
+                          <div class="courseWakuCell w6">6</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—/—/—</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
                   <div class="cdHint">※ データ接続後に自動表示されます。</div>
                 </div>
               </div>
@@ -73,8 +149,84 @@
               <div id="courseLocalView" style="display:none;">
                 <div class="courseBlock">
                   <div class="courseBlockTitle">コース別当地直近5年</div>
-                  <div class="courseBlockSub">当地実績を別タブで確認できます。</div>
-                  <div class="courseScroll" id="courseLocalScroll"></div>
+                  <div class="courseBlockSub">当地実績を同じ並びで表示します。</div>
+
+                  <div class="courseScroll" id="courseLocalScroll">
+                    <div class="courseTable">
+                      <div class="courseHeadRow">
+                        <div class="courseHeadCell courseHeadCell--waku">枠</div>
+                        <div class="courseHeadCell">平均ST</div>
+                        <div class="courseHeadCell">今節平均ST</div>
+                        <div class="courseHeadCell">コース勝率</div>
+                        <div class="courseHeadCell">差/捲/捲差</div>
+                        <div class="courseHeadCell">2着内率</div>
+                        <div class="courseHeadCell">3着内率</div>
+                      </div>
+
+                      <div class="courseBody" id="courseLocalBody">
+                        <div class="courseRow">
+                          <div class="courseWakuCell w1">1</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—/—/—</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—</div>
+                        </div>
+
+                        <div class="courseRow">
+                          <div class="courseWakuCell w2">2</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—/—/—</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—</div>
+                        </div>
+
+                        <div class="courseRow">
+                          <div class="courseWakuCell w3">3</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—/—/—</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—</div>
+                        </div>
+
+                        <div class="courseRow">
+                          <div class="courseWakuCell w4">4</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—/—/—</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—</div>
+                        </div>
+
+                        <div class="courseRow">
+                          <div class="courseWakuCell w5">5</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—/—/—</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—</div>
+                        </div>
+
+                        <div class="courseRow">
+                          <div class="courseWakuCell w6">6</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—/—/—</div>
+                          <div class="courseDataCell">—</div>
+                          <div class="courseDataCell">—</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
                   <div class="cdHint">※ データ接続後に自動表示されます。</div>
                 </div>
               </div>
