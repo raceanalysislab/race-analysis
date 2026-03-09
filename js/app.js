@@ -1,6 +1,6 @@
-/* js/app.js（完全置き換え：24場固定 / リアルタイム切替 / PRO切替強化版 / 日付跨ぎ自動切替対応 / 一覧30秒自動更新版） */
+/* js/app.js（完全置き換え：24場固定 / リアルタイム切替 / PRO切替強化版 / 日付跨ぎ自動切替対応 / raw.githubusercontent.com版） */
 
-const DATA_URL = "https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/site/venues.json";
+const DATA_URL = "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/site/venues.json";
 
 const NOTE_URLS = {
   YOSO_ONLY: "https://note.com/wsnndboat7/n/n1fdca8b0a7e3",
@@ -473,7 +473,10 @@ async function load() {
   isLoading = true;
 
   try {
-    const res = await fetch(buildDataUrl(), { cache: "no-store" });
+    const res = await fetch(buildDataUrl(), {
+      cache: "no-store",
+      headers: { "Cache-Control": "no-cache" }
+    });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
     const json = await res.json();
