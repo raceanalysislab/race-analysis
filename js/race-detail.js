@@ -143,23 +143,96 @@ function extractAverageSt(note) {
   return m ? m[1] : "—";
 }
 
-function getCourseStat(regno, course) {
+function normalizeRegno(regno) {
+  return String(regno ?? "").replace(/\D/g, "");
+}
+
+function getPlayerStats(regno) {
   if (!courseStatsLoaded) return null;
-  const player = courseStats[String(regno)];
+
+  const raw = String(regno ?? "").trim();
+  const normalized = normalizeRegno(regno);
+
+  const candidates = [
+    raw,
+    normalized,
+    normalized.replace(/^0+/, ""),
+    String(Number(normalized || 0)),
+  ].filter(Boolean);
+
+  for (const key of candidates) {
+    if (courseStats[key]) return courseStats[key];
+  }
+
+  return null;
+}
+
+function aggregatePlayerStats(player) {
+  if (!player || typeof player !== "object") return null;
+
+  const total = {
+    starts: 0,
+    wins: 0,
+    place2: 0,
+    place3: 0,
+    avg_st: null,
+    kimarite: {}
+  };
+
+  let stSum = 0;
+  let stCount = 0;
+
+  Object.values(player).forEach((c) => {
+    if (!c || typeof c !== "object") return;
+
+    total.starts += Number(c.starts || 0);
+    total.wins += Number(c.wins || 0);
+    total.place2 += Number(c.place2 || 0);
+    total.place3 += Number(c.place3 || 0);
+
+    if (c.avg_st !== undefined && c.avg_st !== null && c.avg_st !== "") {
+      const starts = Number(c.starts || 0);
+      const avg = Number(c.avg_st);
+      if (Number.isFinite(avg) && starts > 0) {
+        stSum += avg * starts;
+        stCount += starts;
+      }
+    }
+
+    if (c.kimarite && typeof c.kimarite === "object") {
+      Object.entries(c.kimarite).forEach(([k, v]) => {
+        total.kimarite[k] = (total.kimarite[k] || 0) + Number(v || 0);
+      });
+    }
+  });
+
+  if (total.starts <= 0) return null;
+
+  total.avg_st = stCount > 0 ? Number((stSum / stCount).toFixed(3)) : null;
+  return total;
+}
+
+function getCourseStat(regno, course) {
+  const player = getPlayerStats(regno);
   if (!player) return null;
-  return player[String(course)] || null;
+
+  const byCourse = player[String(course)];
+  if (byCourse && Number(byCourse.starts || 0) > 0) {
+    return byCourse;
+  }
+
+  return aggregatePlayerStats(player);
 }
 
 function kimariteText(kimarite) {
   if (!kimarite || typeof kimarite !== "object") return "—";
+
   const arr = Object.entries(kimarite)
     .filter(([, v]) => Number(v) > 0)
     .sort((a, b) => Number(b[1]) - Number(a[1]));
 
   if (!arr.length) return "—";
-
-  const top = arr[0][0];
-  return top;
+  return arr[0][0];
 }
 
 function entryAvgSt(p) {
