@@ -244,7 +244,6 @@ body{ padding-top:var(--safe-top); }
   min-height:0;
 }
 
-/* 出走表 */
 .table{
   flex:1 1 auto;
   min-height:0;
@@ -335,10 +334,10 @@ body{ padding-top:var(--safe-top); }
 
 .metric{
   flex:0 0 40%;
-  min-width:166px;
+  min-width:170px;
   display:grid;
   grid-template-columns:1fr 1fr;
-  column-gap:14px;
+  column-gap:18px;
   align-self:stretch;
   align-items:center;
   justify-items:center;
@@ -356,17 +355,17 @@ body{ padding-top:var(--safe-top); }
 }
 
 .metricCol--nat{
-  gap:8px;
+  gap:6px;
 }
 
 .metricCol--motor{
-  gap:5px;
+  gap:6px;
 }
 
 .metricHead{
-  font-size:11px;
+  font-size:12px;
   line-height:1;
-  font-weight:900;
+  font-weight:800;
   color:#475569;
   white-space:nowrap;
   text-align:center;
@@ -374,7 +373,7 @@ body{ padding-top:var(--safe-top); }
 }
 
 .metricVal{
-  font-size:22px;
+  font-size:26px;
   line-height:1;
   font-weight:900;
   color:#0f172a;
@@ -384,19 +383,19 @@ body{ padding-top:var(--safe-top); }
 }
 
 .metricSub{
-  font-size:17px;
+  font-size:18px;
   line-height:1;
   font-weight:900;
   color:#0f172a;
   white-space:nowrap;
   text-align:center;
   width:100%;
-  margin-top:-1px;
+  margin-top:-2px;
 }
 
 .metricVal--motor{
-  font-size:18px;
-  margin-top:-1px;
+  font-size:20px;
+  margin-top:-2px;
 }
 
 .note{
@@ -408,7 +407,6 @@ body{ padding-top:var(--safe-top); }
   flex:0 0 auto;
 }
 
-/* コース/枠番 */
 .panelPlaceholder{
   flex:1 1 auto;
   min-height:0;
@@ -465,9 +463,9 @@ body{ padding-top:var(--safe-top); }
   }
 
   .metricHead{ font-size:10px; }
-  .metricVal{ font-size:19px; }
-  .metricSub{ font-size:15px; }
-  .metricVal--motor{ font-size:16px; }
+  .metricVal{ font-size:22px; }
+  .metricSub{ font-size:16px; }
+  .metricVal--motor{ font-size:18px; }
 
   .viewTab{
     height:34px;
