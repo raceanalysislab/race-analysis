@@ -1,292 +1,361 @@
-:root{
---safe-top:env(safe-area-inset-top,0px);
---safe-bottom:env(safe-area-inset-bottom,0px);
---raceTopH:112px;
+const qs = new URLSearchParams(location.search);
 
---bg:#f3f5f9;
---panel:#ffffff;
---panel-soft:#f8fafc;
---line:#e2e8f0;
---line-soft:#eef2f7;
+const venueName = decodeURIComponent(qs.get("name") || "会場");
+const jcd = String(qs.get("jcd") || "").padStart(2,"0");
 
---text:#0f172a;
---muted:#64748b;
---muted-2:#94a3b8;
---accent:#2563eb;
+const $ = id => document.getElementById(id);
 
---shadow:0 2px 8px rgba(15,23,42,.06);
+const $tabs = $("tabs");
+const $table = $("table");
+const $raceNoLabel = $("raceNoLabel");
+const $timeLabel = $("timeLabel");
+const $dayLabel = $("dayLabel");
+const $viewTabs = $("viewTabs");
+const $viewTrack = $("viewTrack");
+const $viewPager = $("viewPager");
+
+const BOT_RACES_BASE_URL =
+"https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/site/races/";
+
+let currentRace = 1;
+let currentView = 0;
+
+$("venueName").textContent = venueName;
+
+/* ---------- util ---------- */
+
+const clamp = (n,min,max)=>Math.max(min,Math.min(max,n));
+
+const esc = s =>
+String(s ?? "").replace(/[&<>"']/g,c=>({
+"&":"&amp;",
+"<":"&lt;",
+">":"&gt;",
+'"':"&quot;",
+"'":"&#39;"
+}[c]));
+
+const safeNum=v=>{
+if(v===undefined||v===null||v==="")return "—";
+const n=Number(v);
+return Number.isFinite(n)?n.toFixed(2):"—";
+};
+
+const safeInt=v=>{
+if(v===undefined||v===null||v==="")return "—";
+const n=Number(v);
+return Number.isFinite(n)?String(Math.trunc(n)):"—";
+};
+
+const toHM=x=>{
+const m=String(x||"").match(/(\d{1,2}):(\d{2})/);
+return m?`${m[1].padStart(2,"0")}:${m[2]}`:"--:--";
+};
+
+/* ---------- fetch ---------- */
+
+const fetchJSON = async url=>{
+const res = await fetch(url+"?t="+Date.now(),{cache:"no-store"});
+if(!res.ok) throw new Error(url);
+return res.json();
+};
+
+/* ---------- tabs ---------- */
+
+function makeTabs(active){
+
+$tabs.innerHTML = Array.from({length:12},(_,i)=>{
+
+const r=i+1;
+
+return `<button class="tab${r===active?" is-active":""}" data-race="${r}">
+${r}R
+</button>`;
+
+}).join("");
+
+$tabs.querySelectorAll(".tab").forEach(btn=>{
+
+btn.addEventListener("click",()=>{
+
+setRace(Number(btn.dataset.race));
+
+});
+
+});
+
 }
 
-*{
-box-sizing:border-box;
+/* ---------- boats normalize ---------- */
+
+function normalizeBoatsTo6(boats){
+
+const byWaku=new Map();
+const rest=[];
+
+boats.forEach(b=>{
+
+const w=Number(b?.waku);
+
+if(w>=1&&w<=6&&!byWaku.has(w)) byWaku.set(w,b);
+else rest.push(b);
+
+});
+
+for(let w=1;w<=6;w++){
+
+if(!byWaku.has(w)&&rest.length){
+
+byWaku.set(w,{...rest.shift(),waku:w});
+
 }
 
-html,body{
-margin:0;
-min-height:100%;
-background:linear-gradient(180deg,#f8fafc 0%,#f1f5f9 100%);
-color:var(--text);
-font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP","Segoe UI",sans-serif;
-overscroll-behavior-y:none;
 }
 
-body{
-padding-top:var(--safe-top);
+return Array.from({length:6},(_,i)=>{
+
+const w=i+1;
+
+return byWaku.get(w)||{
+waku:w,
+name:"—",
+regno:"",
+branch:"",
+age:"",
+grade:"",
+nat_win:null,
+motor_no:null,
+motor_2:null
+};
+
+});
+
 }
 
-/* 上部 */
+/* ---------- row html ---------- */
 
-.raceTop{
-position:sticky;
-top:0;
-z-index:50;
-padding:8px 10px 6px;
-background:rgba(246,247,251,.98);
-border-bottom:1px solid rgba(226,232,240,.92);
+function metricHTML(p){
+
+return `
+<div class="metric">
+
+<div>
+<div>全国勝率</div>
+<div>${esc(safeNum(p.nat_win))}</div>
+</div>
+
+<div>
+<div>モーター</div>
+<div>${esc(safeInt(p.motor_no))}</div>
+<div>${esc(safeNum(p.motor_2))}</div>
+</div>
+
+</div>
+`;
+
 }
 
-.raceHead{
-display:flex;
-align-items:flex-start;
-justify-content:space-between;
-gap:10px;
-background:var(--panel);
-border:1px solid var(--line);
-border-radius:16px;
-padding:10px;
-box-shadow:var(--shadow);
+function rowHTML(p){
+
+const regno = p.regno || p.id || "—";
+const grade = p.grade || "—";
+const branch = p.branch || "—";
+const age = p.age ? `${p.age}歳`:"—";
+
+return `
+<div class="row">
+
+<div class="waku w${p.waku}">
+${p.waku}
+</div>
+
+<div class="info">
+
+<div class="sub">
+${esc(regno)} / ${esc(grade)} / ${esc(branch)} / ${esc(age)}
+</div>
+
+<div class="name">
+${esc(p.name)}
+</div>
+
+</div>
+
+${metricHTML(p)}
+
+</div>
+`;
+
 }
 
-.raceHead__left{
-display:flex;
-flex-direction:column;
-gap:6px;
-min-width:0;
+/* ---------- view switch ---------- */
+
+function setView(index){
+
+currentView = clamp(index,0,2);
+
+Array.from($viewTabs.querySelectorAll(".viewTab"))
+.forEach((btn,i)=>{
+
+btn.classList.toggle("is-active",i===currentView);
+
+});
+
+$viewTrack.style.transform =
+`translate3d(${-100*currentView}%,0,0)`;
+
 }
 
-.raceVenue{
-font-size:22px;
-font-weight:1000;
-line-height:1;
-white-space:nowrap;
-overflow:hidden;
-text-overflow:ellipsis;
+/* ---------- view tabs ---------- */
+
+Array.from($viewTabs.querySelectorAll(".viewTab"))
+.forEach(btn=>{
+
+btn.addEventListener("click",()=>{
+
+setView(Number(btn.dataset.view));
+
+});
+
+});
+
+/* ---------- swipe ---------- */
+
+let dragStart=0;
+let dragX=0;
+let dragging=false;
+
+$viewPager.addEventListener("pointerdown",e=>{
+
+dragging=true;
+dragStart=e.clientX;
+dragX=e.clientX;
+
+});
+
+$viewPager.addEventListener("pointermove",e=>{
+
+if(!dragging) return;
+
+dragX=e.clientX;
+
+const width=$viewPager.clientWidth||1;
+const delta=dragX-dragStart;
+
+const pct=(delta/width)*100;
+
+$viewTrack.style.transform=
+`translate3d(${(-100*currentView)+pct}%,0,0)`;
+
+});
+
+$viewPager.addEventListener("pointerup",()=>{
+
+if(!dragging) return;
+
+dragging=false;
+
+const width=$viewPager.clientWidth||1;
+const delta=dragX-dragStart;
+
+if(delta<-width*0.2&&currentView<2) setView(currentView+1);
+else if(delta>width*0.2&&currentView>0) setView(currentView-1);
+else setView(currentView);
+
+});
+
+/* ---------- race load ---------- */
+
+function buildUrls(r){
+
+return [
+
+...(jcd&&jcd!=="00"
+? [`${BOT_RACES_BASE_URL}${jcd}_${r}R.json`]
+: []),
+
+`${BOT_RACES_BASE_URL}${venueName}_${r}R.json`
+
+];
+
 }
 
-.raceMeta{
-display:flex;
-gap:6px;
-flex-wrap:wrap;
-align-items:center;
-font-size:11px;
-color:var(--muted);
+async function fetchRaceJSON(r){
+
+let err=null;
+
+for(const url of buildUrls(r)){
+
+try{
+
+return await fetchJSON(url);
+
+}catch(e){
+
+err=e;
+
 }
 
-.metaChip{
-display:inline-flex;
-align-items:center;
-min-height:24px;
-padding:0 9px;
-border-radius:999px;
-border:1px solid var(--line);
-background:var(--panel-soft);
-font-weight:700;
 }
 
-.raceBtn{
-border:1px solid var(--line);
-background:var(--panel-soft);
-min-width:64px;
-height:38px;
-border-radius:11px;
-font-size:13px;
-font-weight:900;
+throw err;
+
 }
 
-/* レース番号 */
+function renderRaceJSON(r,json){
 
-.raceTabs{
-margin-top:8px;
-display:flex;
-gap:6px;
-overflow-x:auto;
--webkit-overflow-scrolling:touch;
+const raceObj=json?.race||{};
+
+$raceNoLabel.textContent=`${r}R`;
+$timeLabel.textContent=`締切: ${toHM(raceObj.cutoff)}`;
+$dayLabel.textContent=json?.day_label||"—";
+
+const boats=normalizeBoatsTo6(raceObj.boats||[]);
+
+$table.innerHTML=boats.map(rowHTML).join("");
+
 }
 
-.tab{
-flex:0 0 auto;
-min-width:52px;
-height:34px;
-border-radius:999px;
-border:1px solid var(--line);
-background:#fff;
-font-size:12px;
-font-weight:900;
+/* ---------- set race ---------- */
+
+async function setRace(r){
+
+r=clamp(r,1,12);
+
+currentRace=r;
+
+makeTabs(r);
+
+$table.innerHTML="読み込み中...";
+
+try{
+
+const json=await fetchRaceJSON(r);
+
+renderRaceJSON(r,json);
+
+}catch{
+
+$table.innerHTML="データ取得失敗";
+
 }
 
-.tab.is-active{
-background:linear-gradient(180deg,#2f7cff 0%,#2563eb 100%);
-color:#fff;
-border-color:transparent;
 }
 
-/* 本体 */
+/* ---------- boot ---------- */
 
-.raceBody{
-height:calc(100dvh - var(--raceTopH));
-padding:6px 10px calc(8px + var(--safe-bottom));
+async function boot(){
+
+const initialRace=clamp(Number(qs.get("race")||1),1,12);
+
+makeTabs(initialRace);
+
+setView(0);
+
+await setRace(initialRace);
+
 }
 
-.section{
-height:100%;
-display:flex;
-flex-direction:column;
-background:var(--panel);
-border:1px solid var(--line);
-border-radius:18px;
-padding:8px;
-box-shadow:var(--shadow);
-overflow:hidden;
-}
+$("btnBack").addEventListener("click",()=>history.back());
 
-.sectionHead{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:6px;
-padding-bottom:6px;
-border-bottom:1px solid var(--line-soft);
-}
-
-.sectionTitle{
-font-size:13px;
-font-weight:1000;
-}
-
-.sectionMeta{
-font-size:10px;
-color:var(--muted-2);
-text-align:right;
-}
-
-/* 上部タブ */
-
-.viewTabs{
-display:flex;
-gap:8px;
-margin-bottom:8px;
-overflow-x:auto;
-}
-
-.viewTab{
-border:1px solid var(--line);
-background:#fff;
-height:36px;
-padding:0 14px;
-border-radius:999px;
-font-size:12px;
-font-weight:900;
-}
-
-.viewTab.is-active{
-background:linear-gradient(180deg,#2f7cff 0%,#2563eb 100%);
-color:#fff;
-border-color:transparent;
-}
-
-/* スワイプ */
-
-.viewPager{
-flex:1;
-overflow:hidden;
-}
-
-.viewTrack{
-height:100%;
-display:flex;
-transition:transform .22s ease;
-}
-
-.viewPage{
-width:100%;
-min-width:100%;
-height:100%;
-display:flex;
-flex-direction:column;
-}
-
-/* 出走表 */
-
-.table{
-flex:1;
-display:flex;
-flex-direction:column;
-gap:10px;
-overflow:auto;
-padding-right:2px;
-}
-
-.row{
-display:flex;
-align-items:center;
-gap:14px;
-border-radius:18px;
-background:#fff;
-border:1px solid #e5eaf2;
-padding:14px;
-box-shadow:0 1px 2px rgba(0,0,0,.04);
-}
-
-.waku{
-width:48px;
-height:48px;
-border-radius:16px;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:28px;
-font-weight:1000;
-}
-
-.w1{background:#fff;border:2px solid #ddd;color:#111}
-.w2{background:#111;color:#fff}
-.w3{background:#f06f63;color:#fff}
-.w4{background:#568cff;color:#fff}
-.w5{background:#f7dd58;color:#111}
-.w6{background:#6fd275;color:#111}
-
-.info{
-flex:1;
-display:flex;
-flex-direction:column;
-gap:6px;
-}
-
-.sub{
-font-size:12px;
-color:#64748b;
-font-weight:700;
-}
-
-.name{
-font-size:24px;
-font-weight:900;
-}
-
-.metric{
-display:flex;
-flex-direction:column;
-align-items:flex-end;
-font-size:14px;
-gap:4px;
-}
-
-.metric div{
-text-align:right;
-}
-
-.note{
-margin-top:6px;
-font-size:10px;
-color:var(--muted);
-}
+boot();
