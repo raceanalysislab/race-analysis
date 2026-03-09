@@ -1,4 +1,4 @@
-/* js/app.js（完全置き換え：24場固定 / 非開催場も表示 / jsDelivr + cache bust / 30秒自動更新 / PRO対応 / 日付跨ぎ対応 / 00:00:10強制再取得保険つき） */
+/* js/app.js（完全置き換え：24場固定 / 非開催場も表示 / jsDelivr + cache bust / 30秒自動更新 / PRO対応 / 日付跨ぎ対応 / 00:00:10強制再取得保険つき / グレード表記統一 + class付与） */
 
 const DATA_URL = "https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/site/venues.json";
 
@@ -90,10 +90,25 @@ function getLocalYMD() {
 }
 
 function normalizeGradeLabel(v) {
-  const s = String(v || "").trim();
-  if (!s) return "-- --";
-  if (s === "一般戦") return "一般";
-  return s;
+  const s = String(v || "").trim().toUpperCase();
+
+  if (s === "SG") return "SG";
+  if (s === "G1" || s === "GI") return "G1";
+  if (s === "G2" || s === "GII") return "G2";
+  if (s === "G3" || s === "GIII") return "G3";
+  if (s === "一般" || s === "一般戦") return "一般";
+
+  return "一般";
+}
+
+function getGradeClass(v) {
+  const label = normalizeGradeLabel(v);
+
+  if (label === "SG") return "gradeText--sg";
+  if (label === "G1") return "gradeText--g1";
+  if (label === "G2") return "gradeText--g2";
+  if (label === "G3") return "gradeText--g3";
+  return "gradeText--general";
 }
 
 function normalizeBand(v) {
@@ -212,7 +227,7 @@ function scheduleMidnightReload() {
   const next = new Date(now);
 
   next.setDate(now.getDate() + 1);
-  next.setHours(0, 0, 10, 0); // 翌日 00:00:10 に1回強制再取得
+  next.setHours(0, 0, 10, 0);
 
   const delay = Math.max(1000, next.getTime() - now.getTime());
 
@@ -400,6 +415,8 @@ function renderOffCard(base) {
 function renderOnCard(base, v) {
   const next = computeNextDisplay(v);
   const m = String(next.text).match(/^(\d+R)\s+(\d{2}:\d{2})$/);
+  const gradeLabel = normalizeGradeLabel(v.grade_label);
+  const gradeClass = getGradeClass(v.grade_label);
 
   let bottomHTML = "";
   let soldoutClass = "";
@@ -430,7 +447,7 @@ function renderOnCard(base, v) {
       </div>
 
       <div class="card__meta">
-        <span class="gradeText">${esc(normalizeGradeLabel(v.grade_label))}</span>
+        <span class="gradeText ${gradeClass}">${esc(gradeLabel)}</span>
         <span class="day">${esc(v.day_label || "-- --")}</span>
       </div>
 
