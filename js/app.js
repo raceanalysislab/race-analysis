@@ -1,4 +1,4 @@
-/* js/app.js（完全置き換え：当日開催場のみ表示 / jsDelivr + cache bust / 30秒自動更新 / PRO対応） */
+/* js/app.js（完全置き換え：24場固定 / 非開催場も表示 / jsDelivr + cache bust / 30秒自動更新 / PRO対応 / 日付跨ぎ対応） */
 
 const DATA_URL = "https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/site/venues.json";
 
@@ -207,18 +207,6 @@ function buildDataUrl() {
   return `${DATA_URL}${sep}t=${Date.now()}`;
 }
 
-function sortActiveVenues(list) {
-  const orderMap = new Map(VENUES.map((v, i) => [v.jcd, i]));
-
-  return [...list].sort((a, b) => {
-    const aj = String(a?.jcd ?? "").padStart(2, "0");
-    const bj = String(b?.jcd ?? "").padStart(2, "0");
-    const ai = orderMap.has(aj) ? orderMap.get(aj) : 999;
-    const bi = orderMap.has(bj) ? orderMap.get(bj) : 999;
-    return ai - bi;
-  });
-}
-
 /* ===== PRO functions ===== */
 
 function isProUnlocked() {
@@ -371,12 +359,12 @@ function initProModal() {
 
 /* ===== card render ===== */
 
-function renderEmptyState() {
-  $grid.innerHTML = `
-    <div class="card card--off" aria-disabled="true" style="grid-column:1/-1;">
+function renderOffCard(base) {
+  return `
+    <div class="card card--off" aria-disabled="true">
       <div class="card__nameRow">
         <span class="card__nameIcon card__nameIcon--empty"></span>
-        <div class="card__name">本日の開催場はありません</div>
+        <div class="card__name">${esc(base.name)}</div>
         <span class="card__nameIcon card__nameIcon--empty"></span>
       </div>
 
@@ -390,9 +378,7 @@ function renderEmptyState() {
   `;
 }
 
-function renderOnCard(v) {
-  const jcd = String(v?.jcd ?? "").padStart(2, "0");
-  const name = String(v?.name ?? "").trim() || "会場";
+function renderOnCard(base, v) {
   const next = computeNextDisplay(v);
   const m = String(next.text).match(/^(\d+R)\s+(\d{2}:\d{2})$/);
 
@@ -417,10 +403,10 @@ function renderOnCard(v) {
 
   return `
     <a class="card card--on ${next.soldout ? "card--soldout" : ""} card--tone-${esc(normalizeBand(v.card_band))}"
-       href="./race.html?jcd=${encodeURIComponent(jcd)}&name=${encodeURIComponent(name)}">
+       href="./race.html?jcd=${encodeURIComponent(base.jcd)}&name=${encodeURIComponent(base.name)}">
       <div class="card__nameRow">
         <span class="card__nameIcon card__nameIcon--empty"></span>
-        <div class="card__name">${esc(name)}</div>
+        <div class="card__name">${esc(base.name)}</div>
         <span class="card__nameIcon card__nameIcon--empty"></span>
       </div>
 
@@ -437,15 +423,12 @@ function renderOnCard(v) {
 }
 
 function renderGrid(list) {
-  const activeList = sortActiveVenues(list);
+  const map = buildVenueMap(list);
 
-  if (!activeList.length) {
-    renderEmptyState();
-    if ($updatedAt) $updatedAt.textContent = nowHM();
-    return;
-  }
-
-  $grid.innerHTML = activeList.map(renderOnCard).join("");
+  $grid.innerHTML = VENUES.map((base) => {
+    const item = map.get(base.jcd);
+    return item ? renderOnCard(base, item) : renderOffCard(base);
+  }).join("");
 
   if ($updatedAt) $updatedAt.textContent = nowHM();
 }
@@ -504,8 +487,7 @@ async function load() {
     renderGrid(venueList);
   } catch (e) {
     console.error(e);
-    venueList = [];
-    renderEmptyState();
+    renderGrid([]);
     if ($updatedAt) $updatedAt.textContent = "ERR";
   } finally {
     isLoading = false;
