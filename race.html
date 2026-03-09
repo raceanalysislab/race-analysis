@@ -433,7 +433,7 @@
     const $raceTop = $("raceTop");
 
     const BOT_RACES_BASE_URL =
-      "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/site/races/";
+      "https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/site/races/";
 
     const DATE_CHECK_INTERVAL_MS = 15 * 1000;
 
@@ -481,10 +481,7 @@
 
     const fetchJSON = async (url) => {
       const bust = url.includes("?") ? `&t=${Date.now()}` : `?t=${Date.now()}`;
-      const res = await fetch(url + bust, {
-        cache:"no-store",
-        headers: { "Cache-Control": "no-cache" }
-      });
+      const res = await fetch(url + bust, { cache:"no-store" });
       if (!res.ok) throw new Error(`failed: ${url}`);
       return res.json();
     };
