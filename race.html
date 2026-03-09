@@ -192,6 +192,66 @@
       white-space:nowrap;
     }
 
+    .viewTabs{
+      display:flex;
+      gap:8px;
+      margin-bottom:8px;
+      overflow-x:auto;
+      -webkit-overflow-scrolling:touch;
+      scrollbar-width:none;
+      flex:0 0 auto;
+    }
+    .viewTabs::-webkit-scrollbar{ display:none; }
+
+    .viewTab{
+      appearance:none;
+      border:1px solid var(--line);
+      background:#fff;
+      color:#334155;
+      height:36px;
+      padding:0 14px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:900;
+      white-space:nowrap;
+      flex:0 0 auto;
+    }
+
+    .viewTab.is-active{
+      background:linear-gradient(180deg, #2f7cff 0%, #2563eb 100%);
+      color:#fff;
+      border-color:transparent;
+      box-shadow:0 4px 10px rgba(37,99,235,.14);
+    }
+
+    .viewPager{
+      flex:1 1 auto;
+      min-height:0;
+      overflow:hidden;
+      position:relative;
+      touch-action:pan-y;
+    }
+
+    .viewTrack{
+      height:100%;
+      display:flex;
+      transition:transform .22s ease;
+      will-change:transform;
+    }
+
+    .viewTrack.is-dragging{
+      transition:none;
+    }
+
+    .viewPage{
+      width:100%;
+      min-width:100%;
+      height:100%;
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+    }
+
     .table{
       flex:1 1 auto;
       min-height:0;
@@ -199,6 +259,8 @@
       flex-direction:column;
       gap:6px;
       justify-content:space-between;
+      overflow:auto;
+      padding-right:1px;
     }
 
     .row{
@@ -353,6 +415,35 @@
       flex:0 0 auto;
     }
 
+    .panelPlaceholder{
+      flex:1 1 auto;
+      min-height:0;
+      border:1px solid #e5eaf2;
+      border-radius:16px;
+      background:linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+      padding:18px 14px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      text-align:center;
+      color:#334155;
+    }
+
+    .panelPlaceholder__title{
+      font-size:18px;
+      font-weight:1000;
+      color:#0f172a;
+      margin-bottom:10px;
+    }
+
+    .panelPlaceholder__text{
+      font-size:12px;
+      line-height:1.8;
+      color:#64748b;
+      max-width:260px;
+    }
+
     .err{
       padding:12px 14px;
       border-radius:14px;
@@ -383,6 +474,12 @@
       .metricVal{ font-size:19px; }
       .metricSub{ font-size:15px; }
       .metricVal--motor{ font-size:16px; }
+
+      .viewTab{
+        height:34px;
+        padding:0 12px;
+        font-size:11px;
+      }
     }
   </style>
 </head>
@@ -407,11 +504,43 @@
   <div class="raceBody">
     <section class="section">
       <div class="sectionHead">
-        <div class="sectionTitle">出走表</div>
+        <div class="sectionTitle">レース情報</div>
         <div class="sectionMeta">無料版は<br>選手データ確認のみ</div>
       </div>
 
-      <div class="table" id="table"></div>
+      <div class="viewTabs" id="viewTabs">
+        <button type="button" class="viewTab is-active" data-view="0">出走表</button>
+        <button type="button" class="viewTab" data-view="1">コースデータ</button>
+        <button type="button" class="viewTab" data-view="2">過去枠番成績</button>
+      </div>
+
+      <div class="viewPager" id="viewPager">
+        <div class="viewTrack" id="viewTrack">
+          <div class="viewPage">
+            <div class="table" id="table"></div>
+          </div>
+
+          <div class="viewPage">
+            <div class="panelPlaceholder" id="courseDataPanel">
+              <div class="panelPlaceholder__title">コースデータ</div>
+              <div class="panelPlaceholder__text">
+                ここにはコース別1着率・逃げ率・まくり傾向などを表示予定です。<br>
+                次段階でデータをつないで実装します。
+              </div>
+            </div>
+          </div>
+
+          <div class="viewPage">
+            <div class="panelPlaceholder" id="frameStatsPanel">
+              <div class="panelPlaceholder__title">過去枠番成績</div>
+              <div class="panelPlaceholder__text">
+                ここには会場別・枠番別の成績や傾向を表示予定です。<br>
+                次段階でデータをつないで実装します。
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div class="note">
         ※無料版は「各選手データの確認」専用です。予想は表示しません。
@@ -431,6 +560,9 @@
     const $timeLabel = $("timeLabel");
     const $dayLabel = $("dayLabel");
     const $raceTop = $("raceTop");
+    const $viewTabs = $("viewTabs");
+    const $viewTrack = $("viewTrack");
+    const $viewPager = $("viewPager");
 
     const BOT_RACES_BASE_URL =
       "https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/site/races/";
@@ -438,9 +570,15 @@
     const DATE_CHECK_INTERVAL_MS = 15 * 1000;
 
     let currentRace = 1;
+    let currentView = 0;
     let lastLoadedDataDate = "";
     let lastSeenLocalDate = getLocalYMD();
     let isLoadingRace = false;
+
+    let dragStartX = 0;
+    let dragCurrentX = 0;
+    let isDraggingView = false;
+    let dragPointerId = null;
 
     $("venueName").textContent = venueName;
 
@@ -575,6 +713,82 @@
       `;
     }
 
+    function setView(index, animate = true){
+      currentView = clamp(index, 0, 2);
+
+      const tabs = Array.from($viewTabs.querySelectorAll(".viewTab"));
+      tabs.forEach((btn, i) => {
+        btn.classList.toggle("is-active", i === currentView);
+      });
+
+      if (animate) {
+        $viewTrack.classList.remove("is-dragging");
+      } else {
+        $viewTrack.classList.add("is-dragging");
+      }
+
+      $viewTrack.style.transform = `translate3d(${-100 * currentView}%, 0, 0)`;
+    }
+
+    function setupViewTabs(){
+      Array.from($viewTabs.querySelectorAll(".viewTab")).forEach((btn) => {
+        btn.addEventListener("click", () => {
+          setView(Number(btn.dataset.view), true);
+        });
+      });
+    }
+
+    function setupViewSwipe(){
+      if (!$viewPager || !$viewTrack) return;
+
+      $viewPager.addEventListener("pointerdown", (e) => {
+        if (e.pointerType === "mouse" && e.button !== 0) return;
+        isDraggingView = true;
+        dragPointerId = e.pointerId;
+        dragStartX = e.clientX;
+        dragCurrentX = e.clientX;
+        $viewTrack.classList.add("is-dragging");
+        try { $viewPager.setPointerCapture(e.pointerId); } catch (_) {}
+      });
+
+      $viewPager.addEventListener("pointermove", (e) => {
+        if (!isDraggingView || e.pointerId !== dragPointerId) return;
+        dragCurrentX = e.clientX;
+        const width = $viewPager.clientWidth || 1;
+        const deltaX = dragCurrentX - dragStartX;
+        const basePct = -100 * currentView;
+        const deltaPct = (deltaX / width) * 100;
+        $viewTrack.style.transform = `translate3d(${basePct + deltaPct}%, 0, 0)`;
+      });
+
+      const finishDrag = (e) => {
+        if (!isDraggingView || (e && e.pointerId !== dragPointerId)) return;
+
+        const width = $viewPager.clientWidth || 1;
+        const deltaX = dragCurrentX - dragStartX;
+        const threshold = Math.min(90, width * 0.18);
+
+        isDraggingView = false;
+        dragPointerId = null;
+
+        if (deltaX <= -threshold && currentView < 2) {
+          setView(currentView + 1, true);
+          return;
+        }
+
+        if (deltaX >= threshold && currentView > 0) {
+          setView(currentView - 1, true);
+          return;
+        }
+
+        setView(currentView, true);
+      };
+
+      $viewPager.addEventListener("pointerup", finishDrag);
+      $viewPager.addEventListener("pointercancel", finishDrag);
+      $viewPager.addEventListener("pointerleave", finishDrag);
+    }
+
     function renderRaceJSON(r, json){
       const raceObj = json?.race || {};
       const dataDate = String(json?.date || raceObj?.date || "").trim();
@@ -667,6 +881,9 @@
       const initialRace = clamp(Number(qs.get("race") || 1) || 1, 1, 12);
       currentRace = initialRace;
       makeTabs(initialRace);
+      setupViewTabs();
+      setupViewSwipe();
+      setView(0, false);
       await setRace(initialRace);
       requestAnimationFrame(() => {
         setTopHeight();
@@ -674,11 +891,15 @@
       });
     }
 
-    addEventListener("resize", setTopHeight, { passive:true });
+    addEventListener("resize", () => {
+      setTopHeight();
+      setView(currentView, false);
+    }, { passive:true });
 
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState === "visible") {
         setTopHeight();
+        setView(currentView, false);
         setRace(currentRace);
       }
     });
