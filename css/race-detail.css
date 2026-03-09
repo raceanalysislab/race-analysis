@@ -238,7 +238,7 @@ body{ padding-top:var(--safe-top); }
 
 /* 出走表 */
 .entryBoard{
-  flex:1 1 auto;
+  flex:0 0 auto;
   min-height:0;
   border:1px solid #e5eaf2;
   border-radius:16px;
