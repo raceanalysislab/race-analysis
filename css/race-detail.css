@@ -244,8 +244,8 @@ body{ padding-top:var(--safe-top); }
   min-height:0;
 }
 
-/* 出走表 compact */
-.compactBoard{
+/* 出走表 */
+.entryBoard{
   flex:1 1 auto;
   min-height:0;
   border:1px solid #e5eaf2;
@@ -256,16 +256,16 @@ body{ padding-top:var(--safe-top); }
   flex-direction:column;
 }
 
-.compactHead{
+.entryHead{
   display:grid;
-  grid-template-columns:46px 84px minmax(0,1fr) 58px;
+  grid-template-columns:46px minmax(0,1fr) 64px 64px 92px;
   align-items:center;
-  min-height:40px;
+  min-height:44px;
   background:#f8fafc;
   border-bottom:1px solid #e5eaf2;
 }
 
-.compactHead > div{
+.entryHead > div{
   font-size:11px;
   font-weight:800;
   color:#64748b;
@@ -273,25 +273,24 @@ body{ padding-top:var(--safe-top); }
   padding:0 6px;
   border-right:1px solid #e5eaf2;
 }
-.compactHead > div:last-child{ border-right:none; }
+.entryHead > div:last-child{ border-right:none; }
 
-.compactTable{
+.entryTable{
   flex:1 1 auto;
   min-height:0;
   overflow:auto;
 }
 
-.compactRow{
+.entryRow{
   display:grid;
-  grid-template-columns:46px 84px minmax(0,1fr) 58px;
-  align-items:center;
-  min-height:62px;
+  grid-template-columns:46px minmax(0,1fr) 64px 64px 92px;
+  min-height:72px;
   border-bottom:1px solid #e5eaf2;
   background:#fff;
 }
-.compactRow:last-child{ border-bottom:none; }
+.entryRow:last-child{ border-bottom:none; }
 
-.compactWaku{
+.entryWaku{
   height:100%;
   display:flex;
   align-items:center;
@@ -301,40 +300,34 @@ body{ padding-top:var(--safe-top); }
   border-right:1px solid rgba(255,255,255,.2);
 }
 
-.compactWaku.w1{ background:#ffffff; color:#111827; border-right:1px solid #e5eaf2; }
-.compactWaku.w2{ background:#4b5563; color:#ffffff; }
-.compactWaku.w3{ background:#e3534a; color:#ffffff; }
-.compactWaku.w4{ background:#4e7fd1; color:#ffffff; }
-.compactWaku.w5{ background:#dedd69; color:#111827; }
-.compactWaku.w6{ background:#6eb65a; color:#ffffff; }
+.entryWaku.w1{ background:#ffffff; color:#111827; border-right:1px solid #e5eaf2; }
+.entryWaku.w2{ background:#4b5563; color:#ffffff; }
+.entryWaku.w3{ background:#e3534a; color:#ffffff; }
+.entryWaku.w4{ background:#4e7fd1; color:#ffffff; }
+.entryWaku.w5{ background:#d6d66e; color:#111827; }
+.entryWaku.w6{ background:#7fb365; color:#ffffff; }
 
-.compactReg{
-  font-size:15px;
-  line-height:1;
-  text-align:center;
-  color:#111827;
-  padding:0 6px;
-  border-right:1px solid #e5eaf2;
-}
-
-.compactNameBox{
+.entryNameCell{
   min-width:0;
-  padding:0 10px;
+  padding:8px 10px;
   border-right:1px solid #e5eaf2;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
 }
 
-.compactMeta{
-  font-size:11px;
-  line-height:1.1;
+.entryMeta{
+  font-size:10px;
+  line-height:1.2;
   color:#64748b;
-  margin-bottom:4px;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
+  margin-bottom:5px;
 }
 
-.compactName{
-  font-size:17px;
+.entryName{
+  font-size:18px;
   line-height:1.1;
   font-weight:900;
   color:#1d4ed8;
@@ -343,105 +336,12 @@ body{ padding-top:var(--safe-top); }
   text-overflow:ellipsis;
 }
 
-.compactGrade{
-  font-size:18px;
-  line-height:1;
-  font-weight:900;
-  color:#111827;
-  text-align:center;
-}
-
-/* 比較 */
-.compareBoard{
-  flex:1 1 auto;
-  min-height:0;
-  border:1px solid #e5eaf2;
-  border-radius:16px;
-  background:linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-  overflow:hidden;
-  display:flex;
-  flex-direction:column;
-}
-
-.compareHead{
-  display:grid;
-  grid-template-columns:44px minmax(0,1fr) 88px 102px 74px;
-  min-height:40px;
-  align-items:center;
-  background:#f8fafc;
-  border-bottom:1px solid #e5eaf2;
-}
-
-.compareHead > div{
-  font-size:11px;
-  font-weight:800;
-  color:#64748b;
-  text-align:center;
-  padding:0 6px;
-  border-right:1px solid #e5eaf2;
-}
-.compareHead > div:last-child{ border-right:none; }
-
-.compareTable{
-  flex:1 1 auto;
-  min-height:0;
-  overflow:auto;
-}
-
-.compareRow{
-  display:grid;
-  grid-template-columns:44px minmax(0,1fr) 88px 102px 74px;
-  min-height:58px;
-  align-items:center;
-  border-bottom:1px solid #e5eaf2;
-  background:#fff;
-}
-.compareRow:last-child{ border-bottom:none; }
-
-.compareWaku{
-  height:100%;
+.entryVal{
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:19px;
-  font-weight:1000;
-}
-
-.compareWaku.w1{ background:#ffffff; color:#111827; border-right:1px solid #e5eaf2; }
-.compareWaku.w2{ background:#4b5563; color:#ffffff; }
-.compareWaku.w3{ background:#e3534a; color:#ffffff; }
-.compareWaku.w4{ background:#4e7fd1; color:#ffffff; }
-.compareWaku.w5{ background:#dedd69; color:#111827; }
-.compareWaku.w6{ background:#6eb65a; color:#ffffff; }
-
-.compareNameBox{
-  min-width:0;
-  padding:0 10px;
-  border-right:1px solid #e5eaf2;
-}
-
-.compareName{
-  font-size:16px;
-  line-height:1.1;
-  font-weight:900;
-  color:#111827;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-
-.compareSub{
-  font-size:11px;
-  line-height:1.1;
-  color:#64748b;
-  margin-bottom:3px;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-
-.compareVal{
   text-align:center;
+  font-variant-numeric:tabular-nums;
   font-size:17px;
   line-height:1.1;
   font-weight:900;
@@ -449,7 +349,27 @@ body{ padding-top:var(--safe-top); }
   padding:0 4px;
   border-right:1px solid #e5eaf2;
 }
-.compareVal:last-child{ border-right:none; }
+.entryVal:last-child{ border-right:none; }
+
+.entryMotor{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:2px;
+}
+
+.entryMotorNo{
+  font-size:17px;
+  font-weight:900;
+  line-height:1;
+}
+
+.entryMotorRate{
+  font-size:17px;
+  font-weight:900;
+  line-height:1;
+}
 
 /* course */
 .courseWrap{
@@ -672,45 +592,30 @@ body{ padding-top:var(--safe-top); }
     font-size:11px;
   }
 
-  .compactHead{
-    grid-template-columns:42px 76px minmax(0,1fr) 52px;
+  .entryHead{
+    grid-template-columns:42px minmax(0,1fr) 58px 58px 84px;
   }
 
-  .compactRow{
-    grid-template-columns:42px 76px minmax(0,1fr) 52px;
-    min-height:58px;
+  .entryRow{
+    grid-template-columns:42px minmax(0,1fr) 58px 58px 84px;
+    min-height:68px;
   }
 
-  .compactWaku{
+  .entryWaku{
     font-size:18px;
   }
 
-  .compactReg{
-    font-size:14px;
+  .entryMeta{
+    font-size:9px;
   }
 
-  .compactName{
+  .entryName{
     font-size:16px;
   }
 
-  .compactGrade{
-    font-size:17px;
-  }
-
-  .compareHead{
-    grid-template-columns:40px minmax(0,1fr) 78px 92px 64px;
-  }
-
-  .compareRow{
-    grid-template-columns:40px minmax(0,1fr) 78px 92px 64px;
-    min-height:56px;
-  }
-
-  .compareName{
-    font-size:15px;
-  }
-
-  .compareVal{
+  .entryVal,
+  .entryMotorNo,
+  .entryMotorRate{
     font-size:15px;
   }
 
