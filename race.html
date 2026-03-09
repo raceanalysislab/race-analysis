@@ -1,134 +1,103 @@
 <!doctype html>
 <html lang="ja">
 <head>
-
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#f6f7fb">
-
-<title>レース詳細</title>
-
-<link rel="stylesheet" href="./css/race-detail.css">
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f6f7fb">
+  <title>レース詳細</title>
+  <link rel="stylesheet" href="./css/race-detail.css">
 </head>
 
 <body>
+  <div class="raceTop" id="raceTop">
+    <div class="raceHead">
+      <div class="raceHead__left">
+        <div id="venueName" class="raceVenue">—</div>
 
-<div class="raceTop" id="raceTop">
+        <div class="raceMeta">
+          <span class="metaChip" id="raceNoLabel">—R</span>
+          <span class="metaChip" id="timeLabel">締切: --:--</span>
+          <span class="metaChip" id="dayLabel">—</span>
+        </div>
+      </div>
 
-<div class="raceHead">
+      <button class="raceBtn" type="button" id="btnBack">戻る</button>
+    </div>
 
-<div class="raceHead__left">
-<div id="venueName" class="raceVenue">—</div>
+    <div class="raceTabs" id="tabs" aria-label="レース番号"></div>
+  </div>
 
-<div class="raceMeta">
-<span class="metaChip" id="raceNoLabel">—R</span>
-<span class="metaChip" id="timeLabel">締切: --:--</span>
-<span class="metaChip" id="dayLabel">—</span>
-</div>
-</div>
+  <div class="raceBody">
+    <section class="section">
+      <div class="sectionHead">
+        <div class="sectionTitle">レース情報</div>
 
-<button class="raceBtn" id="btnBack">戻る</button>
+        <div class="sectionMeta">
+          無料版は<br>
+          選手データ確認のみ
+        </div>
+      </div>
 
-</div>
+      <div class="viewTabs" id="viewTabs">
+        <button type="button" class="viewTab is-active" data-view="0">出走表</button>
+        <button type="button" class="viewTab" data-view="1">コースデータ</button>
+        <button type="button" class="viewTab" data-view="2">過去枠番成績</button>
+      </div>
 
-<div class="raceTabs" id="tabs"></div>
+      <div class="viewPager" id="viewPager">
+        <div class="viewTrack" id="viewTrack">
+          <div class="viewPage">
+            <div class="table" id="table"></div>
+          </div>
 
-</div>
+          <div class="viewPage">
+            <div class="courseWrap" id="courseDataPanel">
+              <div class="courseInnerTabs" id="courseInnerTabs">
+                <button type="button" class="courseInnerTab is-active" data-course-tab="year">
+                  コース別直近1年
+                </button>
+                <button type="button" class="courseInnerTab" data-course-tab="local">
+                  コース別当地直近5年
+                </button>
+              </div>
 
-<div class="raceBody">
+              <div id="courseYearView">
+                <div class="courseBlock">
+                  <div class="courseBlockTitle">コース別直近1年</div>
+                  <div class="courseBlockSub">平均ST と 今節平均ST を並べて比較できます。</div>
+                  <div class="courseScroll" id="courseYearScroll"></div>
+                  <div class="cdHint">※ データ接続後に自動表示されます。</div>
+                </div>
+              </div>
 
-<section class="section">
+              <div id="courseLocalView" style="display:none;">
+                <div class="courseBlock">
+                  <div class="courseBlockTitle">コース別当地直近5年</div>
+                  <div class="courseBlockSub">当地実績を別タブで確認できます。</div>
+                  <div class="courseScroll" id="courseLocalScroll"></div>
+                  <div class="cdHint">※ データ接続後に自動表示されます。</div>
+                </div>
+              </div>
+            </div>
+          </div>
 
-<div class="sectionHead">
+          <div class="viewPage">
+            <div class="panelPlaceholder" id="frameStatsPanel">
+              <div class="panelPlaceholder__title">過去枠番成績</div>
+              <div class="panelPlaceholder__text">
+                ここには会場別・枠番別の成績や傾向を表示予定です
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-<div class="sectionTitle">
-レース情報
-</div>
+      <div class="note">
+        ※無料版は選手データのみ
+      </div>
+    </section>
+  </div>
 
-<div class="sectionMeta">
-無料版は<br>
-選手データ確認のみ
-</div>
-
-</div>
-
-<div class="viewTabs" id="viewTabs">
-
-<button class="viewTab is-active" data-view="0">
-出走表
-</button>
-
-<button class="viewTab" data-view="1">
-コースデータ
-</button>
-
-<button class="viewTab" data-view="2">
-過去枠番成績
-</button>
-
-</div>
-
-
-<div class="viewPager" id="viewPager">
-
-<div class="viewTrack" id="viewTrack">
-
-<div class="viewPage">
-
-<div class="table" id="table"></div>
-
-</div>
-
-
-<div class="viewPage">
-
-<div class="panelPlaceholder">
-
-<div class="panelPlaceholder__title">
-コースデータ
-</div>
-
-<div class="panelPlaceholder__text">
-ここにはコース別データを表示予定です
-</div>
-
-</div>
-
-</div>
-
-
-<div class="viewPage">
-
-<div class="panelPlaceholder">
-
-<div class="panelPlaceholder__title">
-過去枠番成績
-</div>
-
-<div class="panelPlaceholder__text">
-ここには枠番データを表示予定です
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-
-<div class="note">
-※無料版は選手データのみ
-</div>
-
-</section>
-
-</div>
-
-
-<script src="./js/race-detail.js"></script>
-
+  <script src="./js/race-detail.js"></script>
 </body>
 </html>
