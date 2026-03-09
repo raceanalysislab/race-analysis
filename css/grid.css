@@ -149,7 +149,7 @@
   align-items:center;
   justify-content:space-between;
   gap:8px;
-  min-height:12px;
+  min-height:20px;
   width:100%;
   padding:0 2px;
   margin-bottom:2px;
@@ -170,10 +170,62 @@
   text-align:right;
 }
 
+/* ===== グレード表示 ===== */
+
+.gradeText{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:34px;
+  height:18px;
+  padding:0 6px;
+  border-radius:999px;
+  border:1px solid transparent;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:.01em;
+  white-space:nowrap;
+}
+
+.gradeText--general{
+  color:#475569;
+  background:#f8fafc;
+  border-color:#dbe2ea;
+}
+
+.gradeText--sg{
+  color:#ffffff;
+  background:#dc2626;
+  border-color:#b91c1c;
+}
+
+.gradeText--g1{
+  color:#111827;
+  background:#facc15;
+  border-color:#eab308;
+}
+
+.gradeText--g2{
+  color:#ffffff;
+  background:#16a34a;
+  border-color:#15803d;
+}
+
+.gradeText--g3{
+  color:#ffffff;
+  background:#2563eb;
+  border-color:#1d4ed8;
+}
+
 .card--off .card__name,
 .card--off .gradeText,
 .card--off .day{
   color:#6b7280;
+}
+
+.card--off .gradeText{
+  background:transparent;
+  border-color:transparent;
 }
 
 /* ===== 下段 ===== */
