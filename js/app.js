@@ -1,4 +1,4 @@
-/* js/app.js（完全置き換え：24場固定 / 非開催場も表示 / jsDelivr + cache bust / 30秒自動更新 / PRO対応 / 日付跨ぎ対応） */
+/* js/app.js（完全置き換え：24場固定 / 非開催場も表示 / jsDelivr + cache bust / 30秒自動更新 / PRO対応 / 日付跨ぎ対応 / 00:00:10強制再取得保険つき） */
 
 const DATA_URL = "https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/site/venues.json";
 
@@ -205,6 +205,25 @@ function getVenueArray(json) {
 function buildDataUrl() {
   const sep = DATA_URL.includes("?") ? "&" : "?";
   return `${DATA_URL}${sep}t=${Date.now()}`;
+}
+
+function scheduleMidnightReload() {
+  const now = new Date();
+  const next = new Date(now);
+
+  next.setDate(now.getDate() + 1);
+  next.setHours(0, 0, 10, 0); // 翌日 00:00:10 に1回強制再取得
+
+  const delay = Math.max(1000, next.getTime() - now.getTime());
+
+  setTimeout(async () => {
+    try {
+      lastSeenLocalDate = getLocalYMD();
+      await load();
+    } finally {
+      scheduleMidnightReload();
+    }
+  }, delay);
 }
 
 /* ===== PRO functions ===== */
@@ -540,3 +559,4 @@ applyProTheme();
 renderPicksCta();
 renderPicksEmpty();
 load();
+scheduleMidnightReload();
