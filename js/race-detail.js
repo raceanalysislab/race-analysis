@@ -31,6 +31,7 @@ let dragging = false;
 
 let courseStats = {};
 let courseStatsLoaded = false;
+let courseStatsIndex = {};
 
 const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
 
@@ -78,13 +79,28 @@ async function fetchJSON(url) {
   return res.json();
 }
 
+function normalizeRegno(regno) {
+  return String(regno ?? "").replace(/\D/g, "");
+}
+
+function buildCourseStatsIndex(raw) {
+  const index = {};
+  Object.entries(raw || {}).forEach(([key, value]) => {
+    const nk = normalizeRegno(key);
+    if (nk) index[nk] = value;
+  });
+  return index;
+}
+
 async function loadCourseStats() {
   try {
     courseStats = await fetchJSON("./data/site/course_stats_3y.json");
+    courseStatsIndex = buildCourseStatsIndex(courseStats);
     courseStatsLoaded = true;
-    console.log("courseStats loaded", Object.keys(courseStats).length);
+    console.log("courseStats loaded", Object.keys(courseStatsIndex).length);
   } catch (err) {
     courseStats = {};
+    courseStatsIndex = {};
     courseStatsLoaded = false;
     console.error("courseStats load error", err);
   }
@@ -143,28 +159,11 @@ function extractAverageSt(note) {
   return m ? m[1] : "—";
 }
 
-function normalizeRegno(regno) {
-  return String(regno ?? "").replace(/\D/g, "");
-}
-
 function getPlayerStats(regno) {
   if (!courseStatsLoaded) return null;
-
-  const raw = String(regno ?? "").trim();
-  const normalized = normalizeRegno(regno);
-
-  const candidates = [
-    raw,
-    normalized,
-    normalized.replace(/^0+/, ""),
-    String(Number(normalized || 0)),
-  ].filter(Boolean);
-
-  for (const key of candidates) {
-    if (courseStats[key]) return courseStats[key];
-  }
-
-  return null;
+  const key = normalizeRegno(regno);
+  if (!key) return null;
+  return courseStatsIndex[key] || null;
 }
 
 function aggregatePlayerStats(player) {
@@ -185,18 +184,20 @@ function aggregatePlayerStats(player) {
   Object.values(player).forEach((c) => {
     if (!c || typeof c !== "object") return;
 
-    total.starts += Number(c.starts || 0);
-    total.wins += Number(c.wins || 0);
-    total.place2 += Number(c.place2 || 0);
-    total.place3 += Number(c.place3 || 0);
+    const starts = Number(c.starts || 0);
+    const wins = Number(c.wins || 0);
+    const place2 = Number(c.place2 || 0);
+    const place3 = Number(c.place3 || 0);
+    const avgSt = Number(c.avg_st);
 
-    if (c.avg_st !== undefined && c.avg_st !== null && c.avg_st !== "") {
-      const starts = Number(c.starts || 0);
-      const avg = Number(c.avg_st);
-      if (Number.isFinite(avg) && starts > 0) {
-        stSum += avg * starts;
-        stCount += starts;
-      }
+    total.starts += starts;
+    total.wins += wins;
+    total.place2 += place2;
+    total.place3 += place3;
+
+    if (Number.isFinite(avgSt) && starts > 0) {
+      stSum += avgSt * starts;
+      stCount += starts;
     }
 
     if (c.kimarite && typeof c.kimarite === "object") {
@@ -501,3 +502,5 @@ addEventListener("resize", setTopHeight, { passive: true });
 $("btnBack").addEventListener("click", () => history.back());
 
 boot();
+
+修正よろしくお願いします
