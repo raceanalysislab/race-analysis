@@ -10,6 +10,7 @@ const $table = $("table");
 const $raceNoLabel = $("raceNoLabel");
 const $timeLabel = $("timeLabel");
 const $dayLabel = $("dayLabel");
+const $raceTop = $("raceTop");
 const $viewTabs = $("viewTabs");
 const $viewTrack = $("viewTrack");
 const $viewPager = $("viewPager");
@@ -22,7 +23,7 @@ let currentView = 0;
 
 $("venueName").textContent = venueName;
 
-/* ---------- util ---------- */
+/* util */
 
 const clamp = (n,min,max)=>Math.max(min,Math.min(max,n));
 
@@ -49,10 +50,15 @@ return Number.isFinite(n)?String(Math.trunc(n)):"—";
 
 const toHM=x=>{
 const m=String(x||"").match(/(\d{1,2}):(\d{2})/);
-return m?`${m[1].padStart(2,"0")}:${m[2]}`:"--:--";
+return m?`${String(m[1]).padStart(2,"0")}:${m[2]}`:"--:--";
 };
 
-/* ---------- fetch ---------- */
+function setTopHeight(){
+const h=$raceTop.getBoundingClientRect().height||112;
+document.documentElement.style.setProperty("--raceTopH",`${Math.ceil(h)}px`);
+}
+
+/* fetch */
 
 const fetchJSON = async url=>{
 const res = await fetch(url+"?t="+Date.now(),{cache:"no-store"});
@@ -60,7 +66,7 @@ if(!res.ok) throw new Error(url);
 return res.json();
 };
 
-/* ---------- tabs ---------- */
+/* race tabs */
 
 function makeTabs(active){
 
@@ -68,9 +74,7 @@ $tabs.innerHTML = Array.from({length:12},(_,i)=>{
 
 const r=i+1;
 
-return `<button class="tab${r===active?" is-active":""}" data-race="${r}">
-${r}R
-</button>`;
+return `<button type="button" class="tab${r===active?" is-active":""}" data-race="${r}">${r}R</button>`;
 
 }).join("");
 
@@ -86,7 +90,7 @@ setRace(Number(btn.dataset.race));
 
 }
 
-/* ---------- boats normalize ---------- */
+/* boats normalize */
 
 function normalizeBoatsTo6(boats){
 
@@ -132,41 +136,41 @@ motor_2:null
 
 }
 
-/* ---------- row html ---------- */
+/* metric */
 
 function metricHTML(p){
-
 return `
 <div class="metric">
 
-<div>
-<div>全国勝率</div>
-<div>${esc(safeNum(p.nat_win))}</div>
+<div class="metricCol metricCol--nat">
+<div class="metricHead">全国勝率</div>
+<div class="metricVal">${esc(safeNum(p.nat_win))}</div>
 </div>
 
-<div>
-<div>モーター</div>
-<div>${esc(safeInt(p.motor_no))}</div>
-<div>${esc(safeNum(p.motor_2))}</div>
+<div class="metricCol metricCol--motor">
+<div class="metricHead">モーターNo.</div>
+<div class="metricSub">${esc(safeInt(p.motor_no))}</div>
+<div class="metricVal metricVal--motor">${esc(safeNum(p.motor_2))}</div>
 </div>
 
 </div>
 `;
-
 }
+
+/* row */
 
 function rowHTML(p){
 
 const regno = p.regno || p.id || "—";
 const grade = p.grade || "—";
 const branch = p.branch || "—";
-const age = p.age ? `${p.age}歳`:"—";
+const age = (p.age !== undefined && p.age !== null && p.age !== "") ? `${p.age}歳` : "—";
 
 return `
 <div class="row">
 
-<div class="waku w${p.waku}">
-${p.waku}
+<div class="waku w${Number(p.waku) || 0}">
+${Number(p.waku) || ""}
 </div>
 
 <div class="info">
@@ -175,8 +179,8 @@ ${p.waku}
 ${esc(regno)} / ${esc(grade)} / ${esc(branch)} / ${esc(age)}
 </div>
 
-<div class="name">
-${esc(p.name)}
+<div class="nameRow">
+<div class="name">${esc(p.name || "—")}</div>
 </div>
 
 </div>
@@ -185,14 +189,13 @@ ${metricHTML(p)}
 
 </div>
 `;
-
 }
 
-/* ---------- view switch ---------- */
+/* view switch */
 
-function setView(index){
+function setView(index,animate=true){
 
-currentView = clamp(index,0,2);
+currentView=clamp(index,0,2);
 
 Array.from($viewTabs.querySelectorAll(".viewTab"))
 .forEach((btn,i)=>{
@@ -201,12 +204,12 @@ btn.classList.toggle("is-active",i===currentView);
 
 });
 
-$viewTrack.style.transform =
+$viewTrack.style.transform=
 `translate3d(${-100*currentView}%,0,0)`;
 
 }
 
-/* ---------- view tabs ---------- */
+/* view tabs */
 
 Array.from($viewTabs.querySelectorAll(".viewTab"))
 .forEach(btn=>{
@@ -219,17 +222,17 @@ setView(Number(btn.dataset.view));
 
 });
 
-/* ---------- swipe ---------- */
+/* swipe */
 
-let dragStart=0;
-let dragX=0;
+let dragStartX=0;
+let dragCurrentX=0;
 let dragging=false;
 
 $viewPager.addEventListener("pointerdown",e=>{
 
 dragging=true;
-dragStart=e.clientX;
-dragX=e.clientX;
+dragStartX=e.clientX;
+dragCurrentX=e.clientX;
 
 });
 
@@ -237,11 +240,10 @@ $viewPager.addEventListener("pointermove",e=>{
 
 if(!dragging) return;
 
-dragX=e.clientX;
+dragCurrentX=e.clientX;
 
 const width=$viewPager.clientWidth||1;
-const delta=dragX-dragStart;
-
+const delta=dragCurrentX-dragStartX;
 const pct=(delta/width)*100;
 
 $viewTrack.style.transform=
@@ -256,21 +258,29 @@ if(!dragging) return;
 dragging=false;
 
 const width=$viewPager.clientWidth||1;
-const delta=dragX-dragStart;
+const delta=dragCurrentX-dragStartX;
 
-if(delta<-width*0.2&&currentView<2) setView(currentView+1);
-else if(delta>width*0.2&&currentView>0) setView(currentView-1);
-else setView(currentView);
+if(delta<-width*0.18 && currentView<2){
+setView(currentView+1);
+return;
+}
+
+if(delta>width*0.18 && currentView>0){
+setView(currentView-1);
+return;
+}
+
+setView(currentView);
 
 });
 
-/* ---------- race load ---------- */
+/* json */
 
 function buildUrls(r){
 
 return [
 
-...(jcd&&jcd!=="00"
+...(jcd && jcd!=="00"
 ? [`${BOT_RACES_BASE_URL}${jcd}_${r}R.json`]
 : []),
 
@@ -282,7 +292,7 @@ return [
 
 async function fetchRaceJSON(r){
 
-let err=null;
+let lastErr=null;
 
 for(const url of buildUrls(r)){
 
@@ -292,15 +302,17 @@ return await fetchJSON(url);
 
 }catch(e){
 
-err=e;
+lastErr=e;
 
 }
 
 }
 
-throw err;
+throw lastErr;
 
 }
+
+/* render */
 
 function renderRaceJSON(r,json){
 
@@ -310,23 +322,33 @@ $raceNoLabel.textContent=`${r}R`;
 $timeLabel.textContent=`締切: ${toHM(raceObj.cutoff)}`;
 $dayLabel.textContent=json?.day_label||"—";
 
-const boats=normalizeBoatsTo6(raceObj.boats||[]);
+const boatsRaw = Array.isArray(raceObj.boats)?raceObj.boats:[];
 
-$table.innerHTML=boats.map(rowHTML).join("");
+if(!boatsRaw.length){
+
+$table.innerHTML="出走表データなし";
+return;
 
 }
 
-/* ---------- set race ---------- */
+$table.innerHTML=
+normalizeBoatsTo6(boatsRaw).map(rowHTML).join("");
+
+setTopHeight();
+
+}
+
+/* set race */
 
 async function setRace(r){
 
-r=clamp(r,1,12);
+r=clamp(Number(r)||1,1,12);
 
 currentRace=r;
 
 makeTabs(r);
 
-$table.innerHTML="読み込み中...";
+$table.innerHTML="読み込み中…";
 
 try{
 
@@ -336,13 +358,13 @@ renderRaceJSON(r,json);
 
 }catch{
 
-$table.innerHTML="データ取得失敗";
+$table.innerHTML="JSON取得失敗";
 
 }
 
 }
 
-/* ---------- boot ---------- */
+/* boot */
 
 async function boot(){
 
@@ -350,11 +372,15 @@ const initialRace=clamp(Number(qs.get("race")||1),1,12);
 
 makeTabs(initialRace);
 
-setView(0);
+setView(0,false);
 
 await setRace(initialRace);
 
+requestAnimationFrame(setTopHeight);
+
 }
+
+addEventListener("resize",setTopHeight,{passive:true});
 
 $("btnBack").addEventListener("click",()=>history.back());
 
