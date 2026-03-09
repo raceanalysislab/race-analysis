@@ -258,9 +258,9 @@ body{ padding-top:var(--safe-top); }
 
 .entryHead{
   display:grid;
-  grid-template-columns:46px minmax(0,1fr) 64px 64px 92px;
+  grid-template-columns:46px minmax(0,1fr) 52px 60px 84px;
   align-items:center;
-  min-height:44px;
+  min-height:40px;
   background:#f8fafc;
   border-bottom:1px solid #e5eaf2;
 }
@@ -283,8 +283,8 @@ body{ padding-top:var(--safe-top); }
 
 .entryRow{
   display:grid;
-  grid-template-columns:46px minmax(0,1fr) 64px 64px 92px;
-  min-height:72px;
+  grid-template-columns:46px minmax(0,1fr) 52px 60px 84px;
+  min-height:62px;
   border-bottom:1px solid #e5eaf2;
   background:#fff;
 }
@@ -309,7 +309,7 @@ body{ padding-top:var(--safe-top); }
 
 .entryNameCell{
   min-width:0;
-  padding:8px 10px;
+  padding:6px 10px;
   border-right:1px solid #e5eaf2;
   display:flex;
   flex-direction:column;
@@ -317,18 +317,18 @@ body{ padding-top:var(--safe-top); }
 }
 
 .entryMeta{
-  font-size:10px;
-  line-height:1.2;
+  font-size:9px;
+  line-height:1.15;
   color:#64748b;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
-  margin-bottom:5px;
+  margin-bottom:4px;
 }
 
 .entryName{
-  font-size:18px;
-  line-height:1.1;
+  font-size:16px;
+  line-height:1.05;
   font-weight:900;
   color:#1d4ed8;
   white-space:nowrap;
@@ -342,11 +342,11 @@ body{ padding-top:var(--safe-top); }
   justify-content:center;
   text-align:center;
   font-variant-numeric:tabular-nums;
-  font-size:17px;
-  line-height:1.1;
+  font-size:16px;
+  line-height:1.05;
   font-weight:900;
   color:#0f172a;
-  padding:0 4px;
+  padding:0 3px;
   border-right:1px solid #e5eaf2;
 }
 .entryVal:last-child{ border-right:none; }
@@ -360,13 +360,13 @@ body{ padding-top:var(--safe-top); }
 }
 
 .entryMotorNo{
-  font-size:17px;
+  font-size:16px;
   font-weight:900;
   line-height:1;
 }
 
 .entryMotorRate{
-  font-size:17px;
+  font-size:16px;
   font-weight:900;
   line-height:1;
 }
@@ -593,12 +593,12 @@ body{ padding-top:var(--safe-top); }
   }
 
   .entryHead{
-    grid-template-columns:42px minmax(0,1fr) 58px 58px 84px;
+    grid-template-columns:42px minmax(0,1fr) 48px 56px 78px;
   }
 
   .entryRow{
-    grid-template-columns:42px minmax(0,1fr) 58px 58px 84px;
-    min-height:68px;
+    grid-template-columns:42px minmax(0,1fr) 48px 56px 78px;
+    min-height:58px;
   }
 
   .entryWaku{
@@ -606,17 +606,17 @@ body{ padding-top:var(--safe-top); }
   }
 
   .entryMeta{
-    font-size:9px;
+    font-size:8px;
   }
 
   .entryName{
-    font-size:16px;
+    font-size:15px;
   }
 
   .entryVal,
   .entryMotorNo,
   .entryMotorRate{
-    font-size:15px;
+    font-size:14px;
   }
 
   .courseHeadRow,
