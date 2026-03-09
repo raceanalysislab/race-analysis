@@ -433,7 +433,7 @@
     const $raceTop = $("raceTop");
 
     const BOT_RACES_BASE_URL =
-      "https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/site/races/";
+      "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/site/races/";
 
     const DATE_CHECK_INTERVAL_MS = 15 * 1000;
 
@@ -481,7 +481,10 @@
 
     const fetchJSON = async (url) => {
       const bust = url.includes("?") ? `&t=${Date.now()}` : `?t=${Date.now()}`;
-      const res = await fetch(url + bust, { cache:"no-store" });
+      const res = await fetch(url + bust, {
+        cache:"no-store",
+        headers: { "Cache-Control": "no-cache" }
+      });
       if (!res.ok) throw new Error(`failed: ${url}`);
       return res.json();
     };
@@ -577,8 +580,7 @@
 
     function renderRaceJSON(r, json){
       const raceObj = json?.race || {};
-      const dataDate =
-        String(json?.date || raceObj?.date || "").trim();
+      const dataDate = String(json?.date || raceObj?.date || "").trim();
 
       currentRace = r;
       lastLoadedDataDate = dataDate || lastLoadedDataDate;
@@ -613,8 +615,11 @@
     async function fetchRaceJSON(r){
       let lastErr = null;
       for (const url of buildCandidateUrls(r)){
-        try { return await fetchJSON(url); }
-        catch (e) { lastErr = e; }
+        try {
+          return await fetchJSON(url);
+        } catch (e) {
+          lastErr = e;
+        }
       }
       throw lastErr || new Error("race json not found");
     }
@@ -625,18 +630,21 @@
       makeTabs(r);
       syncURLRace(r);
 
-      $raceNoLabel.textContent = `${r}R`;
-      $timeLabel.textContent = "締切: --:--";
-      $dayLabel.textContent = "—";
-      $table.innerHTML = `<div class="err">データを読み込み中…</div>`;
-
       if (!venueName || venueName === "会場"){
+        $raceNoLabel.textContent = `${r}R`;
+        $timeLabel.textContent = "締切: --:--";
+        $dayLabel.textContent = "—";
         $table.innerHTML = `<div class="err">name が指定されていません。<br>例：race.html?jcd=20&name=若松</div>`;
         return;
       }
 
       if (isLoadingRace) return;
       isLoadingRace = true;
+
+      $raceNoLabel.textContent = `${r}R`;
+      $timeLabel.textContent = "締切: --:--";
+      $dayLabel.textContent = "—";
+      $table.innerHTML = `<div class="err">データを読み込み中…</div>`;
 
       try {
         renderRaceJSON(r, await fetchRaceJSON(r));
@@ -674,7 +682,7 @@
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState === "visible") {
         setTopHeight();
-        reloadIfDateChanged();
+        setRace(currentRace);
       }
     });
 
