@@ -434,16 +434,19 @@ body{ padding-top:var(--safe-top); }
   flex-direction:column;
   border:1px solid #e5eaf2;
   border-radius:16px;
-  overflow:hidden;
+  overflow-x:auto;
+  overflow-y:hidden;
   background:#fff;
   flex:1 1 auto;
   min-height:0;
+  -webkit-overflow-scrolling:touch;
 }
 
 .courseGridHead,
 .courseGridRow{
+  min-width:620px;
   display:grid;
-  grid-template-columns:46px minmax(168px,1.7fr) 74px 62px 78px 78px 78px;
+  grid-template-columns:46px minmax(132px,1.1fr) 62px 58px 72px 72px 72px;
 }
 
 .courseGridHead{
@@ -478,6 +481,7 @@ body{ padding-top:var(--safe-top); }
 .courseGridHead__name{
   justify-content:flex-start;
   text-align:left;
+  padding-left:8px;
 }
 
 .courseGridHead__cell:last-child{
@@ -642,7 +646,8 @@ body{ padding-top:var(--safe-top); }
 
   .courseGridHead,
   .courseGridRow{
-    grid-template-columns:42px minmax(152px,1.7fr) 68px 58px 72px 72px 72px;
+    min-width:590px;
+    grid-template-columns:42px minmax(124px,1.05fr) 60px 56px 68px 68px 68px;
   }
 
   .courseGridHead{
