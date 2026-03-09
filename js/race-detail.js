@@ -35,11 +35,11 @@ let courseStatsLoaded = false;
 const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
 
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({
-  "&":"&amp;",
-  "<":"&lt;",
-  ">":"&gt;",
-  '"':"&quot;",
-  "'":"&#39;"
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#39;"
 }[c]));
 
 const safeNum = (v, digits = 2) => {
@@ -147,39 +147,23 @@ function getCourseStat(regno, course) {
   if (!courseStatsLoaded) return null;
   const player = courseStats[String(regno)];
   if (!player) return null;
-  return player[String(course)] || player[Number(course)] || null;
-}
-
-function shortKimariteLabel(name) {
-  switch (name) {
-    case "逃げ": return "逃";
-    case "差し": return "差";
-    case "まくり": return "捲";
-    case "まくり差し": return "捲差";
-    case "抜き": return "抜";
-    case "恵まれ": return "恵";
-    default: return name || "—";
-  }
+  return player[String(course)] || null;
 }
 
 function kimariteText(kimarite) {
-  if (!kimarite || typeof kimarite !== "object") return "—/—/—";
-
+  if (!kimarite || typeof kimarite !== "object") return "—";
   const arr = Object.entries(kimarite)
     .filter(([, v]) => Number(v) > 0)
     .sort((a, b) => Number(b[1]) - Number(a[1]));
 
-  if (!arr.length) return "—/—/—";
+  if (!arr.length) return "—";
 
-  const top3 = arr.slice(0, 3).map(([k, v]) => `${shortKimariteLabel(k)}${v}`);
-  while (top3.length < 3) top3.push("—");
-  return top3.join("/");
+  const top = arr[0][0];
+  return top;
 }
 
-function courseAvgStFromStats(p) {
-  const regno = p.regno || "";
-  const waku = Number(p.waku) || 0;
-  const stat = getCourseStat(regno, waku);
+function entryAvgSt(p) {
+  const stat = getCourseStat(p.regno, p.waku);
   if (stat && stat.avg_st !== undefined && stat.avg_st !== null) {
     return safeNum(stat.avg_st, 2);
   }
@@ -191,7 +175,7 @@ function entryRowHTML(p) {
   const grade = p.grade || "—";
   const branch = p.branch || "—";
   const age = (p.age !== undefined && p.age !== null && p.age !== "") ? `${p.age}歳` : "—";
-  const avgSt = courseAvgStFromStats(p);
+  const avgSt = entryAvgSt(p);
 
   return `
     <div class="entryRow">
@@ -215,43 +199,75 @@ function entryRowHTML(p) {
   `;
 }
 
-function courseRowHTML(p, stat) {
-  const waku = Number(p?.waku) || 0;
-
-  if (!stat) {
-    return `
-      <div class="courseRow">
-        <div class="courseWakuCell w${waku}">${waku}</div>
-        <div class="courseDataCell">—</div>
-        <div class="courseDataCell">—</div>
-        <div class="courseDataCell">—</div>
-        <div class="courseDataCell">—/—/—</div>
-        <div class="courseDataCell">—</div>
-        <div class="courseDataCell">—</div>
-      </div>
-    `;
-  }
-
-  return `
-    <div class="courseRow">
-      <div class="courseWakuCell w${waku}">${waku}</div>
-      <div class="courseDataCell">${esc(safeNum(stat.avg_st, 2))}</div>
-      <div class="courseDataCell">${esc(safeRate(stat.wins, stat.starts))}</div>
-      <div class="courseDataCell">${esc(safeRate(stat.place2, stat.starts))}</div>
-      <div class="courseDataCell">${esc(kimariteText(stat.kimarite))}</div>
-      <div class="courseDataCell">${esc(safeRate(stat.place3, stat.starts))}</div>
-      <div class="courseDataCell">${esc(safeInt(stat.starts))}</div>
+function courseGridHTML(boats) {
+  const header = `
+    <div class="entryRow entryRow--head">
+      <div class="entryWaku entryWaku--head">枠</div>
+      <div class="entryNameCell entryNameCell--head">選手名</div>
+      <div class="entryVal entryVal--head">平均ST</div>
+      <div class="entryVal entryVal--head">勝率</div>
+      <div class="entryVal entryVal--head">2連率</div>
+      <div class="entryVal entryVal--head">決まり手</div>
     </div>
   `;
+
+  const rows = boats.map((p) => {
+    const stat = getCourseStat(p.regno, p.waku);
+    const regno = p.regno || "—";
+    const grade = p.grade || "—";
+    const branch = p.branch || "—";
+    const age = (p.age !== undefined && p.age !== null && p.age !== "") ? `${p.age}歳` : "—";
+
+    return `
+      <div class="entryRow">
+        <div class="entryWaku w${Number(p.waku) || 0}">${Number(p.waku) || ""}</div>
+
+        <div class="entryNameCell">
+          <div class="entryMeta">${esc(regno)} / ${esc(grade)} / ${esc(branch)} / ${esc(age)}</div>
+          <div class="entryName">${esc(p.name || "—")}</div>
+        </div>
+
+        <div class="entryVal">${esc(stat ? safeNum(stat.avg_st, 2) : "—")}</div>
+        <div class="entryVal">${esc(stat ? safeRate(stat.wins, stat.starts) : "—")}</div>
+        <div class="entryVal">${esc(stat ? safeRate(stat.place2, stat.starts) : "—")}</div>
+        <div class="entryVal">${esc(stat ? kimariteText(stat.kimarite) : "—")}</div>
+      </div>
+    `;
+  }).join("");
+
+  return header + rows;
 }
 
 function renderCourseRows(boats) {
-  $courseYearBody.innerHTML = boats.map((p) => {
-    const stat = getCourseStat(p.regno, p.waku);
-    return courseRowHTML(p, stat);
-  }).join("");
+  if ($courseYearBody) {
+    $courseYearBody.innerHTML = courseGridHTML(boats);
+  }
 
-  $courseLocalBody.innerHTML = boats.map((p) => courseRowHTML(p, null)).join("");
+  if ($courseLocalBody) {
+    $courseLocalBody.innerHTML = `
+      <div class="entryRow entryRow--head">
+        <div class="entryWaku entryWaku--head">枠</div>
+        <div class="entryNameCell entryNameCell--head">選手名</div>
+        <div class="entryVal entryVal--head">平均ST</div>
+        <div class="entryVal entryVal--head">勝率</div>
+        <div class="entryVal entryVal--head">2連率</div>
+        <div class="entryVal entryVal--head">決まり手</div>
+      </div>
+      ${boats.map((p) => `
+        <div class="entryRow">
+          <div class="entryWaku w${Number(p.waku) || 0}">${Number(p.waku) || ""}</div>
+          <div class="entryNameCell">
+            <div class="entryMeta">${esc(p.regno || "—")} / ${esc(p.grade || "—")} / ${esc(p.branch || "—")} / ${esc((p.age !== undefined && p.age !== null && p.age !== "") ? `${p.age}歳` : "—")}</div>
+            <div class="entryName">${esc(p.name || "—")}</div>
+          </div>
+          <div class="entryVal">—</div>
+          <div class="entryVal">—</div>
+          <div class="entryVal">—</div>
+          <div class="entryVal">—</div>
+        </div>
+      `).join("")}
+    `;
+  }
 }
 
 function setView(index) {
@@ -283,11 +299,11 @@ function setupCourseTabs() {
       btn.classList.add("is-active");
 
       if (btn.dataset.courseTab === "year") {
-        yearView.style.display = "";
-        localView.style.display = "none";
+        if (yearView) yearView.style.display = "";
+        if (localView) localView.style.display = "none";
       } else {
-        yearView.style.display = "none";
-        localView.style.display = "";
+        if (yearView) yearView.style.display = "none";
+        if (localView) localView.style.display = "";
       }
     });
   });
@@ -379,14 +395,17 @@ async function setRace(r) {
 
   makeTabs(r);
   $entryTable.innerHTML = `<div class="err">読み込み中…</div>`;
-  $courseYearBody.innerHTML = "";
-  $courseLocalBody.innerHTML = "";
+
+  if ($courseYearBody) $courseYearBody.innerHTML = `<div class="err">読み込み中…</div>`;
+  if ($courseLocalBody) $courseLocalBody.innerHTML = `<div class="err">読み込み中…</div>`;
 
   try {
     const json = await fetchRaceJSON(r);
     renderRaceJSON(r, json);
   } catch (e) {
     $entryTable.innerHTML = `<div class="err">JSON取得失敗</div>`;
+    if ($courseYearBody) $courseYearBody.innerHTML = `<div class="err">JSON取得失敗</div>`;
+    if ($courseLocalBody) $courseLocalBody.innerHTML = `<div class="err">JSON取得失敗</div>`;
   }
 }
 
