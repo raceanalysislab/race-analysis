@@ -1,6 +1,6 @@
-/* js/app.js（完全置き換え：24場固定 / リアルタイム切替 / PRO切替強化版 / 日付跨ぎ自動切替対応 / raw.githubusercontent.com版） */
+/* js/app.js（完全置き換え：当日開催場のみ表示 / jsDelivr + cache bust / 30秒自動更新 / PRO対応） */
 
-const DATA_URL = "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/site/venues.json";
+const DATA_URL = "https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/site/venues.json";
 
 const NOTE_URLS = {
   YOSO_ONLY: "https://note.com/wsnndboat7/n/n1fdca8b0a7e3",
@@ -175,7 +175,7 @@ function buildVenueMap(list) {
   const map = new Map();
 
   for (const item of Array.isArray(list) ? list : []) {
-    const jcd = String(item?.jcd || "").padStart(2, "0");
+    const jcd = String(item?.jcd ?? "").padStart(2, "0");
     if (!jcd) continue;
     map.set(jcd, item);
   }
@@ -205,6 +205,18 @@ function getVenueArray(json) {
 function buildDataUrl() {
   const sep = DATA_URL.includes("?") ? "&" : "?";
   return `${DATA_URL}${sep}t=${Date.now()}`;
+}
+
+function sortActiveVenues(list) {
+  const orderMap = new Map(VENUES.map((v, i) => [v.jcd, i]));
+
+  return [...list].sort((a, b) => {
+    const aj = String(a?.jcd ?? "").padStart(2, "0");
+    const bj = String(b?.jcd ?? "").padStart(2, "0");
+    const ai = orderMap.has(aj) ? orderMap.get(aj) : 999;
+    const bi = orderMap.has(bj) ? orderMap.get(bj) : 999;
+    return ai - bi;
+  });
 }
 
 /* ===== PRO functions ===== */
@@ -359,12 +371,12 @@ function initProModal() {
 
 /* ===== card render ===== */
 
-function renderOffCard(base) {
-  return `
-    <div class="card card--off" aria-disabled="true">
+function renderEmptyState() {
+  $grid.innerHTML = `
+    <div class="card card--off" aria-disabled="true" style="grid-column:1/-1;">
       <div class="card__nameRow">
         <span class="card__nameIcon card__nameIcon--empty"></span>
-        <div class="card__name">${esc(base.name)}</div>
+        <div class="card__name">本日の開催場はありません</div>
         <span class="card__nameIcon card__nameIcon--empty"></span>
       </div>
 
@@ -378,7 +390,9 @@ function renderOffCard(base) {
   `;
 }
 
-function renderOnCard(base, v) {
+function renderOnCard(v) {
+  const jcd = String(v?.jcd ?? "").padStart(2, "0");
+  const name = String(v?.name ?? "").trim() || "会場";
   const next = computeNextDisplay(v);
   const m = String(next.text).match(/^(\d+R)\s+(\d{2}:\d{2})$/);
 
@@ -403,10 +417,10 @@ function renderOnCard(base, v) {
 
   return `
     <a class="card card--on ${next.soldout ? "card--soldout" : ""} card--tone-${esc(normalizeBand(v.card_band))}"
-       href="./race.html?jcd=${encodeURIComponent(base.jcd)}&name=${encodeURIComponent(base.name)}">
+       href="./race.html?jcd=${encodeURIComponent(jcd)}&name=${encodeURIComponent(name)}">
       <div class="card__nameRow">
         <span class="card__nameIcon card__nameIcon--empty"></span>
-        <div class="card__name">${esc(base.name)}</div>
+        <div class="card__name">${esc(name)}</div>
         <span class="card__nameIcon card__nameIcon--empty"></span>
       </div>
 
@@ -423,12 +437,15 @@ function renderOnCard(base, v) {
 }
 
 function renderGrid(list) {
-  const map = buildVenueMap(list);
+  const activeList = sortActiveVenues(list);
 
-  $grid.innerHTML = VENUES.map((base) => {
-    const item = map.get(base.jcd);
-    return item ? renderOnCard(base, item) : renderOffCard(base);
-  }).join("");
+  if (!activeList.length) {
+    renderEmptyState();
+    if ($updatedAt) $updatedAt.textContent = nowHM();
+    return;
+  }
+
+  $grid.innerHTML = activeList.map(renderOnCard).join("");
 
   if ($updatedAt) $updatedAt.textContent = nowHM();
 }
@@ -473,10 +490,7 @@ async function load() {
   isLoading = true;
 
   try {
-    const res = await fetch(buildDataUrl(), {
-      cache: "no-store",
-      headers: { "Cache-Control": "no-cache" }
-    });
+    const res = await fetch(buildDataUrl(), { cache: "no-store" });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
     const json = await res.json();
@@ -490,7 +504,8 @@ async function load() {
     renderGrid(venueList);
   } catch (e) {
     console.error(e);
-    renderGrid([]);
+    venueList = [];
+    renderEmptyState();
     if ($updatedAt) $updatedAt.textContent = "ERR";
   } finally {
     isLoading = false;
@@ -514,7 +529,6 @@ if ($btn) {
 
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible") {
-    renderGrid(venueList);
     load();
   }
 });
