@@ -60,7 +60,7 @@
             <div class="courseWrap" id="courseDataPanel">
               <div class="courseInnerTabs" id="courseInnerTabs">
                 <button type="button" class="courseInnerTab is-active" data-course-tab="year">
-                  コース別直近1年
+                  コース別直近3年
                 </button>
                 <button type="button" class="courseInnerTab" data-course-tab="local">
                   コース別当地直近5年
@@ -69,45 +69,17 @@
 
               <div id="courseYearView">
                 <div class="courseBlock">
-                  <div class="courseBlockTitle">コース別直近1年</div>
-                  <div class="courseBlockSub">枠番を縦、比較データを横並びで表示します。</div>
-
-                  <div class="courseScroll">
-                    <div class="courseTable">
-                      <div class="courseHeadRow">
-                        <div class="courseHeadCell courseHeadCell--waku">枠</div>
-                        <div class="courseHeadCell">平均ST</div>
-                        <div class="courseHeadCell">今節平均ST</div>
-                        <div class="courseHeadCell">コース勝率</div>
-                        <div class="courseHeadCell">差/捲/捲差</div>
-                        <div class="courseHeadCell">2着内率</div>
-                        <div class="courseHeadCell">3着内率</div>
-                      </div>
-                      <div class="courseBody" id="courseYearBody"></div>
-                    </div>
-                  </div>
+                  <div class="courseBlockTitle">コース別直近3年</div>
+                  <div class="courseBlockSub">6艇を一括で比較表示します。</div>
+                  <div class="table" id="courseYearBody"></div>
                 </div>
               </div>
 
               <div id="courseLocalView" style="display:none;">
                 <div class="courseBlock">
                   <div class="courseBlockTitle">コース別当地直近5年</div>
-                  <div class="courseBlockSub">当地実績を同じ並びで表示します。</div>
-
-                  <div class="courseScroll">
-                    <div class="courseTable">
-                      <div class="courseHeadRow">
-                        <div class="courseHeadCell courseHeadCell--waku">枠</div>
-                        <div class="courseHeadCell">平均ST</div>
-                        <div class="courseHeadCell">今節平均ST</div>
-                        <div class="courseHeadCell">コース勝率</div>
-                        <div class="courseHeadCell">差/捲/捲差</div>
-                        <div class="courseHeadCell">2着内率</div>
-                        <div class="courseHeadCell">3着内率</div>
-                      </div>
-                      <div class="courseBody" id="courseLocalBody"></div>
-                    </div>
-                  </div>
+                  <div class="courseBlockSub">当地データは後で接続します。</div>
+                  <div class="table" id="courseLocalBody"></div>
                 </div>
               </div>
             </div>
