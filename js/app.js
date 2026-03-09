@@ -1,4 +1,4 @@
-/* js/app.js（完全置き換え：24場固定 / リアルタイム切替 / PRO切替強化版 / 日付跨ぎ自動切替対応） */
+/* js/app.js（完全置き換え：24場固定 / リアルタイム切替 / PRO切替強化版 / 日付跨ぎ自動切替対応 / 一覧30秒自動更新版） */
 
 const DATA_URL = "https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/site/venues.json";
 
@@ -38,7 +38,7 @@ const VENUES = [
 const NEXT_RACE_DELAY_MS = 3000;
 const DANGER_MS = 5 * 60 * 1000;
 const RERENDER_INTERVAL_MS = 1000;
-const REFRESH_INTERVAL_MS = 5 * 60 * 1000;
+const REFRESH_INTERVAL_MS = 30 * 1000;
 const DATE_CHECK_INTERVAL_MS = 15 * 1000;
 
 /* PROキー */
@@ -512,7 +512,7 @@ if ($btn) {
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible") {
     renderGrid(venueList);
-    reloadIfDateChanged();
+    load();
   }
 });
 
