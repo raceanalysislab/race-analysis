@@ -14,8 +14,7 @@ const $viewTabs = $("viewTabs");
 const $viewTrack = $("viewTrack");
 const $viewPager = $("viewPager");
 
-const $compactTable = $("compactTable");
-const $compareTable = $("compareTable");
+const $entryTable = $("entryTable");
 const $courseYearBody = $("courseYearBody");
 const $courseLocalBody = $("courseLocalBody");
 
@@ -114,48 +113,40 @@ function normalizeBoatsTo6(boats) {
   });
 }
 
-function compactRowHTML(p) {
-  const regno = p.regno || "—";
-  const grade = p.grade || "—";
-  const branch = p.branch || "—";
-
-  return `
-    <div class="compactRow">
-      <div class="compactWaku w${Number(p.waku) || 0}">${Number(p.waku) || ""}</div>
-      <div class="compactReg">${esc(regno)}</div>
-      <div class="compactNameBox">
-        <div class="compactMeta">${esc(grade)} / ${esc(branch)}</div>
-        <div class="compactName">${esc(p.name || "—")}</div>
-      </div>
-      <div class="compactGrade">${esc(grade)}</div>
-    </div>
-  `;
-}
-
-function compareRowHTML(p) {
-  const regno = p.regno || "—";
-  const grade = p.grade || "—";
-  const branch = p.branch || "—";
-
-  return `
-    <div class="compareRow">
-      <div class="compareWaku w${Number(p.waku) || 0}">${Number(p.waku) || ""}</div>
-      <div class="compareNameBox">
-        <div class="compareSub">${esc(regno)} / ${esc(grade)} / ${esc(branch)}</div>
-        <div class="compareName">${esc(p.name || "—")}</div>
-      </div>
-      <div class="compareVal">${esc(safeNum(p.nat_win))}</div>
-      <div class="compareVal">${esc(safeInt(p.motor_no))}<br>${esc(safeNum(p.motor_2))}</div>
-      <div class="compareVal">${esc(extractAverageSt(p.note))}</div>
-    </div>
-  `;
-}
-
 function extractAverageSt(note) {
   const text = String(note || "").trim();
   if (!text) return "—";
   const m = text.match(/(?:^|\s)(0\.\d{2})(?:\s|$)/);
   return m ? m[1] : "—";
+}
+
+function entryRowHTML(p) {
+  const regno = p.regno || "—";
+  const grade = p.grade || "—";
+  const branch = p.branch || "—";
+  const age = (p.age !== undefined && p.age !== null && p.age !== "") ? `${p.age}歳` : "—";
+  const avgSt = extractAverageSt(p.note);
+
+  return `
+    <div class="entryRow">
+      <div class="entryWaku w${Number(p.waku) || 0}">${Number(p.waku) || ""}</div>
+
+      <div class="entryNameCell">
+        <div class="entryMeta">${esc(regno)} / ${esc(grade)} / ${esc(branch)} / ${esc(age)}</div>
+        <div class="entryName">${esc(p.name || "—")}</div>
+      </div>
+
+      <div class="entryVal">${esc(avgSt)}</div>
+      <div class="entryVal">${esc(safeNum(p.nat_win))}</div>
+
+      <div class="entryVal">
+        <div class="entryMotor">
+          <div class="entryMotorNo">${esc(safeInt(p.motor_no))}</div>
+          <div class="entryMotorRate">${esc(safeNum(p.motor_2))}</div>
+        </div>
+      </div>
+    </div>
+  `;
 }
 
 function courseRowHTML(waku) {
@@ -178,7 +169,7 @@ function renderCoursePlaceholders() {
 }
 
 function setView(index) {
-  currentView = clamp(index, 0, 3);
+  currentView = clamp(index, 0, 2);
 
   Array.from($viewTabs.querySelectorAll(".viewTab")).forEach((btn, i) => {
     btn.classList.toggle("is-active", i === currentView);
@@ -243,7 +234,7 @@ function setupSwipe() {
     const width = $viewPager.clientWidth || 1;
     const delta = dragCurrentX - dragStartX;
 
-    if (delta < -width * 0.18 && currentView < 3) {
+    if (delta < -width * 0.18 && currentView < 2) {
       setView(currentView + 1);
       return;
     }
@@ -290,8 +281,7 @@ function renderRaceJSON(r, json) {
 
   const boats = normalizeBoatsTo6(Array.isArray(raceObj.boats) ? raceObj.boats : []);
 
-  $compactTable.innerHTML = boats.map(compactRowHTML).join("");
-  $compareTable.innerHTML = boats.map(compareRowHTML).join("");
+  $entryTable.innerHTML = boats.map(entryRowHTML).join("");
   renderCoursePlaceholders();
 
   setTopHeight();
@@ -302,15 +292,13 @@ async function setRace(r) {
   currentRace = r;
 
   makeTabs(r);
-  $compactTable.innerHTML = `<div class="err">読み込み中…</div>`;
-  $compareTable.innerHTML = `<div class="err">読み込み中…</div>`;
+  $entryTable.innerHTML = `<div class="err">読み込み中…</div>`;
 
   try {
     const json = await fetchRaceJSON(r);
     renderRaceJSON(r, json);
   } catch (e) {
-    $compactTable.innerHTML = `<div class="err">JSON取得失敗</div>`;
-    $compareTable.innerHTML = `<div class="err">JSON取得失敗</div>`;
+    $entryTable.innerHTML = `<div class="err">JSON取得失敗</div>`;
   }
 }
 
