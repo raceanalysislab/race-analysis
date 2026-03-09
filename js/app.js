@@ -1,4 +1,4 @@
-/* js/app.js（完全置き換え：24場固定 / リアルタイム切替 / PRO切替強化版） */
+/* js/app.js（完全置き換え：24場固定 / リアルタイム切替 / PRO切替強化版 / 日付跨ぎ自動切替対応） */
 
 const DATA_URL = "https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/site/venues.json";
 
@@ -39,6 +39,7 @@ const NEXT_RACE_DELAY_MS = 3000;
 const DANGER_MS = 5 * 60 * 1000;
 const RERENDER_INTERVAL_MS = 1000;
 const REFRESH_INTERVAL_MS = 5 * 60 * 1000;
+const DATE_CHECK_INTERVAL_MS = 15 * 1000;
 
 /* PROキー */
 const PRO_KEY = "123456";
@@ -62,6 +63,8 @@ const proInputs = $proInputsWrap ? Array.from($proInputsWrap.querySelectorAll("i
 
 let venueList = [];
 let isLoading = false;
+let lastLoadedDataDate = "";
+let lastSeenLocalDate = getLocalYMD();
 
 function esc(s) {
   return String(s ?? "").replace(/[&<>"']/g, (c) => ({
@@ -76,6 +79,14 @@ function esc(s) {
 function nowHM() {
   const d = new Date();
   return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+}
+
+function getLocalYMD() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
 }
 
 function normalizeGradeLabel(v) {
@@ -170,6 +181,30 @@ function buildVenueMap(list) {
   }
 
   return map;
+}
+
+function getJsonDataDate(json) {
+  if (json && typeof json === "object" && !Array.isArray(json)) {
+    if (typeof json.date === "string" && json.date.trim()) return json.date.trim();
+    if (Array.isArray(json.venues) && json.venues[0]?.date) return String(json.venues[0].date).trim();
+  }
+
+  if (Array.isArray(json) && json[0]?.date) {
+    return String(json[0].date).trim();
+  }
+
+  return "";
+}
+
+function getVenueArray(json) {
+  if (Array.isArray(json)) return json;
+  if (json && Array.isArray(json.venues)) return json.venues;
+  return [];
+}
+
+function buildDataUrl() {
+  const sep = DATA_URL.includes("?") ? "&" : "?";
+  return `${DATA_URL}${sep}t=${Date.now()}`;
 }
 
 /* ===== PRO functions ===== */
@@ -438,13 +473,17 @@ async function load() {
   isLoading = true;
 
   try {
-    const res = await fetch(DATA_URL, { cache: "no-store" });
+    const res = await fetch(buildDataUrl(), { cache: "no-store" });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
     const json = await res.json();
-    if (!Array.isArray(json)) throw new Error("venues.json is not array");
+    const list = getVenueArray(json);
+    const dataDate = getJsonDataDate(json);
 
-    venueList = json;
+    if (!Array.isArray(list)) throw new Error("venues.json format invalid");
+
+    venueList = list;
+    lastLoadedDataDate = dataDate || "";
     renderGrid(venueList);
   } catch (e) {
     console.error(e);
@@ -455,6 +494,17 @@ async function load() {
   }
 }
 
+async function reloadIfDateChanged() {
+  const currentLocalDate = getLocalYMD();
+  const localDateChanged = currentLocalDate !== lastSeenLocalDate;
+  const dataDateMismatch = lastLoadedDataDate && lastLoadedDataDate !== currentLocalDate;
+
+  if (localDateChanged || dataDateMismatch) {
+    lastSeenLocalDate = currentLocalDate;
+    await load();
+  }
+}
+
 if ($btn) {
   $btn.addEventListener("click", load);
 }
@@ -462,6 +512,7 @@ if ($btn) {
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible") {
     renderGrid(venueList);
+    reloadIfDateChanged();
   }
 });
 
@@ -476,6 +527,12 @@ setInterval(() => {
     load();
   }
 }, REFRESH_INTERVAL_MS);
+
+setInterval(() => {
+  if (document.visibilityState === "visible") {
+    reloadIfDateChanged();
+  }
+}, DATE_CHECK_INTERVAL_MS);
 
 initProModal();
 setupProInputs();
