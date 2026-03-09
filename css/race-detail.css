@@ -1,292 +1,477 @@
 :root{
---safe-top:env(safe-area-inset-top,0px);
---safe-bottom:env(safe-area-inset-bottom,0px);
---raceTopH:112px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --raceTopH: 112px;
 
---bg:#f3f5f9;
---panel:#ffffff;
---panel-soft:#f8fafc;
---line:#e2e8f0;
---line-soft:#eef2f7;
+  --bg:#f3f5f9;
+  --panel:#ffffff;
+  --panel-soft:#f8fafc;
+  --line:#e2e8f0;
+  --line-soft:#eef2f7;
 
---text:#0f172a;
---muted:#64748b;
---muted-2:#94a3b8;
---accent:#2563eb;
+  --text:#0f172a;
+  --muted:#64748b;
+  --muted-2:#94a3b8;
+  --accent:#2563eb;
 
---shadow:0 2px 8px rgba(15,23,42,.06);
+  --shadow:0 2px 8px rgba(15,23,42,.06);
 }
 
-*{
-box-sizing:border-box;
+*{ box-sizing:border-box; }
+
+html, body{
+  margin:0;
+  min-height:100%;
+  background:linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP","Segoe UI",sans-serif;
+  overscroll-behavior-y:none;
 }
 
-html,body{
-margin:0;
-min-height:100%;
-background:linear-gradient(180deg,#f8fafc 0%,#f1f5f9 100%);
-color:var(--text);
-font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP","Segoe UI",sans-serif;
-overscroll-behavior-y:none;
-}
-
-body{
-padding-top:var(--safe-top);
-}
-
-/* 上部 */
+body{ padding-top:var(--safe-top); }
 
 .raceTop{
-position:sticky;
-top:0;
-z-index:50;
-padding:8px 10px 6px;
-background:rgba(246,247,251,.98);
-border-bottom:1px solid rgba(226,232,240,.92);
+  position:sticky;
+  top:0;
+  z-index:50;
+  padding:8px 10px 6px;
+  background:rgba(246,247,251,.98);
+  border-bottom:1px solid rgba(226,232,240,.92);
 }
 
 .raceHead{
-display:flex;
-align-items:flex-start;
-justify-content:space-between;
-gap:10px;
-background:var(--panel);
-border:1px solid var(--line);
-border-radius:16px;
-padding:10px;
-box-shadow:var(--shadow);
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:10px;
+  box-shadow:var(--shadow);
 }
 
 .raceHead__left{
-display:flex;
-flex-direction:column;
-gap:6px;
-min-width:0;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
 }
 
 .raceVenue{
-font-size:22px;
-font-weight:1000;
-line-height:1;
-white-space:nowrap;
-overflow:hidden;
-text-overflow:ellipsis;
+  font-size:22px;
+  line-height:1;
+  font-weight:1000;
+  letter-spacing:.01em;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  color:#0f172a;
 }
 
 .raceMeta{
-display:flex;
-gap:6px;
-flex-wrap:wrap;
-align-items:center;
-font-size:11px;
-color:var(--muted);
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+  align-items:center;
+  font-size:11px;
+  line-height:1;
+  color:var(--muted);
 }
 
 .metaChip{
-display:inline-flex;
-align-items:center;
-min-height:24px;
-padding:0 9px;
-border-radius:999px;
-border:1px solid var(--line);
-background:var(--panel-soft);
-font-weight:700;
+  display:inline-flex;
+  align-items:center;
+  min-height:24px;
+  padding:0 9px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:var(--panel-soft);
+  white-space:nowrap;
+  font-weight:700;
 }
 
 .raceBtn{
-border:1px solid var(--line);
-background:var(--panel-soft);
-min-width:64px;
-height:38px;
-border-radius:11px;
-font-size:13px;
-font-weight:900;
+  appearance:none;
+  border:1px solid var(--line);
+  background:var(--panel-soft);
+  color:var(--text);
+  min-width:64px;
+  height:38px;
+  border-radius:11px;
+  padding:0 12px;
+  font-size:13px;
+  font-weight:900;
+  flex:0 0 auto;
 }
-
-/* レース番号 */
 
 .raceTabs{
-margin-top:8px;
-display:flex;
-gap:6px;
-overflow-x:auto;
--webkit-overflow-scrolling:touch;
+  margin-top:8px;
+  display:flex;
+  gap:6px;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+  padding-bottom:2px;
+  scroll-behavior:smooth;
 }
+.raceTabs::-webkit-scrollbar{ display:none; }
 
 .tab{
-flex:0 0 auto;
-min-width:52px;
-height:34px;
-border-radius:999px;
-border:1px solid var(--line);
-background:#fff;
-font-size:12px;
-font-weight:900;
+  flex:0 0 auto;
+  appearance:none;
+  min-width:52px;
+  height:34px;
+  padding:0 10px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:#fff;
+  color:#334155;
+  font-size:12px;
+  font-weight:900;
+  line-height:1;
 }
 
 .tab.is-active{
-background:linear-gradient(180deg,#2f7cff 0%,#2563eb 100%);
-color:#fff;
-border-color:transparent;
+  background:linear-gradient(180deg, #2f7cff 0%, #2563eb 100%);
+  color:#fff;
+  border-color:transparent;
+  box-shadow:0 4px 10px rgba(37,99,235,.14);
 }
 
-/* 本体 */
-
 .raceBody{
-height:calc(100dvh - var(--raceTopH));
-padding:6px 10px calc(8px + var(--safe-bottom));
+  height:calc(100dvh - var(--raceTopH));
+  overflow:hidden;
+  padding:6px 10px calc(8px + var(--safe-bottom));
 }
 
 .section{
-height:100%;
-display:flex;
-flex-direction:column;
-background:var(--panel);
-border:1px solid var(--line);
-border-radius:18px;
-padding:8px;
-box-shadow:var(--shadow);
-overflow:hidden;
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:8px;
+  box-shadow:var(--shadow);
+  overflow:hidden;
 }
 
 .sectionHead{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:6px;
-padding-bottom:6px;
-border-bottom:1px solid var(--line-soft);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:6px;
+  padding-bottom:6px;
+  border-bottom:1px solid var(--line-soft);
+  flex:0 0 auto;
 }
 
 .sectionTitle{
-font-size:13px;
-font-weight:1000;
+  font-size:13px;
+  font-weight:1000;
+  letter-spacing:.03em;
+  color:#0f172a;
 }
 
 .sectionMeta{
-font-size:10px;
-color:var(--muted-2);
-text-align:right;
+  font-size:10px;
+  line-height:1.3;
+  color:var(--muted-2);
+  text-align:right;
+  white-space:nowrap;
 }
-
-/* 上部タブ */
 
 .viewTabs{
-display:flex;
-gap:8px;
-margin-bottom:8px;
-overflow-x:auto;
+  display:flex;
+  gap:8px;
+  margin-bottom:8px;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+  flex:0 0 auto;
 }
+.viewTabs::-webkit-scrollbar{ display:none; }
 
 .viewTab{
-border:1px solid var(--line);
-background:#fff;
-height:36px;
-padding:0 14px;
-border-radius:999px;
-font-size:12px;
-font-weight:900;
+  appearance:none;
+  border:1px solid var(--line);
+  background:#fff;
+  color:#334155;
+  height:36px;
+  padding:0 14px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:900;
+  white-space:nowrap;
+  flex:0 0 auto;
 }
 
 .viewTab.is-active{
-background:linear-gradient(180deg,#2f7cff 0%,#2563eb 100%);
-color:#fff;
-border-color:transparent;
+  background:linear-gradient(180deg, #2f7cff 0%, #2563eb 100%);
+  color:#fff;
+  border-color:transparent;
+  box-shadow:0 4px 10px rgba(37,99,235,.14);
 }
 
-/* スワイプ */
-
 .viewPager{
-flex:1;
-overflow:hidden;
+  flex:1 1 auto;
+  min-height:0;
+  overflow:hidden;
+  position:relative;
+  touch-action:pan-y;
 }
 
 .viewTrack{
-height:100%;
-display:flex;
-transition:transform .22s ease;
+  height:100%;
+  display:flex;
+  transition:transform .22s ease;
+  will-change:transform;
+}
+
+.viewTrack.is-dragging{
+  transition:none;
 }
 
 .viewPage{
-width:100%;
-min-width:100%;
-height:100%;
-display:flex;
-flex-direction:column;
+  width:100%;
+  min-width:100%;
+  height:100%;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  min-height:0;
 }
 
 /* 出走表 */
-
 .table{
-flex:1;
-display:flex;
-flex-direction:column;
-gap:10px;
-overflow:auto;
-padding-right:2px;
+  flex:1 1 auto;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  justify-content:space-between;
+  overflow:auto;
+  padding-right:1px;
 }
 
 .row{
-display:flex;
-align-items:center;
-gap:14px;
-border-radius:18px;
-background:#fff;
-border:1px solid #e5eaf2;
-padding:14px;
-box-shadow:0 1px 2px rgba(0,0,0,.04);
+  flex:1 1 0;
+  min-height:0;
+  display:flex;
+  align-items:stretch;
+  gap:10px;
+  border-radius:15px;
+  background:linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  border:1px solid #e5eaf2;
+  padding:8px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.75);
 }
 
 .waku{
-width:48px;
-height:48px;
-border-radius:16px;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:28px;
-font-weight:1000;
+  width:42px;
+  height:42px;
+  border-radius:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:24px;
+  font-weight:1000;
+  letter-spacing:-.03em;
+  flex:0 0 auto;
+  align-self:center;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.45),
+    0 1px 2px rgba(15,23,42,.08);
+  border:1px solid rgba(15,23,42,.08);
 }
 
-.w1{background:#fff;border:2px solid #ddd;color:#111}
-.w2{background:#111;color:#fff}
-.w3{background:#f06f63;color:#fff}
-.w4{background:#568cff;color:#fff}
-.w5{background:#f7dd58;color:#111}
-.w6{background:#6fd275;color:#111}
+.w1{ background:linear-gradient(180deg, #ffffff 0%, #f7fafc 100%); color:#111827; }
+.w2{ background:linear-gradient(180deg, #253251 0%, #162033 100%); color:#ffffff; }
+.w3{ background:linear-gradient(180deg, #f06f63 0%, #dd564b 100%); color:#ffffff; }
+.w4{ background:linear-gradient(180deg, #568cff 0%, #376ceb 100%); color:#ffffff; }
+.w5{ background:linear-gradient(180deg, #f7dd58 0%, #edca3f 100%); color:#111827; }
+.w6{ background:linear-gradient(180deg, #6fd275 0%, #55c561 100%); color:#0f172a; }
 
 .info{
-flex:1;
-display:flex;
-flex-direction:column;
-gap:6px;
+  min-width:0;
+  flex:1 1 0;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:5px;
+  padding-right:2px;
 }
 
 .sub{
-font-size:12px;
-color:#64748b;
-font-weight:700;
+  font-size:10px;
+  line-height:1.1;
+  color:#64748b;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  font-weight:700;
+}
+
+.nameRow{
+  display:flex;
+  align-items:center;
+  min-width:0;
 }
 
 .name{
-font-size:24px;
-font-weight:900;
+  min-width:0;
+  max-width:100%;
+  font-size:clamp(20px, 2.5vw, 24px);
+  line-height:1;
+  font-weight:700;
+  color:#0f172a;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  letter-spacing:-.01em;
 }
 
 .metric{
-display:flex;
-flex-direction:column;
-align-items:flex-end;
-font-size:14px;
-gap:4px;
+  flex:0 0 40%;
+  min-width:166px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  column-gap:14px;
+  align-self:stretch;
+  align-items:center;
+  justify-items:center;
+  font-variant-numeric:tabular-nums;
 }
 
-.metric div{
-text-align:right;
+.metricCol{
+  width:100%;
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+}
+
+.metricCol--nat{
+  gap:8px;
+}
+
+.metricCol--motor{
+  gap:5px;
+}
+
+.metricHead{
+  font-size:11px;
+  line-height:1;
+  font-weight:900;
+  color:#475569;
+  white-space:nowrap;
+  text-align:center;
+  width:100%;
+}
+
+.metricVal{
+  font-size:22px;
+  line-height:1;
+  font-weight:900;
+  color:#0f172a;
+  white-space:nowrap;
+  text-align:center;
+  width:100%;
+}
+
+.metricSub{
+  font-size:17px;
+  line-height:1;
+  font-weight:900;
+  color:#0f172a;
+  white-space:nowrap;
+  text-align:center;
+  width:100%;
+  margin-top:-1px;
+}
+
+.metricVal--motor{
+  font-size:18px;
+  margin-top:-1px;
 }
 
 .note{
-margin-top:6px;
-font-size:10px;
-color:var(--muted);
+  margin-top:6px;
+  padding:0 2px;
+  color:var(--muted);
+  font-size:10px;
+  line-height:1.4;
+  flex:0 0 auto;
+}
+
+/* コース/枠番 */
+.panelPlaceholder{
+  flex:1 1 auto;
+  min-height:0;
+  border:1px solid #e5eaf2;
+  border-radius:16px;
+  background:linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  padding:18px 14px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  color:#334155;
+}
+
+.panelPlaceholder__title{
+  font-size:18px;
+  font-weight:1000;
+  color:#0f172a;
+  margin-bottom:10px;
+}
+
+.panelPlaceholder__text{
+  font-size:12px;
+  line-height:1.8;
+  color:#64748b;
+  max-width:260px;
+}
+
+.err{
+  padding:12px 14px;
+  border-radius:14px;
+  border:1px dashed #cbd5e1;
+  background:#f8fafc;
+  color:#475569;
+  font-size:12px;
+  line-height:1.7;
+  word-break:break-word;
+}
+
+@media (max-width: 390px){
+  .waku{
+    width:38px;
+    height:38px;
+    font-size:20px;
+    border-radius:12px;
+  }
+
+  .sub{ font-size:9px; }
+
+  .metric{
+    min-width:148px;
+    column-gap:10px;
+  }
+
+  .metricHead{ font-size:10px; }
+  .metricVal{ font-size:19px; }
+  .metricSub{ font-size:15px; }
+  .metricVal--motor{ font-size:16px; }
+
+  .viewTab{
+    height:34px;
+    padding:0 12px;
+    font-size:11px;
+  }
 }
