@@ -435,6 +435,13 @@
     const BOT_RACES_BASE_URL =
       "https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/site/races/";
 
+    const DATE_CHECK_INTERVAL_MS = 15 * 1000;
+
+    let currentRace = 1;
+    let lastLoadedDataDate = "";
+    let lastSeenLocalDate = getLocalYMD();
+    let isLoadingRace = false;
+
     $("venueName").textContent = venueName;
 
     const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
@@ -458,6 +465,14 @@
       const m = String(x || "").match(/(\d{1,2}):(\d{2})/);
       return m ? `${String(m[1]).padStart(2, "0")}:${m[2]}` : "--:--";
     };
+
+    function getLocalYMD() {
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${y}-${m}-${day}`;
+    }
 
     const setTopHeight = () => {
       const h = $raceTop.getBoundingClientRect().height || 112;
@@ -561,11 +576,18 @@
     }
 
     function renderRaceJSON(r, json){
+      const raceObj = json?.race || {};
+      const dataDate =
+        String(json?.date || raceObj?.date || "").trim();
+
+      currentRace = r;
+      lastLoadedDataDate = dataDate || lastLoadedDataDate;
+
       $raceNoLabel.textContent = `${r}R`;
-      $timeLabel.textContent = `締切: ${toHM(json?.race?.cutoff || json?.cutoff || "")}`;
+      $timeLabel.textContent = `締切: ${toHM(raceObj?.cutoff || json?.cutoff || "")}`;
       $dayLabel.textContent = String(json?.day_label || "").trim() || "—";
 
-      const boatsRaw = Array.isArray(json?.race?.boats) ? json.race.boats : [];
+      const boatsRaw = Array.isArray(raceObj?.boats) ? raceObj.boats : [];
       if (!boatsRaw.length){
         $table.innerHTML = `<div class="err">出走表が空です。<br>（race.boats が見つかりません）</div>`;
         return;
@@ -599,6 +621,7 @@
 
     async function setRace(r){
       r = clamp(Number(r) || 1, 1, 12);
+      currentRace = r;
       makeTabs(r);
       syncURLRace(r);
 
@@ -612,15 +635,32 @@
         return;
       }
 
+      if (isLoadingRace) return;
+      isLoadingRace = true;
+
       try {
         renderRaceJSON(r, await fetchRaceJSON(r));
       } catch (e) {
         $table.innerHTML = `<div class="err">JSONの取得に失敗しました。<br>${buildCandidateUrls(r).map(esc).join("<br>")}<br>（ファイル未生成 or URL違い）</div>`;
+      } finally {
+        isLoadingRace = false;
+      }
+    }
+
+    async function reloadIfDateChanged(){
+      const currentLocalDate = getLocalYMD();
+      const localDateChanged = currentLocalDate !== lastSeenLocalDate;
+      const dataDateMismatch = lastLoadedDataDate && lastLoadedDataDate !== currentLocalDate;
+
+      if (localDateChanged || dataDateMismatch) {
+        lastSeenLocalDate = currentLocalDate;
+        await setRace(currentRace);
       }
     }
 
     async function boot(){
       const initialRace = clamp(Number(qs.get("race") || 1) || 1, 1, 12);
+      currentRace = initialRace;
       makeTabs(initialRace);
       await setRace(initialRace);
       requestAnimationFrame(() => {
@@ -630,6 +670,20 @@
     }
 
     addEventListener("resize", setTopHeight, { passive:true });
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") {
+        setTopHeight();
+        reloadIfDateChanged();
+      }
+    });
+
+    setInterval(() => {
+      if (document.visibilityState === "visible") {
+        reloadIfDateChanged();
+      }
+    }, DATE_CHECK_INTERVAL_MS);
+
     $("btnBack").addEventListener("click", () => history.back());
     requestAnimationFrame(setTopHeight);
     boot();
