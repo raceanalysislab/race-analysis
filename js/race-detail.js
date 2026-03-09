@@ -29,6 +29,9 @@ let dragStartX = 0;
 let dragCurrentX = 0;
 let dragging = false;
 
+let courseStats = {};
+let courseStatsLoaded = false;
+
 const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
 
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({
@@ -51,6 +54,13 @@ const safeInt = (v) => {
   return Number.isFinite(n) ? String(Math.trunc(n)) : "—";
 };
 
+const safeRate = (num, den, digits = 1) => {
+  const n = Number(num);
+  const d = Number(den);
+  if (!Number.isFinite(n) || !Number.isFinite(d) || d <= 0) return "—";
+  return `${((n / d) * 100).toFixed(digits)}%`;
+};
+
 const toHM = (x) => {
   const m = String(x || "").match(/(\d{1,2}):(\d{2})/);
   return m ? `${String(m[1]).padStart(2, "0")}:${m[2]}` : "--:--";
@@ -62,9 +72,22 @@ function setTopHeight() {
 }
 
 async function fetchJSON(url) {
-  const res = await fetch(`${url}?t=${Date.now()}`, { cache: "no-store" });
+  const joiner = url.includes("?") ? "&" : "?";
+  const res = await fetch(`${url}${joiner}t=${Date.now()}`, { cache: "no-store" });
   if (!res.ok) throw new Error(url);
   return res.json();
+}
+
+async function loadCourseStats() {
+  try {
+    courseStats = await fetchJSON("./data/site/course_stats_3y.json");
+    courseStatsLoaded = true;
+    console.log("courseStats loaded", Object.keys(courseStats).length);
+  } catch (err) {
+    courseStats = {};
+    courseStatsLoaded = false;
+    console.error("courseStats load error", err);
+  }
 }
 
 function makeTabs(active) {
@@ -120,12 +143,55 @@ function extractAverageSt(note) {
   return m ? m[1] : "—";
 }
 
+function getCourseStat(regno, course) {
+  if (!courseStatsLoaded) return null;
+  const player = courseStats[String(regno)];
+  if (!player) return null;
+  return player[String(course)] || player[Number(course)] || null;
+}
+
+function shortKimariteLabel(name) {
+  switch (name) {
+    case "逃げ": return "逃";
+    case "差し": return "差";
+    case "まくり": return "捲";
+    case "まくり差し": return "捲差";
+    case "抜き": return "抜";
+    case "恵まれ": return "恵";
+    default: return name || "—";
+  }
+}
+
+function kimariteText(kimarite) {
+  if (!kimarite || typeof kimarite !== "object") return "—/—/—";
+
+  const arr = Object.entries(kimarite)
+    .filter(([, v]) => Number(v) > 0)
+    .sort((a, b) => Number(b[1]) - Number(a[1]));
+
+  if (!arr.length) return "—/—/—";
+
+  const top3 = arr.slice(0, 3).map(([k, v]) => `${shortKimariteLabel(k)}${v}`);
+  while (top3.length < 3) top3.push("—");
+  return top3.join("/");
+}
+
+function courseAvgStFromStats(p) {
+  const regno = p.regno || "";
+  const waku = Number(p.waku) || 0;
+  const stat = getCourseStat(regno, waku);
+  if (stat && stat.avg_st !== undefined && stat.avg_st !== null) {
+    return safeNum(stat.avg_st, 2);
+  }
+  return extractAverageSt(p.note);
+}
+
 function entryRowHTML(p) {
   const regno = p.regno || "—";
   const grade = p.grade || "—";
   const branch = p.branch || "—";
   const age = (p.age !== undefined && p.age !== null && p.age !== "") ? `${p.age}歳` : "—";
-  const avgSt = extractAverageSt(p.note);
+  const avgSt = courseAvgStFromStats(p);
 
   return `
     <div class="entryRow">
@@ -149,23 +215,43 @@ function entryRowHTML(p) {
   `;
 }
 
-function courseRowHTML(waku) {
+function courseRowHTML(p, stat) {
+  const waku = Number(p?.waku) || 0;
+
+  if (!stat) {
+    return `
+      <div class="courseRow">
+        <div class="courseWakuCell w${waku}">${waku}</div>
+        <div class="courseDataCell">—</div>
+        <div class="courseDataCell">—</div>
+        <div class="courseDataCell">—</div>
+        <div class="courseDataCell">—/—/—</div>
+        <div class="courseDataCell">—</div>
+        <div class="courseDataCell">—</div>
+      </div>
+    `;
+  }
+
   return `
     <div class="courseRow">
       <div class="courseWakuCell w${waku}">${waku}</div>
-      <div class="courseDataCell">—</div>
-      <div class="courseDataCell">—</div>
-      <div class="courseDataCell">—</div>
-      <div class="courseDataCell">—/—/—</div>
-      <div class="courseDataCell">—</div>
-      <div class="courseDataCell">—</div>
+      <div class="courseDataCell">${esc(safeNum(stat.avg_st, 2))}</div>
+      <div class="courseDataCell">${esc(safeRate(stat.wins, stat.starts))}</div>
+      <div class="courseDataCell">${esc(safeRate(stat.place2, stat.starts))}</div>
+      <div class="courseDataCell">${esc(kimariteText(stat.kimarite))}</div>
+      <div class="courseDataCell">${esc(safeRate(stat.place3, stat.starts))}</div>
+      <div class="courseDataCell">${esc(safeInt(stat.starts))}</div>
     </div>
   `;
 }
 
-function renderCoursePlaceholders() {
-  $courseYearBody.innerHTML = Array.from({ length: 6 }, (_, i) => courseRowHTML(i + 1)).join("");
-  $courseLocalBody.innerHTML = Array.from({ length: 6 }, (_, i) => courseRowHTML(i + 1)).join("");
+function renderCourseRows(boats) {
+  $courseYearBody.innerHTML = boats.map((p) => {
+    const stat = getCourseStat(p.regno, p.waku);
+    return courseRowHTML(p, stat);
+  }).join("");
+
+  $courseLocalBody.innerHTML = boats.map((p) => courseRowHTML(p, null)).join("");
 }
 
 function setView(index) {
@@ -282,7 +368,7 @@ function renderRaceJSON(r, json) {
   const boats = normalizeBoatsTo6(Array.isArray(raceObj.boats) ? raceObj.boats : []);
 
   $entryTable.innerHTML = boats.map(entryRowHTML).join("");
-  renderCoursePlaceholders();
+  renderCourseRows(boats);
 
   setTopHeight();
 }
@@ -293,6 +379,8 @@ async function setRace(r) {
 
   makeTabs(r);
   $entryTable.innerHTML = `<div class="err">読み込み中…</div>`;
+  $courseYearBody.innerHTML = "";
+  $courseLocalBody.innerHTML = "";
 
   try {
     const json = await fetchRaceJSON(r);
@@ -310,7 +398,10 @@ async function boot() {
   setupCourseTabs();
   setupSwipe();
   setView(0);
+
+  await loadCourseStats();
   await setRace(initialRace);
+
   requestAnimationFrame(setTopHeight);
 }
 
