@@ -275,13 +275,14 @@ function entryRowHTML(p) {
 
 function courseGridHTML(boats) {
   const header = `
-    <div class="entryRow entryRow--head">
-      <div class="entryWaku entryWaku--head">枠</div>
-      <div class="entryNameCell entryNameCell--head">選手名</div>
-      <div class="entryVal entryVal--head">平均ST</div>
-      <div class="entryVal entryVal--head">勝率</div>
-      <div class="entryVal entryVal--head">2連率</div>
-      <div class="entryVal entryVal--head">決まり手</div>
+    <div class="courseGridHead">
+      <div class="courseGridHead__waku"></div>
+      <div class="courseGridHead__name">選手名</div>
+      <div class="courseGridHead__cell">決まり手</div>
+      <div class="courseGridHead__cell">平均ST</div>
+      <div class="courseGridHead__cell">コース勝率</div>
+      <div class="courseGridHead__cell">2着内率</div>
+      <div class="courseGridHead__cell">3着内率</div>
     </div>
   `;
 
@@ -293,18 +294,19 @@ function courseGridHTML(boats) {
     const age = (p.age !== undefined && p.age !== null && p.age !== "") ? `${p.age}歳` : "—";
 
     return `
-      <div class="entryRow">
-        <div class="entryWaku w${Number(p.waku) || 0}">${Number(p.waku) || ""}</div>
+      <div class="courseGridRow">
+        <div class="courseGridWaku w${Number(p.waku) || 0}">${Number(p.waku) || ""}</div>
 
-        <div class="entryNameCell">
-          <div class="entryMeta">${esc(regno)} / ${esc(grade)} / ${esc(branch)} / ${esc(age)}</div>
-          <div class="entryName">${esc(p.name || "—")}</div>
+        <div class="courseGridName">
+          <div class="courseGridMeta">${esc(regno)} / ${esc(grade)} / ${esc(branch)} / ${esc(age)}</div>
+          <div class="courseGridPlayer">${esc(p.name || "—")}</div>
         </div>
 
-        <div class="entryVal">${esc(stat ? safeNum(stat.avg_st, 2) : "—")}</div>
-        <div class="entryVal">${esc(stat ? safeRate(stat.wins, stat.starts) : "—")}</div>
-        <div class="entryVal">${esc(stat ? safeRate(stat.place2, stat.starts) : "—")}</div>
-        <div class="entryVal">${esc(stat ? kimariteText(stat.kimarite) : "—")}</div>
+        <div class="courseGridCell">${esc(stat ? kimariteText(stat.kimarite) : "—")}</div>
+        <div class="courseGridCell">${esc(stat ? safeNum(stat.avg_st, 2) : "—")}</div>
+        <div class="courseGridCell">${esc(stat ? safeRate(stat.wins, stat.starts) : "—")}</div>
+        <div class="courseGridCell">${esc(stat ? safeRate(stat.place2, stat.starts) : "—")}</div>
+        <div class="courseGridCell">${esc(stat ? safeRate(stat.place3, stat.starts) : "—")}</div>
       </div>
     `;
   }).join("");
@@ -319,25 +321,27 @@ function renderCourseRows(boats) {
 
   if ($courseLocalBody) {
     $courseLocalBody.innerHTML = `
-      <div class="entryRow entryRow--head">
-        <div class="entryWaku entryWaku--head">枠</div>
-        <div class="entryNameCell entryNameCell--head">選手名</div>
-        <div class="entryVal entryVal--head">平均ST</div>
-        <div class="entryVal entryVal--head">勝率</div>
-        <div class="entryVal entryVal--head">2連率</div>
-        <div class="entryVal entryVal--head">決まり手</div>
+      <div class="courseGridHead">
+        <div class="courseGridHead__waku"></div>
+        <div class="courseGridHead__name">選手名</div>
+        <div class="courseGridHead__cell">決まり手</div>
+        <div class="courseGridHead__cell">平均ST</div>
+        <div class="courseGridHead__cell">コース勝率</div>
+        <div class="courseGridHead__cell">2着内率</div>
+        <div class="courseGridHead__cell">3着内率</div>
       </div>
       ${boats.map((p) => `
-        <div class="entryRow">
-          <div class="entryWaku w${Number(p.waku) || 0}">${Number(p.waku) || ""}</div>
-          <div class="entryNameCell">
-            <div class="entryMeta">${esc(p.regno || "—")} / ${esc(p.grade || "—")} / ${esc(p.branch || "—")} / ${esc((p.age !== undefined && p.age !== null && p.age !== "") ? `${p.age}歳` : "—")}</div>
-            <div class="entryName">${esc(p.name || "—")}</div>
+        <div class="courseGridRow">
+          <div class="courseGridWaku w${Number(p.waku) || 0}">${Number(p.waku) || ""}</div>
+          <div class="courseGridName">
+            <div class="courseGridMeta">${esc(p.regno || "—")} / ${esc(p.grade || "—")} / ${esc(p.branch || "—")} / ${esc((p.age !== undefined && p.age !== null && p.age !== "") ? `${p.age}歳` : "—")}</div>
+            <div class="courseGridPlayer">${esc(p.name || "—")}</div>
           </div>
-          <div class="entryVal">—</div>
-          <div class="entryVal">—</div>
-          <div class="entryVal">—</div>
-          <div class="entryVal">—</div>
+          <div class="courseGridCell">—</div>
+          <div class="courseGridCell">—</div>
+          <div class="courseGridCell">—</div>
+          <div class="courseGridCell">—</div>
+          <div class="courseGridCell">—</div>
         </div>
       `).join("")}
     `;
@@ -502,5 +506,3 @@ addEventListener("resize", setTopHeight, { passive: true });
 $("btnBack").addEventListener("click", () => history.back());
 
 boot();
-
-修正よろしくお願いします
