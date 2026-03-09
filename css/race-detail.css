@@ -444,9 +444,9 @@ body{ padding-top:var(--safe-top); }
 
 .courseGridHead,
 .courseGridRow{
-  min-width:620px;
+  min-width:560px;
   display:grid;
-  grid-template-columns:46px minmax(132px,1.1fr) 62px 58px 72px 72px 72px;
+  grid-template-columns:46px minmax(112px,0.95fr) 48px 58px 72px 72px 72px;
 }
 
 .courseGridHead{
@@ -548,14 +548,14 @@ body{ padding-top:var(--safe-top); }
 .courseGridCell{
   display:flex;
   align-items:center;
-  justify-content:center;
-  text-align:center;
+  justify-content:flex-start;
+  text-align:left;
   font-variant-numeric:tabular-nums;
   font-size:13px;
   line-height:1.05;
   font-weight:900;
   color:#0f172a;
-  padding:0 4px;
+  padding:0 6px;
   border-right:1px solid #e5eaf2;
   white-space:nowrap;
 }
@@ -646,8 +646,8 @@ body{ padding-top:var(--safe-top); }
 
   .courseGridHead,
   .courseGridRow{
-    min-width:590px;
-    grid-template-columns:42px minmax(124px,1.05fr) 60px 56px 68px 68px 68px;
+    min-width:536px;
+    grid-template-columns:42px minmax(106px,0.95fr) 44px 56px 68px 68px 68px;
   }
 
   .courseGridHead{
@@ -672,7 +672,7 @@ body{ padding-top:var(--safe-top); }
 
   .courseGridCell{
     font-size:12px;
-    padding:0 2px;
+    padding:0 4px;
   }
 
   .courseGridHead__name,
