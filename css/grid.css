@@ -193,8 +193,9 @@
 
 .card--general .card__meta{
   display:grid !important;
-  grid-template-columns: 52px minmax(0, 1fr);
+  grid-template-columns: 44px auto;
   align-items:center;
+  justify-content:space-between;
   width:100% !important;
   margin:0 0 2px 0 !important;
   padding:0 13px !important;
@@ -215,7 +216,7 @@
 }
 
 .card--general .gradeText--general{
-  width:52px;
+  width:44px;
   font-size:11px;
   font-weight:700;
   color:#334155;
@@ -223,7 +224,6 @@
 }
 
 .card--general .day{
-  width:100%;
   font-size:11px;
   font-weight:700;
   color:#334155;
@@ -313,8 +313,9 @@
 /* 一般カードだけ2カラム固定 */
 .card--general .card__line--btm{
   display:grid !important;
-  grid-template-columns: 52px minmax(0, 1fr);
+  grid-template-columns: 44px auto;
   align-items:center;
+  justify-content:space-between;
   width:100% !important;
   margin-top:2px;
   padding:0 13px !important;
@@ -331,21 +332,26 @@
 }
 
 .card--general .raceNo{
-  width:52px;
+  width:44px;
   text-align:left;
 }
 
 .card--general .raceTime{
-  width:100%;
   text-align:right;
 }
 
 .raceNo{
   font-weight:700;
+  font-variant-numeric: tabular-nums;
 }
 
 .raceTime{
   font-weight:700;
+  font-variant-numeric: tabular-nums;
+}
+
+.day{
+  font-variant-numeric: tabular-nums;
 }
 
 .raceTime--danger{
