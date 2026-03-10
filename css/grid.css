@@ -310,16 +310,16 @@
   font-weight:700;
   font-size:13px;
   line-height:1;
-  margin-top:auto;
+  margin-top:2px;
 }
 
 /* 一般カードだけ2カラム固定 */
 .card--general .card__line--btm{
   display:grid !important;
-  grid-template-columns:auto 1fr;
+  grid-template-columns:52px minmax(0, 1fr);
   align-items:center;
   width:100% !important;
-  margin-top:auto;
+  margin-top:2px;
   padding:0 12px !important;
   box-sizing:border-box;
   column-gap:12px;
@@ -334,6 +334,7 @@
 }
 
 .card--general .raceNo{
+  width:52px;
   text-align:left;
   justify-self:start;
 }
@@ -342,6 +343,7 @@
   min-width:0;
   text-align:right;
   justify-self:end;
+  padding-left:10px;
 }
 
 .raceNo{
