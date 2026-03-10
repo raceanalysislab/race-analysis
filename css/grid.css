@@ -313,7 +313,6 @@
   align-items:center;
   justify-content:center;
   gap:6px;
-  font-weight:700;
   font-size:13px;
   line-height:1;
   margin-top:-3px;
@@ -352,7 +351,8 @@
 }
 
 .raceNo{
-  font-weight:700;
+  font-weight:600;
+  letter-spacing:0.02em;
   font-variant-numeric:tabular-nums;
   white-space:nowrap;
   font-family:
@@ -364,7 +364,8 @@
 }
 
 .raceTime{
-  font-weight:700;
+  font-weight:600;
+  letter-spacing:0.01em;
   font-variant-numeric:tabular-nums;
   font-family:
     "Hiragino Sans",
@@ -376,7 +377,7 @@
 
 .raceTime--danger{
   color:#ef4444 !important;
-  font-weight:900;
+  font-weight:700;
 }
 
 /* ===== 三国だけ下段補正 ===== */
