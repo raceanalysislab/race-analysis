@@ -193,13 +193,13 @@
 
 .card--general .card__meta{
   display:grid !important;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 40px 1fr;
   align-items:center;
   width:100% !important;
   margin:0 0 2px 0 !important;
   padding:0 13px !important;
   box-sizing:border-box;
-  gap:8px;
+  gap:0;
 }
 
 .card--general .gradeText--general,
@@ -215,19 +215,19 @@
 }
 
 .card--general .gradeText--general{
+  width:40px;
   font-size:11px;
   font-weight:700;
   color:#334155;
   text-align:left;
-  justify-self:start;
 }
 
 .card--general .day{
+  width:100%;
   font-size:11px;
   font-weight:700;
   color:#334155;
   text-align:right;
-  justify-self:end;
 }
 
 /* ===== グレード帯 ===== */
@@ -313,13 +313,13 @@
 /* 一般カードだけ帯付きみたいに2カラム固定 */
 .card--general .card__line--btm{
   display:grid !important;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 40px 1fr;
   align-items:center;
   width:100% !important;
   margin-top:2px;
   padding:0 13px !important;
   box-sizing:border-box;
-  gap:8px;
+  gap:0;
 }
 
 .card--general .raceNo,
@@ -331,13 +331,13 @@
 }
 
 .card--general .raceNo{
+  width:40px;
   text-align:left;
-  justify-self:start;
 }
 
 .card--general .raceTime{
+  width:100%;
   text-align:right;
-  justify-self:end;
 }
 
 .raceNo{
