@@ -184,29 +184,45 @@
   color:#334155;
 }
 
+/* 一般カードは上段も下段も同じ2列グリッドで揃える */
+.card--general .card__meta{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  align-items:center;
+  width:100%;
+  margin:0 0 2px;
+  padding:0 13px;
+  box-sizing:border-box;
+  gap:0;
+}
+
 .gradeText--general{
   background:transparent;
   border:none;
-  padding:0 0 0 13px;
+  padding:0;
   border-radius:0;
   font-size:11px;
   font-weight:700;
   color:#334155;
-  justify-content:flex-start;
+  display:block;
+  width:100%;
   text-align:left;
+  justify-self:start;
 }
 
 .gradeText--general + .day{
   background:transparent;
   border:none;
-  padding:0 13px 0 0;
+  padding:0;
   border-radius:0;
   font-size:11px;
   font-weight:700;
   color:#334155;
-  margin-left:auto;
-  justify-content:flex-end;
+  display:block;
+  width:100%;
   text-align:right;
+  justify-self:end;
+  margin-left:0;
 }
 
 /* ===== グレード帯（縁まで） ===== */
