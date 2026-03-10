@@ -41,7 +41,6 @@ const RERENDER_INTERVAL_MS = 1000;
 const REFRESH_INTERVAL_MS = 30 * 1000;
 const DATE_CHECK_INTERVAL_MS = 15 * 1000;
 
-/* PROキー */
 const PRO_KEY = "123456";
 const PRO_STORAGE_KEY = "boatcore_pro_unlocked";
 
@@ -52,7 +51,6 @@ const $picks = document.getElementById("picks");
 const $picksUpdatedAt = document.getElementById("picksUpdatedAt");
 const $picksCta = document.getElementById("picksCta");
 
-/* PRO UI */
 const $btnPro = document.getElementById("btnPro");
 const $proModal = document.getElementById("proModal");
 const $proInputsWrap = document.getElementById("proInputs");
@@ -243,7 +241,7 @@ function scheduleMidnightReload() {
   }, delay);
 }
 
-/* ===== PRO functions ===== */
+/* ===== PRO ===== */
 
 function isProUnlocked() {
   return localStorage.getItem(PRO_STORAGE_KEY) === "1";
@@ -414,34 +412,56 @@ function renderOffCard(base) {
   `;
 }
 
+function renderBottomHtml(next, isGeneral) {
+  const m = String(next.text).match(/^(\d+R)\s+(\d{2}:\d{2})$/);
+
+  if (!m) {
+    if (next.soldout) {
+      return {
+        soldoutClass: " card__line--soldout",
+        html: `<span class="status--soldout">発売終了</span>`
+      };
+    }
+    return {
+      soldoutClass: "",
+      html: esc(next.text)
+    };
+  }
+
+  const raceText = m[1];
+  const timeText = m[2];
+  const timeClass = next.danger ? " raceTime--danger" : "";
+
+  if (isGeneral) {
+    return {
+      soldoutClass: "",
+      html: [
+        `<span class="raceNo">${esc(raceText)}</span>`,
+        `<span class="raceTime${timeClass}">${esc(timeText)}</span>`
+      ].join("")
+    };
+  }
+
+  return {
+    soldoutClass: "",
+    html: [
+      `<span class="raceNo">${esc(raceText)}</span>`,
+      `<span class="raceTime${timeClass}">${esc(timeText)}</span>`
+    ].join("")
+  };
+}
+
 function renderOnCard(base, v) {
   const next = computeNextDisplay(v);
-  const m = String(next.text).match(/^(\d+R)\s+(\d{2}:\d{2})$/);
   const gradeLabel = normalizeGradeLabel(v?.grade_label);
   const gradeClass = getGradeClass(v?.grade_label);
   const isGeneral = gradeLabel === "一般";
+  const tone = normalizeBand(v?.card_band);
 
-  let bottomHTML = "";
-  let soldoutClass = "";
-
-  if (m) {
-    const raceText = m[1];
-    const timeText = m[2];
-    const timeClass = next.danger ? " raceTime--danger" : "";
-
-    bottomHTML = `
-      <span class="raceNo">${esc(raceText)}</span>
-      <span class="raceTime${timeClass}">${esc(timeText)}</span>
-    `;
-  } else if (next.soldout) {
-    soldoutClass = " card__line--soldout";
-    bottomHTML = `<span class="status--soldout">発売終了</span>`;
-  } else {
-    bottomHTML = esc(next.text);
-  }
+  const bottom = renderBottomHtml(next, isGeneral);
 
   return `
-    <a class="card card--on ${isGeneral ? "card--general" : ""} ${next.soldout ? "card--soldout" : ""} card--tone-${esc(normalizeBand(v?.card_band))}"
+    <a class="card card--on ${isGeneral ? "card--general" : ""} ${next.soldout ? "card--soldout" : ""} ${next.danger ? "card--danger" : ""} card--tone-${esc(tone)}"
        href="./race.html?jcd=${encodeURIComponent(base.jcd)}&name=${encodeURIComponent(base.name)}">
       <div class="card__nameRow">
         <span class="card__nameIcon card__nameIcon--empty"></span>
@@ -454,8 +474,8 @@ function renderOnCard(base, v) {
         <span class="day">${esc(v?.day_label || "-- --")}</span>
       </div>
 
-      <div class="card__line card__line--btm${soldoutClass}">
-        ${bottomHTML}
+      <div class="card__line card__line--btm${bottom.soldoutClass}">
+        ${bottom.html}
       </div>
     </a>
   `;
