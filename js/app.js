@@ -1,4 +1,4 @@
-/* js/app.js（完全置き換え：24場固定 / 非開催場も表示 / raw.githubusercontent + 1分単位cache bust / 30秒自動更新 / PRO対応 / 日付跨ぎ対応 / 00:00:10強制再取得保険つき / グレード表記統一 + class付与） */
+/* js/app.js（完全置き換え：24場固定 / 非開催場も表示 / raw.githubusercontent + 1分単位cache bust / 30秒自動更新 / PRO対応 / 日付跨ぎ対応 / 00:00:10強制再取得保険つき / グレード表記統一 + class付与 / 一般カードは左右整列） */
 
 const DATA_URL = "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/site/venues.json";
 
@@ -419,6 +419,7 @@ function renderOnCard(base, v) {
   const m = String(next.text).match(/^(\d+R)\s+(\d{2}:\d{2})$/);
   const gradeLabel = normalizeGradeLabel(v?.grade_label);
   const gradeClass = getGradeClass(v?.grade_label);
+  const isGeneral = gradeLabel === "一般";
 
   let bottomHTML = "";
   let soldoutClass = "";
@@ -440,7 +441,7 @@ function renderOnCard(base, v) {
   }
 
   return `
-    <a class="card card--on ${next.soldout ? "card--soldout" : ""} card--tone-${esc(normalizeBand(v?.card_band))}"
+    <a class="card card--on ${isGeneral ? "card--general" : ""} ${next.soldout ? "card--soldout" : ""} card--tone-${esc(normalizeBand(v?.card_band))}"
        href="./race.html?jcd=${encodeURIComponent(base.jcd)}&name=${encodeURIComponent(base.name)}">
       <div class="card__nameRow">
         <span class="card__nameIcon card__nameIcon--empty"></span>
