@@ -296,17 +296,23 @@
 
 /* 一般カードだけ左右整列 */
 .card--general .card__line--btm{
-  justify-content:space-between;
-  gap:0;
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  align-items:center;
+  width:100%;
   padding:0 13px;
+  box-sizing:border-box;
+  gap:0;
 }
 
 .card--general .raceNo{
   text-align:left;
+  justify-self:start;
 }
 
 .card--general .raceTime{
   text-align:right;
+  justify-self:end;
 }
 
 .raceNo{
