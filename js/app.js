@@ -491,16 +491,6 @@ function renderBottomHtml(next, isGeneral) {
   const timeText = m[2];
   const timeClass = next.danger ? " raceTime--danger" : "";
 
-  if (isGeneral) {
-    return {
-      soldoutClass: "",
-      html: [
-        `<span class="raceNo">${esc(raceText)}</span>`,
-        `<span class="raceTime${timeClass}">${esc(timeText)}</span>`
-      ].join("")
-    };
-  }
-
   return {
     soldoutClass: "",
     html: [
@@ -516,6 +506,7 @@ function renderOnCard(base, v) {
   const gradeClass = getGradeClass(v?.grade_label);
   const isGeneral = gradeLabel === "一般";
   const tone = resolveCardBand(v);
+  const bottom = renderBottomHtml(next, isGeneral);
 
   return `
     <a class="card card--on ${isGeneral ? "card--general" : ""} ${next.soldout ? "card--soldout" : ""} ${next.danger ? "card--danger" : ""} card--tone-${esc(tone)}"
