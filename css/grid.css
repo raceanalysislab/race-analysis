@@ -178,51 +178,49 @@
   text-align:center;
 }
 
-/* ===== 一般（帯レイアウト準拠・背景なし） ===== */
+/* ===== 一般 ===== */
 
 .gradeText{
   color:#334155;
 }
 
 .card--general .card__meta{
-  display:grid;
+  display:grid !important;
   grid-template-columns: 1fr 1fr;
   align-items:center;
-  width:100%;
-  margin:0 0 2px;
-  padding:0 13px;
+  width:100% !important;
+  margin:0 0 2px 0 !important;
+  padding:0 13px !important;
   box-sizing:border-box;
   gap:0;
 }
 
-.gradeText--general{
-  display:block;
+.card--general .gradeText--general,
+.card--general .day{
+  display:block !important;
+  min-height:auto !important;
   width:100%;
-  padding:0;
-  margin:0;
-  background:transparent;
-  border:none;
-  border-radius:0;
+  line-height:1;
+  background:transparent !important;
+  border:none !important;
+  border-radius:0 !important;
+  margin:0 !important;
+}
+
+.card--general .gradeText--general{
+  padding:0 !important;
   font-size:11px;
   font-weight:700;
   color:#334155;
   text-align:left;
-  line-height:1;
 }
 
-.gradeText--general + .day{
-  display:block;
-  width:100%;
-  padding:0;
-  margin:0;
-  background:transparent;
-  border:none;
-  border-radius:0;
+.card--general .day{
+  padding:0 !important;
   font-size:11px;
   font-weight:700;
   color:#334155;
   text-align:right;
-  line-height:1;
 }
 
 /* ===== グレード帯（縁まで） ===== */
@@ -310,20 +308,21 @@
   margin-top:2px;
 }
 
-/* 一般カードだけ帯と同じ2分割配置 */
+/* 一般カードだけ左右整列 */
 .card--general .card__line--btm{
-  display:grid;
+  display:grid !important;
   grid-template-columns: 1fr 1fr;
   align-items:center;
-  width:100%;
-  padding:0 13px;
+  width:100% !important;
+  margin-top:2px;
+  padding:0 13px !important;
   box-sizing:border-box;
   gap:0;
 }
 
 .card--general .raceNo,
 .card--general .raceTime{
-  display:block;
+  display:block !important;
   width:100%;
   line-height:1;
 }
