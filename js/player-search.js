@@ -9,7 +9,7 @@ fetch("./data/player_index_today.json")
     input.addEventListener("input", () => {
       const q = input.value.trim();
 
-      if (q.length < 2) {
+      if (q.length < 1) {
         result.style.display = "none";
         result.innerHTML = "";
         return;
