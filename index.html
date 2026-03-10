@@ -152,6 +152,12 @@
       text-overflow: ellipsis;
     }
 
+    .proInputs input{
+      font-size: 16px;
+      -webkit-text-size-adjust: 100%;
+      touch-action: manipulation;
+    }
+
     @media (max-width: 390px){
       .top__searchRow{
         grid-template-columns: minmax(0, 1.55fr) minmax(106px, .85fr);
@@ -250,12 +256,12 @@
       </div>
 
       <div class="proInputs" id="proInputs">
-        <input inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="1桁目">
-        <input inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="2桁目">
-        <input inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="3桁目">
-        <input inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="4桁目">
-        <input inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="5桁目">
-        <input inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="6桁目">
+        <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="1桁目" autocomplete="one-time-code">
+        <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="2桁目" autocomplete="one-time-code">
+        <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="3桁目" autocomplete="one-time-code">
+        <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="4桁目" autocomplete="one-time-code">
+        <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="5桁目" autocomplete="one-time-code">
+        <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="6桁目" autocomplete="one-time-code">
       </div>
 
       <button id="proUnlock" class="proUnlock" type="button">PROを解放する</button>
