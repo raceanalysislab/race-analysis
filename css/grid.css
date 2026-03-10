@@ -187,7 +187,7 @@
 .gradeText--general{
   background:transparent;
   border:none;
-  padding:0 0 0 7px;
+  padding:0 0 0 13px;
   border-radius:0;
   font-size:11px;
   font-weight:700;
@@ -199,7 +199,7 @@
 .gradeText--general + .day{
   background:transparent;
   border:none;
-  padding:0 7px 0 0;
+  padding:0 13px 0 0;
   border-radius:0;
   font-size:11px;
   font-weight:700;
@@ -298,6 +298,7 @@
 .card--general .card__line--btm{
   justify-content:space-between;
   gap:0;
+  padding:0 13px;
 }
 
 .card--general .raceNo{
