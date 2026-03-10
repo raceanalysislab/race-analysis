@@ -3,8 +3,6 @@
   margin-top: 10px;
   isolation: isolate;
   contain: paint;
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
 }
 
 .grid{
@@ -13,8 +11,6 @@
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(6, 1fr);
   gap: 4px;
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
 }
 
 .card{
@@ -31,9 +27,18 @@
   text-align:center;
   backface-visibility:hidden;
   -webkit-backface-visibility:hidden;
-  transform:translateZ(0);
-  -webkit-transform:translateZ(0);
   -webkit-tap-highlight-color:transparent;
+  transform:none !important;
+  scale:1 !important;
+}
+
+.card:focus,
+.card:active,
+.card--on:focus,
+.card--on:active{
+  transform:none !important;
+  scale:1 !important;
+  outline:none !important;
 }
 
 .card::before{
