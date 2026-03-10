@@ -33,14 +33,24 @@ fetch("./data/player_index_today.json")
       "24": "大村"
     };
 
+    const VENUE_NAMES = Object.values(JCD_TO_VENUE);
+
     const normalize = (v) =>
       String(v || "")
         .toLowerCase()
         .replace(/\s+/g, "")
         .replace(/　+/g, "");
 
-    const getVenueLabel = (p) =>
-      JCD_TO_VENUE[String(p.jcd || "").padStart(2, "0")] || "";
+    const getVenueLabel = (p) => {
+      const jcdLabel = JCD_TO_VENUE[String(p.jcd || "").padStart(2, "0")];
+      if (jcdLabel) return jcdLabel;
+
+      const rawVenue = String(p.venue || "");
+      const matched = VENUE_NAMES.find((name) => rawVenue.includes(name));
+      if (matched) return matched;
+
+      return "";
+    };
 
     const clearSearch = () => {
       input.value = "";
@@ -82,6 +92,8 @@ fetch("./data/player_index_today.json")
         div.textContent = `${p.reg_no} ${p.name} ${venueLabel} ${p.race}R`;
 
         div.addEventListener("click", () => {
+          if (!getVenueLabel(p) || !p.jcd) return;
+
           window.location.href =
             "./race-detail.html?name=" +
             encodeURIComponent(venueLabel) +
