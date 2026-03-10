@@ -1,16 +1,16 @@
 /* ===== Header ===== */
-/* 白 × 金 PROテーマ 120点版 / BOAT CORE対応 / 検索欄対応版 */
+/* 白 × 金 PROテーマ 120点版 / BOAT CORE対応 / 検索欄前面表示版 */
 
 .top{
   padding: 16px 14px 12px;
   position: sticky;
   top: 0;
-  z-index: 1000;
-  contain: paint;
+  z-index: 5000;
   background: rgba(243,244,246,.94);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   box-shadow: 0 12px 28px rgba(15,23,42,.10);
+  overflow: visible;
 }
 
 html[data-theme="pro"] .top{
@@ -144,7 +144,8 @@ html[data-theme="pro"] .top__proDot{
 .top__search{
   margin-top: 12px;
   position: relative;
-  z-index: 3000;
+  z-index: 6000;
+  overflow: visible;
 }
 
 .playerSearchInput{
@@ -189,7 +190,7 @@ html[data-theme="pro"] .playerSearchInput{
   top: calc(100% + 8px);
   left: 0;
   right: 0;
-  z-index: 9999;
+  z-index: 99999;
   background: #fff;
   border: 1px solid #dbe2ec;
   border-radius: 16px;
@@ -212,7 +213,7 @@ html[data-theme="pro"] #playerSearchResult{
   font-size: 15px;
   line-height: 1.35;
   color: #111827;
-  background: transparent;
+  background: #fff;
   border-top: 1px solid #eef2f7;
 }
 
@@ -220,8 +221,13 @@ html[data-theme="pro"] #playerSearchResult{
   border-top: 0;
 }
 
+.playerSearchItem:active{
+  background: #f8fafc;
+}
+
 html[data-theme="pro"] .playerSearchItem{
   border-top: 1px solid rgba(212,175,55,.12);
+  background: transparent;
 }
 
 .top__sub{
