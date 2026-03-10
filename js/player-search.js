@@ -39,6 +39,12 @@ fetch("./data/player_index_today.json")
         .replace(/\s+/g, "")
         .replace(/　+/g, "");
 
+    const clearSearch = () => {
+      input.value = "";
+      result.innerHTML = "";
+      result.style.display = "none";
+    };
+
     players.forEach(p => {
       const regNo = normalize(p.reg_no);
       const name = normalize(p.name);
@@ -91,6 +97,10 @@ fetch("./data/player_index_today.json")
       });
 
       result.style.display = "block";
+    });
+
+    window.addEventListener("pageshow", () => {
+      clearSearch();
     });
   })
   .catch(err => console.error("player search error:", err));
