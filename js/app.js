@@ -1,6 +1,6 @@
-/* js/app.js（完全置き換え：24場固定 / 非開催場も表示 / jsDelivr + 1分単位cache bust / 30秒自動更新 / PRO対応 / 日付跨ぎ対応 / 00:00:10強制再取得保険つき / グレード表記統一 + class付与） */
+/* js/app.js（完全置き換え：24場固定 / 非開催場も表示 / raw.githubusercontent + 1分単位cache bust / 30秒自動更新 / PRO対応 / 日付跨ぎ対応 / 00:00:10強制再取得保険つき / グレード表記統一 + class付与） */
 
-const DATA_URL = "https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/site/venues.json";
+const DATA_URL = "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/site/venues.json";
 
 const NOTE_URLS = {
   YOSO_ONLY: "https://note.com/wsnndboat7/n/n1fdca8b0a7e3",
@@ -90,14 +90,14 @@ function getLocalYMD() {
 }
 
 function normalizeGradeLabel(v) {
-  const raw = String(v || "").trim();
+  const raw = String(v ?? "").trim();
   const s = raw.toUpperCase();
 
-  if (s === "SG") return "SG";
-  if (s === "G1" || s === "GI") return "G1";
-  if (s === "G2" || s === "GII") return "G2";
-  if (s === "G3" || s === "GIII") return "G3";
-  if (raw === "一般" || raw === "一般戦") return "一般";
+  if (s.includes("SG")) return "SG";
+  if (s.includes("G1") || s.includes("GI")) return "G1";
+  if (s.includes("G2") || s.includes("GII")) return "G2";
+  if (s.includes("G3") || s.includes("GIII")) return "G3";
+  if (raw.includes("一般")) return "一般";
 
   return "一般";
 }
@@ -220,7 +220,7 @@ function getVenueArray(json) {
 
 function buildDataUrl() {
   const sep = DATA_URL.includes("?") ? "&" : "?";
-  const cacheBust = Math.floor(Date.now() / 60000); // 1分単位でURL更新
+  const cacheBust = Math.floor(Date.now() / 60000);
   return `${DATA_URL}${sep}t=${cacheBust}`;
 }
 
@@ -417,8 +417,8 @@ function renderOffCard(base) {
 function renderOnCard(base, v) {
   const next = computeNextDisplay(v);
   const m = String(next.text).match(/^(\d+R)\s+(\d{2}:\d{2})$/);
-  const gradeLabel = normalizeGradeLabel(v.grade_label);
-  const gradeClass = getGradeClass(v.grade_label);
+  const gradeLabel = normalizeGradeLabel(v?.grade_label);
+  const gradeClass = getGradeClass(v?.grade_label);
 
   let bottomHTML = "";
   let soldoutClass = "";
@@ -440,7 +440,7 @@ function renderOnCard(base, v) {
   }
 
   return `
-    <a class="card card--on ${next.soldout ? "card--soldout" : ""} card--tone-${esc(normalizeBand(v.card_band))}"
+    <a class="card card--on ${next.soldout ? "card--soldout" : ""} card--tone-${esc(normalizeBand(v?.card_band))}"
        href="./race.html?jcd=${encodeURIComponent(base.jcd)}&name=${encodeURIComponent(base.name)}">
       <div class="card__nameRow">
         <span class="card__nameIcon card__nameIcon--empty"></span>
@@ -450,7 +450,7 @@ function renderOnCard(base, v) {
 
       <div class="card__meta">
         <span class="gradeText ${gradeClass}">${esc(gradeLabel)}</span>
-        <span class="day">${esc(v.day_label || "-- --")}</span>
+        <span class="day">${esc(v?.day_label || "-- --")}</span>
       </div>
 
       <div class="card__line card__line--btm${soldoutClass}">
