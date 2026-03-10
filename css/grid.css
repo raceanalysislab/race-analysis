@@ -113,8 +113,6 @@
 .card--soldout .gradeText,
 .card--soldout .day{
   background:transparent !important;
-  border:none !important;
-  box-shadow:none !important;
 }
 
 /* ===== 名前 ===== */
@@ -153,13 +151,13 @@
 
 .card__meta{
   display:flex;
-  align-items:center;
+  align-items:stretch;
   justify-content:space-between;
-  gap:6px;
+  gap:0;
   min-height:18px;
   width:100%;
-  padding:0 2px;
-  margin-bottom:2px;
+  padding:0;
+  margin:0 0 4px;
   position: relative;
   z-index: 2;
 }
@@ -170,15 +168,14 @@
   align-items:center;
   justify-content:center;
   min-height:18px;
-  line-height:1;
   font-size:11px;
-  font-weight:800;
+  line-height:1;
   white-space:nowrap;
 }
 
 .day{
-  text-align:right;
   color:#334155;
+  text-align:center;
 }
 
 /* ===== 一般 ===== */
@@ -192,9 +189,9 @@
   border:none;
   padding:0;
   border-radius:0;
-  color:#334155;
   font-size:11px;
   font-weight:700;
+  color:#334155;
 }
 
 .gradeText--general + .day{
@@ -202,65 +199,58 @@
   border:none;
   padding:0;
   border-radius:0;
-  color:#334155;
   font-size:11px;
   font-weight:700;
+  color:#334155;
+  margin-left:auto;
 }
 
-/* ===== グレード帯（公式アプリ寄せ） ===== */
+/* ===== グレード帯（アプリ寄せ） ===== */
 
 .gradeText--sg,
 .gradeText--g1,
 .gradeText--g2,
 .gradeText--g3{
-  padding:2px 7px;
-  border-radius:4px 0 0 4px;
-  color:#ffffff;
-  font-weight:900;
+  flex:1 1 auto;
+  padding:2px 0;
+  border-radius:2px 0 0 2px;
+  color:#fff;
+  font-size:11px;
+  font-weight:800;
 }
 
 .gradeText--sg + .day,
 .gradeText--g1 + .day,
 .gradeText--g2 + .day,
 .gradeText--g3 + .day{
-  padding:2px 7px;
-  border-radius:0 4px 4px 0;
-  color:#ffffff;
-  font-weight:900;
+  flex:1 1 auto;
+  padding:2px 0;
+  border-radius:0 2px 2px 0;
+  color:#fff;
+  font-size:11px;
+  font-weight:800;
 }
 
 /* SG */
-.gradeText--sg{
-  background:#dc2626;
-}
-
+.gradeText--sg,
 .gradeText--sg + .day{
   background:#dc2626;
 }
 
 /* G1 */
-.gradeText--g1{
-  background:#f59e0b;
-}
-
+.gradeText--g1,
 .gradeText--g1 + .day{
   background:#f59e0b;
 }
 
 /* G2 */
-.gradeText--g2{
-  background:#16a34a;
-}
-
+.gradeText--g2,
 .gradeText--g2 + .day{
   background:#16a34a;
 }
 
 /* G3 */
-.gradeText--g3{
-  background:#2563eb;
-}
-
+.gradeText--g3,
 .gradeText--g3 + .day{
   background:#2563eb;
 }
@@ -274,8 +264,6 @@
 .card--off .gradeText,
 .card--off .day{
   background:transparent !important;
-  border:none !important;
-  box-shadow:none !important;
   padding:0 !important;
   border-radius:0 !important;
   font-weight:700 !important;
