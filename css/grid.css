@@ -196,47 +196,44 @@
     sans-serif;
 }
 
-/* ===== 一般 ===== */
+/* ===== 一般も帯付きと同じ配置に統一 ===== */
 
 .card--general .card__meta{
-  display:grid !important;
-  grid-template-columns:44px 1fr;
+  display:flex !important;
   align-items:center;
-  width:100% !important;
-  margin:0 0 6px 0 !important;
-  padding:0 12px !important;
-  box-sizing:border-box;
-  column-gap:12px;
+  justify-content:space-between;
+  gap:0;
+  min-height:18px;
+  width:calc(100% + 14px);
+  margin:0 -7px 4px !important;
+  padding:0;
+  position:relative;
+  z-index:2;
 }
 
 .card--general .gradeText--general,
 .card--general .day{
-  display:block !important;
-  min-height:auto !important;
-  background:transparent !important;
-  border:none !important;
-  border-radius:0 !important;
+  flex:1 1 50%;
+  display:inline-flex !important;
+  align-items:center;
+  justify-content:center;
+  min-height:18px !important;
   margin:0 !important;
-  padding:0 !important;
-  line-height:1.1;
+  padding:2px 0 !important;
+  line-height:1;
+  font-size:11px;
+  font-weight:700;
+  border-radius:0 !important;
+  background:transparent !important;
+  color:#334155 !important;
 }
 
 .card--general .gradeText--general{
-  width:44px;
-  font-size:11px;
-  font-weight:700;
-  color:#334155;
   text-align:left;
-  justify-self:start;
 }
 
 .card--general .day{
-  min-width:0;
-  font-size:11px;
-  font-weight:700;
-  color:#334155;
   text-align:right;
-  justify-self:end;
 }
 
 /* ===== グレード帯 ===== */
@@ -318,7 +315,7 @@
   margin-top:-2px;
 }
 
-/* 一般カードも中央寄せ */
+/* 一般も帯付きと同じ中央配置 */
 .card--general .card__line--btm{
   display:flex !important;
   align-items:center;
