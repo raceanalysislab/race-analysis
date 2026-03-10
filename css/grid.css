@@ -110,6 +110,13 @@
   color:#1f2937 !important;
 }
 
+.card--soldout .gradeText,
+.card--soldout .day{
+  background:transparent !important;
+  border:none !important;
+  box-shadow:none !important;
+}
+
 /* ===== 名前 ===== */
 
 .card__nameRow{
@@ -148,8 +155,8 @@
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap:8px;
-  min-height:12px;
+  gap:6px;
+  min-height:18px;
   width:100%;
   padding:0 2px;
   margin-bottom:2px;
@@ -159,64 +166,119 @@
 
 .gradeText,
 .day{
-  display:inline-block;
-  font-weight:700;
-  font-size:11px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:18px;
   line-height:1;
-  color:#334155;
+  font-size:11px;
+  font-weight:800;
+  white-space:nowrap;
 }
 
 .day{
   text-align:right;
+  color:#334155;
 }
 
-/* ===== グレード表示 ===== */
+/* ===== 一般 ===== */
 
 .gradeText{
-  display:inline-block;
-  font-weight:700;
-  font-size:11px;
-  line-height:1;
   color:#334155;
-  white-space:nowrap;
 }
 
-/* 一般は前のまま */
 .gradeText--general{
-  color:#334155;
   background:transparent;
   border:none;
   padding:0;
   border-radius:0;
+  color:#334155;
   font-size:11px;
   font-weight:700;
 }
 
-/* グレードレースだけ色分け */
-.gradeText--sg{
-  color:#dc2626;
-  font-weight:900;
+.gradeText--general + .day{
+  background:transparent;
+  border:none;
+  padding:0;
+  border-radius:0;
+  color:#334155;
+  font-size:11px;
+  font-weight:700;
 }
 
-.gradeText--g1{
-  color:#eab308;
-  font-weight:900;
-}
+/* ===== グレード帯（公式アプリ寄せ） ===== */
 
-.gradeText--g2{
-  color:#16a34a;
-  font-weight:900;
-}
-
+.gradeText--sg,
+.gradeText--g1,
+.gradeText--g2,
 .gradeText--g3{
-  color:#2563eb;
+  padding:2px 7px;
+  border-radius:4px 0 0 4px;
+  color:#ffffff;
   font-weight:900;
+}
+
+.gradeText--sg + .day,
+.gradeText--g1 + .day,
+.gradeText--g2 + .day,
+.gradeText--g3 + .day{
+  padding:2px 7px;
+  border-radius:0 4px 4px 0;
+  color:#ffffff;
+  font-weight:900;
+}
+
+/* SG */
+.gradeText--sg{
+  background:#dc2626;
+}
+
+.gradeText--sg + .day{
+  background:#dc2626;
+}
+
+/* G1 */
+.gradeText--g1{
+  background:#f59e0b;
+}
+
+.gradeText--g1 + .day{
+  background:#f59e0b;
+}
+
+/* G2 */
+.gradeText--g2{
+  background:#16a34a;
+}
+
+.gradeText--g2 + .day{
+  background:#16a34a;
+}
+
+/* G3 */
+.gradeText--g3{
+  background:#2563eb;
+}
+
+.gradeText--g3 + .day{
+  background:#2563eb;
 }
 
 .card--off .card__name,
 .card--off .gradeText,
 .card--off .day{
   color:#6b7280;
+}
+
+.card--off .gradeText,
+.card--off .day{
+  background:transparent !important;
+  border:none !important;
+  box-shadow:none !important;
+  padding:0 !important;
+  border-radius:0 !important;
+  font-weight:700 !important;
 }
 
 /* ===== 下段 ===== */
