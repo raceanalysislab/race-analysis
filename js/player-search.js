@@ -1,23 +1,28 @@
 fetch("./data/player_index_today.json")
   .then(res => res.json())
   .then(players => {
-
     const input = document.getElementById("playerSearchInput");
     const result = document.getElementById("playerSearchResult");
 
     if (!input || !result) return;
 
+    const normalize = (v) =>
+      String(v || "")
+        .toLowerCase()
+        .replace(/\s+/g, "")
+        .replace(/　+/g, "");
+
     players.forEach(p => {
-      const regNo = String(p.reg_no || "");
-      const name = String(p.name || "");
-      p._search = (regNo + name).toLowerCase();
+      const regNo = normalize(p.reg_no);
+      const name = normalize(p.name);
+      const venue = normalize(p.venue);
+      p._search = `${regNo}${name}${venue}`;
     });
 
     input.addEventListener("input", () => {
+      const q = normalize(input.value);
 
-      const q = input.value.trim().toLowerCase();
-
-      if (!q){
+      if (!q) {
         result.style.display = "none";
         result.innerHTML = "";
         return;
@@ -27,14 +32,13 @@ fetch("./data/player_index_today.json")
 
       result.innerHTML = "";
 
-      if (found.length === 0){
+      if (found.length === 0) {
         result.style.display = "block";
         result.innerHTML = `<div class="playerSearchItem">該当なし</div>`;
         return;
       }
 
       found.slice(0, 10).forEach(p => {
-
         const div = document.createElement("div");
         div.className = "playerSearchItem";
         div.textContent = `${p.reg_no} ${p.name} ${p.venue} ${p.race}R`;
@@ -53,8 +57,6 @@ fetch("./data/player_index_today.json")
       });
 
       result.style.display = "block";
-
     });
-
   })
   .catch(err => console.error("player search error:", err));
