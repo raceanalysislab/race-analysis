@@ -1,4 +1,4 @@
-/* js/app.js（完全置き換え：24場固定 / 非開催場も表示 / jsDelivr + cache bust / 30秒自動更新 / PRO対応 / 日付跨ぎ対応 / 00:00:10強制再取得保険つき / グレード表記統一 + class付与） */
+/* js/app.js（完全置き換え：24場固定 / 非開催場も表示 / jsDelivr + 1分単位cache bust / 30秒自動更新 / PRO対応 / 日付跨ぎ対応 / 00:00:10強制再取得保険つき / グレード表記統一 + class付与） */
 
 const DATA_URL = "https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/site/venues.json";
 
@@ -90,13 +90,14 @@ function getLocalYMD() {
 }
 
 function normalizeGradeLabel(v) {
-  const s = String(v || "").trim().toUpperCase();
+  const raw = String(v || "").trim();
+  const s = raw.toUpperCase();
 
   if (s === "SG") return "SG";
   if (s === "G1" || s === "GI") return "G1";
   if (s === "G2" || s === "GII") return "G2";
   if (s === "G3" || s === "GIII") return "G3";
-  if (s === "一般" || s === "一般戦") return "一般";
+  if (raw === "一般" || raw === "一般戦") return "一般";
 
   return "一般";
 }
@@ -219,7 +220,8 @@ function getVenueArray(json) {
 
 function buildDataUrl() {
   const sep = DATA_URL.includes("?") ? "&" : "?";
-  return `${DATA_URL}${sep}t=${Date.now()}`;
+  const cacheBust = Math.floor(Date.now() / 60000); // 1分単位でURL更新
+  return `${DATA_URL}${sep}t=${cacheBust}`;
 }
 
 function scheduleMidnightReload() {
