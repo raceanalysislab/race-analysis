@@ -33,9 +33,17 @@
       letter-spacing: .02em;
     }
 
-    .top__search{
+    .top__searchRow{
       margin-top: 12px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.7fr) minmax(116px, .9fr);
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    .top__search{
       position: relative;
+      min-width: 0;
     }
 
     .playerSearchInput{
@@ -105,6 +113,68 @@
       color: var(--muted, #6b7280);
       background: #fff;
     }
+
+    .top__next{
+      min-width: 0;
+    }
+
+    .nextRaceBox{
+      width: 100%;
+      height: 44px;
+      border: 1px solid var(--line, #e5e7eb);
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, .03);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 6px 10px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .nextRaceBox__label{
+      font-size: 10px;
+      line-height: 1;
+      color: var(--muted, #6b7280);
+      letter-spacing: .04em;
+      margin-bottom: 4px;
+      white-space: nowrap;
+    }
+
+    .nextRaceBox__main{
+      font-size: 13px;
+      line-height: 1.1;
+      font-weight: 800;
+      color: var(--text, #111827);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    @media (max-width: 390px){
+      .top__searchRow{
+        grid-template-columns: minmax(0, 1.55fr) minmax(106px, .85fr);
+        gap: 8px;
+      }
+
+      .playerSearchInput,
+      .nextRaceBox{
+        height: 42px;
+      }
+
+      .nextRaceBox{
+        padding: 6px 9px;
+      }
+
+      .nextRaceBox__label{
+        font-size: 9px;
+      }
+
+      .nextRaceBox__main{
+        font-size: 12px;
+      }
+    }
   </style>
 </head>
 
@@ -125,20 +195,29 @@
       </div>
     </div>
 
-    <div class="top__search">
-      <input
-        id="playerSearchInput"
-        class="playerSearchInput"
-        type="text"
-        inputmode="search"
-        autocomplete="off"
-        autocapitalize="off"
-        autocorrect="off"
-        spellcheck="false"
-        placeholder="登録番号 / 選手名で検索"
-        aria-label="登録番号または選手名で検索"
-      />
-      <div id="playerSearchResult" class="playerSearchResult" aria-live="polite"></div>
+    <div class="top__searchRow">
+      <div class="top__search">
+        <input
+          id="playerSearchInput"
+          class="playerSearchInput"
+          type="text"
+          inputmode="search"
+          autocomplete="off"
+          autocapitalize="off"
+          autocorrect="off"
+          spellcheck="false"
+          placeholder="登録番号 / 選手名で検索"
+          aria-label="登録番号または選手名で検索"
+        />
+        <div id="playerSearchResult" class="playerSearchResult" aria-live="polite"></div>
+      </div>
+
+      <div class="top__next">
+        <a id="nextRaceBox" class="nextRaceBox" href="javascript:void(0)" aria-label="最短締切レース">
+          <div class="nextRaceBox__label">NEXT</div>
+          <div id="nextRaceText" class="nextRaceBox__main">--</div>
+        </a>
+      </div>
     </div>
 
     <div class="top__sub">
