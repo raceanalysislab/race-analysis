@@ -188,6 +188,12 @@
   color:#334155;
   text-align:center;
   font-variant-numeric:tabular-nums;
+  font-family:
+    "Hiragino Sans",
+    "Noto Sans JP",
+    "Yu Gothic",
+    "Meiryo",
+    sans-serif;
 }
 
 /* ===== 一般 ===== */
@@ -349,11 +355,23 @@
   font-weight:700;
   font-variant-numeric:tabular-nums;
   white-space:nowrap;
+  font-family:
+    "Hiragino Sans",
+    "Noto Sans JP",
+    "Yu Gothic",
+    "Meiryo",
+    sans-serif;
 }
 
 .raceTime{
   font-weight:700;
   font-variant-numeric:tabular-nums;
+  font-family:
+    "Hiragino Sans",
+    "Noto Sans JP",
+    "Yu Gothic",
+    "Meiryo",
+    sans-serif;
 }
 
 .raceTime--danger{
