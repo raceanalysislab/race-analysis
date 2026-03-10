@@ -18,8 +18,8 @@ fetch("./data/player_index_today.json")
       }
 
       const found = players.filter(p =>
-        String(p.reg_no).includes(q) ||
-        String(p.name).includes(q)
+        String(p.reg_no || "").includes(q) ||
+        String(p.name || "").includes(q)
       );
 
       result.innerHTML = "";
@@ -37,10 +37,13 @@ fetch("./data/player_index_today.json")
 
         div.textContent = `${p.reg_no} ${p.name} ${p.venue} ${p.race}R`;
 
-        div.onclick = () => {
+        div.addEventListener("click", () => {
           window.location.href =
-            `./race-detail.html?venue=${p.venue}&race=${p.race}`;
-        };
+            "./race-detail.html?venue=" +
+            encodeURIComponent(p.venue) +
+            "&race=" +
+            encodeURIComponent(p.race);
+        });
 
         result.appendChild(div);
       });
@@ -50,4 +53,4 @@ fetch("./data/player_index_today.json")
     });
 
   })
-  .catch(err => console.error(err));
+  .catch(err => console.error("player search error:", err));
