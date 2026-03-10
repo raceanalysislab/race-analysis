@@ -1,4 +1,4 @@
-/* js/app.js（完全置き換え：24場固定 / 非開催場も表示 / raw.githubusercontent + 1分単位cache bust / 30秒自動更新 / PRO対応 / 日付跨ぎ対応 / 00:00:10強制再取得保険つき / グレード表記統一 + class付与 / 一般カードは左右整列 / 1R時間帯からtone自動補完 / 戻る時のカード拡大解除対応 / 検索入力中はキーボードを弾かない / 最短締切表示対応） */
+/* js/app.js（完全置き換え：24場固定 / 非開催場も表示 / raw.githubusercontent + 1分単位cache bust / 30秒自動更新 / PRO対応 / 日付跨ぎ対応 / 00:00:10強制再取得保険つき / グレード表記統一 + class付与 / 一般カードは左右整列 / 1R時間帯からtone自動補完 / 戻る時のカード拡大解除対応 / 検索入力中はキーボードを弾かない / 最短締切表示対応 / NEXTから該当レース詳細へ直行） */
 
 const DATA_URL = "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/site/venues.json";
 
@@ -283,7 +283,7 @@ function updateNextRaceBox(list) {
   $nextRaceText.textContent = `${nextRace.venueName} ${nextRace.raceNo}R ${nextRace.cutoff}`;
   $nextRaceBox.setAttribute(
     "href",
-    `./race.html?jcd=${encodeURIComponent(nextRace.jcd)}&name=${encodeURIComponent(nextRace.venueName)}`
+    `./race-detail.html?name=${encodeURIComponent(nextRace.venueName)}&race=${encodeURIComponent(nextRace.raceNo)}&jcd=${encodeURIComponent(nextRace.jcd)}`
   );
   $nextRaceBox.removeAttribute("aria-disabled");
 }
