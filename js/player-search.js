@@ -39,32 +39,32 @@ fetch("./data/player_index_today.json")
         .replace(/\s+/g, "")
         .replace(/　+/g, "");
 
+    const getVenueLabel = (p) =>
+      JCD_TO_VENUE[String(p.jcd || "").padStart(2, "0")] || "";
+
     const clearSearch = () => {
       input.value = "";
       result.innerHTML = "";
       result.style.display = "none";
     };
 
-    players.forEach(p => {
+    players.forEach((p) => {
       const regNo = normalize(p.reg_no);
       const name = normalize(p.name);
-      const venue = normalize(p.venue);
-      const venueLabel = normalize(
-        JCD_TO_VENUE[String(p.jcd || "").padStart(2, "0")] || p.venue
-      );
-      p._search = `${regNo}${name}${venue}${venueLabel}`;
+      const venueLabel = normalize(getVenueLabel(p));
+      const race = normalize(`${p.race || ""}r`);
+      p._search = `${regNo}${name}${venueLabel}${race}`;
     });
 
     input.addEventListener("input", () => {
       const q = normalize(input.value);
 
       if (!q) {
-        result.style.display = "none";
-        result.innerHTML = "";
+        clearSearch();
         return;
       }
 
-      const found = players.filter(p => p._search.includes(q));
+      const found = players.filter((p) => p._search.includes(q));
 
       result.innerHTML = "";
 
@@ -74,13 +74,11 @@ fetch("./data/player_index_today.json")
         return;
       }
 
-      found.slice(0, 10).forEach(p => {
+      found.slice(0, 10).forEach((p) => {
         const div = document.createElement("div");
         div.className = "playerSearchItem";
 
-        const venueLabel =
-          JCD_TO_VENUE[String(p.jcd || "").padStart(2, "0")] || p.venue || "";
-
+        const venueLabel = getVenueLabel(p) || "—";
         div.textContent = `${p.reg_no} ${p.name} ${venueLabel} ${p.race}R`;
 
         div.addEventListener("click", () => {
