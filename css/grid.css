@@ -178,16 +178,15 @@
   text-align:center;
 }
 
-/* ===== 一般 ===== */
+/* ===== 一般（帯レイアウト準拠・背景なし） ===== */
 
 .gradeText{
   color:#334155;
 }
 
-/* 一般カードは上段も下段も同じ基準幅 */
 .card--general .card__meta{
   display:grid;
-  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  grid-template-columns: 1fr 1fr;
   align-items:center;
   width:100%;
   margin:0 0 2px;
@@ -197,32 +196,33 @@
 }
 
 .gradeText--general{
+  display:block;
+  width:100%;
+  padding:0;
+  margin:0;
   background:transparent;
   border:none;
-  padding:0;
   border-radius:0;
   font-size:11px;
   font-weight:700;
   color:#334155;
-  display:block;
-  width:100%;
   text-align:left;
-  justify-self:start;
+  line-height:1;
 }
 
 .gradeText--general + .day{
+  display:block;
+  width:100%;
+  padding:0;
+  margin:0;
   background:transparent;
   border:none;
-  padding:0;
   border-radius:0;
   font-size:11px;
   font-weight:700;
   color:#334155;
-  display:block;
-  width:100%;
   text-align:right;
-  justify-self:end;
-  margin-left:0;
+  line-height:1;
 }
 
 /* ===== グレード帯（縁まで） ===== */
@@ -310,10 +310,10 @@
   margin-top:2px;
 }
 
-/* 一般カードだけ左右整列 */
+/* 一般カードだけ帯と同じ2分割配置 */
 .card--general .card__line--btm{
   display:grid;
-  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  grid-template-columns: 1fr 1fr;
   align-items:center;
   width:100%;
   padding:0 13px;
@@ -325,16 +325,15 @@
 .card--general .raceTime{
   display:block;
   width:100%;
+  line-height:1;
 }
 
 .card--general .raceNo{
   text-align:left;
-  justify-self:start;
 }
 
 .card--general .raceTime{
   text-align:right;
-  justify-self:end;
 }
 
 .raceNo{
