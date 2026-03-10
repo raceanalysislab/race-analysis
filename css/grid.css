@@ -44,7 +44,7 @@
   top:0;
   height: 56%;
   pointer-events:none;
-  opacity: .78;
+  opacity:.78;
   background: var(--toneTop, rgba(15,23,42,.12));
   border-top-left-radius: 7px;
   border-top-right-radius: 7px;
@@ -180,42 +180,43 @@
   white-space:nowrap;
 }
 
+.gradeText{
+  color:#334155;
+}
+
 .day{
   color:#334155;
   text-align:center;
-}
-
-.gradeText{
-  color:#334155;
+  font-variant-numeric: tabular-nums;
 }
 
 /* ===== 一般 ===== */
 
 .card--general .card__meta{
   display:grid !important;
-  grid-template-columns: 44px minmax(0, 1fr);
+  grid-template-columns: 46px minmax(0, 1fr);
   align-items:center;
   width:100% !important;
-  margin:0 0 2px 0 !important;
-  padding:0 13px !important;
+  margin:0 0 4px 0 !important;
+  padding:0 12px !important;
   box-sizing:border-box;
-  gap:8px;
+  column-gap:10px;
 }
 
 .card--general .gradeText--general,
 .card--general .day{
   display:block !important;
   min-height:auto !important;
-  line-height:1;
   background:transparent !important;
   border:none !important;
   border-radius:0 !important;
   margin:0 !important;
   padding:0 !important;
+  line-height:1.1;
 }
 
 .card--general .gradeText--general{
-  width:44px;
+  width:46px;
   font-size:11px;
   font-weight:700;
   color:#334155;
@@ -315,25 +316,25 @@
 /* 一般カードだけ2カラム固定 */
 .card--general .card__line--btm{
   display:grid !important;
-  grid-template-columns: 44px minmax(0, 1fr);
+  grid-template-columns: 46px minmax(0, 1fr);
   align-items:center;
   width:100% !important;
-  margin-top:2px;
-  padding:0 13px !important;
+  margin-top:0;
+  padding:0 12px !important;
   box-sizing:border-box;
-  gap:8px;
+  column-gap:10px;
 }
 
 .card--general .raceNo,
 .card--general .raceTime{
   display:block !important;
-  line-height:1;
+  line-height:1.1;
   margin:0;
   padding:0;
 }
 
 .card--general .raceNo{
-  width:44px;
+  width:46px;
   text-align:left;
   justify-self:start;
 }
@@ -351,10 +352,6 @@
 
 .raceTime{
   font-weight:700;
-  font-variant-numeric: tabular-nums;
-}
-
-.day{
   font-variant-numeric: tabular-nums;
 }
 
