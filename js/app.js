@@ -1,4 +1,4 @@
-/* js/app.js（完全置き換え：24場固定 / 非開催場も表示 / raw.githubusercontent + 1分単位cache bust / 30秒自動更新 / PRO対応 / 日付跨ぎ対応 / 00:00:10強制再取得保険つき / グレード表記統一 + class付与 / 一般カードは左右整列） */
+/* js/app.js（完全置き換え：24場固定 / 非開催場も表示 / raw.githubusercontent + 1分単位cache bust / 30秒自動更新 / PRO対応 / 日付跨ぎ対応 / 00:00:10強制再取得保険つき / グレード表記統一 + class付与 / 一般カードは左右整列 / 1R時間帯からtone自動補完） */
 
 const DATA_URL = "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/site/venues.json";
 
@@ -113,6 +113,7 @@ function getGradeClass(v) {
 function normalizeBand(v) {
   const s = String(v || "").trim().toLowerCase();
   if (s === "morning") return "morning";
+  if (s === "early") return "early";
   if (s === "day") return "day";
   if (s === "evening") return "evening";
   if (s === "night") return "night";
@@ -132,6 +133,12 @@ function parseHHMM(s) {
   return { hh, mm };
 }
 
+function hhmmToNumber(hhmm) {
+  const t = parseHHMM(hhmm);
+  if (!t) return null;
+  return t.hh * 100 + t.mm;
+}
+
 function getCutoffTime(hhmm) {
   const t = parseHHMM(hhmm);
   if (!t) return null;
@@ -139,6 +146,46 @@ function getCutoffTime(hhmm) {
   const d = new Date();
   d.setHours(t.hh, t.mm, 0, 0);
   return d.getTime();
+}
+
+function getFirstRaceCutoff(v) {
+  const raceTimes = Array.isArray(v?.race_times) ? v.race_times : [];
+  if (!raceTimes.length) return "";
+
+  const sorted = raceTimes
+    .map((r) => ({
+      rno: Number(r?.rno),
+      cutoff: String(r?.cutoff || "").trim()
+    }))
+    .filter((r) => Number.isFinite(r.rno) && r.cutoff);
+
+  if (!sorted.length) return "";
+
+  sorted.sort((a, b) => a.rno - b.rno);
+  return sorted[0].cutoff || "";
+}
+
+function deriveBandFromFirstRace(v) {
+  const firstCutoff = getFirstRaceCutoff(v);
+  const n = hhmmToNumber(firstCutoff);
+
+  if (n == null) return "normal";
+
+  if (n < 1200) return "morning";
+  if (n < 1300) return "early";
+  if (n < 1500) return "day";
+  if (n < 1700) return "evening";
+  return "night";
+}
+
+function resolveCardBand(v) {
+  const explicit = normalizeBand(v?.card_band);
+
+  if (explicit !== "normal") {
+    return explicit;
+  }
+
+  return deriveBandFromFirstRace(v);
 }
 
 function computeNextDisplay(v) {
@@ -456,7 +503,7 @@ function renderOnCard(base, v) {
   const gradeLabel = normalizeGradeLabel(v?.grade_label);
   const gradeClass = getGradeClass(v?.grade_label);
   const isGeneral = gradeLabel === "一般";
-  const tone = normalizeBand(v?.card_band);
+  const tone = resolveCardBand(v);
 
   const bottom = renderBottomHtml(next, isGeneral);
 
