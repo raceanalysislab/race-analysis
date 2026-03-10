@@ -184,7 +184,7 @@
   color:#334155;
 }
 
-/* 一般カードは上段も下段も同じ2列グリッドで揃える */
+/* 一般カードは上段も下段も同じ基準幅 */
 .card--general .card__meta{
   display:grid;
   grid-template-columns:minmax(0,1fr) minmax(0,1fr);
