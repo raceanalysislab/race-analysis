@@ -7,20 +7,23 @@ fetch("./data/player_index_today.json")
 
     if (!input || !result) return;
 
+    players.forEach(p => {
+      const regNo = String(p.reg_no || "");
+      const name = String(p.name || "");
+      p._search = (regNo + name).toLowerCase();
+    });
+
     input.addEventListener("input", () => {
 
-      const q = input.value.trim();
+      const q = input.value.trim().toLowerCase();
 
-      if (q.length < 1){
+      if (!q){
         result.style.display = "none";
         result.innerHTML = "";
         return;
       }
 
-      const found = players.filter(p =>
-        String(p.reg_no || "").includes(q) ||
-        String(p.name || "").includes(q)
-      );
+      const found = players.filter(p => p._search.includes(q));
 
       result.innerHTML = "";
 
