@@ -33,6 +33,10 @@ fetch("./data/player_index_today.json")
       "24": "大村"
     };
 
+    const VENUE_TO_JCD = Object.fromEntries(
+      Object.entries(JCD_TO_VENUE).map(([jcd, name]) => [name, jcd])
+    );
+
     const VENUE_NAMES = Object.values(JCD_TO_VENUE);
 
     const normalize = (v) =>
@@ -48,6 +52,16 @@ fetch("./data/player_index_today.json")
       const rawVenue = String(p.venue || "");
       const matched = VENUE_NAMES.find((name) => rawVenue.includes(name));
       if (matched) return matched;
+
+      return "";
+    };
+
+    const getResolvedJcd = (p) => {
+      const rawJcd = String(p.jcd || "").padStart(2, "0");
+      if (JCD_TO_VENUE[rawJcd]) return rawJcd;
+
+      const venueLabel = getVenueLabel(p);
+      if (venueLabel && VENUE_TO_JCD[venueLabel]) return VENUE_TO_JCD[venueLabel];
 
       return "";
     };
@@ -89,10 +103,12 @@ fetch("./data/player_index_today.json")
         div.className = "playerSearchItem";
 
         const venueLabel = getVenueLabel(p) || "—";
+        const resolvedJcd = getResolvedJcd(p);
+
         div.textContent = `${p.reg_no} ${p.name} ${venueLabel} ${p.race}R`;
 
         div.addEventListener("click", () => {
-          if (!getVenueLabel(p) || !p.jcd) return;
+          if (!venueLabel || venueLabel === "—" || !resolvedJcd) return;
 
           window.location.href =
             "./race-detail.html?name=" +
@@ -100,7 +116,7 @@ fetch("./data/player_index_today.json")
             "&race=" +
             encodeURIComponent(p.race || 1) +
             "&jcd=" +
-            encodeURIComponent(p.jcd || "");
+            encodeURIComponent(resolvedJcd);
         });
 
         result.appendChild(div);
