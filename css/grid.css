@@ -87,6 +87,13 @@
   border-color: var(--border);
 }
 
+/* ===== 締切近いカード ===== */
+
+.card--danger{
+  border-color:#ef4444 !important;
+  box-shadow:0 0 0 1px rgba(239,68,68,.08) inset;
+}
+
 /* ===== 発売終了 ===== */
 
 .card--soldout{
@@ -178,52 +185,52 @@
   text-align:center;
 }
 
-/* ===== 一般 ===== */
-
 .gradeText{
   color:#334155;
 }
 
+/* ===== 一般 ===== */
+
 .card--general .card__meta{
   display:grid !important;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr auto;
   align-items:center;
   width:100% !important;
   margin:0 0 2px 0 !important;
   padding:0 13px !important;
   box-sizing:border-box;
-  gap:0;
+  gap:8px;
 }
 
 .card--general .gradeText--general,
 .card--general .day{
   display:block !important;
   min-height:auto !important;
-  width:100%;
   line-height:1;
   background:transparent !important;
   border:none !important;
   border-radius:0 !important;
   margin:0 !important;
+  padding:0 !important;
 }
 
 .card--general .gradeText--general{
-  padding:0 !important;
   font-size:11px;
   font-weight:700;
   color:#334155;
   text-align:left;
+  justify-self:start;
 }
 
 .card--general .day{
-  padding:0 !important;
   font-size:11px;
   font-weight:700;
   color:#334155;
   text-align:right;
+  justify-self:end;
 }
 
-/* ===== グレード帯（縁まで） ===== */
+/* ===== グレード帯 ===== */
 
 .gradeText--sg,
 .gradeText--g1,
@@ -249,25 +256,21 @@
   font-weight:800;
 }
 
-/* SG */
 .gradeText--sg,
 .gradeText--sg + .day{
   background:#dc2626;
 }
 
-/* G1 */
 .gradeText--g1,
 .gradeText--g1 + .day{
   background:#f59e0b;
 }
 
-/* G2 */
 .gradeText--g2,
 .gradeText--g2 + .day{
   background:#16a34a;
 }
 
-/* G3 */
 .gradeText--g3,
 .gradeText--g3 + .day{
   background:#2563eb;
@@ -291,10 +294,9 @@
 
 .card__line{
   white-space:nowrap;
-  text-align:center;
   color:#334155;
-  position: relative;
-  z-index: 2;
+  position:relative;
+  z-index:2;
 }
 
 .card__line--btm{
@@ -308,31 +310,34 @@
   margin-top:2px;
 }
 
-/* 一般カードだけ左右整列 */
+/* 一般カードだけ帯付きみたいに2カラム固定 */
 .card--general .card__line--btm{
   display:grid !important;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr auto;
   align-items:center;
   width:100% !important;
   margin-top:2px;
   padding:0 13px !important;
   box-sizing:border-box;
-  gap:0;
+  gap:8px;
 }
 
 .card--general .raceNo,
 .card--general .raceTime{
   display:block !important;
-  width:100%;
   line-height:1;
+  margin:0;
+  padding:0;
 }
 
 .card--general .raceNo{
   text-align:left;
+  justify-self:start;
 }
 
 .card--general .raceTime{
   text-align:right;
+  justify-self:end;
 }
 
 .raceNo{
@@ -351,7 +356,7 @@
 /* ===== 発売終了文字 ===== */
 
 .card__line--soldout{
-  display:flex;
+  display:flex !important;
   align-items:center;
   justify-content:center;
   width:calc(100% + 14px);
