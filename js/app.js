@@ -1,4 +1,4 @@
-/* js/app.js（完全置き換え：24場固定 / 非開催場も表示 / raw.githubusercontent + 1分単位cache bust / 30秒自動更新 / PRO対応 / 日付跨ぎ対応 / 00:00:10強制再取得保険つき / グレード表記統一 + class付与 / 一般カードは左右整列 / 1R時間帯からtone自動補完） */
+/* js/app.js（完全置き換え：24場固定 / 非開催場も表示 / raw.githubusercontent + 1分単位cache bust / 30秒自動更新 / PRO対応 / 日付跨ぎ対応 / 00:00:10強制再取得保険つき / グレード表記統一 + class付与 / 一般カードは左右整列 / 1R時間帯からtone自動補完 / 戻る時のカード拡大解除対応） */
 
 const DATA_URL = "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/site/venues.json";
 
@@ -288,6 +288,18 @@ function scheduleMidnightReload() {
   }, delay);
 }
 
+function clearCardFocus() {
+  if (document.activeElement && typeof document.activeElement.blur === "function") {
+    document.activeElement.blur();
+  }
+
+  document.querySelectorAll(".card--on").forEach((el) => {
+    if (typeof el.blur === "function") {
+      el.blur();
+    }
+  });
+}
+
 /* ===== PRO ===== */
 
 function isProUnlocked() {
@@ -505,8 +517,6 @@ function renderOnCard(base, v) {
   const isGeneral = gradeLabel === "一般";
   const tone = resolveCardBand(v);
 
-  const bottom = renderBottomHtml(next, isGeneral);
-
   return `
     <a class="card card--on ${isGeneral ? "card--general" : ""} ${next.soldout ? "card--soldout" : ""} ${next.danger ? "card--danger" : ""} card--tone-${esc(tone)}"
        href="./race.html?jcd=${encodeURIComponent(base.jcd)}&name=${encodeURIComponent(base.name)}">
@@ -535,6 +545,8 @@ function renderGrid(list) {
     const item = map.get(base.jcd);
     return item ? renderOnCard(base, item) : renderOffCard(base);
   }).join("");
+
+  clearCardFocus();
 
   if ($updatedAt) $updatedAt.textContent = nowHM();
 }
@@ -617,8 +629,15 @@ if ($btn) {
 
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible") {
+    clearCardFocus();
     load();
   }
+});
+
+window.addEventListener("pageshow", () => {
+  clearCardFocus();
+  setTimeout(clearCardFocus, 0);
+  setTimeout(clearCardFocus, 120);
 });
 
 setInterval(() => {
