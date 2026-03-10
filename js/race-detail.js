@@ -18,8 +18,7 @@ const $entryTable = $("entryTable");
 const $courseYearBody = $("courseYearBody");
 const $courseLocalBody = $("courseLocalBody");
 
-const BOT_RACES_BASE_URL =
-  "https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/site/races/";
+const BOT_RACES_BASE_URL = "./data/site/races/";
 
 $("venueName").textContent = venueName;
 
@@ -79,358 +78,6 @@ async function fetchJSON(url) {
   return res.json();
 }
 
-function normalizeRegno(regno) {
-  return String(regno ?? "").replace(/\D/g, "");
-}
-
-function buildCourseStatsIndex(raw) {
-  const index = {};
-  Object.entries(raw || {}).forEach(([key, value]) => {
-    const nk = normalizeRegno(key);
-    if (nk) index[nk] = value;
-  });
-  return index;
-}
-
-async function loadCourseStats() {
-  try {
-    courseStats = await fetchJSON("./data/site/course_stats_3y.json");
-    courseStatsIndex = buildCourseStatsIndex(courseStats);
-    courseStatsLoaded = true;
-    console.log("courseStats loaded", Object.keys(courseStatsIndex).length);
-  } catch (err) {
-    courseStats = {};
-    courseStatsIndex = {};
-    courseStatsLoaded = false;
-    console.error("courseStats load error", err);
-  }
-}
-
-function makeTabs(active) {
-  $tabs.innerHTML = Array.from({ length: 12 }, (_, i) => {
-    const r = i + 1;
-    return `<button type="button" class="tab${r === active ? " is-active" : ""}" data-race="${r}">${r}R</button>`;
-  }).join("");
-
-  $tabs.querySelectorAll(".tab").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      setRace(Number(btn.dataset.race));
-    });
-  });
-}
-
-function normalizeBoatsTo6(boats) {
-  const byWaku = new Map();
-  const rest = [];
-
-  boats.forEach((b) => {
-    const w = Number(b?.waku);
-    if (w >= 1 && w <= 6 && !byWaku.has(w)) byWaku.set(w, b);
-    else rest.push(b);
-  });
-
-  for (let w = 1; w <= 6; w++) {
-    if (!byWaku.has(w) && rest.length) {
-      byWaku.set(w, { ...rest.shift(), waku: w });
-    }
-  }
-
-  return Array.from({ length: 6 }, (_, i) => {
-    const w = i + 1;
-    return byWaku.get(w) || {
-      waku: w,
-      name: "—",
-      regno: "",
-      branch: "",
-      age: "",
-      grade: "",
-      nat_win: null,
-      motor_no: null,
-      motor_2: null,
-      note: ""
-    };
-  });
-}
-
-function extractAverageSt(note) {
-  const text = String(note || "").trim();
-  if (!text) return "—";
-  const m = text.match(/(?:^|\s)(0\.\d{2})(?:\s|$)/);
-  return m ? m[1] : "—";
-}
-
-function getPlayerStats(regno) {
-  if (!courseStatsLoaded) return null;
-  const key = normalizeRegno(regno);
-  if (!key) return null;
-  return courseStatsIndex[key] || null;
-}
-
-function aggregatePlayerStats(player) {
-  if (!player || typeof player !== "object") return null;
-
-  const total = {
-    starts: 0,
-    wins: 0,
-    place2: 0,
-    place3: 0,
-    avg_st: null,
-    kimarite: {}
-  };
-
-  let stSum = 0;
-  let stCount = 0;
-
-  Object.values(player).forEach((c) => {
-    if (!c || typeof c !== "object") return;
-
-    const starts = Number(c.starts || 0);
-    const wins = Number(c.wins || 0);
-    const place2 = Number(c.place2 || 0);
-    const place3 = Number(c.place3 || 0);
-    const avgSt = Number(c.avg_st);
-
-    total.starts += starts;
-    total.wins += wins;
-    total.place2 += place2;
-    total.place3 += place3;
-
-    if (Number.isFinite(avgSt) && starts > 0) {
-      stSum += avgSt * starts;
-      stCount += starts;
-    }
-
-    if (c.kimarite && typeof c.kimarite === "object") {
-      Object.entries(c.kimarite).forEach(([k, v]) => {
-        total.kimarite[k] = (total.kimarite[k] || 0) + Number(v || 0);
-      });
-    }
-  });
-
-  if (total.starts <= 0) return null;
-
-  total.avg_st = stCount > 0 ? Number((stSum / stCount).toFixed(3)) : null;
-  return total;
-}
-
-function getCourseStat(regno, course) {
-  const player = getPlayerStats(regno);
-  if (!player) return null;
-
-  const byCourse = player[String(course)];
-  if (byCourse && Number(byCourse.starts || 0) > 0) {
-    return byCourse;
-  }
-
-  return aggregatePlayerStats(player);
-}
-
-function kimariteText(kimarite) {
-  if (!kimarite || typeof kimarite !== "object") return "—";
-
-  const arr = Object.entries(kimarite)
-    .filter(([, v]) => Number(v) > 0)
-    .sort((a, b) => Number(b[1]) - Number(a[1]));
-
-  if (!arr.length) return "—";
-  return arr[0][0];
-}
-
-function entryAvgSt(p) {
-  const stat = getCourseStat(p.regno, p.waku);
-  if (stat && stat.avg_st !== undefined && stat.avg_st !== null) {
-    return safeNum(stat.avg_st, 2);
-  }
-  return extractAverageSt(p.note);
-}
-
-function entryRowHTML(p) {
-  const regno = p.regno || "—";
-  const grade = p.grade || "—";
-  const branch = p.branch || "—";
-  const age = (p.age !== undefined && p.age !== null && p.age !== "") ? `${p.age}歳` : "—";
-  const avgSt = entryAvgSt(p);
-
-  return `
-    <div class="entryRow">
-      <div class="entryWaku w${Number(p.waku) || 0}">${Number(p.waku) || ""}</div>
-
-      <div class="entryNameCell">
-        <div class="entryMeta">${esc(regno)} / ${esc(grade)} / ${esc(branch)} / ${esc(age)}</div>
-        <div class="entryName">${esc(p.name || "—")}</div>
-      </div>
-
-      <div class="entryVal">${esc(avgSt)}</div>
-      <div class="entryVal">${esc(safeNum(p.nat_win))}</div>
-
-      <div class="entryVal">
-        <div class="entryMotor">
-          <div class="entryMotorNo">${esc(safeInt(p.motor_no))}</div>
-          <div class="entryMotorRate">${esc(safeNum(p.motor_2))}</div>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function courseGridHTML(boats) {
-  const header = `
-    <div class="courseGridHead">
-      <div class="courseGridHead__waku"></div>
-      <div class="courseGridHead__name">選手名</div>
-      <div class="courseGridHead__cell">決まり手</div>
-      <div class="courseGridHead__cell">平均ST</div>
-      <div class="courseGridHead__cell">コース勝率</div>
-      <div class="courseGridHead__cell">2着内率</div>
-      <div class="courseGridHead__cell">3着内率</div>
-    </div>
-  `;
-
-  const rows = boats.map((p) => {
-    const stat = getCourseStat(p.regno, p.waku);
-    const regno = p.regno || "—";
-    const grade = p.grade || "—";
-    const branch = p.branch || "—";
-    const age = (p.age !== undefined && p.age !== null && p.age !== "") ? `${p.age}歳` : "—";
-
-    return `
-      <div class="courseGridRow">
-        <div class="courseGridWaku w${Number(p.waku) || 0}">${Number(p.waku) || ""}</div>
-
-        <div class="courseGridName">
-          <div class="courseGridMeta">${esc(regno)} / ${esc(grade)} / ${esc(branch)} / ${esc(age)}</div>
-          <div class="courseGridPlayer">${esc(p.name || "—")}</div>
-        </div>
-
-        <div class="courseGridCell">${esc(stat ? kimariteText(stat.kimarite) : "—")}</div>
-        <div class="courseGridCell">${esc(stat ? safeNum(stat.avg_st, 2) : "—")}</div>
-        <div class="courseGridCell">${esc(stat ? safeRate(stat.wins, stat.starts) : "—")}</div>
-        <div class="courseGridCell">${esc(stat ? safeRate(stat.place2, stat.starts) : "—")}</div>
-        <div class="courseGridCell">${esc(stat ? safeRate(stat.place3, stat.starts) : "—")}</div>
-      </div>
-    `;
-  }).join("");
-
-  return header + rows;
-}
-
-function renderCourseRows(boats) {
-  if ($courseYearBody) {
-    $courseYearBody.innerHTML = courseGridHTML(boats);
-  }
-
-  if ($courseLocalBody) {
-    $courseLocalBody.innerHTML = `
-      <div class="courseGridHead">
-        <div class="courseGridHead__waku"></div>
-        <div class="courseGridHead__name">選手名</div>
-        <div class="courseGridHead__cell">決まり手</div>
-        <div class="courseGridHead__cell">平均ST</div>
-        <div class="courseGridHead__cell">コース勝率</div>
-        <div class="courseGridHead__cell">2着内率</div>
-        <div class="courseGridHead__cell">3着内率</div>
-      </div>
-      ${boats.map((p) => `
-        <div class="courseGridRow">
-          <div class="courseGridWaku w${Number(p.waku) || 0}">${Number(p.waku) || ""}</div>
-          <div class="courseGridName">
-            <div class="courseGridMeta">${esc(p.regno || "—")} / ${esc(p.grade || "—")} / ${esc(p.branch || "—")} / ${esc((p.age !== undefined && p.age !== null && p.age !== "") ? `${p.age}歳` : "—")}</div>
-            <div class="courseGridPlayer">${esc(p.name || "—")}</div>
-          </div>
-          <div class="courseGridCell">—</div>
-          <div class="courseGridCell">—</div>
-          <div class="courseGridCell">—</div>
-          <div class="courseGridCell">—</div>
-          <div class="courseGridCell">—</div>
-        </div>
-      `).join("")}
-    `;
-  }
-}
-
-function setView(index) {
-  currentView = clamp(index, 0, 2);
-
-  Array.from($viewTabs.querySelectorAll(".viewTab")).forEach((btn, i) => {
-    btn.classList.toggle("is-active", i === currentView);
-  });
-
-  $viewTrack.style.transform = `translate3d(${-100 * currentView}%,0,0)`;
-}
-
-function setupViewTabs() {
-  Array.from($viewTabs.querySelectorAll(".viewTab")).forEach((btn) => {
-    btn.addEventListener("click", () => {
-      setView(Number(btn.dataset.view));
-    });
-  });
-}
-
-function setupCourseTabs() {
-  const tabs = Array.from(document.querySelectorAll(".courseInnerTab"));
-  const yearView = $("courseYearView");
-  const localView = $("courseLocalView");
-
-  tabs.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      tabs.forEach((x) => x.classList.remove("is-active"));
-      btn.classList.add("is-active");
-
-      if (btn.dataset.courseTab === "year") {
-        if (yearView) yearView.style.display = "";
-        if (localView) localView.style.display = "none";
-      } else {
-        if (yearView) yearView.style.display = "none";
-        if (localView) localView.style.display = "";
-      }
-    });
-  });
-}
-
-function setupSwipe() {
-  $viewPager.addEventListener("pointerdown", (e) => {
-    dragging = true;
-    dragStartX = e.clientX;
-    dragCurrentX = e.clientX;
-    $viewTrack.classList.add("is-dragging");
-  });
-
-  $viewPager.addEventListener("pointermove", (e) => {
-    if (!dragging) return;
-    dragCurrentX = e.clientX;
-
-    const width = $viewPager.clientWidth || 1;
-    const delta = dragCurrentX - dragStartX;
-    const pct = (delta / width) * 100;
-
-    $viewTrack.style.transform = `translate3d(${(-100 * currentView) + pct}%,0,0)`;
-  });
-
-  const finish = () => {
-    if (!dragging) return;
-    dragging = false;
-    $viewTrack.classList.remove("is-dragging");
-
-    const width = $viewPager.clientWidth || 1;
-    const delta = dragCurrentX - dragStartX;
-
-    if (delta < -width * 0.18 && currentView < 2) {
-      setView(currentView + 1);
-      return;
-    }
-
-    if (delta > width * 0.18 && currentView > 0) {
-      setView(currentView - 1);
-      return;
-    }
-
-    setView(currentView);
-  };
-
-  $viewPager.addEventListener("pointerup", finish);
-  $viewPager.addEventListener("pointercancel", finish);
-}
-
 function buildUrls(r) {
   return [
     ...(jcd && jcd !== "00" ? [`${BOT_RACES_BASE_URL}${jcd}_${r}R.json`] : []),
@@ -459,10 +106,25 @@ function renderRaceJSON(r, json) {
   $timeLabel.textContent = `締切: ${toHM(raceObj.cutoff)}`;
   $dayLabel.textContent = json?.day_label || "—";
 
-  const boats = normalizeBoatsTo6(Array.isArray(raceObj.boats) ? raceObj.boats : []);
+  const boats = Array.isArray(raceObj.boats) ? raceObj.boats : [];
 
-  $entryTable.innerHTML = boats.map(entryRowHTML).join("");
-  renderCourseRows(boats);
+  $entryTable.innerHTML = boats.map(p => `
+    <div class="entryRow">
+      <div class="entryWaku w${p.waku}">${p.waku}</div>
+      <div class="entryNameCell">
+        <div class="entryMeta">${esc(p.regno)} / ${esc(p.grade)} / ${esc(p.branch)} / ${esc(p.age)}歳</div>
+        <div class="entryName">${esc(p.name)}</div>
+      </div>
+      <div class="entryVal">${safeNum(p.avg_st)}</div>
+      <div class="entryVal">${safeNum(p.nat_win)}</div>
+      <div class="entryVal">
+        <div class="entryMotor">
+          <div class="entryMotorNo">${safeInt(p.motor_no)}</div>
+          <div class="entryMotorRate">${safeNum(p.motor_2)}</div>
+        </div>
+      </div>
+    </div>
+  `).join("");
 
   setTopHeight();
 }
@@ -471,34 +133,19 @@ async function setRace(r) {
   r = clamp(Number(r) || 1, 1, 12);
   currentRace = r;
 
-  makeTabs(r);
   $entryTable.innerHTML = `<div class="err">読み込み中…</div>`;
-
-  if ($courseYearBody) $courseYearBody.innerHTML = `<div class="err">読み込み中…</div>`;
-  if ($courseLocalBody) $courseLocalBody.innerHTML = `<div class="err">読み込み中…</div>`;
 
   try {
     const json = await fetchRaceJSON(r);
     renderRaceJSON(r, json);
   } catch (e) {
     $entryTable.innerHTML = `<div class="err">JSON取得失敗</div>`;
-    if ($courseYearBody) $courseYearBody.innerHTML = `<div class="err">JSON取得失敗</div>`;
-    if ($courseLocalBody) $courseLocalBody.innerHTML = `<div class="err">JSON取得失敗</div>`;
   }
 }
 
 async function boot() {
   const initialRace = clamp(Number(qs.get("race") || 1), 1, 12);
-
-  makeTabs(initialRace);
-  setupViewTabs();
-  setupCourseTabs();
-  setupSwipe();
-  setView(0);
-
-  await loadCourseStats();
   await setRace(initialRace);
-
   requestAnimationFrame(setTopHeight);
 }
 
