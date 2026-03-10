@@ -1,4 +1,4 @@
-/* js/app.js（完全置き換え：24場固定 / 非開催場も表示 / raw.githubusercontent + 1分単位cache bust / 30秒自動更新 / PRO対応 / 日付跨ぎ対応 / 00:00:10強制再取得保険つき / グレード表記統一 + class付与 / 一般カードは左右整列 / 1R時間帯からtone自動補完 / 戻る時のカード拡大解除対応 / 検索入力中はキーボードを弾かない） */
+/* js/app.js（完全置き換え：24場固定 / 非開催場も表示 / raw.githubusercontent + 1分単位cache bust / 30秒自動更新 / PRO対応 / 日付跨ぎ対応 / 00:00:10強制再取得保険つき / グレード表記統一 + class付与 / 一般カードは左右整列 / 1R時間帯からtone自動補完 / 戻る時のカード拡大解除対応 / 検索入力中はキーボードを弾かない / 最短締切表示対応） */
 
 const DATA_URL = "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/site/venues.json";
 
@@ -50,6 +50,8 @@ const $btn = document.getElementById("btnRefresh");
 const $picks = document.getElementById("picks");
 const $picksUpdatedAt = document.getElementById("picksUpdatedAt");
 const $picksCta = document.getElementById("picksCta");
+const $nextRaceBox = document.getElementById("nextRaceBox");
+const $nextRaceText = document.getElementById("nextRaceText");
 
 const $btnPro = document.getElementById("btnPro");
 const $proModal = document.getElementById("proModal");
@@ -230,6 +232,60 @@ function computeNextDisplay(v) {
     danger: false,
     soldout: true
   };
+}
+
+function getSoonestRace(list) {
+  const now = Date.now();
+  let best = null;
+
+  for (const venue of Array.isArray(list) ? list : []) {
+    const raceTimes = Array.isArray(venue?.race_times) ? venue.race_times : [];
+    const venueName = String(venue?.name || venue?.venue_name || "").trim();
+    const jcd = String(venue?.jcd || "").padStart(2, "0");
+
+    for (const r of raceTimes) {
+      const cutoff = String(r?.cutoff || "").trim();
+      const raceNo = Number(r?.rno);
+      const cutoffAt = getCutoffTime(cutoff);
+
+      if (!cutoff || !Number.isFinite(raceNo) || cutoffAt == null) continue;
+
+      const switchAt = cutoffAt + NEXT_RACE_DELAY_MS;
+      if (now >= switchAt) continue;
+
+      if (!best || cutoffAt < best.cutoffAt) {
+        best = {
+          jcd,
+          venueName,
+          raceNo,
+          cutoff,
+          cutoffAt
+        };
+      }
+    }
+  }
+
+  return best;
+}
+
+function updateNextRaceBox(list) {
+  if (!$nextRaceBox || !$nextRaceText) return;
+
+  const nextRace = getSoonestRace(list);
+
+  if (!nextRace) {
+    $nextRaceText.textContent = "発売終了";
+    $nextRaceBox.setAttribute("href", "javascript:void(0)");
+    $nextRaceBox.setAttribute("aria-disabled", "true");
+    return;
+  }
+
+  $nextRaceText.textContent = `${nextRace.venueName} ${nextRace.raceNo}R ${nextRace.cutoff}`;
+  $nextRaceBox.setAttribute(
+    "href",
+    `./race.html?jcd=${encodeURIComponent(nextRace.jcd)}&name=${encodeURIComponent(nextRace.venueName)}`
+  );
+  $nextRaceBox.removeAttribute("aria-disabled");
 }
 
 function buildVenueMap(list) {
@@ -543,6 +599,7 @@ function renderGrid(list) {
     return item ? renderOnCard(base, item) : renderOffCard(base);
   }).join("");
 
+  updateNextRaceBox(list);
   clearCardFocus();
 
   if ($updatedAt) $updatedAt.textContent = nowHM();
