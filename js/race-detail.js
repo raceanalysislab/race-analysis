@@ -18,7 +18,8 @@ const $entryTable = $("entryTable");
 const $courseYearBody = $("courseYearBody");
 const $courseLocalBody = $("courseLocalBody");
 
-const BOT_RACES_BASE_URL = "./data/site/races/";
+const BOT_RACES_BASE_URL =
+  "https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/site/races/";
 
 $("venueName").textContent = venueName;
 
