@@ -118,7 +118,7 @@ fetch("./data/player_index_today.json")
 
         div.addEventListener("click", () => {
           window.location.href =
-            "./race-detail.html?name=" +
+            "./race.html?name=" +
             encodeURIComponent(p._resolvedVenueLabel) +
             "&race=" +
             encodeURIComponent(p.race || 1) +
