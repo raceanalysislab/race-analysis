@@ -13,6 +13,8 @@
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(6, 1fr);
   gap: 4px;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 
 .card{
@@ -20,12 +22,18 @@
   flex-direction:column;
   justify-content:flex-start;
   text-decoration:none;
-  border-radius:9px;
-  border:2px solid var(--border);
+  border-radius: 9px;
+  border: 2px solid var(--border);
   overflow:hidden;
-  padding:8px 7px 7px;
-  position:relative;
-  text-align:center;
+  padding: 8px 7px 7px;
+  min-height: 0;
+  position: relative;
+  text-align: center;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  -webkit-tap-highlight-color: transparent;
 }
 
 .card::before{
@@ -34,51 +42,52 @@
   left:0;
   right:0;
   top:0;
-  height:56%;
+  height: 56%;
   pointer-events:none;
-  opacity:.78;
-  background:var(--toneTop, rgba(15,23,42,.12));
-  border-top-left-radius:7px;
-  border-top-right-radius:7px;
-  z-index:1;
+  opacity: .78;
+  background: var(--toneTop, rgba(15,23,42,.12));
+  border-top-left-radius: 7px;
+  border-top-right-radius: 7px;
+  z-index: 1;
 }
 
 /* ===== FREE ===== */
 
 .card--tone-morning{
-  --toneTop:linear-gradient(180deg, rgba(251,191,36,.74), rgba(251,191,36,0));
+  --toneTop: linear-gradient(180deg, rgba(251,191,36,.74), rgba(251,191,36,0));
 }
 
 .card--tone-day{
-  --toneTop:linear-gradient(180deg, rgba(125,211,252,.72), rgba(125,211,252,0));
+  --toneTop: linear-gradient(180deg, rgba(125,211,252,.72), rgba(125,211,252,0));
 }
 
 .card--tone-evening{
-  --toneTop:linear-gradient(180deg, rgba(129,140,248,.82), rgba(129,140,248,0));
+  --toneTop: linear-gradient(180deg, rgba(129,140,248,.82), rgba(129,140,248,0));
 }
 
 .card--tone-night{
-  --toneTop:linear-gradient(180deg, rgba(109,40,217,.58), rgba(109,40,217,0));
+  --toneTop: linear-gradient(180deg, rgba(109,40,217,.58), rgba(109,40,217,0));
 }
 
 .card--tone-normal{
-  --toneTop:linear-gradient(180deg, rgba(148,163,184,.35), rgba(148,163,184,0));
+  --toneTop: linear-gradient(180deg, rgba(148,163,184,.35), rgba(148,163,184,0));
 }
 
 .card--off::before{
-  opacity:0;
+  opacity: 0;
 }
 
 .card--on{
-  background:var(--cardOn);
-  border-color:var(--borderOn);
+  background: var(--cardOn);
+  border-color: var(--borderOn);
 }
 
 .card--off{
-  background:var(--cardOff);
+  background: var(--cardOff);
+  border-color: var(--border);
 }
 
-/* ===== 締切近い ===== */
+/* ===== 締切近いカード ===== */
 
 .card--danger{
   border-color:#ef4444 !important;
@@ -88,7 +97,7 @@
 /* ===== 発売終了 ===== */
 
 .card--soldout{
-  background:linear-gradient(
+  background: linear-gradient(
     180deg,
     #c9ced6 0%,
     #c9ced6 48%,
@@ -102,32 +111,62 @@
   display:none !important;
 }
 
+.card--soldout .card__name,
+.card--soldout .gradeText,
+.card--soldout .day{
+  color:#1f2937 !important;
+}
+
+.card--soldout .gradeText,
+.card--soldout .day{
+  background:transparent !important;
+}
+
 /* ===== 名前 ===== */
 
 .card__nameRow{
   display:grid;
-  grid-template-columns:12px minmax(0,1fr) 12px;
+  grid-template-columns: 12px minmax(0, 1fr) 12px;
   align-items:center;
+  width:100%;
   min-height:30px;
   margin-bottom:4px;
-  position:relative;
-  z-index:2;
+  position: relative;
+  z-index: 2;
+}
+
+.card__nameIcon{
+  width:12px;
+  height:12px;
+}
+
+.card__nameIcon--empty{
+  visibility:hidden;
 }
 
 .card__name{
   font-weight:900;
   font-size:17px;
+  line-height:1.04;
+  letter-spacing:.01em;
   color:#0f172a;
+  text-align:center;
+  text-shadow:0 0 0 rgba(15,23,42,0.01);
 }
 
 /* ===== メタ情報 ===== */
 
 .card__meta{
   display:flex;
+  align-items:stretch;
   justify-content:space-between;
+  gap:0;
   min-height:18px;
   width:calc(100% + 14px);
   margin:0 -7px 2px;
+  padding:0;
+  position: relative;
+  z-index: 2;
 }
 
 .gradeText,
@@ -135,34 +174,60 @@
   display:inline-flex;
   align-items:center;
   justify-content:center;
+  min-height:18px;
   font-size:11px;
+  line-height:1;
   white-space:nowrap;
 }
 
 .day{
   color:#334155;
+  text-align:center;
 }
 
-/* ===== 一般カード ===== */
+.gradeText{
+  color:#334155;
+}
+
+/* ===== 一般 ===== */
 
 .card--general .card__meta{
   display:grid !important;
-  grid-template-columns:44px minmax(0,1fr);
+  grid-template-columns: 44px minmax(0, 1fr);
   align-items:center;
   width:100% !important;
   margin:0 0 2px 0 !important;
   padding:0 13px !important;
+  box-sizing:border-box;
+  gap:8px;
+}
+
+.card--general .gradeText--general,
+.card--general .day{
+  display:block !important;
+  min-height:auto !important;
+  line-height:1;
+  background:transparent !important;
+  border:none !important;
+  border-radius:0 !important;
+  margin:0 !important;
+  padding:0 !important;
 }
 
 .card--general .gradeText--general{
+  width:44px;
   font-size:11px;
   font-weight:700;
+  color:#334155;
   text-align:left;
+  justify-self:start;
 }
 
 .card--general .day{
+  min-width:0;
   font-size:11px;
   font-weight:700;
+  color:#334155;
   text-align:right;
   justify-self:end;
 }
@@ -173,24 +238,59 @@
 .gradeText--g1,
 .gradeText--g2,
 .gradeText--g3{
-  flex:1;
+  flex:1 1 50%;
   padding:2px 0;
+  border-radius:0;
+  color:#fff;
+  font-size:11px;
+  font-weight:800;
+}
+
+.gradeText--sg + .day,
+.gradeText--g1 + .day,
+.gradeText--g2 + .day,
+.gradeText--g3 + .day{
+  flex:1 1 50%;
+  padding:2px 0;
+  border-radius:0;
   color:#fff;
   font-size:11px;
   font-weight:800;
 }
 
 .gradeText--sg,
-.gradeText--sg + .day{ background:#dc2626; }
+.gradeText--sg + .day{
+  background:#dc2626;
+}
 
 .gradeText--g1,
-.gradeText--g1 + .day{ background:#f59e0b; }
+.gradeText--g1 + .day{
+  background:#f59e0b;
+}
 
 .gradeText--g2,
-.gradeText--g2 + .day{ background:#16a34a; }
+.gradeText--g2 + .day{
+  background:#16a34a;
+}
 
 .gradeText--g3,
-.gradeText--g3 + .day{ background:#2563eb; }
+.gradeText--g3 + .day{
+  background:#2563eb;
+}
+
+.card--off .card__name,
+.card--off .gradeText,
+.card--off .day{
+  color:#6b7280;
+}
+
+.card--off .gradeText,
+.card--off .day{
+  background:transparent !important;
+  padding:0 !important;
+  border-radius:0 !important;
+  font-weight:700 !important;
+}
 
 /* ===== 下段 ===== */
 
@@ -203,36 +303,59 @@
 
 .card__line--btm{
   display:flex;
+  align-items:center;
   justify-content:center;
   gap:6px;
   font-weight:700;
   font-size:13px;
+  line-height:1;
   margin-top:2px;
 }
 
-/* 一般カード */
-
+/* 一般カードだけ2カラム固定 */
 .card--general .card__line--btm{
   display:grid !important;
-  grid-template-columns:44px minmax(0,1fr);
+  grid-template-columns: 44px minmax(0, 1fr);
   align-items:center;
   width:100% !important;
+  margin-top:2px;
   padding:0 13px !important;
+  box-sizing:border-box;
+  gap:8px;
+}
+
+.card--general .raceNo,
+.card--general .raceTime{
+  display:block !important;
+  line-height:1;
+  margin:0;
+  padding:0;
 }
 
 .card--general .raceNo{
+  width:44px;
   text-align:left;
+  justify-self:start;
 }
 
 .card--general .raceTime{
+  min-width:0;
   text-align:right;
   justify-self:end;
 }
 
-.raceNo,
-.raceTime,
+.raceNo{
+  font-weight:700;
+  font-variant-numeric: tabular-nums;
+}
+
+.raceTime{
+  font-weight:700;
+  font-variant-numeric: tabular-nums;
+}
+
 .day{
-  font-variant-numeric:tabular-nums;
+  font-variant-numeric: tabular-nums;
 }
 
 .raceTime--danger{
@@ -240,7 +363,7 @@
   font-weight:900;
 }
 
-/* ===== 発売終了 ===== */
+/* ===== 発売終了文字 ===== */
 
 .card__line--soldout{
   display:flex !important;
@@ -252,10 +375,13 @@
   margin-top:2px;
   margin-bottom:-7px;
   min-height:24px;
+  padding:2px 0 4px;
 }
 
 .status--soldout{
   font-weight:700;
   font-size:13px;
+  line-height:1;
   color:#374151;
+  transform: translateY(-1px);
 }
