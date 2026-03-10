@@ -348,6 +348,7 @@
 .raceNo{
   font-weight:700;
   font-variant-numeric:tabular-nums;
+  white-space:nowrap;
 }
 
 .raceTime{
@@ -358,6 +359,16 @@
 .raceTime--danger{
   color:#ef4444 !important;
   font-weight:900;
+}
+
+/* ===== 三国だけ下段補正 ===== */
+
+a.card--general[href*="name=%E4%B8%89%E5%9B%BD"] .card__line--btm{
+  grid-template-columns:58px 1fr !important;
+}
+
+a.card--general[href*="name=%E4%B8%89%E5%9B%BD"] .raceNo{
+  width:58px !important;
 }
 
 /* ===== 発売終了文字 ===== */
