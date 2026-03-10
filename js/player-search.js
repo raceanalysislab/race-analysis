@@ -24,25 +24,26 @@ fetch("./data/player_index_today.json")
 
       result.innerHTML = "";
 
-      if(found.length === 0){
+      if (found.length === 0){
         result.style.display = "block";
         result.innerHTML = `<div class="playerSearchItem">該当なし</div>`;
         return;
       }
 
-      found.slice(0,10).forEach(p => {
+      found.slice(0, 10).forEach(p => {
 
         const div = document.createElement("div");
         div.className = "playerSearchItem";
-
         div.textContent = `${p.reg_no} ${p.name} ${p.venue} ${p.race}R`;
 
         div.addEventListener("click", () => {
           window.location.href =
-            "./race-detail.html?venue=" +
-            encodeURIComponent(p.venue) +
+            "./race-detail.html?name=" +
+            encodeURIComponent(p.venue || "") +
             "&race=" +
-            encodeURIComponent(p.race);
+            encodeURIComponent(p.race || 1) +
+            "&jcd=" +
+            encodeURIComponent(p.jcd || "");
         });
 
         result.appendChild(div);
