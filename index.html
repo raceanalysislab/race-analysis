@@ -32,6 +32,79 @@
       color: var(--muted);
       letter-spacing: .02em;
     }
+
+    .top__search{
+      margin-top: 12px;
+      position: relative;
+    }
+
+    .playerSearchInput{
+      width: 100%;
+      height: 44px;
+      padding: 0 14px;
+      border: 1px solid var(--line, #e5e7eb);
+      border-radius: 12px;
+      background: #fff;
+      color: var(--text, #111827);
+      font-size: 14px;
+      outline: none;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, .03);
+    }
+
+    .playerSearchInput:focus{
+      border-color: #cbd5e1;
+      box-shadow: 0 0 0 3px rgba(148, 163, 184, .12);
+    }
+
+    .playerSearchResult{
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      right: 0;
+      background: #fff;
+      border: 1px solid var(--line, #e5e7eb);
+      border-radius: 14px;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, .10);
+      overflow: hidden;
+      z-index: 30;
+    }
+
+    .playerSearchItem{
+      padding: 12px 14px;
+      border-top: 1px solid #f1f5f9;
+      cursor: pointer;
+      background: #fff;
+    }
+
+    .playerSearchItem:first-child{
+      border-top: 0;
+    }
+
+    .playerSearchItem:hover{
+      background: #f8fafc;
+    }
+
+    .playerSearchMain{
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text, #111827);
+      line-height: 1.35;
+    }
+
+    .playerSearchSub{
+      margin-top: 3px;
+      font-size: 12px;
+      color: var(--muted, #6b7280);
+      line-height: 1.35;
+    }
+
+    .playerSearchEmpty{
+      padding: 12px 14px;
+      font-size: 13px;
+      color: var(--muted, #6b7280);
+      background: #fff;
+    }
   </style>
 </head>
 
@@ -50,6 +123,19 @@
         </button>
         <button id="btnRefresh" class="top__btn" type="button">更新</button>
       </div>
+    </div>
+
+    <div class="top__search">
+      <input
+        id="playerSearchInput"
+        class="playerSearchInput"
+        type="search"
+        inputmode="search"
+        autocomplete="off"
+        placeholder="登録番号 / 選手名で検索"
+        aria-label="登録番号または選手名で検索"
+      />
+      <div id="playerSearchResult" class="playerSearchResult" aria-live="polite"></div>
     </div>
 
     <div class="top__sub">
@@ -100,5 +186,6 @@
   </div>
 
   <script type="module" src="./js/app.js?v=2.5"></script>
+  <script src="./js/player-search.js"></script>
 </body>
 </html>
