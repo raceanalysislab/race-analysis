@@ -46,7 +46,7 @@
       border-radius: 12px;
       background: #fff;
       color: var(--text, #111827);
-      font-size: 14px;
+      font-size: 16px;
       outline: none;
       box-shadow: 0 1px 2px rgba(15, 23, 42, .03);
     }
@@ -129,9 +129,12 @@
       <input
         id="playerSearchInput"
         class="playerSearchInput"
-        type="search"
+        type="text"
         inputmode="search"
         autocomplete="off"
+        autocapitalize="off"
+        autocorrect="off"
+        spellcheck="false"
         placeholder="登録番号 / 選手名で検索"
         aria-label="登録番号または選手名で検索"
       />
