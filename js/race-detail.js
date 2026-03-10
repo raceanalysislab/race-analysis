@@ -100,16 +100,48 @@ async function fetchRaceJSON(r) {
   throw lastErr;
 }
 
+function renderRaceTabs() {
+  if (!$tabs) return;
+
+  $tabs.innerHTML = Array.from({ length: 12 }, (_, i) => {
+    const race = i + 1;
+    const activeClass = race === currentRace ? " is-active" : "";
+    return `<button type="button" class="raceTab${activeClass}" data-race="${race}">${race}R</button>`;
+  }).join("");
+
+  $tabs.querySelectorAll(".raceTab").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const race = Number(btn.dataset.race || 1);
+      setRace(race);
+    });
+  });
+
+  const activeBtn = $tabs.querySelector(`.raceTab[data-race="${currentRace}"]`);
+  if (activeBtn && typeof activeBtn.scrollIntoView === "function") {
+    activeBtn.scrollIntoView({
+      behavior: "smooth",
+      inline: "center",
+      block: "nearest"
+    });
+  }
+}
+
+function updateUrlRace(r) {
+  const next = new URL(location.href);
+  next.searchParams.set("race", String(r));
+  history.replaceState(null, "", next.toString());
+}
+
 function renderRaceJSON(r, json) {
   const raceObj = json?.race || {};
 
   $raceNoLabel.textContent = `${r}R`;
   $timeLabel.textContent = `締切: ${toHM(raceObj.cutoff)}`;
-  $dayLabel.textContent = json?.day_label || "—";
+  $dayLabel.textContent = json?.day_label || raceObj?.day_label || "—";
 
   const boats = Array.isArray(raceObj.boats) ? raceObj.boats : [];
 
-  $entryTable.innerHTML = boats.map(p => `
+  $entryTable.innerHTML = boats.map((p) => `
     <div class="entryRow">
       <div class="entryWaku w${p.waku}">${p.waku}</div>
       <div class="entryNameCell">
@@ -127,6 +159,8 @@ function renderRaceJSON(r, json) {
     </div>
   `).join("");
 
+  renderRaceTabs();
+  updateUrlRace(r);
   setTopHeight();
 }
 
@@ -134,18 +168,83 @@ async function setRace(r) {
   r = clamp(Number(r) || 1, 1, 12);
   currentRace = r;
 
+  renderRaceTabs();
   $entryTable.innerHTML = `<div class="err">読み込み中…</div>`;
 
   try {
     const json = await fetchRaceJSON(r);
     renderRaceJSON(r, json);
   } catch (e) {
+    $raceNoLabel.textContent = `${r}R`;
+    $timeLabel.textContent = `締切: --:--`;
+    $dayLabel.textContent = "—";
     $entryTable.innerHTML = `<div class="err">JSON取得失敗</div>`;
+    renderRaceTabs();
+    updateUrlRace(r);
+    setTopHeight();
   }
+}
+
+function handleSwipeStart(clientX) {
+  dragStartX = clientX;
+  dragCurrentX = clientX;
+  dragging = true;
+}
+
+function handleSwipeMove(clientX) {
+  if (!dragging) return;
+  dragCurrentX = clientX;
+}
+
+function handleSwipeEnd() {
+  if (!dragging) return;
+
+  const diff = dragCurrentX - dragStartX;
+  dragging = false;
+
+  if (Math.abs(diff) < 50) return;
+
+  if (diff < 0) {
+    setRace(currentRace + 1);
+  } else {
+    setRace(currentRace - 1);
+  }
+}
+
+function bindSwipe() {
+  const target = $viewTrack || document;
+
+  target.addEventListener("touchstart", (e) => {
+    if (!e.touches || !e.touches.length) return;
+    handleSwipeStart(e.touches[0].clientX);
+  }, { passive: true });
+
+  target.addEventListener("touchmove", (e) => {
+    if (!e.touches || !e.touches.length) return;
+    handleSwipeMove(e.touches[0].clientX);
+  }, { passive: true });
+
+  target.addEventListener("touchend", () => {
+    handleSwipeEnd();
+  }, { passive: true });
+
+  target.addEventListener("mousedown", (e) => {
+    handleSwipeStart(e.clientX);
+  });
+
+  window.addEventListener("mousemove", (e) => {
+    handleSwipeMove(e.clientX);
+  });
+
+  window.addEventListener("mouseup", () => {
+    handleSwipeEnd();
+  });
 }
 
 async function boot() {
   const initialRace = clamp(Number(qs.get("race") || 1), 1, 12);
+  renderRaceTabs();
+  bindSwipe();
   await setRace(initialRace);
   requestAnimationFrame(setTopHeight);
 }
