@@ -45,24 +45,27 @@ fetch("./data/player_index_today.json")
         .replace(/\s+/g, "")
         .replace(/　+/g, "");
 
-    const getVenueLabel = (p) => {
-      const jcdLabel = JCD_TO_VENUE[String(p.jcd || "").padStart(2, "0")];
-      if (jcdLabel) return jcdLabel;
+    const cleanVenueText = (v) =>
+      String(v || "")
+        .replace(/[0-9０-９]+R?$/i, "")
+        .replace(/[0-9０-９]+$/, "")
+        .trim();
 
-      const rawVenue = String(p.venue || "");
+    const resolveVenueLabel = (p) => {
+      const rawJcd = String(p.jcd || "").padStart(2, "0");
+      if (JCD_TO_VENUE[rawJcd]) return JCD_TO_VENUE[rawJcd];
+
+      const rawVenue = cleanVenueText(p.venue);
       const matched = VENUE_NAMES.find((name) => rawVenue.includes(name));
       if (matched) return matched;
 
       return "";
     };
 
-    const getResolvedJcd = (p) => {
+    const resolveJcd = (p, venueLabel) => {
       const rawJcd = String(p.jcd || "").padStart(2, "0");
       if (JCD_TO_VENUE[rawJcd]) return rawJcd;
-
-      const venueLabel = getVenueLabel(p);
       if (venueLabel && VENUE_TO_JCD[venueLabel]) return VENUE_TO_JCD[venueLabel];
-
       return "";
     };
 
@@ -73,11 +76,19 @@ fetch("./data/player_index_today.json")
     };
 
     players.forEach((p) => {
+      const venueLabel = resolveVenueLabel(p);
+      const resolvedJcd = resolveJcd(p, venueLabel);
+
+      p._resolvedVenueLabel = venueLabel;
+      p._resolvedJcd = resolvedJcd;
+      p._isUsable = Boolean(venueLabel && resolvedJcd);
+
       const regNo = normalize(p.reg_no);
       const name = normalize(p.name);
-      const venueLabel = normalize(getVenueLabel(p));
       const race = normalize(`${p.race || ""}r`);
-      p._search = `${regNo}${name}${venueLabel}${race}`;
+      const venue = normalize(venueLabel);
+
+      p._search = `${regNo}${name}${venue}${race}`;
     });
 
     input.addEventListener("input", () => {
@@ -88,7 +99,9 @@ fetch("./data/player_index_today.json")
         return;
       }
 
-      const found = players.filter((p) => p._search.includes(q));
+      const found = players
+        .filter((p) => p._search.includes(q))
+        .filter((p) => p._isUsable);
 
       result.innerHTML = "";
 
@@ -101,22 +114,16 @@ fetch("./data/player_index_today.json")
       found.slice(0, 10).forEach((p) => {
         const div = document.createElement("div");
         div.className = "playerSearchItem";
-
-        const venueLabel = getVenueLabel(p) || "—";
-        const resolvedJcd = getResolvedJcd(p);
-
-        div.textContent = `${p.reg_no} ${p.name} ${venueLabel} ${p.race}R`;
+        div.textContent = `${p.reg_no} ${p.name} ${p._resolvedVenueLabel} ${p.race}R`;
 
         div.addEventListener("click", () => {
-          if (!venueLabel || venueLabel === "—" || !resolvedJcd) return;
-
           window.location.href =
             "./race-detail.html?name=" +
-            encodeURIComponent(venueLabel) +
+            encodeURIComponent(p._resolvedVenueLabel) +
             "&race=" +
             encodeURIComponent(p.race || 1) +
             "&jcd=" +
-            encodeURIComponent(resolvedJcd);
+            encodeURIComponent(p._resolvedJcd);
         });
 
         result.appendChild(div);
