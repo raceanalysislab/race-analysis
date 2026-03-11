@@ -17,8 +17,12 @@
 
       <div class="raceHead__left">
 
-        <div id="venueName" class="raceVenue">
-          —
+        <div class="raceBrand">BOAT CORE</div>
+
+        <div class="raceVenueRow">
+          <div id="venueName" class="raceVenue">—</div>
+          <span id="gradeLabel" class="raceGrade">—</span>
+          <div id="eventTitle" class="raceEventTitle">—</div>
         </div>
 
         <div class="raceMeta">
@@ -68,13 +72,10 @@
       </div>
 
 
-
       <div class="viewPager" id="viewPager">
 
         <div class="viewTrack" id="viewTrack">
 
-
-          <!-- 出走表 -->
 
           <div class="viewPage">
 
@@ -111,9 +112,6 @@
           </div>
 
 
-
-          <!-- コースデータ -->
-
           <div class="viewPage">
 
             <div class="courseWrap" id="courseDataPanel">
@@ -123,21 +121,16 @@
                 <button type="button"
                         class="courseInnerTab is-active"
                         data-course-tab="year">
-
                   コース別直近3年
-
                 </button>
 
                 <button type="button"
                         class="courseInnerTab"
                         data-course-tab="local">
-
                   コース別当地直近5年
-
                 </button>
 
               </div>
-
 
 
               <div id="courseYearView">
@@ -153,7 +146,6 @@
                 </div>
 
               </div>
-
 
 
               <div id="courseLocalView" style="display:none;">
@@ -174,9 +166,6 @@
 
           </div>
 
-
-
-          <!-- 枠傾向 -->
 
           <div class="viewPage">
 
@@ -200,13 +189,10 @@
 
       </div>
 
-
     </section>
 
   </div>
 
-
-  <!-- キャッシュ対策 -->
 
   <script src="./js/race-detail.js?v=2"></script>
 
