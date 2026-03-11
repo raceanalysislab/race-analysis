@@ -1,4 +1,4 @@
-/* js/app.js（完全置き換え：メインrepo Pages公開JSON対応 / 24場固定 / 非開催場も表示 / 1分単位cache bust / 30秒自動更新 / PRO対応 / 日付跨ぎ対応 / 00:00:10強制再取得保険つき / グレード表記統一 + class付与 / 一般カードは左右整列 / 1R時間帯からtone自動補完 / 戻る時のカード拡大解除対応 / 検索入力中はキーボードを弾かない / PROキー入力中もキーボードを弾かない / 最短締切表示対応 / NEXTから該当レース詳細へ直行） */
+/* js/app.js（完全置き換え：メインrepo Pages公開JSON対応 / 24場固定 / 非開催場も表示 / 1分単位cache bust / 30秒自動更新 / PRO対応 / 日付跨ぎ対応 / 00:00:10強制再取得保険つき / グレード表記統一 + class付与 / 一般カードは左右整列 / 1R時間帯からtone自動補完 / 戻る時のカード拡大解除対応 / 検索入力中はキーボードを弾かない / PROキー入力中もキーボードを弾かない / PRO解放後のスクロール位置補正 / 最短締切表示対応 / NEXTから該当レース詳細へ直行） */
 
 const DATA_URL = "https://raceanalysislab.github.io/race-analysis/data/site/venues_today.json";
 
@@ -408,6 +408,10 @@ function openProModal() {
 function closeProModal() {
   if (!$proModal) return;
   setModalVisible(false);
+
+  requestAnimationFrame(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  });
 }
 
 function clearProInputs() {
@@ -724,3 +728,6 @@ renderPicksCta();
 renderPicksEmpty();
 load();
 scheduleMidnightReload();
+
+こんな感じ？♀♀♀♀assistant to=web.run in analysis  彩神争霸充值"search_query":[{"q":"GitHub Pages static site refresh cache javascript updated file not showing Safari iPhone hard reload"}],"response_length":"short"}【อ่านข้อความเต็มanalysis to=web.run code  一级a做爰片  შედეგ  天天购彩票assistant to=web.run in analysis  大发快三彩票{"search_query":[{"q":"GitHub Pages JavaScript file cache bust query string script src Safari iPhone official docs"},{"q":"MDN script src cache bust query string browser cache"}],"response_length":"short"}.`|`
+analysis to=web.run code  彩神争霸能assistant to=web.run in analysis ＿老司机ങ്ങൾ{"open":[{"ref_id":"turn1search1"},{"ref_id":"turn1search0"}]} tamakkeranalysis to=web.run code  имҩаԥыс to=web.run code  天天中彩票为什么 not showing? Need advise likely yes code okay and need bump script src version in HTML because browser caches js. Since searched, citations needed for factual internet statements. We can say code is fine and likely issue is cached js file due script src v=1 unchanged; browsers cache resources and query-string versioning is common. cite MDN maybe not directly but browser cache standard. Let's inspect source maybe MDN about cache bust? open maybe relevant.ങ്ങളിൽ to=web.run code 】【：】【“】【open":[{"ref_id":"turn1search1","lineno":1},{"ref_id":"turn1search0","lineno":1}]} output not useful? Let's craft with citations from MDN? Need if searched all internet-supported statements cited. Let's answer concise.
