@@ -290,7 +290,7 @@ body{
 
 .entryHead{
   display:grid;
-  grid-template-columns:48px minmax(0,1.08fr) 50px 58px 58px 66px;
+  grid-template-columns:48px minmax(0,1.08fr) 50px 60px 60px 60px;
   align-items:center;
   min-height:40px;
   background:#eef1f4;
@@ -316,7 +316,7 @@ body{
 
 .entryRow{
   display:grid;
-  grid-template-columns:48px minmax(0,1.08fr) 50px 58px 58px 66px;
+  grid-template-columns:48px minmax(0,1.08fr) 50px 60px 60px 60px;
   min-height:72px;
   border-bottom:1px solid var(--line);
   background:#fff;
