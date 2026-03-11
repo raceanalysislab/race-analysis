@@ -1,5 +1,3 @@
-/* js/app.js（完全置き換え：メインrepo Pages公開JSON対応 / 24場固定 / 非開催場も表示 / 1分単位cache bust / 30秒自動更新 / PRO対応 / 日付跨ぎ対応 / 00:00:10強制再取得保険つき / グレード表記統一 + class付与 / 一般カードは左右整列 / 1R時間帯からtone自動補完 / 戻る時のカード拡大解除対応 / 検索入力中はキーボードを弾かない / PROキー入力中もキーボードを弾かない / PRO解放後のスクロール位置補正 / 最短締切表示対応 / NEXTから該当レース詳細へ直行） */
-
 const DATA_URL = "https://raceanalysislab.github.io/race-analysis/data/site/venues_today.json";
 
 const NOTE_URLS = {
@@ -172,7 +170,6 @@ function deriveBandFromFirstRace(v) {
   const n = hhmmToNumber(firstCutoff);
 
   if (n == null) return "normal";
-
   if (n < 1200) return "morning";
   if (n < 1300) return "early";
   if (n < 1500) return "day";
@@ -182,11 +179,7 @@ function deriveBandFromFirstRace(v) {
 
 function resolveCardBand(v) {
   const explicit = normalizeBand(v?.card_band);
-
-  if (explicit !== "normal") {
-    return explicit;
-  }
-
+  if (explicit !== "normal") return explicit;
   return deriveBandFromFirstRace(v);
 }
 
@@ -211,11 +204,7 @@ function computeNextDisplay(v) {
       }
     }
 
-    return {
-      text: "発売終了",
-      danger: false,
-      soldout: true
-    };
+    return { text: "発売終了", danger: false, soldout: true };
   }
 
   const nextDisplay = String(v?.next_display || "").trim();
@@ -227,11 +216,7 @@ function computeNextDisplay(v) {
     };
   }
 
-  return {
-    text: "発売終了",
-    danger: false,
-    soldout: true
-  };
+  return { text: "発売終了", danger: false, soldout: true };
 }
 
 function getSoonestRace(list) {
@@ -249,18 +234,10 @@ function getSoonestRace(list) {
       const cutoffAt = getCutoffTime(cutoff);
 
       if (!cutoff || !Number.isFinite(raceNo) || cutoffAt == null) continue;
-
-      const switchAt = cutoffAt + NEXT_RACE_DELAY_MS;
-      if (now >= switchAt) continue;
+      if (now >= cutoffAt + NEXT_RACE_DELAY_MS) continue;
 
       if (!best || cutoffAt < best.cutoffAt) {
-        best = {
-          jcd,
-          venueName,
-          raceNo,
-          cutoff,
-          cutoffAt
-        };
+        best = { jcd, venueName, raceNo, cutoff, cutoffAt };
       }
     }
   }
@@ -290,13 +267,11 @@ function updateNextRaceBox(list) {
 
 function buildVenueMap(list) {
   const map = new Map();
-
   for (const item of Array.isArray(list) ? list : []) {
     const jcd = String(item?.jcd ?? "").padStart(2, "0");
     if (!jcd) continue;
     map.set(jcd, item);
   }
-
   return map;
 }
 
@@ -347,26 +322,17 @@ function scheduleMidnightReload() {
 function clearCardFocus() {
   const active = document.activeElement;
 
-  if (active && active.id === "playerSearchInput") {
-    return;
-  }
-
-  if (active && active.closest && active.closest("#proModal")) {
-    return;
-  }
+  if (active && active.id === "playerSearchInput") return;
+  if (active && active.closest && active.closest("#proModal")) return;
 
   if (active && typeof active.blur === "function") {
     active.blur();
   }
 
   document.querySelectorAll(".card--on").forEach((el) => {
-    if (typeof el.blur === "function") {
-      el.blur();
-    }
+    if (typeof el.blur === "function") el.blur();
   });
 }
-
-/* ===== PRO ===== */
 
 function isProUnlocked() {
   return localStorage.getItem(PRO_STORAGE_KEY) === "1";
@@ -410,7 +376,7 @@ function closeProModal() {
   setModalVisible(false);
 
   requestAnimationFrame(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    window.scrollTo(0, 0);
   });
 }
 
@@ -456,11 +422,9 @@ function setupProInputs() {
       if (e.key === "Backspace" && !input.value && idx > 0) {
         proInputs[idx - 1].focus();
       }
-
       if (e.key === "Enter") {
         unlockPro();
       }
-
       if (e.key === "Escape") {
         closeProModal();
       }
@@ -520,8 +484,6 @@ function initProModal() {
   setModalVisible(false);
 }
 
-/* ===== card render ===== */
-
 function renderOffCard(base) {
   return `
     <div class="card card--off" aria-disabled="true">
@@ -530,18 +492,16 @@ function renderOffCard(base) {
         <div class="card__name">${esc(base.name)}</div>
         <span class="card__nameIcon card__nameIcon--empty"></span>
       </div>
-
       <div class="card__meta">
         <span class="gradeText">-- --</span>
         <span class="day">-- --</span>
       </div>
-
       <div class="card__line card__line--btm">-- --</div>
     </div>
   `;
 }
 
-function renderBottomHtml(next, isGeneral) {
+function renderBottomHtml(next) {
   const m = String(next.text).match(/^(\d+R)\s+(\d{2}:\d{2})$/);
 
   if (!m) {
@@ -563,10 +523,7 @@ function renderBottomHtml(next, isGeneral) {
 
   return {
     soldoutClass: "",
-    html: [
-      `<span class="raceNo">${esc(raceText)}</span>`,
-      `<span class="raceTime${timeClass}">${esc(timeText)}</span>`
-    ].join("")
+    html: `<span class="raceNo">${esc(raceText)}</span><span class="raceTime${timeClass}">${esc(timeText)}</span>`
   };
 }
 
@@ -576,7 +533,7 @@ function renderOnCard(base, v) {
   const gradeClass = getGradeClass(v?.grade_label);
   const isGeneral = gradeLabel === "一般";
   const tone = resolveCardBand(v);
-  const bottom = renderBottomHtml(next, isGeneral);
+  const bottom = renderBottomHtml(next);
 
   return `
     <a class="card card--on ${isGeneral ? "card--general" : ""} ${next.soldout ? "card--soldout" : ""} ${next.danger ? "card--danger" : ""} card--tone-${esc(tone)}"
@@ -586,12 +543,10 @@ function renderOnCard(base, v) {
         <div class="card__name">${esc(base.name)}</div>
         <span class="card__nameIcon card__nameIcon--empty"></span>
       </div>
-
       <div class="card__meta">
         <span class="gradeText ${gradeClass}">${esc(gradeLabel)}</span>
         <span class="day">${esc(v?.day_label || "-- --")}</span>
       </div>
-
       <div class="card__line card__line--btm${bottom.soldoutClass}">
         ${bottom.html}
       </div>
@@ -624,7 +579,6 @@ function renderPicksCta() {
       </div>
       <div class="picksBtnArrow">→</div>
     </a>
-
     <a class="picksBtn" href="${NOTE_URLS.PRO_ONLY}" target="_blank" rel="noopener noreferrer">
       <div>
         <div class="picksBtnMain">PROだけ購入（500円）</div>
@@ -632,7 +586,6 @@ function renderPicksCta() {
       </div>
       <div class="picksBtnArrow">→</div>
     </a>
-
     <a class="picksBtn picksBtn--set" href="${NOTE_URLS.SET}" target="_blank" rel="noopener noreferrer">
       <div>
         <div class="picksBtnMain">セット購入（800円）</div>
@@ -728,6 +681,3 @@ renderPicksCta();
 renderPicksEmpty();
 load();
 scheduleMidnightReload();
-
-こんな感じ？♀♀♀♀assistant to=web.run in analysis  彩神争霸充值"search_query":[{"q":"GitHub Pages static site refresh cache javascript updated file not showing Safari iPhone hard reload"}],"response_length":"short"}【อ่านข้อความเต็มanalysis to=web.run code  一级a做爰片  შედეგ  天天购彩票assistant to=web.run in analysis  大发快三彩票{"search_query":[{"q":"GitHub Pages JavaScript file cache bust query string script src Safari iPhone official docs"},{"q":"MDN script src cache bust query string browser cache"}],"response_length":"short"}.`|`
-analysis to=web.run code  彩神争霸能assistant to=web.run in analysis ＿老司机ങ്ങൾ{"open":[{"ref_id":"turn1search1"},{"ref_id":"turn1search0"}]} tamakkeranalysis to=web.run code  имҩаԥыс to=web.run code  天天中彩票为什么 not showing? Need advise likely yes code okay and need bump script src version in HTML because browser caches js. Since searched, citations needed for factual internet statements. We can say code is fine and likely issue is cached js file due script src v=1 unchanged; browsers cache resources and query-string versioning is common. cite MDN maybe not directly but browser cache standard. Let's inspect source maybe MDN about cache bust? open maybe relevant.ങ്ങളിൽ to=web.run code 】【：】【“】【open":[{"ref_id":"turn1search1","lineno":1},{"ref_id":"turn1search0","lineno":1}]} output not useful? Let's craft with citations from MDN? Need if searched all internet-supported statements cited. Let's answer concise.
