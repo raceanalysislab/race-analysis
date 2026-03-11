@@ -55,13 +55,6 @@ const safeInt = (v) => {
   return Number.isFinite(n) ? String(Math.trunc(n)) : "—";
 };
 
-const safeRate = (num, den, digits = 1) => {
-  const n = Number(num);
-  const d = Number(den);
-  if (!Number.isFinite(n) || !Number.isFinite(d) || d <= 0) return "—";
-  return `${((n / d) * 100).toFixed(digits)}%`;
-};
-
 const toHM = (x) => {
   const m = String(x || "").match(/(\d{1,2}):(\d{2})/);
   return m ? `${String(m[1]).padStart(2, "0")}:${m[2]}` : "--:--";
@@ -83,7 +76,6 @@ async function fetchJSON(url) {
 function buildUrls(r) {
   const fileName = `${jcd}_${r}R.json`;
   const slotCandidates = ["today", "tomorrow"];
-
   return slotCandidates.map((slot) => `${RACES_BASE_URL}${slot}/${fileName}`);
 }
 
@@ -144,19 +136,18 @@ function renderRaceJSON(r, json) {
 
   $entryTable.innerHTML = boats.map((p) => `
     <div class="entryRow">
-      <div class="entryWaku w${p.waku}">${p.waku}</div>
+      <div class="entryWaku w${esc(p.waku)}">${esc(p.waku)}</div>
+
       <div class="entryNameCell">
-        <div class="entryMeta">${esc(p.regno)} / ${esc(p.grade)} / ${esc(p.branch)} / ${esc(p.age)}歳</div>
+        <div class="entryMeta">
+          ${esc(p.regno)} / ${esc(p.grade)} / ${esc(p.branch)} / ${esc(p.age)}歳
+        </div>
         <div class="entryName">${esc(p.name)}</div>
       </div>
+
       <div class="entryVal">${safeNum(p.avg_st)}</div>
       <div class="entryVal">${safeNum(p.nat_win)}</div>
-      <div class="entryVal">
-        <div class="entryMotor">
-          <div class="entryMotorNo">${safeInt(p.motor_no)}</div>
-          <div class="entryMotorRate">${safeNum(p.motor_2)}</div>
-        </div>
-      </div>
+      <div class="entryVal">${safeInt(p.motor_no)}</div>
     </div>
   `).join("");
 
