@@ -1,0 +1,137 @@
+{
+  "slot": "today",
+  "venue": "児島",
+  "date": "2026-03-11",
+  "day": 1,
+  "total_days": null,
+  "day_label": "初日",
+  "grade_label": "一般",
+  "event_title": "第5回ＰａｙＰａｙ銀行賞",
+  "first_race_time": "10:55",
+  "card_band": "day",
+  "card_tone": "normal",
+  "race_times": [
+    {
+      "rno": 1,
+      "cutoff": "10:55"
+    },
+    {
+      "rno": 2,
+      "cutoff": "11:27"
+    },
+    {
+      "rno": 3,
+      "cutoff": "12:01"
+    },
+    {
+      "rno": 4,
+      "cutoff": "12:32"
+    },
+    {
+      "rno": 5,
+      "cutoff": "12:59"
+    },
+    {
+      "rno": 6,
+      "cutoff": "13:37"
+    },
+    {
+      "rno": 7,
+      "cutoff": "14:14"
+    },
+    {
+      "rno": 8,
+      "cutoff": "14:44"
+    },
+    {
+      "rno": 9,
+      "cutoff": "15:15"
+    },
+    {
+      "rno": 10,
+      "cutoff": "15:43"
+    },
+    {
+      "rno": 11,
+      "cutoff": "16:16"
+    },
+    {
+      "rno": 12,
+      "cutoff": "16:50"
+    }
+  ],
+  "races": [
+    {
+      "rno": 1,
+      "name": "朝得ガァ～コ",
+      "cutoff": "10:55",
+      "distance": 1800
+    },
+    {
+      "rno": 2,
+      "name": "予選",
+      "cutoff": "11:27",
+      "distance": 1800
+    },
+    {
+      "rno": 3,
+      "name": "予選",
+      "cutoff": "12:01",
+      "distance": 1800
+    },
+    {
+      "rno": 4,
+      "name": "コジマだ4っ",
+      "cutoff": "12:32",
+      "distance": 1800
+    },
+    {
+      "rno": 5,
+      "name": "日替艇食戦",
+      "cutoff": "12:59",
+      "distance": 1800
+    },
+    {
+      "rno": 6,
+      "name": "昼得クラリス",
+      "cutoff": "13:37",
+      "distance": 1800
+    },
+    {
+      "rno": 7,
+      "name": "予選",
+      "cutoff": "14:14",
+      "distance": 1800
+    },
+    {
+      "rno": 8,
+      "name": "予選",
+      "cutoff": "14:44",
+      "distance": 1800
+    },
+    {
+      "rno": 9,
+      "name": "予選特賞",
+      "cutoff": "15:15",
+      "distance": 1800
+    },
+    {
+      "rno": 10,
+      "name": "予選特賞",
+      "cutoff": "15:43",
+      "distance": 1800
+    },
+    {
+      "rno": 11,
+      "name": "予選特選",
+      "cutoff": "16:16",
+      "distance": 1800
+    },
+    {
+      "rno": 12,
+      "name": "ペイペイ選抜",
+      "cutoff": "16:50",
+      "distance": 1800
+    }
+  ]
+}
