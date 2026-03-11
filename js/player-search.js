@@ -1,4 +1,12 @@
-fetch("./data/player_index_today.json")
+const PLAYER_INDEX_URL = "./data/player_index_today.json";
+
+function buildPlayerIndexUrl() {
+  const sep = PLAYER_INDEX_URL.includes("?") ? "&" : "?";
+  const cacheBust = Math.floor(Date.now() / 60000);
+  return `${PLAYER_INDEX_URL}${sep}t=${cacheBust}`;
+}
+
+fetch(buildPlayerIndexUrl(), { cache: "no-store" })
   .then(res => res.json())
   .then(players => {
     const input = document.getElementById("playerSearchInput");
