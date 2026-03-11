@@ -140,6 +140,28 @@ function updateUrlRace(r) {
   history.replaceState(null, "", next.toString());
 }
 
+function renderRateBlock(label, v1, v2, v3) {
+  return `
+    <div class="entryStatBlock">
+      <div class="entryStatLabel">${esc(label)}</div>
+      <div class="entryStatMain">${safeNum(v1)}</div>
+      <div class="entryStatSub">${safeNum(v2)}</div>
+      <div class="entryStatSub">${safeNum(v3)}</div>
+    </div>
+  `;
+}
+
+function renderMotorBlock(no, r2, r3) {
+  return `
+    <div class="entryMotorBlock">
+      <div class="entryStatLabel">モーター</div>
+      <div class="entryMotorNo">${safeInt(no)}</div>
+      <div class="entryMotorRate">${safeNum(r2)}</div>
+      <div class="entryMotorRate">${safeNum(r3)}</div>
+    </div>
+  `;
+}
+
 function renderRaceJSON(r, json) {
   const raceObj = json?.race || {};
 
@@ -171,14 +193,17 @@ function renderRaceJSON(r, json) {
       </div>
 
       <div class="entryVal">${safeNum(p.avg_st)}</div>
-      <div class="entryVal">${safeNum(p.nat_win)}</div>
-      <div class="entryVal">${safeNum(p.loc_win)}</div>
 
       <div class="entryVal entryVal--stack">
-        <div class="entryMotor">
-          <div class="entryMotorNo">${safeInt(p.motor_no)}</div>
-          <div class="entryMotorRate">${safeNum(p.motor_2)}</div>
-        </div>
+        ${renderRateBlock("全国", p.nat_win, p.nat_2, p.nat_3)}
+      </div>
+
+      <div class="entryVal entryVal--stack">
+        ${renderRateBlock("当地", p.loc_win, p.loc_2, p.loc_3)}
+      </div>
+
+      <div class="entryVal entryVal--stack">
+        ${renderMotorBlock(p.motor_no, p.motor_2, p.motor_3)}
       </div>
     </div>
   `).join("");
