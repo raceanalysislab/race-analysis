@@ -290,7 +290,7 @@ body{
 
 .entryHead{
   display:grid;
-  grid-template-columns:48px minmax(0,1fr) 50px 58px 58px 74px;
+  grid-template-columns:48px minmax(0,1.08fr) 50px 58px 58px 66px;
   align-items:center;
   min-height:40px;
   background:#eef1f4;
@@ -316,7 +316,7 @@ body{
 
 .entryRow{
   display:grid;
-  grid-template-columns:48px minmax(0,1fr) 50px 58px 58px 74px;
+  grid-template-columns:48px minmax(0,1.08fr) 50px 58px 58px 66px;
   min-height:72px;
   border-bottom:1px solid var(--line);
   background:#fff;
@@ -711,12 +711,12 @@ body{
   }
 
   .entryHead{
-    grid-template-columns:44px minmax(0,1fr) 48px 52px 52px 68px;
+    grid-template-columns:44px minmax(0,1.08fr) 46px 50px 50px 62px;
     min-height:36px;
   }
 
   .entryRow{
-    grid-template-columns:44px minmax(0,1fr) 48px 52px 52px 68px;
+    grid-template-columns:44px minmax(0,1.08fr) 46px 50px 50px 62px;
     min-height:66px;
   }
 
