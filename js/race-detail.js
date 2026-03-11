@@ -55,6 +55,21 @@ const formatST = (v) => {
   return `.${n.toFixed(2).split(".")[1]}`;
 };
 
+const pickAvgST = (p) => {
+  const candidates = [
+    p?.avg_st,
+    p?.st_avg,
+    p?.ave_st,
+    p?.average_st,
+    p?.start_average
+  ];
+
+  for (const v of candidates) {
+    if (v !== undefined && v !== null && v !== "") return v;
+  }
+  return "";
+};
+
 const toHM = (x) => {
   const m = String(x || "").match(/(\d{1,2}):(\d{2})/);
   return m ? `${String(m[1]).padStart(2, "0")}:${m[2]}` : "--:--";
@@ -171,7 +186,7 @@ function renderRaceJSON(r, json) {
         <div class="entryName">${esc(p.name)}</div>
       </div>
 
-      <div class="entryVal">${formatST(p.avg_st)}</div>
+      <div class="entryVal">${formatST(pickAvgST(p))}</div>
 
       <div class="entryVal entryVal--stack">
         <div class="entryStatBlock">
