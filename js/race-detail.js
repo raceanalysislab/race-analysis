@@ -9,6 +9,8 @@ const $tabs = $("tabs");
 const $raceNoLabel = $("raceNoLabel");
 const $timeLabel = $("timeLabel");
 const $dayLabel = $("dayLabel");
+const $gradeLabel = $("gradeLabel");
+const $eventTitle = $("eventTitle");
 const $raceTop = $("raceTop");
 const $viewTabs = $("viewTabs");
 const $viewTrack = $("viewTrack");
@@ -59,6 +61,19 @@ const toHM = (x) => {
   const m = String(x || "").match(/(\d{1,2}):(\d{2})/);
   return m ? `${String(m[1]).padStart(2, "0")}:${m[2]}` : "--:--";
 };
+
+function normalizeGradeLabel(v) {
+  const raw = String(v ?? "").trim();
+  const s = raw.toUpperCase();
+
+  if (s.includes("SG")) return "SG";
+  if (s.includes("G1") || s.includes("GI")) return "G1";
+  if (s.includes("G2") || s.includes("GII")) return "G2";
+  if (s.includes("G3") || s.includes("GIII")) return "G3";
+  if (raw.includes("一般")) return "一般";
+
+  return raw || "一般";
+}
 
 function setTopHeight() {
   const h = $raceTop.getBoundingClientRect().height || 112;
@@ -132,6 +147,16 @@ function renderRaceJSON(r, json) {
   $timeLabel.textContent = `締切: ${toHM(raceObj.cutoff)}`;
   $dayLabel.textContent = json?.day_label || raceObj?.day_label || "—";
 
+  if ($gradeLabel) {
+    $gradeLabel.textContent = normalizeGradeLabel(json?.grade_label || raceObj?.grade_label || "一般");
+  }
+
+  if ($eventTitle) {
+    const title = String(json?.event_title || json?.title || raceObj?.title || "").trim();
+    $eventTitle.textContent = title || "—";
+    $eventTitle.title = title || "";
+  }
+
   const boats = Array.isArray(raceObj.boats) ? raceObj.boats : [];
 
   $entryTable.innerHTML = boats.map((p) => `
@@ -170,6 +195,13 @@ async function setRace(r) {
     $raceNoLabel.textContent = `${r}R`;
     $timeLabel.textContent = `締切: --:--`;
     $dayLabel.textContent = "—";
+
+    if ($gradeLabel) $gradeLabel.textContent = "—";
+    if ($eventTitle) {
+      $eventTitle.textContent = "—";
+      $eventTitle.title = "";
+    }
+
     $entryTable.innerHTML = `<div class="err">JSON取得失敗</div>`;
     renderRaceTabs();
     updateUrlRace(r);
