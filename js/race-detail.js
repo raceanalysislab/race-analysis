@@ -18,8 +18,8 @@ const $entryTable = $("entryTable");
 const $courseYearBody = $("courseYearBody");
 const $courseLocalBody = $("courseLocalBody");
 
-const BOT_RACES_BASE_URL =
-  "https://cdn.jsdelivr.net/gh/raceanalysislab/race-data-bot@main/data/site/races/";
+const RACES_BASE_URL =
+  "https://raceanalysislab.github.io/race-analysis/data/site/races/";
 
 $("venueName").textContent = venueName;
 
@@ -74,16 +74,17 @@ function setTopHeight() {
 
 async function fetchJSON(url) {
   const joiner = url.includes("?") ? "&" : "?";
-  const res = await fetch(`${url}${joiner}t=${Date.now()}`, { cache: "no-store" });
+  const cacheBust = Math.floor(Date.now() / 60000);
+  const res = await fetch(`${url}${joiner}t=${cacheBust}`, { cache: "no-store" });
   if (!res.ok) throw new Error(url);
   return res.json();
 }
 
 function buildUrls(r) {
-  return [
-    ...(jcd && jcd !== "00" ? [`${BOT_RACES_BASE_URL}${jcd}_${r}R.json`] : []),
-    `${BOT_RACES_BASE_URL}${venueName}_${r}R.json`
-  ];
+  const fileName = `${jcd}_${r}R.json`;
+  const slotCandidates = ["today", "tomorrow"];
+
+  return slotCandidates.map((slot) => `${RACES_BASE_URL}${slot}/${fileName}`);
 }
 
 async function fetchRaceJSON(r) {
