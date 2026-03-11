@@ -1,6 +1,6 @@
-/* js/app.js（完全置き換え：24場固定 / 非開催場も表示 / raw.githubusercontent + 1分単位cache bust / 30秒自動更新 / PRO対応 / 日付跨ぎ対応 / 00:00:10強制再取得保険つき / グレード表記統一 + class付与 / 一般カードは左右整列 / 1R時間帯からtone自動補完 / 戻る時のカード拡大解除対応 / 検索入力中はキーボードを弾かない / 最短締切表示対応 / NEXTから該当レース詳細へ直行） */
+/* js/app.js（完全置き換え：メインrepo Pages公開JSON対応 / 24場固定 / 非開催場も表示 / 1分単位cache bust / 30秒自動更新 / PRO対応 / 日付跨ぎ対応 / 00:00:10強制再取得保険つき / グレード表記統一 + class付与 / 一般カードは左右整列 / 1R時間帯からtone自動補完 / 戻る時のカード拡大解除対応 / 検索入力中はキーボードを弾かない / 最短締切表示対応 / NEXTから該当レース詳細へ直行） */
 
-const DATA_URL = "https://raw.githubusercontent.com/raceanalysislab/race-data-bot/main/data/site/venues.json";
+const DATA_URL = "https://raceanalysislab.github.io/race-analysis/data/site/venues_today.json";
 
 const NOTE_URLS = {
   YOSO_ONLY: "https://note.com/wsnndboat7/n/n1fdca8b0a7e3",
@@ -239,7 +239,7 @@ function getSoonestRace(list) {
   let best = null;
 
   for (const venue of Array.isArray(list) ? list : []) {
-    const raceTimes = Array.isArray(venue?.race_times) ? venue.race_times : [];
+    const raceTimes = Array.isArray(venue?.race_times) ? venue?.race_times : [];
     const venueName = String(venue?.name || venue?.venue_name || "").trim();
     const jcd = String(venue?.jcd || "").padStart(2, "0");
 
@@ -652,7 +652,7 @@ async function load() {
     const list = getVenueArray(json);
     const dataDate = getJsonDataDate(json);
 
-    if (!Array.isArray(list)) throw new Error("venues.json format invalid");
+    if (!Array.isArray(list)) throw new Error("venues_today.json format invalid");
 
     venueList = list;
     lastLoadedDataDate = dataDate || "";
