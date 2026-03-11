@@ -260,7 +260,7 @@ function updateNextRaceBox(list) {
   $nextRaceText.textContent = `${nextRace.venueName} ${nextRace.raceNo}R ${nextRace.cutoff}`;
   $nextRaceBox.setAttribute(
     "href",
-    `./race-detail.html?name=${encodeURIComponent(nextRace.venueName)}&race=${encodeURIComponent(nextRace.raceNo)}&jcd=${encodeURIComponent(nextRace.jcd)}`
+    `./race.html?name=${encodeURIComponent(nextRace.venueName)}&race=${encodeURIComponent(nextRace.raceNo)}&jcd=${encodeURIComponent(nextRace.jcd)}`
   );
   $nextRaceBox.removeAttribute("aria-disabled");
 }
@@ -681,3 +681,5 @@ renderPicksCta();
 renderPicksEmpty();
 load();
 scheduleMidnightReload();
+
+いい？
