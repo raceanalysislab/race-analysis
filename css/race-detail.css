@@ -1,7 +1,7 @@
 :root{
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
-  --raceTopH: 100px;
+  --raceTopH: 96px;
 
   --bg:#eef2f6;
   --panel:#ffffff;
@@ -157,7 +157,7 @@ body{
   flex:0 0 auto;
   appearance:none;
   min-width:64px;
-  height:44px;
+  height:42px;
   padding:0 12px;
   border:0;
   border-right:1px solid #d9e0e8;
@@ -227,7 +227,7 @@ body{
   border-right:1px solid #d9e0e8;
   background:#f7f8fa;
   color:#4d5868;
-  height:44px;
+  height:42px;
   padding:0 14px;
   font-size:14px;
   font-weight:900;
@@ -290,9 +290,9 @@ body{
 
 .entryHead{
   display:grid;
-  grid-template-columns:48px minmax(0,1.08fr) 50px 60px 60px 60px;
-  align-items:center;
-  min-height:42px;
+  grid-template-columns:46px minmax(0,1.16fr) 48px 70px 70px 70px;
+  align-items:stretch;
+  min-height:58px;
   background:#eef1f4;
   border-bottom:1px solid var(--line);
 }
@@ -303,9 +303,9 @@ body{
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  gap:1px;
+  gap:2px;
   text-align:center;
-  padding:2px 3px;
+  padding:4px 3px;
   border-right:1px solid var(--line);
   color:#5f6978;
 }
@@ -336,8 +336,8 @@ body{
 
 .entryRow{
   display:grid;
-  grid-template-columns:48px minmax(0,1.08fr) 50px 60px 60px 60px;
-  min-height:84px;
+  grid-template-columns:46px minmax(0,1.16fr) 48px 70px 70px 70px;
+  min-height:68px;
   border-bottom:1px solid var(--line);
   background:#fff;
 }
@@ -348,7 +348,7 @@ body{
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:20px;
+  font-size:19px;
   font-weight:900;
   border-right:1px solid var(--line);
 }
@@ -362,7 +362,7 @@ body{
 
 .entryNameCell{
   min-width:0;
-  padding:6px 8px;
+  padding:5px 8px;
   border-right:1px solid var(--line);
   display:flex;
   flex-direction:column;
@@ -370,18 +370,18 @@ body{
 }
 
 .entryMeta{
-  font-size:9px;
-  line-height:1.15;
+  font-size:8px;
+  line-height:1.12;
   color:#6e7785;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
-  margin-bottom:3px;
+  margin-bottom:2px;
   font-weight:500;
 }
 
 .entryName{
-  font-size:16px;
+  font-size:15px;
   line-height:1.02;
   font-weight:900;
   color:#151b24;
@@ -396,55 +396,73 @@ body{
   justify-content:center;
   text-align:center;
   font-variant-numeric:tabular-nums;
-  font-size:13px;
-  line-height:1.05;
+  font-size:12px;
+  line-height:1.02;
   font-weight:900;
   color:#101722;
   padding:0 2px;
   border-right:1px solid var(--line);
+  min-width:0;
 }
 .entryVal:last-child{ border-right:none; }
 
 .entryVal--stack{
-  padding:4px 2px;
+  padding:3px 2px;
 }
 
 .entryStatBlock,
 .entryMotorBlock{
   width:100%;
+  height:100%;
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  gap:3px;
+  gap:2px;
 }
 
 .entryStatMain{
-  font-size:13px;
+  display:block;
+  width:100%;
+  font-size:11px;
   line-height:1.02;
   font-weight:900;
   color:#101722;
+  white-space:nowrap;
+  text-align:center;
 }
 
 .entryStatSub{
-  font-size:12px;
+  display:block;
+  width:100%;
+  font-size:10px;
   line-height:1.02;
   font-weight:800;
   color:#3d4756;
+  white-space:nowrap;
+  text-align:center;
 }
 
 .entryMotorNo{
-  font-size:14px;
+  display:block;
+  width:100%;
+  font-size:12px;
   font-weight:900;
   line-height:1;
   color:#101722;
+  white-space:nowrap;
+  text-align:center;
 }
 
 .entryMotorRate{
-  font-size:11px;
+  display:block;
+  width:100%;
+  font-size:10px;
   font-weight:800;
   line-height:1;
   color:#3d4756;
+  white-space:nowrap;
+  text-align:center;
 }
 
 /* course */
@@ -747,8 +765,8 @@ body{
   }
 
   .entryHead{
-    grid-template-columns:44px minmax(0,1.08fr) 46px 50px 50px 62px;
-    min-height:38px;
+    grid-template-columns:42px minmax(0,1.16fr) 44px 64px 64px 64px;
+    min-height:54px;
   }
 
   .entryHeadMain{
@@ -760,8 +778,8 @@ body{
   }
 
   .entryRow{
-    grid-template-columns:44px minmax(0,1.08fr) 46px 50px 50px 62px;
-    min-height:78px;
+    grid-template-columns:42px minmax(0,1.16fr) 44px 64px 64px 64px;
+    min-height:62px;
   }
 
   .entryWaku{
@@ -778,27 +796,27 @@ body{
   }
 
   .entryVal{
-    font-size:12px;
+    font-size:11px;
   }
 
   .entryVal--stack{
-    padding:3px 1px;
+    padding:2px 1px;
   }
 
   .entryStatMain{
-    font-size:12px;
+    font-size:10px;
   }
 
   .entryStatSub{
-    font-size:10px;
+    font-size:9px;
   }
 
   .entryMotorNo{
-    font-size:13px;
+    font-size:11px;
   }
 
   .entryMotorRate{
-    font-size:10px;
+    font-size:9px;
   }
 
   .courseInnerTab{
