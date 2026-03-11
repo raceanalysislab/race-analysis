@@ -681,5 +681,3 @@ renderPicksCta();
 renderPicksEmpty();
 load();
 scheduleMidnightReload();
-
-いい？
