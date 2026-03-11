@@ -290,9 +290,9 @@ body{
 
 .entryHead{
   display:grid;
-  grid-template-columns:46px minmax(0,1.16fr) 48px 70px 70px 70px;
+  grid-template-columns:44px minmax(0,1.18fr) 46px 72px 72px 72px;
   align-items:stretch;
-  min-height:58px;
+  min-height:76px;
   background:#eef1f4;
   border-bottom:1px solid var(--line);
 }
@@ -305,7 +305,7 @@ body{
   justify-content:center;
   gap:2px;
   text-align:center;
-  padding:4px 3px;
+  padding:4px 2px;
   border-right:1px solid var(--line);
   color:#5f6978;
 }
@@ -336,8 +336,8 @@ body{
 
 .entryRow{
   display:grid;
-  grid-template-columns:46px minmax(0,1.16fr) 48px 70px 70px 70px;
-  min-height:68px;
+  grid-template-columns:44px minmax(0,1.18fr) 46px 72px 72px 72px;
+  min-height:64px;
   border-bottom:1px solid var(--line);
   background:#fff;
 }
@@ -362,7 +362,7 @@ body{
 
 .entryNameCell{
   min-width:0;
-  padding:5px 8px;
+  padding:5px 7px;
   border-right:1px solid var(--line);
   display:flex;
   flex-direction:column;
@@ -371,7 +371,7 @@ body{
 
 .entryMeta{
   font-size:8px;
-  line-height:1.12;
+  line-height:1.1;
   color:#6e7785;
   white-space:nowrap;
   overflow:hidden;
@@ -407,7 +407,7 @@ body{
 .entryVal:last-child{ border-right:none; }
 
 .entryVal--stack{
-  padding:3px 2px;
+  padding:2px 1px;
 }
 
 .entryStatBlock,
@@ -446,7 +446,7 @@ body{
 .entryMotorNo{
   display:block;
   width:100%;
-  font-size:12px;
+  font-size:11px;
   font-weight:900;
   line-height:1;
   color:#101722;
@@ -766,7 +766,7 @@ body{
 
   .entryHead{
     grid-template-columns:42px minmax(0,1.16fr) 44px 64px 64px 64px;
-    min-height:54px;
+    min-height:72px;
   }
 
   .entryHeadMain{
@@ -779,7 +779,7 @@ body{
 
   .entryRow{
     grid-template-columns:42px minmax(0,1.16fr) 44px 64px 64px 64px;
-    min-height:62px;
+    min-height:60px;
   }
 
   .entryWaku{
