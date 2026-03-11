@@ -1,11 +1,10 @@
 :root{
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
-  --raceTopH: 112px;
+  --raceTopH: 100px;
 
   --bg:#eef2f6;
   --panel:#ffffff;
-  --panel-soft:#f6f7f9;
   --line:#d7dde5;
   --line-soft:#e8edf3;
 
@@ -43,17 +42,17 @@ body{
   display:flex;
   align-items:flex-start;
   justify-content:space-between;
-  gap:12px;
+  gap:10px;
   background:#fff;
   border-bottom:1px solid var(--line);
-  padding:12px 14px 10px;
+  padding:8px 12px 7px;
 }
 
 .raceHead__left{
   min-width:0;
   display:flex;
   flex-direction:column;
-  gap:7px;
+  gap:5px;
 }
 
 .raceBrand{
@@ -67,12 +66,12 @@ body{
 .raceVenueRow{
   display:flex;
   align-items:center;
-  gap:8px;
+  gap:7px;
   min-width:0;
 }
 
 .raceVenue{
-  font-size:31px;
+  font-size:29px;
   line-height:1;
   font-weight:900;
   letter-spacing:-.02em;
@@ -85,11 +84,11 @@ body{
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  min-height:28px;
-  padding:0 10px;
+  min-height:24px;
+  padding:0 8px;
   border:1px solid #cfd6df;
   background:#fff;
-  font-size:12px;
+  font-size:11px;
   line-height:1;
   font-weight:900;
   color:#2a3240;
@@ -99,8 +98,8 @@ body{
 
 .raceEventTitle{
   min-width:0;
-  font-size:13px;
-  line-height:1.25;
+  font-size:12px;
+  line-height:1.2;
   font-weight:700;
   color:#3b4452;
   white-space:nowrap;
@@ -110,7 +109,7 @@ body{
 
 .raceMeta{
   display:flex;
-  gap:8px;
+  gap:10px;
   flex-wrap:wrap;
   align-items:center;
 }
@@ -118,13 +117,13 @@ body{
 .metaChip{
   display:inline-flex;
   align-items:center;
-  min-height:32px;
-  padding:0 14px;
-  border:1px solid #cfd6df;
-  background:#f7f8fa;
+  min-height:0;
+  padding:0;
+  border:0;
+  background:transparent;
   white-space:nowrap;
   font-size:12px;
-  line-height:1;
+  line-height:1.1;
   font-weight:800;
   color:#5f6978;
 }
@@ -132,12 +131,12 @@ body{
 .raceBtn{
   appearance:none;
   border:1px solid #cfd6df;
-  background:#f7f8fa;
+  background:#fff;
   color:#18202c;
-  min-width:90px;
-  height:56px;
-  padding:0 16px;
-  font-size:17px;
+  min-width:78px;
+  height:48px;
+  padding:0 14px;
+  font-size:16px;
   font-weight:900;
   flex:0 0 auto;
 }
@@ -157,14 +156,14 @@ body{
 .raceTab{
   flex:0 0 auto;
   appearance:none;
-  min-width:72px;
-  height:54px;
-  padding:0 14px;
+  min-width:64px;
+  height:44px;
+  padding:0 12px;
   border:0;
   border-right:1px solid #d9e0e8;
   background:#f7f8fa;
   color:#3e4858;
-  font-size:16px;
+  font-size:15px;
   font-weight:900;
   line-height:1;
 }
@@ -197,13 +196,13 @@ body{
   align-items:center;
   justify-content:space-between;
   gap:10px;
-  padding:12px 14px 8px;
+  padding:8px 12px 6px;
   border-bottom:1px solid var(--line-soft);
   flex:0 0 auto;
 }
 
 .sectionTitle{
-  font-size:15px;
+  font-size:14px;
   font-weight:900;
   letter-spacing:.02em;
   color:#111826;
@@ -228,13 +227,13 @@ body{
   border-right:1px solid #d9e0e8;
   background:#f7f8fa;
   color:#4d5868;
-  height:52px;
-  padding:0 18px;
-  font-size:15px;
+  height:44px;
+  padding:0 14px;
+  font-size:14px;
   font-weight:900;
   white-space:nowrap;
   flex:1 0 auto;
-  min-width:120px;
+  min-width:104px;
 }
 
 .viewTab:first-child{
@@ -291,19 +290,19 @@ body{
 
 .entryHead{
   display:grid;
-  grid-template-columns:54px minmax(0,1fr) 72px 74px 92px;
+  grid-template-columns:50px minmax(0,1fr) 64px 68px 88px;
   align-items:center;
-  min-height:46px;
+  min-height:40px;
   background:#eef1f4;
   border-bottom:1px solid var(--line);
 }
 
 .entryHead > div{
-  font-size:12px;
+  font-size:11px;
   font-weight:800;
   color:#5f6978;
   text-align:center;
-  padding:0 8px;
+  padding:0 6px;
   border-right:1px solid var(--line);
 }
 .entryHead > div:last-child{ border-right:none; }
@@ -316,8 +315,8 @@ body{
 
 .entryRow{
   display:grid;
-  grid-template-columns:54px minmax(0,1fr) 72px 74px 92px;
-  min-height:84px;
+  grid-template-columns:50px minmax(0,1fr) 64px 68px 88px;
+  min-height:72px;
   border-bottom:1px solid var(--line);
   background:#fff;
 }
@@ -328,7 +327,7 @@ body{
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:22px;
+  font-size:20px;
   font-weight:900;
   border-right:1px solid var(--line);
 }
@@ -342,7 +341,7 @@ body{
 
 .entryNameCell{
   min-width:0;
-  padding:8px 10px;
+  padding:6px 8px;
   border-right:1px solid var(--line);
   display:flex;
   flex-direction:column;
@@ -350,19 +349,19 @@ body{
 }
 
 .entryMeta{
-  font-size:10px;
-  line-height:1.2;
+  font-size:9px;
+  line-height:1.15;
   color:#6e7785;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
-  margin-bottom:4px;
+  margin-bottom:3px;
   font-weight:500;
 }
 
 .entryName{
-  font-size:18px;
-  line-height:1.05;
+  font-size:16px;
+  line-height:1.02;
   font-weight:900;
   color:#151b24;
   white-space:nowrap;
@@ -376,7 +375,7 @@ body{
   justify-content:center;
   text-align:center;
   font-variant-numeric:tabular-nums;
-  font-size:17px;
+  font-size:15px;
   line-height:1.05;
   font-weight:900;
   color:#101722;
@@ -386,7 +385,7 @@ body{
 .entryVal:last-child{ border-right:none; }
 
 .entryVal--stack{
-  padding:6px 4px;
+  padding:4px 3px;
 }
 
 .entryMotor{
@@ -394,18 +393,18 @@ body{
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  gap:4px;
+  gap:3px;
 }
 
 .entryMotorNo{
-  font-size:17px;
+  font-size:15px;
   font-weight:900;
   line-height:1;
   color:#101722;
 }
 
 .entryMotorRate{
-  font-size:15px;
+  font-size:12px;
   font-weight:800;
   line-height:1;
   color:#3d4756;
@@ -440,13 +439,13 @@ body{
   border-right:1px solid #d9e0e8;
   background:#f7f8fa;
   color:#4d5868;
-  height:44px;
-  padding:0 14px;
-  font-size:12px;
+  height:40px;
+  padding:0 12px;
+  font-size:11px;
   font-weight:900;
   white-space:nowrap;
   flex:1 0 auto;
-  min-width:160px;
+  min-width:150px;
 }
 
 .courseInnerTab:first-child{
@@ -468,11 +467,11 @@ body{
 }
 
 .courseBlockTitle{
-  font-size:13px;
+  font-size:12px;
   line-height:1.2;
   font-weight:900;
   color:#111826;
-  padding:12px 14px 10px;
+  padding:10px 12px 8px;
   border-bottom:1px solid var(--line);
 }
 
@@ -493,14 +492,14 @@ body{
 
 .courseGridHead,
 .courseGridRow{
-  min-width:560px;
+  min-width:540px;
   display:grid;
-  grid-template-columns:54px minmax(96px,0.78fr) 48px 58px 70px 70px 70px;
+  grid-template-columns:50px minmax(92px,0.78fr) 46px 56px 66px 66px 66px;
 }
 
 .courseGridHead{
   flex:0 0 auto;
-  min-height:38px;
+  min-height:34px;
   background:#eef1f4;
   border-bottom:1px solid var(--line);
 }
@@ -515,7 +514,7 @@ body{
   align-items:center;
   justify-content:center;
   text-align:center;
-  font-size:10px;
+  font-size:9px;
   line-height:1.1;
   font-weight:800;
   color:#5f6978;
@@ -539,7 +538,7 @@ body{
 
 .courseGridRow{
   flex:0 0 auto;
-  min-height:66px;
+  min-height:60px;
   border-bottom:1px solid var(--line);
   background:#fff;
 }
@@ -553,7 +552,7 @@ body{
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:19px;
+  font-size:18px;
   font-weight:900;
   border-right:1px solid var(--line);
 }
@@ -567,7 +566,7 @@ body{
 
 .courseGridName{
   min-width:0;
-  padding:6px 8px;
+  padding:5px 7px;
   border-right:1px solid var(--line);
   display:flex;
   flex-direction:column;
@@ -575,7 +574,7 @@ body{
 }
 
 .courseGridMeta{
-  font-size:8px;
+  font-size:7px;
   line-height:1.1;
   color:#6e7785;
   white-space:nowrap;
@@ -585,8 +584,8 @@ body{
 }
 
 .courseGridPlayer{
-  font-size:14px;
-  line-height:1.05;
+  font-size:13px;
+  line-height:1.03;
   font-weight:900;
   color:#151b24;
   white-space:nowrap;
@@ -600,11 +599,11 @@ body{
   justify-content:flex-start;
   text-align:left;
   font-variant-numeric:tabular-nums;
-  font-size:12px;
+  font-size:11px;
   line-height:1.05;
   font-weight:900;
   color:#101722;
-  padding:0 6px;
+  padding:0 5px;
   border-right:1px solid var(--line);
   white-space:nowrap;
 }
@@ -615,7 +614,7 @@ body{
   min-height:0;
   border-top:1px solid var(--line);
   background:#fff;
-  padding:24px 16px;
+  padding:20px 14px;
   display:flex;
   flex-direction:column;
   justify-content:center;
@@ -625,21 +624,21 @@ body{
 }
 
 .panelPlaceholder__title{
-  font-size:18px;
+  font-size:17px;
   font-weight:900;
   color:#0f172a;
-  margin-bottom:10px;
+  margin-bottom:8px;
 }
 
 .panelPlaceholder__text{
   font-size:12px;
-  line-height:1.8;
+  line-height:1.7;
   color:#64748b;
   max-width:260px;
 }
 
 .err{
-  padding:14px;
+  padding:12px;
   border-top:1px solid var(--line);
   background:#f8fafc;
   color:#475569;
@@ -650,7 +649,8 @@ body{
 
 @media (max-width: 390px){
   .raceHead{
-    padding:10px 12px 9px;
+    padding:7px 10px 6px;
+    gap:8px;
   }
 
   .raceBrand{
@@ -659,96 +659,132 @@ body{
   }
 
   .raceVenueRow{
-    gap:6px;
+    gap:5px;
   }
 
   .raceVenue{
-    font-size:28px;
+    font-size:26px;
   }
 
   .raceGrade{
-    min-height:24px;
-    padding:0 8px;
-    font-size:11px;
+    min-height:22px;
+    padding:0 7px;
+    font-size:10px;
   }
 
   .raceEventTitle{
-    font-size:12px;
+    font-size:11px;
+  }
+
+  .metaChip{
+    font-size:11px;
   }
 
   .raceBtn{
-    min-width:76px;
-    height:50px;
-    font-size:16px;
+    min-width:72px;
+    height:44px;
+    font-size:15px;
+    padding:0 12px;
   }
 
   .raceTab{
-    min-width:64px;
-    height:48px;
-    font-size:15px;
+    min-width:58px;
+    height:40px;
+    font-size:14px;
+    padding:0 10px;
+  }
+
+  .sectionHead{
+    padding:7px 10px 6px;
+  }
+
+  .sectionTitle{
+    font-size:13px;
   }
 
   .viewTab{
-    height:48px;
-    min-width:110px;
-    font-size:14px;
+    height:40px;
+    min-width:98px;
+    font-size:13px;
+    padding:0 10px;
   }
 
   .entryHead{
-    grid-template-columns:48px minmax(0,1fr) 62px 66px 84px;
+    grid-template-columns:46px minmax(0,1fr) 58px 62px 80px;
+    min-height:36px;
   }
 
   .entryRow{
-    grid-template-columns:48px minmax(0,1fr) 62px 66px 84px;
-    min-height:78px;
+    grid-template-columns:46px minmax(0,1fr) 58px 62px 80px;
+    min-height:66px;
   }
 
   .entryWaku{
-    font-size:20px;
+    font-size:18px;
   }
 
   .entryMeta{
-    font-size:9px;
+    font-size:8px;
+    margin-bottom:2px;
   }
 
   .entryName{
-    font-size:16px;
-  }
-
-  .entryVal{
     font-size:15px;
   }
 
+  .entryVal{
+    font-size:14px;
+  }
+
   .entryMotorNo{
-    font-size:16px;
+    font-size:14px;
   }
 
   .entryMotorRate{
-    font-size:13px;
+    font-size:11px;
+  }
+
+  .courseInnerTab{
+    height:38px;
+    font-size:10px;
+    min-width:138px;
+  }
+
+  .courseBlockTitle{
+    font-size:11px;
+    padding:8px 10px 7px;
   }
 
   .courseGridHead,
   .courseGridRow{
-    min-width:520px;
-    grid-template-columns:48px minmax(84px,0.74fr) 44px 54px 64px 64px 64px;
+    min-width:500px;
+    grid-template-columns:46px minmax(82px,0.74fr) 42px 52px 62px 62px 62px;
+  }
+
+  .courseGridHead{
+    min-height:32px;
+  }
+
+  .courseGridRow{
+    min-height:56px;
   }
 
   .courseGridWaku{
-    font-size:18px;
+    font-size:17px;
   }
 
   .courseGridPlayer{
-    font-size:13px;
+    font-size:12px;
   }
 
   .courseGridCell{
-    font-size:11px;
+    font-size:10px;
     padding:0 4px;
   }
 
   .courseGridHead__name,
   .courseGridHead__cell{
-    font-size:9px;
+    font-size:8px;
     padding:0 3px;
   }
 }
