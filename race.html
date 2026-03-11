@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#f6f7fb">
   <title>BOAT CORE</title>
 
-  <link rel="stylesheet" href="./css/race-detail.css">
+  <link rel="stylesheet" href="./css/race-detail.css?v=3">
 </head>
 
 <body>
@@ -76,101 +76,62 @@
 
         <div class="viewTrack" id="viewTrack">
 
-
           <div class="viewPage">
-
             <div class="entryBoard">
 
               <div class="entryHead">
-
-                <div class="entryHead__waku">
-                  枠
-                </div>
-
-                <div class="entryHead__name">
-                  選手名
-                </div>
-
-                <div class="entryHead__st">
-                  平均ST
-                </div>
-
-                <div class="entryHead__nat">
-                  全国
-                </div>
-
-                <div class="entryHead__motor">
-                  モーターNo.
-                </div>
-
+                <div class="entryHead__waku">枠</div>
+                <div class="entryHead__name">選手名</div>
+                <div class="entryHead__st">平均ST</div>
+                <div class="entryHead__nat">全国</div>
+                <div class="entryHead__motor">モーターNo.</div>
               </div>
 
               <div class="entryTable" id="entryTable"></div>
 
             </div>
-
           </div>
 
 
           <div class="viewPage">
-
             <div class="courseWrap" id="courseDataPanel">
 
               <div class="courseInnerTabs" id="courseInnerTabs">
-
-                <button type="button"
-                        class="courseInnerTab is-active"
-                        data-course-tab="year">
+                <button type="button" class="courseInnerTab is-active" data-course-tab="year">
                   コース別直近3年
                 </button>
 
-                <button type="button"
-                        class="courseInnerTab"
-                        data-course-tab="local">
+                <button type="button" class="courseInnerTab" data-course-tab="local">
                   コース別当地直近5年
                 </button>
-
               </div>
 
 
               <div id="courseYearView">
-
                 <div class="courseBlock">
-
                   <div class="courseBlockTitle">
                     コース別直近3年
                   </div>
-
                   <div class="courseSimpleTable" id="courseYearBody"></div>
-
                 </div>
-
               </div>
 
 
               <div id="courseLocalView" style="display:none;">
-
                 <div class="courseBlock">
-
                   <div class="courseBlockTitle">
                     コース別当地直近5年
                   </div>
-
                   <div class="courseSimpleTable" id="courseLocalBody"></div>
-
                 </div>
-
               </div>
 
             </div>
-
           </div>
 
 
           <div class="viewPage">
-
             <div class="panelPlaceholder">
-
               <div class="panelPlaceholder__title">
                 枠傾向
               </div>
@@ -179,11 +140,8 @@
                 ここには会場別の<br>
                 1枠逃げ率・2枠差し率などを表示予定
               </div>
-
             </div>
-
           </div>
-
 
         </div>
 
@@ -194,7 +152,7 @@
   </div>
 
 
-  <script src="./js/race-detail.js?v=2"></script>
+  <script src="./js/race-detail.js?v=3"></script>
 
 </body>
 </html>
