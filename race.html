@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#f6f7fb">
   <title>BOAT CORE</title>
 
-  <link rel="stylesheet" href="./css/race-detail.css?v=4">
+  <link rel="stylesheet" href="./css/race-detail.css?v=5">
 </head>
 
 <body>
@@ -43,7 +43,6 @@
 
   </div>
 
-
   <div class="raceBody">
 
     <section class="section">
@@ -53,7 +52,6 @@
           レース情報
         </div>
       </div>
-
 
       <div class="viewTabs" id="viewTabs">
 
@@ -71,7 +69,6 @@
 
       </div>
 
-
       <div class="viewPager" id="viewPager">
 
         <div class="viewTrack" id="viewTrack">
@@ -83,16 +80,27 @@
                 <div class="entryHead__waku">枠</div>
                 <div class="entryHead__name">選手名</div>
                 <div class="entryHead__st">平均ST</div>
-                <div class="entryHead__nat">全国</div>
-                <div class="entryHead__loc">当地</div>
-                <div class="entryHead__motor">モーター</div>
+
+                <div class="entryHead__nat">
+                  <span class="entryHeadMain">全国</span>
+                  <span class="entryHeadSub">勝率</span>
+                </div>
+
+                <div class="entryHead__loc">
+                  <span class="entryHeadMain">当地</span>
+                  <span class="entryHeadSub">勝率</span>
+                </div>
+
+                <div class="entryHead__motor">
+                  <span class="entryHeadMain">モーター</span>
+                  <span class="entryHeadSub">No.</span>
+                </div>
               </div>
 
               <div class="entryTable" id="entryTable"></div>
 
             </div>
           </div>
-
 
           <div class="viewPage">
             <div class="courseWrap" id="courseDataPanel">
@@ -107,7 +115,6 @@
                 </button>
               </div>
 
-
               <div id="courseYearView">
                 <div class="courseBlock">
                   <div class="courseBlockTitle">
@@ -116,7 +123,6 @@
                   <div class="courseSimpleTable" id="courseYearBody"></div>
                 </div>
               </div>
-
 
               <div id="courseLocalView" style="display:none;">
                 <div class="courseBlock">
@@ -129,7 +135,6 @@
 
             </div>
           </div>
-
 
           <div class="viewPage">
             <div class="panelPlaceholder">
@@ -151,7 +156,6 @@
     </section>
 
   </div>
-
 
   <script src="./js/race-detail.js?v=4"></script>
 
