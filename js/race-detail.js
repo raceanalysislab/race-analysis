@@ -172,6 +172,7 @@ function renderRaceJSON(r, json) {
 
       <div class="entryVal">${safeNum(p.avg_st)}</div>
       <div class="entryVal">${safeNum(p.nat_win)}</div>
+      <div class="entryVal">${safeNum(p.loc_win)}</div>
 
       <div class="entryVal entryVal--stack">
         <div class="entryMotor">
