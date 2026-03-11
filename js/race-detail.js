@@ -12,13 +12,9 @@ const $dayLabel = $("dayLabel");
 const $gradeLabel = $("gradeLabel");
 const $eventTitle = $("eventTitle");
 const $raceTop = $("raceTop");
-const $viewTabs = $("viewTabs");
 const $viewTrack = $("viewTrack");
-const $viewPager = $("viewPager");
 
 const $entryTable = $("entryTable");
-const $courseYearBody = $("courseYearBody");
-const $courseLocalBody = $("courseLocalBody");
 
 const RACES_BASE_URL =
   "https://raceanalysislab.github.io/race-analysis/data/site/races/";
@@ -26,24 +22,20 @@ const RACES_BASE_URL =
 $("venueName").textContent = venueName;
 
 let currentRace = 1;
-let currentView = 0;
 let dragStartX = 0;
 let dragCurrentX = 0;
 let dragging = false;
 
-let courseStats = {};
-let courseStatsLoaded = false;
-let courseStatsIndex = {};
-
 const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
 
-const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({
-  "&": "&amp;",
-  "<": "&lt;",
-  ">": "&gt;",
-  '"': "&quot;",
-  "'": "&#39;"
-}[c]));
+const esc = (s) =>
+  String(s ?? "").replace(/[&<>"']/g, (c) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;",
+  }[c]));
 
 const safeNum = (v, digits = 2) => {
   if (v === undefined || v === null || v === "") return "—";
@@ -123,43 +115,12 @@ function renderRaceTabs() {
       setRace(race);
     });
   });
-
-  const activeBtn = $tabs.querySelector(`.raceTab[data-race="${currentRace}"]`);
-  if (activeBtn && typeof activeBtn.scrollIntoView === "function") {
-    activeBtn.scrollIntoView({
-      behavior: "smooth",
-      inline: "center",
-      block: "nearest"
-    });
-  }
 }
 
 function updateUrlRace(r) {
   const next = new URL(location.href);
   next.searchParams.set("race", String(r));
   history.replaceState(null, "", next.toString());
-}
-
-function renderRateBlock(label, v1, v2, v3) {
-  return `
-    <div class="entryStatBlock">
-      <div class="entryStatLabel">${esc(label)}</div>
-      <div class="entryStatMain">${safeNum(v1)}</div>
-      <div class="entryStatSub">${safeNum(v2)}</div>
-      <div class="entryStatSub">${safeNum(v3)}</div>
-    </div>
-  `;
-}
-
-function renderMotorBlock(no, r2, r3) {
-  return `
-    <div class="entryMotorBlock">
-      <div class="entryStatLabel">モーター</div>
-      <div class="entryMotorNo">${safeInt(no)}</div>
-      <div class="entryMotorRate">${safeNum(r2)}</div>
-      <div class="entryMotorRate">${safeNum(r3)}</div>
-    </div>
-  `;
 }
 
 function renderRaceJSON(r, json) {
@@ -170,24 +131,33 @@ function renderRaceJSON(r, json) {
   $dayLabel.textContent = json?.day_label || raceObj?.day_label || "—";
 
   if ($gradeLabel) {
-    $gradeLabel.textContent = normalizeGradeLabel(json?.grade_label || raceObj?.grade_label || "一般");
+    $gradeLabel.textContent = normalizeGradeLabel(
+      json?.grade_label || raceObj?.grade_label || "一般"
+    );
   }
 
   if ($eventTitle) {
-    const title = String(json?.event_title || json?.title || raceObj?.title || "").trim();
+    const title = String(
+      json?.event_title || json?.title || raceObj?.title || ""
+    ).trim();
     $eventTitle.textContent = title || "—";
     $eventTitle.title = title || "";
   }
 
   const boats = Array.isArray(raceObj.boats) ? raceObj.boats : [];
 
-  $entryTable.innerHTML = boats.map((p) => `
+  $entryTable.innerHTML = boats
+    .map(
+      (p) => `
     <div class="entryRow">
+
       <div class="entryWaku w${esc(p.waku)}">${esc(p.waku)}</div>
 
       <div class="entryNameCell">
         <div class="entryMeta">
-          ${esc(p.regno)} / ${esc(p.grade)} / ${esc(p.branch)} / ${esc(p.age)}歳
+          ${esc(p.regno)} / ${esc(p.grade)} / ${esc(p.branch)} / ${esc(
+        p.age
+      )}歳
         </div>
         <div class="entryName">${esc(p.name)}</div>
       </div>
@@ -195,18 +165,27 @@ function renderRaceJSON(r, json) {
       <div class="entryVal">${safeNum(p.avg_st)}</div>
 
       <div class="entryVal entryVal--stack">
-        ${renderRateBlock("全国", p.nat_win, p.nat_2, p.nat_3)}
+        <div class="entryStatMain">${safeNum(p.nat_win)}</div>
+        <div class="entryStatSub">${safeNum(p.nat_2)}</div>
+        <div class="entryStatSub">${safeNum(p.nat_3)}</div>
       </div>
 
       <div class="entryVal entryVal--stack">
-        ${renderRateBlock("当地", p.loc_win, p.loc_2, p.loc_3)}
+        <div class="entryStatMain">${safeNum(p.loc_win)}</div>
+        <div class="entryStatSub">${safeNum(p.loc_2)}</div>
+        <div class="entryStatSub">${safeNum(p.loc_3)}</div>
       </div>
 
       <div class="entryVal entryVal--stack">
-        ${renderMotorBlock(p.motor_no, p.motor_2, p.motor_3)}
+        <div class="entryMotorNo">${safeInt(p.motor_no)}</div>
+        <div class="entryMotorRate">${safeNum(p.motor_2)}</div>
+        <div class="entryMotorRate">${safeNum(p.motor_3)}</div>
       </div>
+
     </div>
-  `).join("");
+  `
+    )
+    .join("");
 
   renderRaceTabs();
   updateUrlRace(r);
@@ -224,20 +203,7 @@ async function setRace(r) {
     const json = await fetchRaceJSON(r);
     renderRaceJSON(r, json);
   } catch (e) {
-    $raceNoLabel.textContent = `${r}R`;
-    $timeLabel.textContent = `締切: --:--`;
-    $dayLabel.textContent = "—";
-
-    if ($gradeLabel) $gradeLabel.textContent = "—";
-    if ($eventTitle) {
-      $eventTitle.textContent = "—";
-      $eventTitle.title = "";
-    }
-
     $entryTable.innerHTML = `<div class="err">JSON取得失敗</div>`;
-    renderRaceTabs();
-    updateUrlRace(r);
-    setTopHeight();
   }
 }
 
@@ -260,41 +226,38 @@ function handleSwipeEnd() {
 
   if (Math.abs(diff) < 50) return;
 
-  if (diff < 0) {
-    setRace(currentRace + 1);
-  } else {
-    setRace(currentRace - 1);
-  }
+  if (diff < 0) setRace(currentRace + 1);
+  else setRace(currentRace - 1);
 }
 
 function bindSwipe() {
   const target = $viewTrack || document;
 
-  target.addEventListener("touchstart", (e) => {
-    if (!e.touches || !e.touches.length) return;
-    handleSwipeStart(e.touches[0].clientX);
-  }, { passive: true });
+  target.addEventListener(
+    "touchstart",
+    (e) => {
+      if (!e.touches?.length) return;
+      handleSwipeStart(e.touches[0].clientX);
+    },
+    { passive: true }
+  );
 
-  target.addEventListener("touchmove", (e) => {
-    if (!e.touches || !e.touches.length) return;
-    handleSwipeMove(e.touches[0].clientX);
-  }, { passive: true });
+  target.addEventListener(
+    "touchmove",
+    (e) => {
+      if (!e.touches?.length) return;
+      handleSwipeMove(e.touches[0].clientX);
+    },
+    { passive: true }
+  );
 
-  target.addEventListener("touchend", () => {
-    handleSwipeEnd();
-  }, { passive: true });
-
-  target.addEventListener("mousedown", (e) => {
-    handleSwipeStart(e.clientX);
-  });
-
-  window.addEventListener("mousemove", (e) => {
-    handleSwipeMove(e.clientX);
-  });
-
-  window.addEventListener("mouseup", () => {
-    handleSwipeEnd();
-  });
+  target.addEventListener(
+    "touchend",
+    () => {
+      handleSwipeEnd();
+    },
+    { passive: true }
+  );
 }
 
 async function boot() {
