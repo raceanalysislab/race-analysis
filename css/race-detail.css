@@ -317,7 +317,7 @@ body{
 .entryRow{
   display:grid;
   grid-template-columns:48px minmax(0,1.08fr) 50px 60px 60px 60px;
-  min-height:72px;
+  min-height:84px;
   border-bottom:1px solid var(--line);
   background:#fff;
 }
@@ -389,12 +389,37 @@ body{
   padding:4px 2px;
 }
 
-.entryMotor{
+.entryStatBlock,
+.entryMotorBlock{
+  width:100%;
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  gap:3px;
+  gap:2px;
+}
+
+.entryStatLabel{
+  font-size:9px;
+  line-height:1;
+  font-weight:800;
+  color:#677180;
+  letter-spacing:-.01em;
+  margin-bottom:1px;
+}
+
+.entryStatMain{
+  font-size:13px;
+  line-height:1.02;
+  font-weight:900;
+  color:#101722;
+}
+
+.entryStatSub{
+  font-size:12px;
+  line-height:1.02;
+  font-weight:800;
+  color:#3d4756;
 }
 
 .entryMotorNo{
@@ -717,7 +742,7 @@ body{
 
   .entryRow{
     grid-template-columns:44px minmax(0,1.08fr) 46px 50px 50px 62px;
-    min-height:66px;
+    min-height:78px;
   }
 
   .entryWaku{
@@ -735,6 +760,22 @@ body{
 
   .entryVal{
     font-size:12px;
+  }
+
+  .entryVal--stack{
+    padding:3px 1px;
+  }
+
+  .entryStatLabel{
+    font-size:8px;
+  }
+
+  .entryStatMain{
+    font-size:12px;
+  }
+
+  .entryStatSub{
+    font-size:10px;
   }
 
   .entryMotorNo{
