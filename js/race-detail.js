@@ -2,6 +2,7 @@ const qs = new URLSearchParams(location.search);
 
 const venueName = decodeURIComponent(qs.get("name") || "会場");
 const jcd = String(qs.get("jcd") || "").padStart(2, "0");
+const dateParam = String(qs.get("date") || "").trim();
 
 const $ = (id) => document.getElementById(id);
 
@@ -21,6 +22,7 @@ const RACES_BASE_URL =
 $("venueName").textContent = venueName;
 
 let currentRace = 1;
+let currentDate = dateParam || getLocalYMD();
 let dragStartX = 0;
 let dragCurrentX = 0;
 let dragging = false;
@@ -75,6 +77,24 @@ const toHM = (x) => {
   return m ? `${String(m[1]).padStart(2, "0")}:${m[2]}` : "--:--";
 };
 
+function getLocalYMD() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function addDaysYMD(ymd, days) {
+  const [y, m, d] = String(ymd).split("-").map(Number);
+  const dt = new Date(y, m - 1, d);
+  dt.setDate(dt.getDate() + days);
+  const yy = dt.getFullYear();
+  const mm = String(dt.getMonth() + 1).padStart(2, "0");
+  const dd = String(dt.getDate()).padStart(2, "0");
+  return `${yy}-${mm}-${dd}`;
+}
+
 function normalizeGradeLabel(v) {
   const raw = String(v ?? "").trim();
   const s = raw.toUpperCase();
@@ -101,17 +121,26 @@ async function fetchJSON(url) {
   return res.json();
 }
 
-function buildUrls(r) {
+function buildUrls(r, dateStr) {
   const fileName = `${jcd}_${r}R.json`;
-  return ["today", "tomorrow"].map((slot) => `${RACES_BASE_URL}${slot}/${fileName}`);
+  const candidates = [
+    `${RACES_BASE_URL}${dateStr}/${fileName}`,
+    `${RACES_BASE_URL}${addDaysYMD(dateStr, 1)}/${fileName}`,
+    `${RACES_BASE_URL}${addDaysYMD(dateStr, -1)}/${fileName}`
+  ];
+  return candidates;
 }
 
 async function fetchRaceJSON(r) {
   let lastErr = null;
 
-  for (const url of buildUrls(r)) {
+  for (const url of buildUrls(r, currentDate)) {
     try {
-      return await fetchJSON(url);
+      const json = await fetchJSON(url);
+      if (json?.date) {
+        currentDate = String(json.date).trim();
+      }
+      return json;
     } catch (e) {
       lastErr = e;
     }
@@ -149,11 +178,16 @@ function renderRaceTabs() {
 function updateUrlRace(r) {
   const next = new URL(location.href);
   next.searchParams.set("race", String(r));
+  if (currentDate) next.searchParams.set("date", currentDate);
   history.replaceState(null, "", next.toString());
 }
 
 function renderRaceJSON(r, json) {
   const raceObj = json?.race || {};
+
+  if (json?.date) {
+    currentDate = String(json.date).trim();
+  }
 
   $raceNoLabel.textContent = `${r}R`;
   $timeLabel.textContent = `締切: ${toHM(raceObj.cutoff)}`;
