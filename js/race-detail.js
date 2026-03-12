@@ -72,6 +72,18 @@ const pickAvgST = (p) => {
   return "";
 };
 
+const pickValue = (obj, keys) => {
+  for (const key of keys) {
+    const v = obj?.[key];
+    if (v !== undefined && v !== null && v !== "") return v;
+  }
+  return "";
+};
+
+const pickNat3 = (p) => pickValue(p, ["nat_3", "nat3", "nat_three"]);
+const pickLoc3 = (p) => pickValue(p, ["loc_3", "loc3", "loc_three"]);
+const pickMotor3 = (p) => pickValue(p, ["motor_3", "motor3", "motor_three"]);
+
 const toHM = (x) => {
   const m = String(x || "").match(/(\d{1,2}):(\d{2})/);
   return m ? `${String(m[1]).padStart(2, "0")}:${m[2]}` : "--:--";
@@ -226,7 +238,7 @@ function renderRaceJSON(r, json) {
         <div class="entryStatBlock">
           <div class="entryStatMain">${safeNum(p.nat_win)}</div>
           <div class="entryStatSub">${safeNum(p.nat_2)}</div>
-          <div class="entryStatSub">${safeNum(p.nat_3)}</div>
+          <div class="entryStatSub">${safeNum(pickNat3(p))}</div>
         </div>
       </div>
 
@@ -234,7 +246,7 @@ function renderRaceJSON(r, json) {
         <div class="entryStatBlock">
           <div class="entryStatMain">${safeNum(p.loc_win)}</div>
           <div class="entryStatSub">${safeNum(p.loc_2)}</div>
-          <div class="entryStatSub">${safeNum(p.loc_3)}</div>
+          <div class="entryStatSub">${safeNum(pickLoc3(p))}</div>
         </div>
       </div>
 
@@ -242,7 +254,7 @@ function renderRaceJSON(r, json) {
         <div class="entryMotorBlock">
           <div class="entryMotorNo">${safeInt(p.motor_no)}</div>
           <div class="entryMotorRate">${safeNum(p.motor_2)}</div>
-          <div class="entryMotorRate">${safeNum(p.motor_3)}</div>
+          <div class="entryMotorRate">${safeNum(pickMotor3(p))}</div>
         </div>
       </div>
     </div>
