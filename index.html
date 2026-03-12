@@ -6,11 +6,11 @@
 <meta name="theme-color" content="#f3f4f6" />
 <title>BOAT CORE</title>
 
-<link rel="stylesheet" href="./style.css?v=1" />
-<link rel="stylesheet" href="./css/base.css?v=1" />
-<link rel="stylesheet" href="./css/layout.css?v=1" />
-<link rel="stylesheet" href="./css/header.css?v=1" />
-<link rel="stylesheet" href="./css/grid.css?v=1" />
+<link rel="stylesheet" href="./style.css?v=2" />
+<link rel="stylesheet" href="./css/base.css?v=2" />
+<link rel="stylesheet" href="./css/layout.css?v=2" />
+<link rel="stylesheet" href="./css/header.css?v=2" />
+<link rel="stylesheet" href="./css/grid.css?v=2" />
 <link href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&display=swap" rel="stylesheet" />
 </head>
 
@@ -18,137 +18,136 @@
 
 <header class="top">
 
-<div class="top__row">
+  <div class="top__row">
 
-<div class="top__titleWrap">
-<h1 class="top__title">BOAT CORE</h1>
-<div class="top__subtitle">本日の開催一覧</div>
-</div>
+    <div class="top__titleWrap">
+      <h1 class="top__title">BOAT CORE</h1>
+      <div class="top__subtitle">本日の開催一覧</div>
+    </div>
 
-<div class="top__actions">
+    <div class="top__actions">
 
-<button id="btnPro" class="top__pro" type="button">
-<span class="top__proDot"></span>
-<span>PRO</span>
-</button>
+      <button id="btnPro" class="top__pro" type="button" aria-pressed="false">
+        <span class="top__proDot" aria-hidden="true"></span>
+        <span>PRO</span>
+      </button>
 
-<button id="btnRefresh" class="top__btn" type="button">
-更新
-</button>
+      <button id="btnRefresh" class="top__btn" type="button">
+        更新
+      </button>
 
-</div>
-</div>
+    </div>
+  </div>
 
-<div class="top__searchRow">
+  <div class="top__searchRow">
 
-<div class="top__search">
-<input
-id="playerSearchInput"
-class="playerSearchInput"
-type="text"
-placeholder="登録番号 / 選手名で検索"
-autocomplete="off"
-/>
+    <div class="top__search">
+      <input
+        id="playerSearchInput"
+        class="playerSearchInput"
+        type="text"
+        placeholder="登録番号 / 選手名で検索"
+        autocomplete="off"
+        autocapitalize="off"
+        autocorrect="off"
+        spellcheck="false"
+        inputmode="search"
+        aria-label="登録番号または選手名で検索"
+      />
 
-<div id="playerSearchResult" class="playerSearchResult"></div>
-</div>
+      <div id="playerSearchResult" class="playerSearchResult" aria-live="polite"></div>
+    </div>
 
-<div class="top__next">
+    <div class="top__next">
 
-<a id="nextRaceBox" class="nextRaceBox" href="javascript:void(0)">
+      <a id="nextRaceBox" class="nextRaceBox" href="javascript:void(0)" aria-label="最短締切レース">
 
-<div class="nextRaceBox__label">
-NEXT
-</div>
+        <div class="nextRaceBox__label">
+          NEXT
+        </div>
 
-<div id="nextRaceText" class="nextRaceBox__main">
---
-</div>
+        <div id="nextRaceText" class="nextRaceBox__main">
+          --
+        </div>
 
-</a>
+      </a>
 
-</div>
-</div>
+    </div>
+  </div>
 
-<div class="top__sub">
-<div class="top__updated">
-最終更新:
-<span id="updatedAt">--:--</span>
-</div>
-</div>
+  <div class="top__sub">
+    <div class="top__updated">
+      最終更新:
+      <span id="updatedAt">--:--</span>
+    </div>
+  </div>
 
 </header>
 
-
 <main class="wrap">
 
-<section class="gridWrap">
-<section id="grid" class="grid"></section>
-</section>
+  <section class="gridWrap">
+    <section id="grid" class="grid"></section>
+  </section>
 
+  <section class="picksWrap">
 
-<section class="picksWrap">
+    <div class="picksHead">
 
-<div class="picksHead">
+      <h2 class="picksTitle">
+        本日厳選レース
+      </h2>
 
-<h2 class="picksTitle">
-本日厳選レース
-</h2>
+      <div class="picksMeta">
+        更新:
+        <span id="picksUpdatedAt">--:--</span>
+      </div>
 
-<div class="picksMeta">
-更新:
-<span id="picksUpdatedAt">--:--</span>
-</div>
+    </div>
 
-</div>
+    <div id="picksCta" class="picksCta"></div>
+    <div id="picks" class="picksList"></div>
 
-<div id="picksCta" class="picksCta"></div>
-<div id="picks" class="picksList"></div>
-
-</section>
+  </section>
 
 </main>
 
-
 <div id="proModal" class="proModal" aria-hidden="true">
 
-<div class="proModalBox">
+  <div class="proModalBox" role="dialog" aria-modal="true" aria-label="PROキー入力">
 
-<div class="proTitle">
-PROキー入力
+    <div class="proTitle">
+      PROキー入力
+    </div>
+
+    <div class="proDesc">
+      note購読者専用機能です<br>
+      配布された6桁キーを入力してください
+    </div>
+
+    <div class="proInputs" id="proInputs">
+      <input maxlength="1" inputmode="numeric" type="tel" pattern="[0-9]*" aria-label="1桁目" autocomplete="one-time-code">
+      <input maxlength="1" inputmode="numeric" type="tel" pattern="[0-9]*" aria-label="2桁目" autocomplete="one-time-code">
+      <input maxlength="1" inputmode="numeric" type="tel" pattern="[0-9]*" aria-label="3桁目" autocomplete="one-time-code">
+      <input maxlength="1" inputmode="numeric" type="tel" pattern="[0-9]*" aria-label="4桁目" autocomplete="one-time-code">
+      <input maxlength="1" inputmode="numeric" type="tel" pattern="[0-9]*" aria-label="5桁目" autocomplete="one-time-code">
+      <input maxlength="1" inputmode="numeric" type="tel" pattern="[0-9]*" aria-label="6桁目" autocomplete="one-time-code">
+    </div>
+
+    <button id="proUnlock" class="proUnlock" type="button">
+      PROを解放する
+    </button>
+
+    <div class="proBottom">
+      <button id="proCancel" type="button">キャンセル</button>
+      <button id="proClear" type="button">クリア</button>
+    </div>
+
+  </div>
 </div>
 
-<div class="proDesc">
-note購読者専用機能です<br>
-配布された6桁キーを入力してください
-</div>
-
-<div class="proInputs" id="proInputs">
-<input maxlength="1" inputmode="numeric">
-<input maxlength="1" inputmode="numeric">
-<input maxlength="1" inputmode="numeric">
-<input maxlength="1" inputmode="numeric">
-<input maxlength="1" inputmode="numeric">
-<input maxlength="1" inputmode="numeric">
-</div>
-
-<button id="proUnlock" class="proUnlock">
-PROを解放する
-</button>
-
-<div class="proBottom">
-<button id="proCancel">キャンセル</button>
-<button id="proClear">クリア</button>
-</div>
-
-</div>
-</div>
-
-
-<!-- JS -->
-
-<script defer src="./js/app.js?v=7"></script>
-<script defer src="./js/player-search.js?v=1"></script>
+<script defer src="./js/app.js?v=8"></script>
+<script defer src="./js/player-search.js?v=2"></script>
 
 </body>
 </html>
