@@ -1,4 +1,24 @@
-const DATA_URL = "https://raceanalysislab.github.io/race-analysis/data/site/venues_today.json";
+function getLocalYMD() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function addDaysYMD(ymd, days) {
+  const [y, m, d] = String(ymd).split("-").map(Number);
+  const dt = new Date(y, m - 1, d);
+  dt.setDate(dt.getDate() + days);
+  const yy = dt.getFullYear();
+  const mm = String(dt.getMonth() + 1).padStart(2, "0");
+  const dd = String(dt.getDate()).padStart(2, "0");
+  return `${yy}-${mm}-${dd}`;
+}
+
+function buildVenuesUrl(dateStr) {
+  return `https://raceanalysislab.github.io/race-analysis/data/site/venues/${dateStr}.json`;
+}
 
 const NOTE_URLS = {
   YOSO_ONLY: "https://note.com/wsnndboat7/n/n1fdca8b0a7e3",
@@ -63,6 +83,7 @@ let venueList = [];
 let isLoading = false;
 let lastLoadedDataDate = "";
 let lastSeenLocalDate = getLocalYMD();
+let currentDataUrl = buildVenuesUrl(lastSeenLocalDate);
 
 function esc(s) {
   return String(s ?? "").replace(/[&<>"']/g, (c) => ({
@@ -77,14 +98,6 @@ function esc(s) {
 function nowHM() {
   const d = new Date();
   return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
-}
-
-function getLocalYMD() {
-  const d = new Date();
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
 }
 
 function normalizeGradeLabel(v) {
@@ -227,6 +240,7 @@ function getSoonestRace(list) {
     const raceTimes = Array.isArray(venue?.race_times) ? venue.race_times : [];
     const venueName = String(venue?.name || venue?.venue_name || "").trim();
     const jcd = String(venue?.jcd || "").padStart(2, "0");
+    const date = String(venue?.date || lastSeenLocalDate).trim();
 
     for (const r of raceTimes) {
       const cutoff = String(r?.cutoff || "").trim();
@@ -237,7 +251,7 @@ function getSoonestRace(list) {
       if (now >= cutoffAt + NEXT_RACE_DELAY_MS) continue;
 
       if (!best || cutoffAt < best.cutoffAt) {
-        best = { jcd, venueName, raceNo, cutoff, cutoffAt };
+        best = { jcd, venueName, raceNo, cutoff, cutoffAt, date };
       }
     }
   }
@@ -260,7 +274,7 @@ function updateNextRaceBox(list) {
   $nextRaceText.textContent = `${nextRace.venueName} ${nextRace.raceNo}R ${nextRace.cutoff}`;
   $nextRaceBox.setAttribute(
     "href",
-    `./race.html?name=${encodeURIComponent(nextRace.venueName)}&race=${encodeURIComponent(nextRace.raceNo)}&jcd=${encodeURIComponent(nextRace.jcd)}`
+    `./race.html?date=${encodeURIComponent(nextRace.date)}&name=${encodeURIComponent(nextRace.venueName)}&race=${encodeURIComponent(nextRace.raceNo)}&jcd=${encodeURIComponent(nextRace.jcd)}`
   );
   $nextRaceBox.removeAttribute("aria-disabled");
 }
@@ -294,10 +308,50 @@ function getVenueArray(json) {
   return [];
 }
 
-function buildDataUrl() {
-  const sep = DATA_URL.includes("?") ? "&" : "?";
+function buildDataUrl(baseUrl) {
+  const sep = baseUrl.includes("?") ? "&" : "?";
   const cacheBust = Math.floor(Date.now() / 60000);
-  return `${DATA_URL}${sep}t=${cacheBust}`;
+  return `${baseUrl}${sep}t=${cacheBust}`;
+}
+
+async function fetchDateJson(dateStr) {
+  const url = buildVenuesUrl(dateStr);
+  const res = await fetch(buildDataUrl(url), { cache: "no-store" });
+  if (!res.ok) {
+    throw new Error(`HTTP ${res.status} ${url}`);
+  }
+  const json = await res.json();
+  const list = getVenueArray(json);
+  if (!Array.isArray(list)) {
+    throw new Error(`invalid venues json ${url}`);
+  }
+  return {
+    url,
+    json,
+    list,
+    dataDate: getJsonDataDate(json) || dateStr
+  };
+}
+
+async function fetchBestVenueData() {
+  const today = getLocalYMD();
+  const candidates = [
+    today,
+    addDaysYMD(today, 1),
+    addDaysYMD(today, -1)
+  ];
+
+  let lastErr = null;
+
+  for (const dateStr of candidates) {
+    try {
+      return await fetchDateJson(dateStr);
+    } catch (e) {
+      lastErr = e;
+    }
+  }
+
+  throw lastErr || new Error("venues json not found");
 }
 
 function scheduleMidnightReload() {
@@ -312,6 +366,7 @@ function scheduleMidnightReload() {
   setTimeout(async () => {
     try {
       lastSeenLocalDate = getLocalYMD();
+      currentDataUrl = buildVenuesUrl(lastSeenLocalDate);
       await load();
     } finally {
       scheduleMidnightReload();
@@ -534,10 +589,11 @@ function renderOnCard(base, v) {
   const isGeneral = gradeLabel === "一般";
   const tone = resolveCardBand(v);
   const bottom = renderBottomHtml(next);
+  const date = String(v?.date || lastLoadedDataDate || lastSeenLocalDate).trim();
 
   return `
     <a class="card card--on ${isGeneral ? "card--general" : ""} ${next.soldout ? "card--soldout" : ""} ${next.danger ? "card--danger" : ""} card--tone-${esc(tone)}"
-       href="./race.html?jcd=${encodeURIComponent(base.jcd)}&name=${encodeURIComponent(base.name)}">
+       href="./race.html?date=${encodeURIComponent(date)}&jcd=${encodeURIComponent(base.jcd)}&name=${encodeURIComponent(base.name)}">
       <div class="card__nameRow">
         <span class="card__nameIcon card__nameIcon--empty"></span>
         <div class="card__name">${esc(base.name)}</div>
@@ -606,17 +662,15 @@ async function load() {
   isLoading = true;
 
   try {
-    const res = await fetch(buildDataUrl(), { cache: "no-store" });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-    const json = await res.json();
-    const list = getVenueArray(json);
-    const dataDate = getJsonDataDate(json);
-
-    if (!Array.isArray(list)) throw new Error("venues_today.json format invalid");
+    const result = await fetchBestVenueData();
+    const json = result.json;
+    const list = result.list;
+    const dataDate = result.dataDate;
+    const usedUrl = result.url;
 
     venueList = list;
     lastLoadedDataDate = dataDate || "";
+    currentDataUrl = usedUrl;
     renderGrid(venueList);
   } catch (e) {
     console.error(e);
@@ -634,6 +688,7 @@ async function reloadIfDateChanged() {
 
   if (localDateChanged || dataDateMismatch) {
     lastSeenLocalDate = currentLocalDate;
+    currentDataUrl = buildVenuesUrl(currentLocalDate);
     await load();
   }
 }
