@@ -406,13 +406,9 @@
   color:#374151;
   transform:translateY(-1px);
 }
-/* 非開催カードは会場名だけ表示 */
+/* 非開催カードは --- を消すだけ */
 
 .card--off .card__meta,
 .card--off .card__line{
-  display:none;
-}
-
-.card--off{
-  justify-content:center;
+  visibility:hidden;
 }
