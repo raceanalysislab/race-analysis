@@ -12,142 +12,129 @@
 <link rel="stylesheet" href="./css/header.css?v=1" />
 <link rel="stylesheet" href="./css/grid.css?v=1" />
 <link href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&display=swap" rel="stylesheet" />
-
-<style>
-.top__actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
-.top__pro,.top__btn{display:inline-flex;align-items:center;justify-content:center;}
-.picksWrap{display:block;}
-.picksHead{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;flex-wrap:wrap;}
-.picksCta,.picksList{display:block;}
-
-.top__titleWrap{display:flex;flex-direction:column;align-items:flex-start;}
-.top__title{font-family:"Yuji Syuku",serif;letter-spacing:.04em;}
-.top__subtitle{margin-top:4px;font-size:13px;line-height:1.2;color:var(--muted);letter-spacing:.02em;}
-
-.top__searchRow{
-margin-top:12px;
-display:grid;
-grid-template-columns:minmax(0,1.7fr) minmax(116px,.9fr);
-gap:10px;
-align-items:stretch;
-}
-
-.top__search{position:relative;min-width:0;}
-
-.playerSearchInput{
-width:100%;
-height:44px;
-padding:0 14px;
-border:1px solid var(--line,#e5e7eb);
-border-radius:12px;
-background:#fff;
-color:var(--text,#111827);
-font-size:16px;
-outline:none;
-box-shadow:0 1px 2px rgba(15,23,42,.03);
-}
-
-.playerSearchInput:focus{
-border-color:#cbd5e1;
-box-shadow:0 0 0 3px rgba(148,163,184,.12);
-}
-
-.playerSearchResult{
-display:none;
-position:absolute;
-top:calc(100% + 8px);
-left:0;
-right:0;
-background:#fff;
-border:1px solid var(--line,#e5e7eb);
-border-radius:14px;
-box-shadow:0 12px 30px rgba(15,23,42,.10);
-overflow:hidden;
-z-index:30;
-}
-
-.playerSearchItem{
-padding:12px 14px;
-border-top:1px solid #f1f5f9;
-cursor:pointer;
-background:#fff;
-}
-
-.playerSearchItem:first-child{border-top:0;}
-.playerSearchItem:hover{background:#f8fafc;}
-
-.playerSearchMain{
-font-size:14px;
-font-weight:700;
-color:var(--text,#111827);
-line-height:1.35;
-}
-
-.playerSearchSub{
-margin-top:3px;
-font-size:12px;
-color:var(--muted,#6b7280);
-line-height:1.35;
-}
-
-.playerSearchEmpty{
-padding:12px 14px;
-font-size:13px;
-color:var(--muted,#6b7280);
-background:#fff;
-}
-
-.top__next{min-width:0;}
-
-.nextRaceBox{
-width:100%;
-height:44px;
-border:1px solid var(--line,#e5e7eb);
-border-radius:12px;
-background:#fff;
-box-shadow:0 1px 2px rgba(15,23,42,.03);
-display:flex;
-flex-direction:column;
-justify-content:center;
-padding:6px 10px;
-text-decoration:none;
-color:inherit;
-}
-
-.nextRaceBox__label{
-font-size:10px;
-line-height:1;
-color:var(--muted,#6b7280);
-letter-spacing:.04em;
-margin-bottom:4px;
-white-space:nowrap;
-}
-
-.nextRaceBox__main{
-font-size:13px;
-line-height:1.1;
-font-weight:800;
-color:var(--text,#111827);
-white-space:nowrap;
-overflow:hidden;
-text-overflow:ellipsis;
-}
-
-.proInputs input{
-font-size:16px;
--webkit-text-size-adjust:100%;
-touch-action:manipulation;
-}
-</style>
 </head>
 
 <body>
 
-<!-- ここまで元コードそのまま -->
+<header class="top">
+<div class="top__row">
 
-<!-- scripts -->
-<script defer src="./js/app.js?v=5"></script>
-<script defer src="./js/player-search.js?v=2"></script>
+<div class="top__titleWrap">
+<h1 class="top__title">BOAT CORE</h1>
+<div class="top__subtitle">本日の開催一覧</div>
+</div>
+
+<div class="top__actions">
+<button id="btnPro" class="top__pro" type="button">
+<span class="top__proDot"></span>
+<span>PRO</span>
+</button>
+
+<button id="btnRefresh" class="top__btn" type="button">
+更新
+</button>
+</div>
+
+</div>
+
+<div class="top__searchRow">
+
+<div class="top__search">
+<input
+id="playerSearchInput"
+class="playerSearchInput"
+type="text"
+placeholder="登録番号 / 選手名で検索"
+/>
+
+<div id="playerSearchResult" class="playerSearchResult"></div>
+</div>
+
+<div class="top__next">
+<a id="nextRaceBox" class="nextRaceBox">
+
+<div class="nextRaceBox__label">
+NEXT
+</div>
+
+<div id="nextRaceText" class="nextRaceBox__main">
+--
+</div>
+
+</a>
+</div>
+
+</div>
+
+<div class="top__sub">
+<div class="top__updated">
+最終更新:
+<span id="updatedAt">--:--</span>
+</div>
+</div>
+
+</header>
+
+<main class="wrap">
+
+<section class="gridWrap">
+<section id="grid" class="grid"></section>
+</section>
+
+<section class="picksWrap">
+
+<div class="picksHead">
+<h2 class="picksTitle">本日厳選レース</h2>
+
+<div class="picksMeta">
+更新:
+<span id="picksUpdatedAt">--:--</span>
+</div>
+</div>
+
+<div id="picksCta" class="picksCta"></div>
+<div id="picks" class="picksList"></div>
+
+</section>
+
+</main>
+
+<div id="proModal" class="proModal" aria-hidden="true">
+
+<div class="proModalBox">
+
+<div class="proTitle">
+PROキー入力
+</div>
+
+<div class="proDesc">
+note購読者専用機能です
+<br>
+配布された6桁キーを入力してください
+</div>
+
+<div class="proInputs" id="proInputs">
+<input maxlength="1">
+<input maxlength="1">
+<input maxlength="1">
+<input maxlength="1">
+<input maxlength="1">
+<input maxlength="1">
+</div>
+
+<button id="proUnlock" class="proUnlock">
+PROを解放する
+</button>
+
+<div class="proBottom">
+<button id="proCancel">キャンセル</button>
+<button id="proClear">クリア</button>
+</div>
+
+</div>
+</div>
+
+<script defer src="./js/app.js?v=6"></script>
 
 </body>
 </html>
