@@ -6,11 +6,11 @@
   <meta name="theme-color" content="#f3f4f6" />
   <title>BOAT CORE</title>
 
-  <link rel="stylesheet" href="./style.css" />
-  <link rel="stylesheet" href="./css/base.css" />
-  <link rel="stylesheet" href="./css/layout.css" />
-  <link rel="stylesheet" href="./css/header.css" />
-  <link rel="stylesheet" href="./css/grid.css" />
+  <link rel="stylesheet" href="./style.css?v=1" />
+  <link rel="stylesheet" href="./css/base.css?v=1" />
+  <link rel="stylesheet" href="./css/layout.css?v=1" />
+  <link rel="stylesheet" href="./css/header.css?v=1" />
+  <link rel="stylesheet" href="./css/grid.css?v=1" />
   <link href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&display=swap" rel="stylesheet" />
 
   <style>
@@ -185,17 +185,14 @@
 </head>
 
 <body>
-  <!-- ここまで一切変更なし -->
 
-  <!-- 省略（中身はそのまま） -->
-
-  <!-- JS読み込みだけ変更 -->
+  <!-- JS読み込み（キャッシュ回避） -->
 
   <script type="module">
     import "./js/app.js?t=" + Date.now();
   </script>
 
-  <script src="./js/player-search.js"></script>
+  <script src="./js/player-search.js?v=1"></script>
 
 </body>
 </html>
