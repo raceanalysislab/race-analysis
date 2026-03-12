@@ -193,11 +193,10 @@ function deriveBandFromFirstRace(v) {
 
   const minutes = t.hh * 60 + t.mm;
 
-  if (minutes >= 8 * 60 && minutes < 9 * 60) return "morning";
-  if (minutes >= 9 * 60 && minutes < 10 * 60 + 30) return "day";
-  if (minutes >= 10 * 60 + 30 && minutes < 15 * 60) return "early";
-  if (minutes >= 15 * 60 && minutes < 17 * 60) return "evening";
-  if (minutes >= 17 * 60 && minutes < 18 * 60 + 30) return "night";
+  if (minutes >= 8 * 60 && minutes <= 9 * 60 + 59) return "morning";
+  if (minutes >= 10 * 60 && minutes <= 12 * 60 + 59) return "day";
+  if (minutes >= 15 * 60 && minutes <= 16 * 60 + 59) return "evening";
+  if (minutes >= 17 * 60 && minutes <= 18 * 60 + 59) return "night";
 
   return "normal";
 }
