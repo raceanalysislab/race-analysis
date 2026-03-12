@@ -16,8 +16,8 @@ function addDaysYMD(ymd, days) {
   return `${yy}-${mm}-${dd}`;
 }
 
-function buildVenuesUrl(dateStr) {
-  return `https://raceanalysislab.github.io/race-analysis/data/site/venues/${dateStr}.json`;
+function buildVenuesUrl() {
+  return "https://raceanalysislab.github.io/race-analysis/data/site/venues_today.json";
 }
 
 const NOTE_URLS = {
@@ -83,7 +83,7 @@ let venueList = [];
 let isLoading = false;
 let lastLoadedDataDate = "";
 let lastSeenLocalDate = getLocalYMD();
-let currentDataUrl = buildVenuesUrl(lastSeenLocalDate);
+let currentDataUrl = buildVenuesUrl();
 
 function esc(s) {
   return String(s ?? "").replace(/[&<>"']/g, (c) => ({
@@ -256,7 +256,7 @@ function getSoonestRace(list) {
     const raceTimes = Array.isArray(venue?.race_times) ? venue.race_times : [];
     const venueName = String(venue?.name || venue?.venue_name || "").trim();
     const jcd = String(venue?.jcd || "").padStart(2, "0");
-    const date = String(venue?.date || lastSeenLocalDate).trim();
+    const date = String(venue?.date || lastLoadedDataDate || lastSeenLocalDate).trim();
 
     for (const r of raceTimes) {
       const cutoff = String(r?.cutoff || "").trim();
@@ -330,44 +330,27 @@ function buildDataUrl(baseUrl) {
   return `${baseUrl}${sep}t=${cacheBust}`;
 }
 
-async function fetchDateJson(dateStr) {
-  const url = buildVenuesUrl(dateStr);
+async function fetchVenueData() {
+  const url = buildVenuesUrl();
   const res = await fetch(buildDataUrl(url), { cache: "no-store" });
+
   if (!res.ok) {
     throw new Error(`HTTP ${res.status} ${url}`);
   }
+
   const json = await res.json();
   const list = getVenueArray(json);
+
   if (!Array.isArray(list)) {
     throw new Error(`invalid venues json ${url}`);
   }
+
   return {
     url,
     json,
     list,
-    dataDate: getJsonDataDate(json) || dateStr
+    dataDate: getJsonDataDate(json) || ""
   };
-}
-
-async function fetchBestVenueData() {
-  const today = getLocalYMD();
-  const candidates = [
-    today,
-    addDaysYMD(today, 1),
-    addDaysYMD(today, -1)
-  ];
-
-  let lastErr = null;
-
-  for (const dateStr of candidates) {
-    try {
-      return await fetchDateJson(dateStr);
-    } catch (e) {
-      lastErr = e;
-    }
-  }
-
-  throw lastErr || new Error("venues json not found");
 }
 
 function scheduleMidnightReload() {
@@ -382,7 +365,7 @@ function scheduleMidnightReload() {
   setTimeout(async () => {
     try {
       lastSeenLocalDate = getLocalYMD();
-      currentDataUrl = buildVenuesUrl(lastSeenLocalDate);
+      currentDataUrl = buildVenuesUrl();
       await load();
     } finally {
       scheduleMidnightReload();
@@ -680,7 +663,7 @@ async function load() {
   isLoading = true;
 
   try {
-    const result = await fetchBestVenueData();
+    const result = await fetchVenueData();
     const json = result.json;
     const list = result.list;
     const dataDate = result.dataDate;
@@ -713,7 +696,7 @@ async function reloadIfDateChanged() {
 
   if (localDateChanged || dataDateMismatch) {
     lastSeenLocalDate = currentLocalDate;
-    currentDataUrl = buildVenuesUrl(currentLocalDate);
+    currentDataUrl = buildVenuesUrl();
     await load();
   }
 }
