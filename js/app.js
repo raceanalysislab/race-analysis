@@ -193,11 +193,13 @@ function deriveBandFromFirstRace(v) {
 
   const minutes = t.hh * 60 + t.mm;
 
-  if (minutes >= 8 * 60 && minutes < 10 * 60) return "morning";
-  if (minutes >= 10 * 60 && minutes < 12 * 60) return "early";
-  if (minutes >= 12 * 60 && minutes < 15 * 60) return "day";
+  if (minutes >= 8 * 60 && minutes < 9 * 60) return "morning";
+  if (minutes >= 9 * 60 && minutes < 10 * 60 + 30) return "day";
+  if (minutes >= 10 * 60 + 30 && minutes < 15 * 60) return "early";
   if (minutes >= 15 * 60 && minutes < 17 * 60) return "evening";
-  return "night";
+  if (minutes >= 17 * 60 && minutes < 18 * 60 + 30) return "night";
+
+  return "normal";
 }
 
 function resolveCardBand(v) {
@@ -689,7 +691,6 @@ async function load() {
     currentDataUrl = usedUrl;
 
     renderGrid(venueList);
-
   } catch (e) {
     console.error(e);
 
