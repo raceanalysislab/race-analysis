@@ -172,12 +172,12 @@
 
 .card__meta{
   display:flex;
-  align-items:stretch;
+  align-items:center;
   justify-content:space-between;
   gap:0;
   min-height:18px;
   width:calc(100% + 14px);
-  margin:0 -7px 4px;
+  margin:-2px -7px 5px;
   padding:0;
   position:relative;
   z-index:2;
@@ -192,6 +192,7 @@
   font-size:11px;
   line-height:1;
   white-space:nowrap;
+  font-weight:700;
 }
 
 .gradeText{
@@ -219,7 +220,7 @@
   gap:0;
   min-height:18px;
   width:calc(100% + 14px);
-  margin:0 -7px 4px !important;
+  margin:-2px -7px 5px !important;
   padding:0;
   position:relative;
   z-index:2;
@@ -243,11 +244,11 @@
 }
 
 .card--general .gradeText--general{
-  text-align:left;
+  text-align:center;
 }
 
 .card--general .day{
-  text-align:right;
+  text-align:center;
 }
 
 /* ===== グレード帯 ===== */
@@ -326,7 +327,7 @@
   gap:8px;
   font-size:12px;
   line-height:1;
-  margin-top:-2px;
+  margin-top:-1px;
 }
 
 /* 一般も帯付きと同じ中央配置 */
@@ -335,7 +336,7 @@
   align-items:center;
   justify-content:center;
   width:100% !important;
-  margin-top:-2px;
+  margin-top:-1px;
   padding:0 !important;
   box-sizing:border-box;
   gap:8px;
