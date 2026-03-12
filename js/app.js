@@ -295,13 +295,11 @@ function updateNextRaceBox(list) {
 
 function buildVenueMap(list) {
   const map = new Map();
-
   for (const item of Array.isArray(list) ? list : []) {
-    const jcd = String(item?.jcd || "");
+    const jcd = String(item?.jcd ?? "").padStart(2, "0");
     if (!jcd) continue;
     map.set(jcd, item);
   }
-
   return map;
 }
 
@@ -752,3 +750,5 @@ renderPicksCta();
 renderPicksEmpty();
 load();
 scheduleMidnightReload();
+
+これでいいの？
