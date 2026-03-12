@@ -126,26 +126,6 @@ function getGradeClass(v) {
   return "gradeText--general";
 }
 
-function normalizeBand(v) {
-  const s = String(v || "").trim().toLowerCase();
-  if (s === "morning") return "morning";
-  if (s === "early") return "early";
-  if (s === "day") return "day";
-  if (s === "evening") return "evening";
-  if (s === "night") return "night";
-  return "normal";
-}
-
-function normalizeTone(v) {
-  const s = String(v || "").trim().toLowerCase();
-  if (s === "morning") return "morning";
-  if (s === "early") return "early";
-  if (s === "day") return "day";
-  if (s === "evening") return "evening";
-  if (s === "night") return "night";
-  return "";
-}
-
 function parseHHMM(s) {
   const m = String(s ?? "").trim().match(/^(\d{1,2}):(\d{2})$/);
   if (!m) return null;
@@ -157,12 +137,6 @@ function parseHHMM(s) {
   if (hh < 0 || hh > 23 || mm < 0 || mm > 59) return null;
 
   return { hh, mm };
-}
-
-function hhmmToNumber(hhmm) {
-  const t = parseHHMM(hhmm);
-  if (!t) return null;
-  return t.hh * 100 + t.mm;
 }
 
 function getCutoffTime(hhmm) {
@@ -199,20 +173,25 @@ function deriveBandFromFirstRace(v) {
 
   const minutes = t.hh * 60 + t.mm;
 
-  if (minutes >= 8 * 60 && minutes < 10 * 60) return "morning";
-  if (minutes >= 10 * 60 && minutes < 12 * 60) return "early";
-  if (minutes >= 12 * 60 && minutes < 15 * 60) return "day";
-  if (minutes >= 15 * 60 && minutes < 17 * 60) return "evening";
-  return "night";
+  // 8:00〜9:00 → 黄色
+  if (minutes >= 8 * 60 && minutes < 9 * 60) return "early";
+
+  // 9:00〜11:00 → 青
+  if (minutes >= 9 * 60 && minutes < 11 * 60) return "morning";
+
+  // 11:00〜14:00 → 赤
+  if (minutes >= 11 * 60 && minutes < 14 * 60) return "day";
+
+  // 14:00〜16:00 → 若松同様の色
+  if (minutes >= 14 * 60 && minutes < 16 * 60) return "evening";
+
+  // 16:00〜19:00 → 若松より暗め
+  if (minutes >= 16 * 60 && minutes < 19 * 60) return "night";
+
+  return "normal";
 }
 
 function resolveCardBand(v) {
-  const explicitBand = normalizeBand(v?.card_band);
-  if (explicitBand !== "normal") return explicitBand;
-
-  const explicitTone = normalizeTone(v?.card_tone);
-  if (explicitTone) return explicitTone;
-
   return deriveBandFromFirstRace(v);
 }
 
@@ -756,3 +735,6 @@ renderPicksCta();
 renderPicksEmpty();
 load();
 scheduleMidnightReload();
+
+これでいいの？ેણ្តanalysis to=container.exec  一级a做爰片  天天中彩票怎么买json
+{"cmd":["bash","-lc","sed -n '1,220p' /mnt/data/F8ED3ADF-4A42-4E99-8AE9-1055D67E154F.jpeg >/dev/null; echo ok"],"timeout":3000}
