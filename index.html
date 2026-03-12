@@ -17,6 +17,7 @@
 <body>
 
 <header class="top">
+
 <div class="top__row">
 
 <div class="top__titleWrap">
@@ -25,6 +26,7 @@
 </div>
 
 <div class="top__actions">
+
 <button id="btnPro" class="top__pro" type="button">
 <span class="top__proDot"></span>
 <span>PRO</span>
@@ -33,8 +35,8 @@
 <button id="btnRefresh" class="top__btn" type="button">
 更新
 </button>
-</div>
 
+</div>
 </div>
 
 <div class="top__searchRow">
@@ -45,13 +47,15 @@ id="playerSearchInput"
 class="playerSearchInput"
 type="text"
 placeholder="登録番号 / 選手名で検索"
+autocomplete="off"
 />
 
 <div id="playerSearchResult" class="playerSearchResult"></div>
 </div>
 
 <div class="top__next">
-<a id="nextRaceBox" class="nextRaceBox">
+
+<a id="nextRaceBox" class="nextRaceBox" href="javascript:void(0)">
 
 <div class="nextRaceBox__label">
 NEXT
@@ -62,8 +66,8 @@ NEXT
 </div>
 
 </a>
-</div>
 
+</div>
 </div>
 
 <div class="top__sub">
@@ -75,21 +79,27 @@ NEXT
 
 </header>
 
+
 <main class="wrap">
 
 <section class="gridWrap">
 <section id="grid" class="grid"></section>
 </section>
 
+
 <section class="picksWrap">
 
 <div class="picksHead">
-<h2 class="picksTitle">本日厳選レース</h2>
+
+<h2 class="picksTitle">
+本日厳選レース
+</h2>
 
 <div class="picksMeta">
 更新:
 <span id="picksUpdatedAt">--:--</span>
 </div>
+
 </div>
 
 <div id="picksCta" class="picksCta"></div>
@@ -98,6 +108,7 @@ NEXT
 </section>
 
 </main>
+
 
 <div id="proModal" class="proModal" aria-hidden="true">
 
@@ -108,18 +119,17 @@ PROキー入力
 </div>
 
 <div class="proDesc">
-note購読者専用機能です
-<br>
+note購読者専用機能です<br>
 配布された6桁キーを入力してください
 </div>
 
 <div class="proInputs" id="proInputs">
-<input maxlength="1">
-<input maxlength="1">
-<input maxlength="1">
-<input maxlength="1">
-<input maxlength="1">
-<input maxlength="1">
+<input maxlength="1" inputmode="numeric">
+<input maxlength="1" inputmode="numeric">
+<input maxlength="1" inputmode="numeric">
+<input maxlength="1" inputmode="numeric">
+<input maxlength="1" inputmode="numeric">
+<input maxlength="1" inputmode="numeric">
 </div>
 
 <button id="proUnlock" class="proUnlock">
@@ -134,7 +144,11 @@ PROを解放する
 </div>
 </div>
 
-<script defer src="./js/app.js?v=6"></script>
+
+<!-- JS -->
+
+<script defer src="./js/app.js?v=7"></script>
+<script defer src="./js/player-search.js?v=1"></script>
 
 </body>
 </html>
