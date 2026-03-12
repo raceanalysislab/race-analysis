@@ -102,13 +102,16 @@ function nowHM() {
 
 function normalizeGradeLabel(v) {
   const raw = String(v ?? "").trim();
-  const s = raw.toUpperCase();
+  if (!raw) return "一般";
 
-  if (s.includes("SG")) return "SG";
-  if (s.includes("G1") || s.includes("GI")) return "G1";
-  if (s.includes("G2") || s.includes("GII")) return "G2";
-  if (s.includes("G3") || s.includes("GIII")) return "G3";
-  if (raw.includes("一般")) return "一般";
+  const upper = raw.toUpperCase();
+  const compact = upper.replace(/\s+/g, "");
+
+  if (compact === "SG") return "SG";
+  if (compact === "G1" || compact === "GI") return "G1";
+  if (compact === "G2" || compact === "GII") return "G2";
+  if (compact === "G3" || compact === "GIII") return "G3";
+  if (raw === "一般") return "一般";
 
   return "一般";
 }
@@ -131,6 +134,16 @@ function normalizeBand(v) {
   if (s === "evening") return "evening";
   if (s === "night") return "night";
   return "normal";
+}
+
+function normalizeTone(v) {
+  const s = String(v || "").trim().toLowerCase();
+  if (s === "morning") return "morning";
+  if (s === "early") return "early";
+  if (s === "day") return "day";
+  if (s === "evening") return "evening";
+  if (s === "night") return "night";
+  return "";
 }
 
 function parseHHMM(s) {
@@ -180,19 +193,26 @@ function getFirstRaceCutoff(v) {
 
 function deriveBandFromFirstRace(v) {
   const firstCutoff = getFirstRaceCutoff(v);
-  const n = hhmmToNumber(firstCutoff);
+  const t = parseHHMM(firstCutoff);
 
-  if (n == null) return "normal";
-  if (n < 1200) return "morning";
-  if (n < 1300) return "early";
-  if (n < 1500) return "day";
-  if (n < 1700) return "evening";
+  if (!t) return "normal";
+
+  const minutes = t.hh * 60 + t.mm;
+
+  if (minutes >= 8 * 60 && minutes < 10 * 60) return "morning";
+  if (minutes >= 10 * 60 && minutes < 12 * 60) return "early";
+  if (minutes >= 12 * 60 && minutes < 15 * 60) return "day";
+  if (minutes >= 15 * 60 && minutes < 17 * 60) return "evening";
   return "night";
 }
 
 function resolveCardBand(v) {
-  const explicit = normalizeBand(v?.card_band);
-  if (explicit !== "normal") return explicit;
+  const explicitBand = normalizeBand(v?.card_band);
+  if (explicitBand !== "normal") return explicitBand;
+
+  const explicitTone = normalizeTone(v?.card_tone);
+  if (explicitTone) return explicitTone;
+
   return deriveBandFromFirstRace(v);
 }
 
