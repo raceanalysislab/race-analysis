@@ -625,6 +625,8 @@ function renderOnCard(base, v) {
 }
 
 function renderGrid(list) {
+  if (!$grid) return;
+
   const map = buildVenueMap(list);
 
   $grid.innerHTML = VENUES.map((base) => {
@@ -685,11 +687,19 @@ async function load() {
     venueList = list;
     lastLoadedDataDate = dataDate || "";
     currentDataUrl = usedUrl;
+
     renderGrid(venueList);
+
   } catch (e) {
     console.error(e);
-    renderGrid([]);
-    if ($updatedAt) $updatedAt.textContent = "ERR";
+
+    if (venueList && venueList.length > 0) {
+      renderGrid(venueList);
+    }
+
+    if ($updatedAt) {
+      $updatedAt.textContent = nowHM();
+    }
   } finally {
     isLoading = false;
   }
@@ -750,5 +760,3 @@ renderPicksCta();
 renderPicksEmpty();
 load();
 scheduleMidnightReload();
-
-これでいいの？
