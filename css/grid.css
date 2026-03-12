@@ -193,6 +193,12 @@
   line-height:1;
   white-space:nowrap;
   font-weight:700;
+  font-family:
+    "Hiragino Sans",
+    "Noto Sans JP",
+    "Yu Gothic",
+    "Meiryo",
+    sans-serif;
 }
 
 .gradeText{
@@ -203,6 +209,17 @@
   color:#334155;
   text-align:center;
   font-variant-numeric:tabular-nums;
+}
+
+/* ===== 一般も帯付きと同じ構造に統一 ===== */
+
+.gradeText--general{
+  flex:1 1 50%;
+  padding:2px 0;
+  border-radius:0;
+  color:#334155;
+  font-size:11px;
+  font-weight:700;
   font-family:
     "Hiragino Sans",
     "Noto Sans JP",
@@ -211,44 +228,19 @@
     sans-serif;
 }
 
-/* ===== 一般も帯付きと同じ配置に統一 ===== */
-
-.card--general .card__meta{
-  display:flex !important;
-  align-items:center;
-  justify-content:space-between;
-  gap:0;
-  min-height:18px;
-  width:calc(100% + 14px);
-  margin:-2px -7px 5px !important;
-  padding:0;
-  position:relative;
-  z-index:2;
-}
-
-.card--general .gradeText--general,
-.card--general .day{
+.gradeText--general + .day{
   flex:1 1 50%;
-  display:inline-flex !important;
-  align-items:center;
-  justify-content:center;
-  min-height:18px !important;
-  margin:0 !important;
-  padding:2px 0 !important;
-  line-height:1;
+  padding:2px 0;
+  border-radius:0;
+  color:#334155;
   font-size:11px;
   font-weight:700;
-  border-radius:0 !important;
-  background:transparent !important;
-  color:#334155 !important;
-}
-
-.card--general .gradeText--general{
-  text-align:center;
-}
-
-.card--general .day{
-  text-align:center;
+  font-family:
+    "Hiragino Sans",
+    "Noto Sans JP",
+    "Yu Gothic",
+    "Meiryo",
+    sans-serif;
 }
 
 /* ===== グレード帯 ===== */
@@ -263,6 +255,12 @@
   color:#fff;
   font-size:11px;
   font-weight:700;
+  font-family:
+    "Hiragino Sans",
+    "Noto Sans JP",
+    "Yu Gothic",
+    "Meiryo",
+    sans-serif;
 }
 
 .gradeText--sg + .day,
@@ -273,8 +271,14 @@
   padding:2px 0;
   border-radius:0;
   color:#fff;
-  font-size:10px;
+  font-size:11px;
   font-weight:700;
+  font-family:
+    "Hiragino Sans",
+    "Noto Sans JP",
+    "Yu Gothic",
+    "Meiryo",
+    sans-serif;
 }
 
 .gradeText--sg,
@@ -328,26 +332,6 @@
   font-size:12px;
   line-height:1;
   margin-top:-1px;
-}
-
-/* 一般も帯付きと同じ中央配置 */
-.card--general .card__line--btm{
-  display:flex !important;
-  align-items:center;
-  justify-content:center;
-  width:100% !important;
-  margin-top:-1px;
-  padding:0 !important;
-  box-sizing:border-box;
-  gap:8px;
-}
-
-.card--general .raceNo,
-.card--general .raceTime{
-  display:inline-block !important;
-  line-height:1;
-  margin:0;
-  padding:0;
 }
 
 .raceNo{
