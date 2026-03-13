@@ -9,6 +9,10 @@
 
   --text:#121a2b;
   --muted:#667085;
+  --blue:#2c66cf;
+  --blue-dark:#17479f;
+  --cyan:#30b7d5;
+  --green:#34c89a;
 
   --waku1:#ffffff;
   --waku2:#2d3138;
@@ -20,48 +24,243 @@
 
 *{ box-sizing:border-box; }
 
-html,body{
+html, body{
   margin:0;
   min-height:100%;
   background:var(--bg);
   color:var(--text);
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Hiragino Sans","Noto Sans JP","Yu Gothic",sans-serif;
   -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  overflow-x:hidden;
 }
 
 body{
   padding-top:var(--safe-top);
 }
 
-/* ===== HERO ===== */
+.playerTop{
+  position:sticky;
+  top:0;
+  z-index:50;
+  background:#f5f7fb;
+  border-bottom:1px solid #d8deea;
+}
+
+.playerHead{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  padding:12px 14px 10px;
+  background:#fff;
+}
+
+.playerHead__left{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+}
+
+.playerBrand{
+  font-size:10px;
+  line-height:1;
+  font-weight:800;
+  letter-spacing:.22em;
+  color:#778197;
+}
+
+.playerTitleRow{
+  display:flex;
+  align-items:flex-end;
+  gap:8px;
+  min-width:0;
+  flex-wrap:wrap;
+}
+
+.playerName{
+  font-size:31px;
+  line-height:1;
+  font-weight:900;
+  color:#0d1730;
+  letter-spacing:-.04em;
+}
+
+.playerMetaInline{
+  font-size:13px;
+  line-height:1.2;
+  font-weight:800;
+  color:#4f596b;
+}
+
+.playerSubMeta{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.playerSubChip{
+  font-size:12px;
+  line-height:1.1;
+  font-weight:800;
+  color:#5f6978;
+}
+
+.playerBackBtn{
+  appearance:none;
+  border:1px solid #cfd6df;
+  background:#fff;
+  color:#18202c;
+  min-width:84px;
+  height:52px;
+  padding:0 16px;
+  font-size:17px;
+  font-weight:900;
+  letter-spacing:-.01em;
+  flex:0 0 auto;
+}
+
+.playerBody{
+  padding:12px 0 calc(22px + var(--safe-bottom));
+  overflow-x:hidden;
+}
+
+.playerSection{
+  margin:0 0 14px;
+  background:#fff;
+  border-top:1px solid #d9e1eb;
+  border-bottom:1px solid #d9e1eb;
+}
+
+.playerSection--hero{
+  background:transparent;
+  border:0;
+  margin:0 10px 14px;
+}
+
+.playerSectionTitle{
+  padding:14px 12px 10px;
+  font-size:18px;
+  line-height:1.1;
+  font-weight:900;
+  color:#071126;
+  letter-spacing:-.03em;
+  border-bottom:1px solid var(--line-soft);
+}
+
+/* hero */
+.courseHeroCard{
+  background:#fff;
+  border:1px solid #d8e0ed;
+  border-radius:22px;
+  box-shadow:0 8px 22px rgba(33,52,96,.09);
+  overflow:hidden;
+  width:100%;
+  max-width:100%;
+}
+
+.courseHeroTabs{
+  display:grid;
+  grid-template-columns:repeat(6, minmax(0, 1fr));
+  gap:0;
+  padding:12px 12px 0;
+  width:100%;
+}
+
+.courseHeroTab{
+  appearance:none;
+  border:1px solid #d9e0ec;
+  border-right:0;
+  height:42px;
+  font-size:14px;
+  font-weight:900;
+  letter-spacing:-.02em;
+  color:#1d2433;
+  background:#fff;
+  position:relative;
+  min-width:0;
+  overflow:hidden;
+}
+
+.courseHeroTab:first-child{
+  border-radius:14px 0 0 14px;
+}
+
+.courseHeroTab:last-child{
+  border-right:1px solid #d9e0ec;
+  border-radius:0 14px 14px 0;
+}
+
+.courseHeroTab[data-course="1"]{ background:var(--waku1); color:#111827; }
+.courseHeroTab[data-course="2"]{ background:var(--waku2); color:#fff; }
+.courseHeroTab[data-course="3"]{ background:var(--waku3); color:#fff; }
+.courseHeroTab[data-course="4"]{ background:var(--waku4); color:#fff; }
+.courseHeroTab[data-course="5"]{ background:var(--waku5); color:#162033; }
+.courseHeroTab[data-course="6"]{ background:var(--waku6); color:#fff; }
+
+.courseHeroTab.is-active{
+  transform:translateY(-4px);
+  box-shadow:0 6px 14px rgba(30,72,155,.18);
+  z-index:2;
+  border-right:1px solid rgba(0,0,0,.05);
+}
 
 .courseHeroBody{
   display:grid;
-  grid-template-columns:.9fr 1.1fr;
+  grid-template-columns:minmax(0, .88fr) minmax(0, 1.12fr);
   gap:10px;
-  padding:12px;
+  padding:12px 12px 18px;
+  width:100%;
+  max-width:100%;
+  align-items:start;
 }
 
 .courseRadarCard{
-  position:relative;
+  min-width:0;
+  width:100%;
   border-radius:18px;
-  padding:10px;
+  padding:8px 8px 24px;
   background:
-  radial-gradient(circle at 50% 48%, rgba(126,231,255,.18), rgba(37,87,193,0) 58%),
-  linear-gradient(145deg,#13398b 0%,#265fd2 42%,#69d7d9 100%);
+    radial-gradient(circle at 50% 47%, rgba(126,231,255,.18), rgba(37,87,193,0) 57%),
+    linear-gradient(145deg, #13398b 0%, #265fd2 42%, #69d7d9 100%);
   box-shadow:
-  inset 0 0 0 1px rgba(255,255,255,.15),
-  inset 0 10px 40px rgba(255,255,255,.05);
+    inset 0 0 0 1px rgba(255,255,255,.16),
+    inset 0 10px 40px rgba(255,255,255,.05);
+  overflow:visible;
+  position:relative;
 }
-
-/* ===== レーダー ===== */
 
 .courseRadarStage{
   position:relative;
   width:100%;
-  aspect-ratio:1/1;
+  aspect-ratio:1 / 1;
+  min-height:0;
   border-radius:16px;
-  overflow:hidden;
+  overflow:visible;
+  background:
+    radial-gradient(circle at center, rgba(255,255,255,.12) 0, rgba(255,255,255,.05) 26%, rgba(255,255,255,0) 52%),
+    linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
+}
+
+.courseRadarBg{
+  position:absolute;
+  inset:0;
+  border-radius:16px;
+  background:
+    radial-gradient(circle at center, rgba(255,255,255,.10), transparent 54%),
+    repeating-radial-gradient(circle at center, rgba(255,255,255,.05) 0 2px, transparent 2px 25px);
+  opacity:.8;
+}
+
+.courseRadarGlow{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  border-radius:16px;
+  background:
+    radial-gradient(circle at 50% 54%, rgba(116,236,255,.15) 0, rgba(116,236,255,.07) 22%, rgba(116,236,255,0) 55%);
+  mix-blend-mode:screen;
 }
 
 .courseRadarSvg{
@@ -71,53 +270,81 @@ body{
   height:100%;
 }
 
+#courseRadarGrid polygon{
+  fill:none;
+  stroke:rgba(255,255,255,.16);
+  stroke-width:1.15;
+}
+
+#courseRadarGrid line{
+  stroke:rgba(255,255,255,.14);
+  stroke-width:1.1;
+}
+
 #courseRadarPolygon{
   fill:rgba(109,245,235,.14);
   stroke:#b9ffff;
-  stroke-width:2.2;
+  stroke-width:2.4;
+  filter:drop-shadow(0 0 4px rgba(126,231,255,.32));
 }
 
 #courseRadarPolygonCore{
-  fill:rgba(109,245,235,.1);
+  fill:rgba(109,245,235,.10);
   stroke:#7ce7ff;
-  stroke-width:1.2;
+  stroke-width:1.4;
+  filter:drop-shadow(0 0 6px rgba(124,231,255,.22));
 }
 
 .courseRadarNodes{
   position:absolute;
   inset:0;
+  pointer-events:none;
 }
 
 .courseRadarNode{
   position:absolute;
   width:6px;
   height:6px;
-  border-radius:50%;
   margin-left:-3px;
   margin-top:-3px;
-  background:#fff;
-  box-shadow:0 0 0 2px rgba(124,231,255,.25);
+  border-radius:50%;
+  background:#eaffff;
+  box-shadow:
+    0 0 0 2px rgba(124,231,255,.22),
+    0 0 5px rgba(124,231,255,.24);
+  opacity:.95;
+  z-index:2;
 }
-
-/* ===== 数字ラベル ===== */
 
 .courseRadarLabels{
   position:absolute;
   inset:0;
+  z-index:4;
   pointer-events:none;
 }
 
-.radarLabel{
+.courseRadarLabels .radarLabel{
   position:absolute;
-  width:26px;
-  height:26px;
-  border-radius:50%;
+  width:28px;
+  height:28px;
+  min-width:0;
+  padding:0;
+  border-radius:999px;
+  font-size:0;
+  line-height:0;
+  text-align:center;
+  box-shadow:0 4px 10px rgba(0,0,0,.14);
+  white-space:nowrap;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:13px;
   font-weight:900;
-  box-shadow:0 4px 10px rgba(0,0,0,.15);
+}
+
+.courseRadarLabels .radarLabel::before{
+  font-size:14px;
+  line-height:1;
+  font-weight:900;
 }
 
 /* 1 */
@@ -126,8 +353,11 @@ body{
   left:50%;
   transform:translateX(-50%);
   background:var(--waku1);
-  color:#111;
-  border:1px solid #ddd;
+  border:1px solid #d8dde8;
+}
+.radarLabel--1::before{
+  content:"1";
+  color:#111827;
 }
 
 /* 2 */
@@ -135,23 +365,32 @@ body{
   top:46px;
   right:-4px;
   background:var(--waku2);
+}
+.radarLabel--2::before{
+  content:"2";
   color:#fff;
 }
 
 /* 3 */
 .radarLabel--3{
-  bottom:18px;
+  top:138px;
   right:-6px;
   background:var(--waku3);
+}
+.radarLabel--3::before{
+  content:"3";
   color:#fff;
 }
 
 /* 4 */
 .radarLabel--4{
-  bottom:70px;
   left:50%;
+  bottom:82px;
   transform:translateX(-50%);
   background:var(--waku4);
+}
+.radarLabel--4::before{
+  content:"4";
   color:#fff;
 }
 
@@ -160,93 +399,403 @@ body{
   top:46px;
   left:-4px;
   background:var(--waku5);
-  color:#111;
+}
+.radarLabel--5::before{
+  content:"5";
+  color:#162033;
 }
 
 /* 6 */
 .radarLabel--6{
-  bottom:18px;
+  top:138px;
   left:-6px;
   background:var(--waku6);
+}
+.radarLabel--6::before{
+  content:"6";
   color:#fff;
 }
 
-/* ===== イン型（カード外） ===== */
-
-.courseTypeExternal{
-  margin-top:6px;
-  display:flex;
-  justify-content:center;
-}
-
+/* イン型：カード外の下 */
 .courseTypePill{
-  min-width:120px;
+  position:absolute;
+  left:22px;
+  right:22px;
+  bottom:-16px;
   height:32px;
   border-radius:999px;
-  background:linear-gradient(90deg,#2d66d0,#4fe0ca);
+  background:linear-gradient(90deg, rgba(46,100,210,.96), rgba(77,224,205,.96));
   color:#fff;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:15px;
+  font-size:16px;
   font-weight:900;
-  box-shadow:0 8px 18px rgba(16,42,111,.2);
+  letter-spacing:-.02em;
+  box-shadow:0 8px 18px rgba(16,42,111,.18);
+  backdrop-filter:blur(2px);
+  z-index:6;
 }
 
-/* ===== 右カード ===== */
-
 .courseStatCard{
+  min-width:0;
+  width:100%;
   border-radius:18px;
   background:#fff;
   border:1px solid #dbe2ef;
   box-shadow:0 6px 14px rgba(26,56,120,.08);
   padding:12px;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+  overflow:hidden;
 }
 
 .courseStatHead{
   display:flex;
+  align-items:flex-start;
   justify-content:space-between;
+  gap:8px;
   margin-bottom:10px;
 }
 
 .courseStatHead__course{
+  font-size:15px;
+  line-height:1.05;
   font-weight:900;
-  font-size:16px;
+  color:#0a1731;
+  letter-spacing:-.03em;
 }
 
 .courseStatHead__type{
+  min-height:30px;
   padding:0 10px;
   border-radius:999px;
-  background:linear-gradient(90deg,#2d66d0,#4fe0ca);
+  background:linear-gradient(90deg, #2d66d0, #4fe0ca);
   color:#fff;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
   font-size:13px;
   font-weight:900;
+  white-space:nowrap;
+  max-width:46%;
+  flex:0 0 auto;
 }
 
-/* ===== meter ===== */
+.courseStatRows{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.courseStatRow{
+  display:flex;
+  align-items:end;
+  justify-content:space-between;
+  gap:8px;
+}
+
+.courseStatLabel{
+  font-size:12px;
+  line-height:1;
+  font-weight:900;
+  color:#354158;
+}
+
+.courseStatValue{
+  font-size:17px;
+  line-height:1;
+  font-weight:900;
+  color:#0d1730;
+}
 
 .meter{
+  position:relative;
   width:100%;
   height:12px;
   border-radius:999px;
   overflow:hidden;
   background:#e8edf6;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.02);
+}
+
+.meter::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:repeating-linear-gradient(
+    90deg,
+    rgba(255,255,255,.22) 0 10px,
+    rgba(255,255,255,0) 10px 14px
+  );
+  pointer-events:none;
 }
 
 .meterFill{
   height:100%;
   width:0%;
   border-radius:999px;
+  transition:width .28s ease;
 }
 
 .meter--blue .meterFill{
-  background:linear-gradient(90deg,#2865d4,#4f9bf1);
+  background:linear-gradient(90deg, #2865d4, #4f9bf1);
 }
 
 .meter--cyan .meterFill{
-  background:linear-gradient(90deg,#2e69d2,#39d1d0);
+  background:linear-gradient(90deg, #2e69d2, #39d1d0);
 }
 
 .meter--green .meterFill{
-  background:linear-gradient(90deg,#2c7fd2,#46e0a6);
+  background:linear-gradient(90deg, #2c7fd2, #46e0a6);
+}
+
+.kimariteCard{
+  display:none !important;
+}
+
+.playerTableWrap{
+  overflow-x:hidden;
+  -webkit-overflow-scrolling:auto;
+  background:#fff;
+  width:100%;
+}
+
+.playerCourseTable,
+.playerTimingTable{
+  width:100%;
+  min-width:0;
+  background:#fff;
+}
+
+.playerTableHead,
+.playerTableRow{
+  display:grid;
+  width:100%;
+  grid-template-columns:90px repeat(6, minmax(0, 1fr));
+}
+
+.playerTableHead{
+  min-height:50px;
+}
+
+.playerTableHeadCell{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:2px;
+  border-right:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  background:linear-gradient(180deg, #2d67cf, #2257b3);
+  color:#fff;
+  padding:4px 2px;
+  text-align:center;
+  font-weight:900;
+  min-width:0;
+  overflow:hidden;
+}
+
+.playerTableHeadCell:last-child{
+  border-right:none;
+}
+
+.playerTableHeadCell--stub{
+  font-size:10px;
+  line-height:1.1;
+}
+
+.playerCourseName{
+  font-size:11px;
+  line-height:1.05;
+  font-weight:900;
+  letter-spacing:-.03em;
+  white-space:nowrap;
+}
+
+.playerTableRow{
+  min-height:44px;
+}
+
+.playerTableCell{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-right:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  background:#fff;
+  color:#111827;
+  padding:3px 2px;
+  text-align:center;
+  font-variant-numeric:tabular-nums;
+  min-width:0;
+  overflow:hidden;
+}
+
+.playerTableCell:last-child{
+  border-right:none;
+}
+
+.playerTableCell--label{
+  background:linear-gradient(180deg, #2d67cf, #2257b3);
+  color:#fff;
+  font-size:11px;
+  line-height:1.05;
+  font-weight:900;
+  padding:2px 3px;
+}
+
+.playerTableCell--value{
+  font-size:13px;
+  line-height:1;
+  font-weight:900;
+  letter-spacing:-.02em;
+}
+
+.playerTableCell--value.is-highlight{
+  background:#dce8fb;
+}
+
+.playerRateStack{
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:3px;
+}
+
+.playerRateText{
+  font-size:12px;
+  line-height:1;
+  font-weight:900;
+  white-space:nowrap;
+}
+
+.playerRateBar{
+  width:100%;
+  height:6px;
+  background:#edf2fb;
+  position:relative;
+  overflow:hidden;
+}
+
+.playerRateBarFill{
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  background:#4a97e6;
+}
+
+.playerTimingTable .playerTableRow{
+  min-height:40px;
+}
+
+.playerTimingTable .playerTableCell--label{
+  font-size:11px;
+}
+
+@media (min-width: 768px){
+  .courseHeroBody{
+    grid-template-columns:minmax(0, .92fr) minmax(0, 1.08fr);
+    gap:12px;
+    padding-bottom:20px;
+  }
+
+  .courseHeroTab{
+    height:46px;
+    font-size:15px;
+  }
+
+  .courseRadarLabels .radarLabel{
+    width:34px;
+    height:34px;
+  }
+
+  .courseRadarLabels .radarLabel::before{
+    font-size:17px;
+  }
+
+  .radarLabel--1{
+    top:-4px;
+  }
+
+  .radarLabel--2{
+    top:56px;
+    right:-5px;
+  }
+
+  .radarLabel--3{
+    top:164px;
+    right:-8px;
+  }
+
+  .radarLabel--4{
+    bottom:94px;
+  }
+
+  .radarLabel--5{
+    top:56px;
+    left:-5px;
+  }
+
+  .radarLabel--6{
+    top:164px;
+    left:-8px;
+  }
+
+  .courseTypePill{
+    left:24px;
+    right:24px;
+    bottom:-18px;
+    height:36px;
+    font-size:19px;
+  }
+
+  .courseStatHead__course{
+    font-size:18px;
+  }
+
+  .courseStatHead__type{
+    font-size:14px;
+    min-height:32px;
+  }
+
+  .courseStatLabel{
+    font-size:14px;
+  }
+
+  .courseStatValue{
+    font-size:20px;
+  }
+
+  .meter{
+    height:14px;
+  }
+
+  .playerTableHead,
+  .playerTableRow{
+    grid-template-columns:110px repeat(6, minmax(0, 1fr));
+  }
+
+  .playerCourseName{
+    font-size:14px;
+  }
+
+  .playerTableCell--label{
+    font-size:14px;
+  }
+
+  .playerTableCell--value{
+    font-size:16px;
+  }
+
+  .playerRateText{
+    font-size:15px;
+  }
+
+  .playerRateBar{
+    height:8px;
+  }
 }
