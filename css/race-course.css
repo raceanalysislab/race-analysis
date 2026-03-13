@@ -36,9 +36,13 @@
   background:#fff;
 }
 
+.courseGridTopBlock{
+  background:#fff;
+}
+
 .courseGridRow{
   display:grid;
-  grid-template-columns:repeat(6, minmax(0, 1fr)) 40px;
+  grid-template-columns:15.2% 15.2% 15.2% 15.2% 15.2% 15.2% 8.8%;
   min-width:0;
   background:#fff;
   border-bottom:1px solid var(--line);
@@ -46,6 +50,14 @@
 
 .courseGridRow:last-child{
   border-bottom:none;
+}
+
+.courseGridRow--top{
+  border-bottom:none;
+}
+
+.courseGridTopBlock .courseGridRow:last-child{
+  border-bottom:1px solid var(--line);
 }
 
 .courseGridRow--head{
@@ -63,14 +75,18 @@
 .courseGridRow--f,
 .courseGridRow--l,
 .courseGridRow--avgst,
-.courseGridRow--meetavgst,
-.courseGridRow--recent{
+.courseGridRow--meetavgst{
   min-height:42px;
 }
 
 .courseGridRow--course,
 .courseGridRow--kimarite{
   min-height:42px;
+}
+
+.courseGridRow--section{
+  min-height:38px;
+  background:#f8fafc;
 }
 
 .courseGridCell{
@@ -174,9 +190,38 @@
   color:#234ea8;
 }
 
+.courseGridLabel--section{
+  background:#edf3ff;
+  color:#234ea8;
+}
+
+.courseGridSectionTitle{
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  padding:0 10px;
+  font-size:11px;
+  font-weight:900;
+  color:#334155;
+  background:#f8fafc;
+  box-shadow:inset -1px 0 0 var(--line);
+}
+
+.courseGridSubLabel{
+  background:#f7f8fa;
+  color:#4b5563;
+  font-size:8px;
+  line-height:1;
+  font-weight:900;
+  letter-spacing:-.03em;
+  padding:0 1px;
+  word-break:break-all;
+  overflow-wrap:anywhere;
+}
+
 @media (max-width: 390px){
   .courseGridRow{
-    grid-template-columns:repeat(6, minmax(0, 1fr)) 36px;
+    grid-template-columns:15.25% 15.25% 15.25% 15.25% 15.25% 15.25% 8.5%;
   }
 
   .courseGridRow--head{
@@ -195,10 +240,13 @@
   .courseGridRow--l,
   .courseGridRow--avgst,
   .courseGridRow--meetavgst,
-  .courseGridRow--recent,
   .courseGridRow--course,
   .courseGridRow--kimarite{
     min-height:40px;
+  }
+
+  .courseGridRow--section{
+    min-height:34px;
   }
 
   .courseGridCell--head{
@@ -223,6 +271,16 @@
   }
 
   .courseGridLabel{
+    font-size:7px;
+    padding:0;
+  }
+
+  .courseGridSectionTitle{
+    font-size:10px;
+    padding:0 8px;
+  }
+
+  .courseGridSubLabel{
     font-size:7px;
     padding:0;
   }
