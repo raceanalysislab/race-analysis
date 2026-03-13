@@ -20,6 +20,24 @@ $("playerDate").textContent = date || "—";
 
 $("btnBack").addEventListener("click", () => history.back());
 
+const COURSE_ORDER = [1, 2, 3, 4, 5, 6];
+
+/* 
+  ここは仮データ。
+  後でJSON接続するときは、この形に合わせればそのまま使える。
+*/
+const courseData = {
+  1: { win: 77.7, ren2: 84.4, ren3: 88.8, type: "イン型",     kimariteMain: "逃げ 94%",     kimariteSub: "差し 2.7% / まくり 1.1%" },
+  2: { win: 4.4,  ren2: 33.3, ren3: 55.5, type: "差し型",     kimariteMain: "差し 58%",     kimariteSub: "まくり 18% / 抜き 9%" },
+  3: { win: 8.8,  ren2: 35.5, ren3: 57.7, type: "センター型", kimariteMain: "まくり 41%",   kimariteSub: "まくり差し 21% / 差し 10%" },
+  4: { win: 4.4,  ren2: 17.7, ren3: 31.1, type: "カド型",     kimariteMain: "まくり 29%",   kimariteSub: "差し 13% / まくり差し 8%" },
+  5: { win: 2.2,  ren2: 22.2, ren3: 48.8, type: "アウト型",   kimariteMain: "差し 16%",     kimariteSub: "まくり差し 7% / 抜き 5%" },
+  6: { win: 2.2,  ren2: 6.8,  ren3: 18.1, type: "大外型",     kimariteMain: "差し 7%",      kimariteSub: "まくり差し 3% / 抜き 1%" }
+};
+
+let selectedCourse = Math.min(6, Math.max(1, Number.isFinite(waku) ? waku : 1));
+let radarAnimationFrame = null;
+
 function esc(s){
   return String(s ?? "").replace(/[&<>"']/g, (c) => ({
     "&":"&amp;",
@@ -30,26 +48,19 @@ function esc(s){
   }[c]));
 }
 
-const courseData = {
-  1: { win: 77.7, ren2: 84.4, ren3: 88.8, type: "イン型", kimariteMain: "逃げ 94%", kimariteSub: "差し 2.7% / まくり 1.1%" },
-  2: { win: 4.4,  ren2: 33.3, ren3: 55.5, type: "差し型", kimariteMain: "差し 58%", kimariteSub: "まくり 18% / 抜き 9%" },
-  3: { win: 8.8,  ren2: 35.5, ren3: 57.7, type: "センター型", kimariteMain: "まくり 41%", kimariteSub: "まくり差し 21% / 差し 10%" },
-  4: { win: 4.4,  ren2: 17.7, ren3: 31.1, type: "カド型", kimariteMain: "まくり 29%", kimariteSub: "差し 13% / まくり差し 8%" },
-  5: { win: 2.2,  ren2: 22.2, ren3: 48.8, type: "アウト型", kimariteMain: "差し 16%", kimariteSub: "まくり差し 7% / 抜き 5%" },
-  6: { win: 2.2,  ren2: 6.8,  ren3: 18.1, type: "大外型", kimariteMain: "差し 7%", kimariteSub: "まくり差し 3% / 抜き 1%" }
-};
-
-let selectedCourse = Math.min(6, Math.max(1, Number.isFinite(waku) ? waku : 1));
-
+/* =========================
+   上タブ
+========================= */
 function makeCourseTabs(){
   const root = $("courseHeroTabs");
   if (!root) return;
 
-  root.innerHTML = [1,2,3,4,5,6].map((n) => `
+  root.innerHTML = COURSE_ORDER.map((n) => `
     <button
       type="button"
       class="courseHeroTab${n === selectedCourse ? " is-active" : ""}"
       data-course="${n}"
+      aria-pressed="${n === selectedCourse ? "true" : "false"}"
     >
       ${n}
     </button>
@@ -57,23 +68,30 @@ function makeCourseTabs(){
 
   root.querySelectorAll(".courseHeroTab").forEach((btn) => {
     btn.addEventListener("click", () => {
-      selectedCourse = Number(btn.dataset.course || 1);
+      const nextCourse = Number(btn.dataset.course || 1);
+      if (nextCourse === selectedCourse) return;
+
+      selectedCourse = nextCourse;
       makeCourseTabs();
-      renderHeroCard();
+      renderHeroText();
+      animateRadar();
     });
   });
 }
 
+/* =========================
+   レーダーの土台
+========================= */
 function buildRadarGrid(){
   const g = $("courseRadarGrid");
   if (!g) return;
 
   const cx = 160;
-  const cy = 150;
-  const levels = [38, 66, 94, 122];
+  const cy = 160;
+  const levels = [34, 62, 90, 118];
   const angles = [-90, -30, 30, 90, 150, 210].map((deg) => deg * Math.PI / 180);
 
-  const ring = (r) => {
+  const polygonPoints = (r) => {
     return angles.map((a) => {
       const x = cx + Math.cos(a) * r;
       const y = cy + Math.sin(a) * r;
@@ -81,11 +99,17 @@ function buildRadarGrid(){
     }).join(" ");
   };
 
-  g.innerHTML = levels.map((r) => `<polygon points="${ring(r)}"></polygon>`).join("");
+  g.innerHTML = "";
+
+  levels.forEach((r) => {
+    const poly = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+    poly.setAttribute("points", polygonPoints(r));
+    g.appendChild(poly);
+  });
 
   angles.forEach((a) => {
-    const x = cx + Math.cos(a) * 122;
-    const y = cy + Math.sin(a) * 122;
+    const x = cx + Math.cos(a) * 118;
+    const y = cy + Math.sin(a) * 118;
     const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
     line.setAttribute("x1", cx);
     line.setAttribute("y1", cy);
@@ -95,35 +119,86 @@ function buildRadarGrid(){
   });
 }
 
-function buildRadarPolygon(){
-  const polygon = $("courseRadarPolygon");
-  if (!polygon) return;
+/* =========================
+   レーダー点計算
+   今は 1着率ベース
+========================= */
+function getRadarValues(){
+  return COURSE_ORDER.map((course) => {
+    const data = courseData[course] || { win: 0 };
+    return Number(data.win) || 0;
+  });
+}
 
-  const values = [
-    courseData[1].win,
-    courseData[2].win,
-    courseData[3].win,
-    courseData[4].win,
-    courseData[5].win,
-    courseData[6].win
-  ];
-
+function makeRadarPoints(values, progress = 1){
   const cx = 160;
-  const cy = 150;
-  const maxR = 110;
+  const cy = 160;
+  const maxR = 106;
+  const maxValue = Math.max(...values, 1);
   const angles = [-90, -30, 30, 90, 150, 210].map((deg) => deg * Math.PI / 180);
 
-  const points = values.map((v, i) => {
-    const r = maxR * (Math.max(0, Math.min(100, v)) / 100);
+  return values.map((v, i) => {
+    const rate = (v / maxValue) * progress;
+    const r = maxR * rate;
     const x = cx + Math.cos(angles[i]) * r;
     const y = cy + Math.sin(angles[i]) * r;
     return `${x},${y}`;
   }).join(" ");
-
-  polygon.setAttribute("points", points);
 }
 
-function renderHeroCard(){
+/* =========================
+   レーダー描画
+========================= */
+function drawRadar(progress = 1){
+  const polygon = $("courseRadarPolygon");
+  if (!polygon) return;
+
+  const values = getRadarValues();
+  polygon.setAttribute("points", makeRadarPoints(values, progress));
+}
+
+/* =========================
+   レーダーアニメーション
+========================= */
+function animateRadar(){
+  const duration = 520;
+  const start = performance.now();
+
+  if (radarAnimationFrame) {
+    cancelAnimationFrame(radarAnimationFrame);
+    radarAnimationFrame = null;
+  }
+
+  const tick = (now) => {
+    const elapsed = now - start;
+    const t = Math.min(1, elapsed / duration);
+
+    // easeOutCubic
+    const eased = 1 - Math.pow(1 - t, 3);
+
+    drawRadar(eased);
+
+    if (t < 1) {
+      radarAnimationFrame = requestAnimationFrame(tick);
+    } else {
+      radarAnimationFrame = null;
+    }
+  };
+
+  radarAnimationFrame = requestAnimationFrame(tick);
+}
+
+/* =========================
+   右カードのテキスト
+========================= */
+function setMeter(idFill, value){
+  const el = $(idFill);
+  if (!el) return;
+  const width = Math.max(0, Math.min(100, Number(value) || 0));
+  el.style.width = `${width}%`;
+}
+
+function renderHeroText(){
   const data = courseData[selectedCourse] || courseData[1];
 
   $("selectedCourseTitle").textContent = `${selectedCourse}コース進入時`;
@@ -134,23 +209,25 @@ function renderHeroCard(){
   $("ren2RateText").textContent = `${data.ren2.toFixed(1)}%`;
   $("ren3RateText").textContent = `${data.ren3.toFixed(1)}%`;
 
-  $("winRateFill").style.width = `${data.win}%`;
-  $("ren2RateFill").style.width = `${data.ren2}%`;
-  $("ren3RateFill").style.width = `${data.ren3}%`;
+  setMeter("winRateFill", data.win);
+  setMeter("ren2RateFill", data.ren2);
+  setMeter("ren3RateFill", data.ren3);
 
   $("kimariteMain").textContent = data.kimariteMain;
   $("kimariteSub").textContent = data.kimariteSub;
 }
 
+/* =========================
+   下の表
+========================= */
 function makeCourseHeader(){
-  const courses = [1,2,3,4,5,6];
   return `
     <div class="playerTableHead">
       <div class="playerTableHeadCell playerTableHeadCell--stub">
         <span>進入</span>
         <span>選択→</span>
       </div>
-      ${courses.map((course) => `
+      ${COURSE_ORDER.map((course) => `
         <div class="playerTableHeadCell">
           <div class="playerCourseName">${course}コース</div>
         </div>
@@ -194,31 +271,44 @@ function rateRow(label, values){
   `;
 }
 
-$("playerCourseStats").innerHTML = [
-  makeCourseHeader(),
-  valueRow("出走数", ["45","45","45","45","45","44"], true),
-  valueRow("1着", ["35","2","4","2","1","1"], true),
-  valueRow("2着", ["3","13","12","6","9","2"], true),
-  valueRow("3着", ["2","10","10","6","12","5"], true),
-  rateRow("1着率", ["77.7 %","4.4 %","8.8 %","4.4 %","2.2 %","2.2 %"]),
-  rateRow("2連対率", ["84.4 %","33.3 %","35.5 %","17.7 %","22.2 %","6.8 %"]),
-  rateRow("3連対率", ["88.8 %","55.5 %","57.7 %","31.1 %","48.8 %","18.1 %"]),
-  valueRow("逃げ", ["34","0","0","0","0","0"], true),
-  valueRow("差し", ["0","1","0","0","1","0"], true),
-  valueRow("まくり", ["0","1","2","2","0","0"], true),
-  valueRow("まくり差し", ["0","0","1","0","0","1"], true),
-  valueRow("抜き", ["1","0","1","0","0","0"], true),
-  valueRow("恵まれ", ["0","0","0","0","0","0"], true)
-].join("");
+function renderTables(){
+  $("playerCourseStats").innerHTML = [
+    makeCourseHeader(),
+    valueRow("出走数", ["45","45","45","45","45","44"], true),
+    valueRow("1着", ["35","2","4","2","1","1"], true),
+    valueRow("2着", ["3","13","12","6","9","2"], true),
+    valueRow("3着", ["2","10","10","6","12","5"], true),
+    rateRow("1着率", ["77.7 %","4.4 %","8.8 %","4.4 %","2.2 %","2.2 %"]),
+    rateRow("2連対率", ["84.4 %","33.3 %","35.5 %","17.7 %","22.2 %","6.8 %"]),
+    rateRow("3連対率", ["88.8 %","55.5 %","57.7 %","31.1 %","48.8 %","18.1 %"]),
+    valueRow("逃げ", ["34","0","0","0","0","0"], true),
+    valueRow("差し", ["0","1","0","0","1","0"], true),
+    valueRow("まくり", ["0","1","2","2","0","0"], true),
+    valueRow("まくり差し", ["0","0","1","0","0","1"], true),
+    valueRow("抜き", ["1","0","1","0","0","0"], true),
+    valueRow("恵まれ", ["0","0","0","0","0","0"], true)
+  ].join("");
 
-$("playerTimingTable").innerHTML = [
-  makeCourseHeader(),
-  valueRow("平均ST", ["0.13","0.14","0.13","0.15","0.16","0.14"], false),
-  valueRow("F", ["0","0","0","0","0","0"], false),
-  valueRow("L", ["0","0","0","0","0","0"], false)
-].join("");
+  $("playerTimingTable").innerHTML = [
+    makeCourseHeader(),
+    valueRow("平均ST", ["0.13","0.14","0.13","0.15","0.16","0.14"], false),
+    valueRow("F", ["0","0","0","0","0","0"], false),
+    valueRow("L", ["0","0","0","0","0","0"], false)
+  ].join("");
+}
 
-buildRadarGrid();
-buildRadarPolygon();
-makeCourseTabs();
-renderHeroCard();
+/* =========================
+   起動
+========================= */
+function boot(){
+  buildRadarGrid();
+  renderTables();
+  makeCourseTabs();
+  renderHeroText();
+  drawRadar(0);
+  requestAnimationFrame(() => {
+    animateRadar();
+  });
+}
+
+boot();
