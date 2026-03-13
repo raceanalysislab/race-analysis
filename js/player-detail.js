@@ -27,7 +27,7 @@ const RADAR_CX = 160;
 const RADAR_CY = 162;
 
 /* 背景グリッドを少し拡大 */
-const RADAR_GRID_MAX_R = 116;
+const RADAR_GRID_MAX_R = 122;
 const RADAR_VALUE_MAX_R = 96;
 const RADAR_INNER_SCALE = 0.82;
 
