@@ -21,13 +21,19 @@ $("playerDate").textContent = date || "—";
 $("btnBack").addEventListener("click", () => history.back());
 
 const COURSE_ORDER = [1, 2, 3, 4, 5, 6];
+
 const RADAR_SIZE = 320;
 const RADAR_CX = 160;
 const RADAR_CY = 162;
-const RADAR_GRID_MAX_R = 108;
+
+/* 背景グリッドを少し拡大 */
+const RADAR_GRID_MAX_R = 116;
 const RADAR_VALUE_MAX_R = 96;
 const RADAR_INNER_SCALE = 0.82;
-const RADAR_LABEL_R = 126;
+
+/* 数字を少し外周寄りへ */
+const RADAR_LABEL_R = 130;
+
 const RADAR_ANGLES = [-90, -30, 30, 90, 150, 210].map((deg) => deg * Math.PI / 180);
 
 const courseData = {
@@ -75,8 +81,8 @@ function makeCourseTabs(){
       selectedCourse = nextCourse;
       makeCourseTabs();
       renderHeroText();
-      animateRadar();
       layoutRadarLabels();
+      animateRadar();
     });
   });
 }
@@ -93,7 +99,7 @@ function buildRadarGrid(){
   const g = $("courseRadarGrid");
   if (!g) return;
 
-  const levels = [26, 46, 66, 86, RADAR_GRID_MAX_R];
+  const levels = [28, 50, 72, 94, RADAR_GRID_MAX_R];
   g.innerHTML = "";
 
   levels.forEach((r) => {
@@ -195,14 +201,15 @@ function layoutRadarNodes(points){
   });
 }
 
+/* 5と6を入れ替えた位置調整 */
 function getLabelOffsets(){
   return {
     1: { dx: 0,  dy: -4 },
     2: { dx: 7,  dy: -2 },
     3: { dx: 7,  dy: 2 },
     4: { dx: 0,  dy: 6 },
-    5: { dx: -7, dy: -2 },
-    6: { dx: -7, dy: 2 }
+    5: { dx: -7, dy: 2 },
+    6: { dx: -7, dy: -2 }
   };
 }
 
@@ -221,8 +228,8 @@ function layoutRadarLabels(){
     const baseY = RADAR_CY + Math.sin(angle) * RADAR_LABEL_R;
     const offset = offsets[course] || { dx: 0, dy: 0 };
 
-    el.style.left = `${(baseX + offset.dx) / RADAR_SIZE * 100}%`;
-    el.style.top = `${(baseY + offset.dy) / RADAR_SIZE * 100}%`;
+    el.style.left = `${((baseX + offset.dx) / RADAR_SIZE) * 100}%`;
+    el.style.top = `${((baseY + offset.dy) / RADAR_SIZE) * 100}%`;
   });
 }
 
