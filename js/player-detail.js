@@ -27,6 +27,7 @@ const RADAR_CY = 162;
 const RADAR_GRID_MAX_R = 108;
 const RADAR_VALUE_MAX_R = 96;
 const RADAR_INNER_SCALE = 0.82;
+const RADAR_LABEL_R = 126;
 const RADAR_ANGLES = [-90, -30, 30, 90, 150, 210].map((deg) => deg * Math.PI / 180);
 
 const courseData = {
@@ -75,6 +76,7 @@ function makeCourseTabs(){
       makeCourseTabs();
       renderHeroText();
       animateRadar();
+      layoutRadarLabels();
     });
   });
 }
@@ -92,7 +94,6 @@ function buildRadarGrid(){
   if (!g) return;
 
   const levels = [26, 46, 66, 86, RADAR_GRID_MAX_R];
-
   g.innerHTML = "";
 
   levels.forEach((r) => {
@@ -156,14 +157,9 @@ function ensureRadarLabels(){
     stage.appendChild(labels);
   }
 
-  labels.innerHTML = `
-    <div class="radarLabel radarLabel--1">1コース</div>
-    <div class="radarLabel radarLabel--2">2コース</div>
-    <div class="radarLabel radarLabel--3">3コース</div>
-    <div class="radarLabel radarLabel--4">4コース</div>
-    <div class="radarLabel radarLabel--5">5コース</div>
-    <div class="radarLabel radarLabel--6">6コース</div>
-  `;
+  labels.innerHTML = COURSE_ORDER.map((course) => (
+    `<div class="radarLabel radarLabel--${course}" data-course="${course}" aria-hidden="true"></div>`
+  )).join("");
 }
 
 function getRadarValues(){
@@ -196,6 +192,37 @@ function layoutRadarNodes(points){
     if (!node) return;
     node.style.left = `${(p.x / RADAR_SIZE) * 100}%`;
     node.style.top = `${(p.y / RADAR_SIZE) * 100}%`;
+  });
+}
+
+function getLabelOffsets(){
+  return {
+    1: { dx: 0,  dy: -4 },
+    2: { dx: 7,  dy: -2 },
+    3: { dx: 7,  dy: 2 },
+    4: { dx: 0,  dy: 6 },
+    5: { dx: -7, dy: -2 },
+    6: { dx: -7, dy: 2 }
+  };
+}
+
+function layoutRadarLabels(){
+  const stage = document.querySelector(".courseRadarStage");
+  if (!stage) return;
+
+  const offsets = getLabelOffsets();
+
+  COURSE_ORDER.forEach((course, idx) => {
+    const el = stage.querySelector(`.radarLabel--${course}`);
+    if (!el) return;
+
+    const angle = RADAR_ANGLES[idx];
+    const baseX = RADAR_CX + Math.cos(angle) * RADAR_LABEL_R;
+    const baseY = RADAR_CY + Math.sin(angle) * RADAR_LABEL_R;
+    const offset = offsets[course] || { dx: 0, dy: 0 };
+
+    el.style.left = `${(baseX + offset.dx) / RADAR_SIZE * 100}%`;
+    el.style.top = `${(baseY + offset.dy) / RADAR_SIZE * 100}%`;
   });
 }
 
@@ -252,7 +279,9 @@ function renderHeroText(){
 
   $("selectedCourseTitle").textContent = `${selectedCourse}コース進入時`;
   $("selectedCourseType").textContent = data.type;
-  $("courseTypePill").textContent = data.type;
+
+  const courseTypePill = $("courseTypePill");
+  if (courseTypePill) courseTypePill.textContent = data.type;
 
   $("winRateText").textContent = `${data.win.toFixed(1)}%`;
   $("ren2RateText").textContent = `${data.ren2.toFixed(1)}%`;
@@ -352,11 +381,15 @@ function boot(){
   renderTables();
   makeCourseTabs();
   renderHeroText();
+  layoutRadarLabels();
   drawRadar(0);
 
   requestAnimationFrame(() => {
+    layoutRadarLabels();
     animateRadar();
   });
+
+  window.addEventListener("resize", layoutRadarLabels, { passive: true });
 }
 
 boot();
