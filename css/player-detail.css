@@ -206,13 +206,15 @@ body{
   border-right:1px solid rgba(0,0,0,.05);
 }
 
+/* ここを固定2カラム化 */
 .courseHeroBody{
   display:grid;
-  grid-template-columns:1fr;
+  grid-template-columns:minmax(0, 1.12fr) minmax(0, .88fr);
   gap:10px;
   padding:12px;
   width:100%;
   max-width:100%;
+  align-items:stretch;
 }
 
 .courseRadarCard{
@@ -275,12 +277,12 @@ body{
 
 .courseRadarLabels .radarLabel{
   position:absolute;
-  min-width:56px;
-  padding:8px 8px;
+  min-width:48px;
+  padding:7px 6px;
   border-radius:12px;
   background:rgba(255,255,255,.94);
   color:#43506b;
-  font-size:13px;
+  font-size:11px;
   line-height:1;
   font-weight:900;
   text-align:center;
@@ -288,11 +290,11 @@ body{
 }
 
 .radarLabel--1{ top:8px; left:50%; transform:translateX(-50%); }
-.radarLabel--2{ top:54px; right:8px; }
-.radarLabel--3{ right:12px; bottom:56px; }
+.radarLabel--2{ top:50px; right:6px; }
+.radarLabel--3{ right:10px; bottom:52px; }
 .radarLabel--4{ left:50%; bottom:10px; transform:translateX(-50%); }
-.radarLabel--5{ left:12px; bottom:56px; }
-.radarLabel--6{ top:54px; left:8px; }
+.radarLabel--5{ left:10px; bottom:52px; }
+.radarLabel--6{ top:50px; left:6px; }
 
 .courseTypePill{
   position:absolute;
@@ -328,32 +330,34 @@ body{
 
 .courseStatHead{
   display:flex;
-  align-items:center;
+  align-items:flex-start;
   justify-content:space-between;
   gap:8px;
   margin-bottom:10px;
 }
 
 .courseStatHead__course{
-  font-size:18px;
-  line-height:1;
+  font-size:15px;
+  line-height:1.05;
   font-weight:900;
   color:#0a1731;
+  letter-spacing:-.03em;
 }
 
 .courseStatHead__type{
-  min-height:32px;
-  padding:0 12px;
+  min-height:30px;
+  padding:0 10px;
   border-radius:999px;
   background:linear-gradient(90deg, #2d66d0, #4fe0ca);
   color:#fff;
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  font-size:14px;
+  font-size:13px;
   font-weight:900;
   white-space:nowrap;
-  max-width:48%;
+  max-width:46%;
+  flex:0 0 auto;
 }
 
 .courseStatRows{
@@ -370,14 +374,14 @@ body{
 }
 
 .courseStatLabel{
-  font-size:13px;
+  font-size:12px;
   line-height:1;
   font-weight:900;
   color:#354158;
 }
 
 .courseStatValue{
-  font-size:18px;
+  font-size:17px;
   line-height:1;
   font-weight:900;
   color:#0d1730;
@@ -386,7 +390,7 @@ body{
 .meter{
   position:relative;
   width:100%;
-  height:14px;
+  height:12px;
   border-radius:999px;
   overflow:hidden;
   background:#e8edf6;
@@ -433,7 +437,7 @@ body{
 }
 
 .kimariteHead{
-  font-size:13px;
+  font-size:12px;
   line-height:1;
   font-weight:900;
   color:#43607e;
@@ -441,7 +445,7 @@ body{
 }
 
 .kimariteMain{
-  font-size:22px;
+  font-size:20px;
   line-height:1;
   font-weight:900;
   color:#0d1730;
@@ -449,8 +453,8 @@ body{
 }
 
 .kimariteSub{
-  font-size:13px;
-  line-height:1.45;
+  font-size:12px;
+  line-height:1.4;
   font-weight:700;
   color:#5f6b81;
   word-break:break-word;
@@ -598,9 +602,10 @@ body{
   font-size:11px;
 }
 
+/* タブレット以上は少し広げる */
 @media (min-width: 768px){
   .courseHeroBody{
-    grid-template-columns:1.06fr .94fr;
+    grid-template-columns:minmax(0, 1.06fr) minmax(0, .94fr);
     gap:12px;
   }
 
@@ -611,6 +616,50 @@ body{
   .courseHeroTab{
     height:46px;
     font-size:15px;
+  }
+
+  .courseRadarLabels .radarLabel{
+    min-width:64px;
+    font-size:14px;
+    padding:9px 10px;
+  }
+
+  .radarLabel--2{ top:64px; right:10px; }
+  .radarLabel--3{ right:14px; bottom:58px; }
+  .radarLabel--5{ left:14px; bottom:58px; }
+  .radarLabel--6{ top:64px; left:10px; }
+
+  .courseStatHead__course{
+    font-size:19px;
+  }
+
+  .courseStatHead__type{
+    font-size:14px;
+    min-height:32px;
+  }
+
+  .courseStatLabel{
+    font-size:14px;
+  }
+
+  .courseStatValue{
+    font-size:19px;
+  }
+
+  .meter{
+    height:14px;
+  }
+
+  .kimariteHead{
+    font-size:13px;
+  }
+
+  .kimariteMain{
+    font-size:22px;
+  }
+
+  .kimariteSub{
+    font-size:13px;
   }
 
   .playerTableHead,
