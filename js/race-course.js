@@ -79,7 +79,11 @@
       }
     });
 
-    return ORDER.map((waku) => byWaku.get(waku) || { waku });
+    return ORDER.map((waku) => byWaku.get(waku) || { waku, name: "—" });
+  };
+
+  const getBoatName = (boat) => {
+    return formatDash(boat?.name || "—");
   };
 
   const getCourseBucket = (boat, kind) => {
@@ -270,81 +274,104 @@
     return "—";
   };
 
-  const renderTable = (rowDefs, valueGetter, rowHeadClass = "") => {
+  const renderHeader = () => {
     const boats = getBoatsOrdered();
 
-    const headHtml = `
+    return `
       <div class="courseDataGridHead">
-        <div class="courseDataGridHead__label"></div>
-        ${ORDER.map((waku) => `
-          <div class="courseDataGridHead__waku w${waku}">${waku}</div>
+        ${boats.map((boat) => `
+          <div class="courseDataGridHead__waku w${esc(boat.waku)}">${esc(boat.waku)}</div>
+        `).join("")}
+      </div>
+      <div class="courseDataGridNames">
+        ${boats.map((boat) => `
+          <div class="courseDataGridName">${esc(getBoatName(boat))}</div>
         `).join("")}
       </div>
     `;
+  };
 
-    const bodyHtml = rowDefs.map((row) => `
+  const renderSingleRow = (valueGetter, isSmall = false) => {
+    const boats = getBoatsOrdered();
+
+    return `
       <div class="courseDataGridRow">
-        <div class="courseDataGridLabel ${rowHeadClass}">${esc(row.label)}</div>
         ${boats.map((boat) => `
-          <div class="courseDataGridCell">${esc(valueGetter(row, boat))}</div>
+          <div class="courseDataGridCell${isSmall ? " courseDataGridCell--small" : ""}">
+            ${esc(valueGetter(boat))}
+          </div>
+        `).join("")}
+      </div>
+    `;
+  };
+
+  const renderCourseRows = (valueGetter, isSmall = false) => {
+    const boats = getBoatsOrdered();
+
+    return [1, 2, 3, 4, 5, 6].map((courseNo) => `
+      <div class="courseDataGridRow is-course">
+        <div class="courseDataGridCourseLabel">${courseNo}コース</div>
+        ${boats.map((boat) => `
+          <div class="courseDataGridCell${isSmall ? " courseDataGridCell--small" : ""}">
+            ${esc(valueGetter(boat, courseNo))}
+          </div>
         `).join("")}
       </div>
     `).join("");
+  };
 
+  const renderAvgSt = () => {
     return `
       <div class="courseDataGridWrap">
-        ${headHtml}
-        ${bodyHtml}
+        ${renderHeader()}
+        ${renderSingleRow((boat) => getAvgStValue(boat))}
       </div>
     `;
   };
 
-  const renderAvgSt = () => {
-    return renderTable(
-      [{ label: "平均ST" }],
-      (_, boat) => getAvgStValue(boat)
-    );
-  };
-
   const renderMeetAvgSt = () => {
-    return renderTable(
-      [{ label: "今節平均ST" }],
-      (_, boat) => getMeetAvgStValue(boat)
-    );
+    return `
+      <div class="courseDataGridWrap">
+        ${renderHeader()}
+        ${renderSingleRow((boat) => getMeetAvgStValue(boat))}
+      </div>
+    `;
   };
 
   const renderRecent = () => {
-    return renderTable(
-      [{ label: "近況" }],
-      (_, boat) => getRecentValue(boat)
-    );
+    return `
+      <div class="courseDataGridWrap">
+        ${renderHeader()}
+        ${renderSingleRow((boat) => getRecentValue(boat), true)}
+      </div>
+    `;
   };
 
   const renderCourseAvgSt = () => {
-    const rows = [1, 2, 3, 4, 5, 6].map((n) => ({ label: `${n}コース`, courseNo: n }));
-    return renderTable(
-      rows,
-      (row, boat) => getCourseCell(boat, row.courseNo, "avgSt"),
-      "is-course"
-    );
+    return `
+      <div class="courseDataGridWrap">
+        ${renderHeader()}
+        ${renderCourseRows((boat, courseNo) => getCourseCell(boat, courseNo, "avgSt"), true)}
+      </div>
+    `;
   };
 
   const renderCourse2ren = () => {
-    const rows = [1, 2, 3, 4, 5, 6].map((n) => ({ label: `${n}コース`, courseNo: n }));
-    return renderTable(
-      rows,
-      (row, boat) => getCourseCell(boat, row.courseNo, "course2ren"),
-      "is-course"
-    );
+    return `
+      <div class="courseDataGridWrap">
+        ${renderHeader()}
+        ${renderCourseRows((boat, courseNo) => getCourseCell(boat, courseNo, "course2ren"), true)}
+      </div>
+    `;
   };
 
   const renderCourse3ren = () => {
-    const rows = [1, 2, 3, 4, 5, 6].map((n) => ({ label: `${n}コース`, courseNo: n }));
-    return renderTable(
-      rows,
-      (row, boat) => getCourseCell(boat, row.courseNo, "course3ren"),
-      "is-course"
-    );
+    return `
+      <div class="courseDataGridWrap">
+        ${renderHeader()}
+        ${renderCourseRows((boat, courseNo) => getCourseCell(boat, courseNo, "course3ren"), true)}
+      </div>
+    `;
   };
 
   const renderKimarite = () => {
@@ -354,10 +381,23 @@
       { label: "まく差", key: "makurizashi" }
     ];
 
-    return renderTable(
-      rows,
-      (row, boat) => getKimariteCell(boat, row.key)
-    );
+    const boats = getBoatsOrdered();
+
+    return `
+      <div class="courseDataGridWrap">
+        ${renderHeader()}
+        ${rows.map((row) => `
+          <div class="courseDataGridRow is-course">
+            <div class="courseDataGridCourseLabel">${esc(row.label)}</div>
+            ${boats.map((boat) => `
+              <div class="courseDataGridCell courseDataGridCell--small">
+                ${esc(getKimariteCell(boat, row.key))}
+              </div>
+            `).join("")}
+          </div>
+        `).join("")}
+      </div>
+    `;
   };
 
   const renderBodyByTab = () => {
