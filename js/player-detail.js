@@ -77,7 +77,7 @@ function buildRadarGrid(){
   if (!g) return;
 
   const cx = 160;
-  const cy = 160;
+  const cy = 148;
   const levels = [30, 54, 78, 102, 126];
   const angles = [-90, -30, 30, 90, 150, 210].map((deg) => deg * Math.PI / 180);
 
@@ -150,7 +150,7 @@ function getRadarValues(){
 
 function getRadarPointObjects(values, progress = 1, scale = 1){
   const cx = 160;
-  const cy = 160;
+  const cy = 148;
   const maxR = 114 * scale;
   const maxValue = Math.max(...values, 1);
   const angles = [-90, -30, 30, 90, 150, 210].map((deg) => deg * Math.PI / 180);
