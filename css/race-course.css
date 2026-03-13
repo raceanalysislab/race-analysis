@@ -7,8 +7,7 @@
 
 .coursePanel{
   min-height:100%;
-  display:grid;
-  grid-template-columns:minmax(0,1fr) 52px;
+  display:block;
   background:#fff;
 }
 
@@ -16,94 +15,40 @@
   min-width:0;
   display:flex;
   flex-direction:column;
-  border-right:1px solid var(--line);
   background:#fff;
+  min-height:100%;
 }
 
 .coursePanelBody{
   flex:1 1 auto;
   min-height:0;
   overflow-y:auto;
-  overflow-x:hidden;
+  overflow-x:auto;
   background:#fff;
   -webkit-overflow-scrolling:touch;
 }
 
-.coursePanelSide{
-  display:flex;
-  flex-direction:column;
-  background:#f7f8fa;
-}
-
-.courseSideTab{
-  appearance:none;
-  border:0;
-  border-bottom:1px solid var(--line);
-  background:#f7f8fa;
-  color:#4d5868;
-  padding:0 2px;
-  font-size:9px;
-  line-height:1.1;
-  font-weight:900;
-  text-align:center;
-  letter-spacing:-.02em;
-  word-break:break-all;
-  overflow-wrap:anywhere;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-.courseSideTab.is-active{
-  background:#e8eefc;
-  color:#234ea8;
-}
-
 .courseGrid{
   width:100%;
+  min-width:100%;
   border-top:1px solid var(--line);
   border-bottom:1px solid var(--line);
   background:#fff;
 }
 
-.courseGridHeader{
-  display:grid;
-  grid-template-columns:repeat(6, minmax(0, 1fr));
-  min-height:58px;
-  border-bottom:1px solid var(--line);
-}
-
-.courseGridHeaderCell{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:20px;
-  line-height:1;
-  font-weight:900;
-  border-right:1px solid var(--line);
-  letter-spacing:-.02em;
-}
-
-.courseGridHeaderCell:last-child{
-  border-right:none;
-}
-
-.courseGridHeaderCell.w1{ background:#ffffff; color:#111827; }
-.courseGridHeaderCell.w2{ background:#444b55; color:#ffffff; }
-.courseGridHeaderCell.w3{ background:#ea5a50; color:#ffffff; }
-.courseGridHeaderCell.w4{ background:#4d82d8; color:#ffffff; }
-.courseGridHeaderCell.w5{ background:#e6d74a; color:#1e2430; }
-.courseGridHeaderCell.w6{ background:#39b36b; color:#ffffff; }
-
 .courseGridRow{
   display:grid;
-  grid-template-columns:repeat(6, minmax(0, 1fr));
+  grid-template-columns:repeat(6, minmax(0, 1fr)) 54px;
   border-bottom:1px solid var(--line);
   background:#fff;
 }
 
 .courseGridRow:last-child{
   border-bottom:none;
+}
+
+.courseGridRow--head{
+  min-height:58px;
 }
 
 .courseGridRow--name{
@@ -141,6 +86,20 @@
 .courseGridCell:last-child{
   border-right:none;
 }
+
+.courseGridCell--head{
+  font-size:20px;
+  line-height:1;
+  font-weight:900;
+  letter-spacing:-.02em;
+}
+
+.courseGridCell--head.w1{ background:#ffffff; color:#111827; }
+.courseGridCell--head.w2{ background:#444b55; color:#ffffff; }
+.courseGridCell--head.w3{ background:#ea5a50; color:#ffffff; }
+.courseGridCell--head.w4{ background:#4d82d8; color:#ffffff; }
+.courseGridCell--head.w5{ background:#e6d74a; color:#1e2430; }
+.courseGridCell--head.w6{ background:#39b36b; color:#ffffff; }
 
 .courseGridCell--name{
   padding:6px 0;
@@ -192,32 +151,30 @@
   font-size:14px;
 }
 
-.courseGridCourseLabel{
-  display:flex;
-  align-items:center;
-  justify-content:center;
+.courseGridLabel{
+  background:#f3f6fb;
+  color:#425066;
   font-size:11px;
   line-height:1.1;
   font-weight:900;
-  color:#334155;
+  letter-spacing:-.02em;
+  padding:0 4px;
+  word-break:break-all;
+  overflow-wrap:anywhere;
+}
+
+.courseGridLabel.is-active{
+  background:#e8eefc;
+  color:#234ea8;
 }
 
 @media (max-width: 390px){
-  .coursePanel{
-    grid-template-columns:minmax(0,1fr) 46px;
+  .courseGridRow{
+    grid-template-columns:repeat(6, minmax(0, 1fr)) 48px;
   }
 
-  .courseSideTab{
-    font-size:8px;
-    line-height:1.05;
-  }
-
-  .courseGridHeader{
+  .courseGridRow--head{
     min-height:52px;
-  }
-
-  .courseGridHeaderCell{
-    font-size:18px;
   }
 
   .courseGridRow--name{
@@ -238,6 +195,10 @@
     min-height:46px;
   }
 
+  .courseGridCell--head{
+    font-size:18px;
+  }
+
   .courseGridNameVertical{
     height:118px;
     font-size:17px;
@@ -255,7 +216,8 @@
     font-size:12px;
   }
 
-  .courseGridCourseLabel{
+  .courseGridLabel{
     font-size:10px;
+    padding:0 2px;
   }
 }
