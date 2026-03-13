@@ -1,114 +1,68 @@
-(() => {
+.coursePanelBody{
+overflow-y:auto;
+background:#fff;
+}
 
-const ORDER = [6,5,4,3,2,1];
+.courseGrid{
+width:100%;
+border-top:1px solid var(--line);
+border-bottom:1px solid var(--line);
+}
 
-const state = {
-  raceJson:null
-};
+.courseGridRow{
+display:grid;
+grid-template-columns:repeat(6,1fr) 44px;
+border-bottom:1px solid var(--line);
+}
 
-const $ = id => document.getElementById(id);
+.courseGridRow:last-child{
+border-bottom:none;
+}
 
-const format = v => {
-  if(v===undefined || v===null || v==="") return "—";
-  return String(v);
-};
+.courseGridCell{
+display:flex;
+align-items:center;
+justify-content:center;
+border-right:1px solid var(--line);
+min-height:42px;
+}
 
-const formatST = v => {
-  if(v===undefined || v===null || v==="") return "—";
-  const n = Number(v);
-  if(!Number.isFinite(n)) return "—";
-  return "."+n.toFixed(2).split(".")[1];
-};
+.courseGridCell:last-child{
+border-right:none;
+}
 
-const getBoats = () => {
+.courseGridCell--head{
+font-weight:900;
+font-size:16px;
+}
 
-  const boats = state.raceJson?.race?.boats || [];
-  const map = new Map();
+.w1{background:#fff;color:#111;}
+.w2{background:#444;color:#fff;}
+.w3{background:#e6534d;color:#fff;}
+.w4{background:#4c7edb;color:#fff;}
+.w5{background:#e6d74a;color:#111;}
+.w6{background:#3ab56c;color:#fff;}
 
-  boats.forEach(b=>{
-    map.set(Number(b.waku), b);
-  });
+.courseGridRow--name{
+min-height:110px;
+}
 
-  return ORDER.map(w=>map.get(w)||{waku:w});
-};
+.courseGridNameVertical{
+writing-mode:vertical-rl;
+text-orientation:upright;
+font-size:14px;
+}
 
-const row = (boats,label,valueFn) => `
-<div class="courseGridRow">
-${boats.map(b=>`
-<div class="courseGridCell">
-<div class="courseGridMetric">${valueFn(b)}</div>
-</div>
-`).join("")}
-<div class="courseGridLabel">${label}</div>
-</div>
-`;
+.courseGridMetric{
+font-weight:800;
+font-size:12px;
+}
 
-const nameRow = boats => `
-<div class="courseGridRow courseGridRow--name">
-${boats.map(b=>`
-<div class="courseGridCell">
-<div class="courseGridNameVertical">${format(b.name)}</div>
-</div>
-`).join("")}
-<div class="courseGridLabel">選手名</div>
-</div>
-`;
-
-const headRow = boats => `
-<div class="courseGridRow courseGridRow--head">
-${boats.map(b=>`
-<div class="courseGridCell courseGridCell--head w${b.waku}">
-${b.waku}
-</div>
-`).join("")}
-<div class="courseGridLabel">枠</div>
-</div>
-`;
-
-const render = () => {
-
-  const root = $("courseDataRoot");
-  if(!root) return;
-
-  const boats = getBoats();
-
-  root.innerHTML = `
-<div class="coursePanel">
-<div class="coursePanelBody">
-
-<div class="courseGrid">
-
-${headRow(boats)}
-
-${nameRow(boats)}
-
-${row(boats,"級",b=>format(b.grade))}
-
-${row(boats,"F",b=>format(b.f_count))}
-
-${row(boats,"L",b=>format(b.l_count))}
-
-${row(boats,"平均ST",b=>formatST(b.avg_st))}
-
-${row(boats,"今節平均ST",b=>formatST(b.meet_avg_st))}
-
-${row(boats,"コース別決まり手",b=>"—")}
-
-${row(boats,"コース別平均ST",b=>"—")}
-
-${row(boats,"コース別2連対",b=>"—")}
-
-${row(boats,"コース別3連対",b=>"—")}
-
-</div>
-
-</div>
-</div>
-`;
-};
-
-window.BOAT_CORE_COURSE = {
-render
-};
-
-})();
+.courseGridLabel{
+display:flex;
+align-items:center;
+justify-content:center;
+background:#f3f6fb;
+font-size:10px;
+font-weight:800;
+}
