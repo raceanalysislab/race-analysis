@@ -8,7 +8,7 @@
 .coursePanel{
   min-height:100%;
   display:grid;
-  grid-template-columns:minmax(0,1fr) 86px;
+  grid-template-columns:minmax(0,1fr) 44px;
   background:#fff;
 }
 
@@ -53,12 +53,14 @@
   background:#f7f8fa;
   color:#4d5868;
   min-height:58px;
-  padding:8px 6px;
-  font-size:11px;
-  line-height:1.25;
+  padding:6px 2px;
+  font-size:9px;
+  line-height:1.15;
   font-weight:900;
   text-align:center;
-  letter-spacing:-.01em;
+  letter-spacing:-.02em;
+  word-break:break-all;
+  overflow-wrap:anywhere;
 }
 
 .courseSideTab.is-active{
@@ -74,26 +76,23 @@
 }
 
 .courseDataGridHead,
+.courseDataGridNames,
 .courseDataGridRow{
   display:grid;
-  grid-template-columns:56px repeat(6, minmax(0, 1fr));
+  grid-template-columns:repeat(6, minmax(0, 1fr));
 }
 
 .courseDataGridHead{
-  min-height:38px;
+  min-height:44px;
   background:#eef1f4;
   border-bottom:1px solid var(--line);
-}
-
-.courseDataGridHead__label{
-  border-right:1px solid var(--line);
 }
 
 .courseDataGridHead__waku{
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:13px;
+  font-size:19px;
   line-height:1;
   font-weight:900;
   border-right:1px solid var(--line);
@@ -111,8 +110,35 @@
 .courseDataGridHead__waku.w5{ background:#e6d74a; color:#1e2430; }
 .courseDataGridHead__waku.w6{ background:#39b36b; color:#ffffff; }
 
-.courseDataGridRow{
+.courseDataGridNames{
   min-height:44px;
+  background:#fff;
+  border-bottom:1px solid var(--line);
+}
+
+.courseDataGridName{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:4px 3px;
+  border-right:1px solid var(--line);
+  font-size:12px;
+  line-height:1.05;
+  font-weight:900;
+  color:#101722;
+  background:#fff;
+  letter-spacing:-.03em;
+  text-align:center;
+  word-break:keep-all;
+  overflow:hidden;
+}
+
+.courseDataGridName:last-child{
+  border-right:none;
+}
+
+.courseDataGridRow{
+  min-height:46px;
   background:#fff;
   border-bottom:1px solid var(--line);
 }
@@ -121,33 +147,13 @@
   border-bottom:none;
 }
 
-.courseDataGridLabel{
-  display:flex;
-  align-items:center;
-  justify-content:flex-start;
-  padding:0 8px;
-  font-size:11px;
-  line-height:1.1;
-  font-weight:900;
-  color:#334155;
-  border-right:1px solid var(--line);
-  background:#fff;
-  letter-spacing:-.01em;
-  white-space:nowrap;
-}
-
-.courseDataGridLabel.is-course{
-  justify-content:center;
-  padding:0 4px;
-}
-
 .courseDataGridCell{
   display:flex;
   align-items:center;
   justify-content:center;
   padding:0 2px;
   font-variant-numeric:tabular-nums;
-  font-size:11px;
+  font-size:16px;
   line-height:1;
   font-weight:900;
   color:#101722;
@@ -161,9 +167,32 @@
   border-right:none;
 }
 
+.courseDataGridRow.is-course{
+  grid-template-columns:52px repeat(6, minmax(0, 1fr));
+}
+
+.courseDataGridCourseLabel{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0 4px;
+  font-size:10px;
+  line-height:1.1;
+  font-weight:900;
+  color:#334155;
+  border-right:1px solid var(--line);
+  background:#fff;
+  letter-spacing:-.01em;
+  white-space:nowrap;
+}
+
+.courseDataGridCell--small{
+  font-size:13px;
+}
+
 @media (max-width: 390px){
   .coursePanel{
-    grid-template-columns:minmax(0,1fr) 80px;
+    grid-template-columns:minmax(0,1fr) 40px;
   }
 
   .coursePanelTitle{
@@ -173,34 +202,47 @@
 
   .courseSideTab{
     min-height:54px;
-    padding:7px 4px;
-    font-size:10px;
-  }
-
-  .courseDataGridHead,
-  .courseDataGridRow{
-    grid-template-columns:50px repeat(6, minmax(0, 1fr));
+    padding:5px 1px;
+    font-size:8px;
+    line-height:1.1;
   }
 
   .courseDataGridHead{
-    min-height:36px;
+    min-height:40px;
   }
 
   .courseDataGridHead__waku{
-    font-size:12px;
+    font-size:17px;
+  }
+
+  .courseDataGridNames{
+    min-height:40px;
+  }
+
+  .courseDataGridName{
+    font-size:11px;
+    padding:3px 2px;
   }
 
   .courseDataGridRow{
     min-height:42px;
   }
 
-  .courseDataGridLabel{
-    font-size:10px;
-    padding:0 6px;
+  .courseDataGridCell{
+    font-size:14px;
+    padding:0 1px;
   }
 
-  .courseDataGridCell{
-    font-size:10px;
-    padding:0 1px;
+  .courseDataGridRow.is-course{
+    grid-template-columns:46px repeat(6, minmax(0, 1fr));
+  }
+
+  .courseDataGridCourseLabel{
+    font-size:9px;
+    padding:0 2px;
+  }
+
+  .courseDataGridCell--small{
+    font-size:12px;
   }
 }
