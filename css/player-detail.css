@@ -301,18 +301,19 @@ body{
 
 .courseRadarNode{
   position:absolute;
-  width:8px;
-  height:8px;
-  margin-left:-4px;
-  margin-top:-4px;
+  width:7px;
+  height:7px;
+  margin-left:-3.5px;
+  margin-top:-3.5px;
   border-radius:50%;
   background:#eaffff;
   box-shadow:
-    0 0 0 2px rgba(124,231,255,.28),
-    0 0 8px rgba(124,231,255,.36);
+    0 0 0 2px rgba(124,231,255,.24),
+    0 0 6px rgba(124,231,255,.28);
   opacity:.95;
 }
 
+/* ラベルを外へ逃がす */
 .courseRadarLabels .radarLabel{
   position:absolute;
   min-width:42px;
@@ -325,32 +326,60 @@ body{
   font-weight:900;
   text-align:center;
   box-shadow:0 4px 10px rgba(0,0,0,.08);
+  z-index:4;
 }
 
-.radarLabel--1{ top:8px; left:50%; transform:translateX(-50%); }
-.radarLabel--2{ top:48px; right:6px; }
-.radarLabel--3{ right:8px; bottom:48px; }
-.radarLabel--4{ left:50%; bottom:8px; transform:translateX(-50%); }
-.radarLabel--5{ left:8px; bottom:48px; }
-.radarLabel--6{ top:48px; left:6px; }
+.radarLabel--1{
+  top:6px;
+  left:50%;
+  transform:translateX(-50%);
+}
 
+.radarLabel--2{
+  top:44px;
+  right:4px;
+}
+
+.radarLabel--3{
+  right:8px;
+  bottom:76px;
+}
+
+.radarLabel--4{
+  left:50%;
+  bottom:48px;
+  transform:translateX(-50%);
+}
+
+.radarLabel--5{
+  left:8px;
+  bottom:76px;
+}
+
+.radarLabel--6{
+  top:44px;
+  left:4px;
+}
+
+/* イン型帯を下へ移動 */
 .courseTypePill{
   position:absolute;
-  left:14px;
-  right:14px;
-  bottom:14px;
-  height:34px;
+  left:18px;
+  right:18px;
+  bottom:12px;
+  height:30px;
   border-radius:999px;
   background:linear-gradient(90deg, rgba(46,100,210,.92), rgba(77,224,205,.92));
   color:#fff;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:18px;
+  font-size:17px;
   font-weight:900;
   letter-spacing:-.02em;
   box-shadow:0 8px 18px rgba(16,42,111,.18);
   backdrop-filter:blur(2px);
+  z-index:3;
 }
 
 .courseStatCard{
@@ -631,14 +660,40 @@ body{
     padding:8px 8px;
   }
 
-  .radarLabel--2{ top:56px; right:10px; }
-  .radarLabel--3{ right:12px; bottom:56px; }
-  .radarLabel--5{ left:12px; bottom:56px; }
-  .radarLabel--6{ top:56px; left:10px; }
+  .radarLabel--1{
+    top:8px;
+  }
+
+  .radarLabel--2{
+    top:50px;
+    right:6px;
+  }
+
+  .radarLabel--3{
+    right:10px;
+    bottom:82px;
+  }
+
+  .radarLabel--4{
+    bottom:52px;
+  }
+
+  .radarLabel--5{
+    left:10px;
+    bottom:82px;
+  }
+
+  .radarLabel--6{
+    top:50px;
+    left:6px;
+  }
 
   .courseTypePill{
-    height:38px;
-    font-size:20px;
+    left:20px;
+    right:20px;
+    bottom:14px;
+    height:34px;
+    font-size:19px;
   }
 
   .courseStatHead__course{
