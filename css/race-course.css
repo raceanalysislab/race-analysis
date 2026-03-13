@@ -38,7 +38,7 @@
 
 .courseGridRow{
   display:grid;
-  grid-template-columns:repeat(6, minmax(0, 1fr)) 44px;
+  grid-template-columns:repeat(6, minmax(0, 1fr)) minmax(0, .62fr);
   border-bottom:1px solid var(--line);
   background:#fff;
 }
@@ -113,7 +113,7 @@
   justify-content:center;
   writing-mode:vertical-rl;
   text-orientation:upright;
-  font-size:15px;
+  font-size:13px;
   line-height:1;
   font-weight:500;
   letter-spacing:.01em;
@@ -174,7 +174,7 @@
 
 @media (max-width: 390px){
   .courseGridRow{
-    grid-template-columns:repeat(6, minmax(0, 1fr)) 40px;
+    grid-template-columns:repeat(6, minmax(0, 1fr)) minmax(0, .64fr);
   }
 
   .courseGridRow--head{
@@ -205,7 +205,7 @@
 
   .courseGridNameVertical{
     height:102px;
-    font-size:14px;
+    font-size:12px;
   }
 
   .courseGridGradeMain{
