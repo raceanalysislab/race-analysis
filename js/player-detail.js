@@ -21,6 +21,13 @@ $("playerDate").textContent = date || "—";
 $("btnBack").addEventListener("click", () => history.back());
 
 const COURSE_ORDER = [1, 2, 3, 4, 5, 6];
+const RADAR_SIZE = 320;
+const RADAR_CX = 160;
+const RADAR_CY = 162;
+const RADAR_GRID_MAX_R = 108;
+const RADAR_VALUE_MAX_R = 96;
+const RADAR_INNER_SCALE = 0.82;
+const RADAR_ANGLES = [-90, -30, 30, 90, 150, 210].map((deg) => deg * Math.PI / 180);
 
 const courseData = {
   1: { win: 77.7, ren2: 84.4, ren3: 88.8, type: "イン型",     kimariteMain: "逃げ 94%",     kimariteSub: "差し 2.7% / まくり 1.1%" },
@@ -72,37 +79,34 @@ function makeCourseTabs(){
   });
 }
 
+function polygonPointsFromRadius(r){
+  return RADAR_ANGLES.map((a) => {
+    const x = RADAR_CX + Math.cos(a) * r;
+    const y = RADAR_CY + Math.sin(a) * r;
+    return `${x},${y}`;
+  }).join(" ");
+}
+
 function buildRadarGrid(){
   const g = $("courseRadarGrid");
   if (!g) return;
 
-  const cx = 160;
-  const cy = 148;
-  const levels = [30, 54, 78, 102, 126];
-  const angles = [-90, -30, 30, 90, 150, 210].map((deg) => deg * Math.PI / 180);
-
-  const polygonPoints = (r) => {
-    return angles.map((a) => {
-      const x = cx + Math.cos(a) * r;
-      const y = cy + Math.sin(a) * r;
-      return `${x},${y}`;
-    }).join(" ");
-  };
+  const levels = [26, 46, 66, 86, RADAR_GRID_MAX_R];
 
   g.innerHTML = "";
 
   levels.forEach((r) => {
     const poly = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
-    poly.setAttribute("points", polygonPoints(r));
+    poly.setAttribute("points", polygonPointsFromRadius(r));
     g.appendChild(poly);
   });
 
-  angles.forEach((a) => {
-    const x = cx + Math.cos(a) * 126;
-    const y = cy + Math.sin(a) * 126;
+  RADAR_ANGLES.forEach((a) => {
+    const x = RADAR_CX + Math.cos(a) * RADAR_GRID_MAX_R;
+    const y = RADAR_CY + Math.sin(a) * RADAR_GRID_MAX_R;
     const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    line.setAttribute("x1", cx);
-    line.setAttribute("y1", cy);
+    line.setAttribute("x1", RADAR_CX);
+    line.setAttribute("y1", RADAR_CY);
     line.setAttribute("x2", x);
     line.setAttribute("y2", y);
     g.appendChild(line);
@@ -141,6 +145,27 @@ function ensureRadarExtraLayers(){
   }
 }
 
+function ensureRadarLabels(){
+  const stage = document.querySelector(".courseRadarStage");
+  if (!stage) return;
+
+  let labels = stage.querySelector(".courseRadarLabels");
+  if (!labels) {
+    labels = document.createElement("div");
+    labels.className = "courseRadarLabels";
+    stage.appendChild(labels);
+  }
+
+  labels.innerHTML = `
+    <div class="radarLabel radarLabel--1">1コース</div>
+    <div class="radarLabel radarLabel--2">2コース</div>
+    <div class="radarLabel radarLabel--3">3コース</div>
+    <div class="radarLabel radarLabel--4">4コース</div>
+    <div class="radarLabel radarLabel--5">5コース</div>
+    <div class="radarLabel radarLabel--6">6コース</div>
+  `;
+}
+
 function getRadarValues(){
   return COURSE_ORDER.map((course) => {
     const data = courseData[course] || { win: 0 };
@@ -149,18 +174,14 @@ function getRadarValues(){
 }
 
 function getRadarPointObjects(values, progress = 1, scale = 1){
-  const cx = 160;
-  const cy = 148;
-  const maxR = 114 * scale;
   const maxValue = Math.max(...values, 1);
-  const angles = [-90, -30, 30, 90, 150, 210].map((deg) => deg * Math.PI / 180);
 
   return values.map((v, i) => {
     const rate = (v / maxValue) * progress;
-    const r = maxR * rate;
+    const r = RADAR_VALUE_MAX_R * scale * rate;
     return {
-      x: cx + Math.cos(angles[i]) * r,
-      y: cy + Math.sin(angles[i]) * r
+      x: RADAR_CX + Math.cos(RADAR_ANGLES[i]) * r,
+      y: RADAR_CY + Math.sin(RADAR_ANGLES[i]) * r
     };
   });
 }
@@ -173,8 +194,8 @@ function layoutRadarNodes(points){
   points.forEach((p, i) => {
     const node = $(`courseRadarNode${i + 1}`);
     if (!node) return;
-    node.style.left = `${(p.x / 320) * 100}%`;
-    node.style.top = `${(p.y / 320) * 100}%`;
+    node.style.left = `${(p.x / RADAR_SIZE) * 100}%`;
+    node.style.top = `${(p.y / RADAR_SIZE) * 100}%`;
   });
 }
 
@@ -184,9 +205,8 @@ function drawRadar(progress = 1){
   if (!polygon || !core) return;
 
   const values = getRadarValues();
-
   const outerPoints = getRadarPointObjects(values, progress, 1);
-  const innerPoints = getRadarPointObjects(values, progress, 0.82);
+  const innerPoints = getRadarPointObjects(values, progress, RADAR_INNER_SCALE);
 
   polygon.setAttribute("points", pointObjectsToString(outerPoints));
   core.setAttribute("points", pointObjectsToString(innerPoints));
@@ -242,8 +262,10 @@ function renderHeroText(){
   setMeter("ren2RateFill", data.ren2);
   setMeter("ren3RateFill", data.ren3);
 
-  $("kimariteMain").textContent = data.kimariteMain;
-  $("kimariteSub").textContent = data.kimariteSub;
+  const kimariteMain = $("kimariteMain");
+  const kimariteSub = $("kimariteSub");
+  if (kimariteMain) kimariteMain.textContent = data.kimariteMain;
+  if (kimariteSub) kimariteSub.textContent = data.kimariteSub;
 }
 
 function makeCourseHeader(){
@@ -326,10 +348,12 @@ function renderTables(){
 function boot(){
   buildRadarGrid();
   ensureRadarExtraLayers();
+  ensureRadarLabels();
   renderTables();
   makeCourseTabs();
   renderHeroText();
   drawRadar(0);
+
   requestAnimationFrame(() => {
     animateRadar();
   });
