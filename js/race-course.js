@@ -1,24 +1,41 @@
 (() => {
-  const TAB_DEFS = [
-    { key: "waku", label: "枠", rowClass: "courseGridHeader" },
-    { key: "name", label: "選手名", rowClass: "courseGridRow--name" },
-    { key: "grade", label: "級", rowClass: "courseGridRow--grade" },
-    { key: "f", label: "F", rowClass: "courseGridRow--f" },
-    { key: "l", label: "L", rowClass: "courseGridRow--l" },
-    { key: "avgSt", label: "平均ST", rowClass: "courseGridRow--avgst" },
-    { key: "meetAvgSt", label: "今節平均ST", rowClass: "courseGridRow--meetavgst" },
-    { key: "recent", label: "近況データ", rowClass: "courseGridRow--recent" },
-    { key: "courseAvgSt", label: "コース別平均ST", rowClass: "courseGridRow--course" },
-    { key: "kimarite", label: "決まり手", rowClass: "courseGridRow--kimarite" },
-    { key: "course2ren", label: "コース別2連対率", rowClass: "courseGridRow--course" },
-    { key: "course3ren", label: "コース別3連対率", rowClass: "courseGridRow--course" }
-  ];
-
   const ORDER = [6, 5, 4, 3, 2, 1];
 
+  const ROW_DEFS = [
+    { key: "waku", label: "枠", className: "courseGridRow--head" },
+    { key: "name", label: "選手名", className: "courseGridRow--name" },
+    { key: "grade", label: "級", className: "courseGridRow--grade" },
+    { key: "f", label: "F", className: "courseGridRow--f" },
+    { key: "l", label: "L", className: "courseGridRow--l" },
+    { key: "avgSt", label: "平均ST", className: "courseGridRow--avgst" },
+    { key: "meetAvgSt", label: "今節平均ST", className: "courseGridRow--meetavgst" },
+    { key: "recent", label: "近況データ", className: "courseGridRow--recent" },
+    { key: "courseAvgSt-1", label: "コース別平均ST", className: "courseGridRow--course", groupKey: "courseAvgSt", courseNo: 1 },
+    { key: "courseAvgSt-2", label: "コース別平均ST", className: "courseGridRow--course", groupKey: "courseAvgSt", courseNo: 2 },
+    { key: "courseAvgSt-3", label: "コース別平均ST", className: "courseGridRow--course", groupKey: "courseAvgSt", courseNo: 3 },
+    { key: "courseAvgSt-4", label: "コース別平均ST", className: "courseGridRow--course", groupKey: "courseAvgSt", courseNo: 4 },
+    { key: "courseAvgSt-5", label: "コース別平均ST", className: "courseGridRow--course", groupKey: "courseAvgSt", courseNo: 5 },
+    { key: "courseAvgSt-6", label: "コース別平均ST", className: "courseGridRow--course", groupKey: "courseAvgSt", courseNo: 6 },
+    { key: "kimarite-sashi", label: "決まり手", className: "courseGridRow--kimarite", groupKey: "kimarite", kimariteKey: "sashi" },
+    { key: "kimarite-makuri", label: "決まり手", className: "courseGridRow--kimarite", groupKey: "kimarite", kimariteKey: "makuri" },
+    { key: "kimarite-makurizashi", label: "決まり手", className: "courseGridRow--kimarite", groupKey: "kimarite", kimariteKey: "makurizashi" },
+    { key: "course2ren-1", label: "コース別2連対率", className: "courseGridRow--course", groupKey: "course2ren", courseNo: 1 },
+    { key: "course2ren-2", label: "コース別2連対率", className: "courseGridRow--course", groupKey: "course2ren", courseNo: 2 },
+    { key: "course2ren-3", label: "コース別2連対率", className: "courseGridRow--course", groupKey: "course2ren", courseNo: 3 },
+    { key: "course2ren-4", label: "コース別2連対率", className: "courseGridRow--course", groupKey: "course2ren", courseNo: 4 },
+    { key: "course2ren-5", label: "コース別2連対率", className: "courseGridRow--course", groupKey: "course2ren", courseNo: 5 },
+    { key: "course2ren-6", label: "コース別2連対率", className: "courseGridRow--course", groupKey: "course2ren", courseNo: 6 },
+    { key: "course3ren-1", label: "コース別3連対率", className: "courseGridRow--course", groupKey: "course3ren", courseNo: 1 },
+    { key: "course3ren-2", label: "コース別3連対率", className: "courseGridRow--course", groupKey: "course3ren", courseNo: 2 },
+    { key: "course3ren-3", label: "コース別3連対率", className: "courseGridRow--course", groupKey: "course3ren", courseNo: 3 },
+    { key: "course3ren-4", label: "コース別3連対率", className: "courseGridRow--course", groupKey: "course3ren", courseNo: 4 },
+    { key: "course3ren-5", label: "コース別3連対率", className: "courseGridRow--course", groupKey: "course3ren", courseNo: 5 },
+    { key: "course3ren-6", label: "コース別3連対率", className: "courseGridRow--course", groupKey: "course3ren", courseNo: 6 }
+  ];
+
   const state = {
-    activeTab: "avgSt",
-    raceJson: null
+    raceJson: null,
+    activeGroup: "avgSt"
   };
 
   const $ = (id) => document.getElementById(id);
@@ -69,7 +86,7 @@
   const formatCount = (v) => {
     if (v === undefined || v === null || v === "") return "—";
     const n = Number(v);
-    if (!Number.isFinite(n)) return "—";
+    if (!Number.isFinite(n)) return String(Math.trunc(n));
     return String(Math.trunc(n));
   };
 
@@ -79,9 +96,7 @@
 
     boats.forEach((boat) => {
       const waku = Number(boat?.waku);
-      if (waku >= 1 && waku <= 6) {
-        byWaku.set(waku, boat);
-      }
+      if (waku >= 1 && waku <= 6) byWaku.set(waku, boat);
     });
 
     return ORDER.map((waku) => byWaku.get(waku) || { waku, name: "—" });
@@ -89,35 +104,10 @@
 
   const getCourseBucket = (boat, kind) => {
     const directMap = {
-      avgSt: [
-        "course_avg_st",
-        "course_st",
-        "course_st_3y",
-        "course_avg_st_3y",
-        "course_stats_3y",
-        "course3y"
-      ],
-      course2ren: [
-        "course_2ren",
-        "course_2ren_3y",
-        "course_2",
-        "course_stats_3y",
-        "course3y"
-      ],
-      course3ren: [
-        "course_3ren",
-        "course_3ren_3y",
-        "course_3",
-        "course_stats_3y",
-        "course3y"
-      ],
-      kimarite: [
-        "kimarite",
-        "course_kimarite",
-        "kimarite_3y",
-        "course_stats_3y",
-        "course3y"
-      ]
+      avgSt: ["course_avg_st", "course_st", "course_st_3y", "course_avg_st_3y", "course_stats_3y", "course3y"],
+      course2ren: ["course_2ren", "course_2ren_3y", "course_2", "course_stats_3y", "course3y"],
+      course3ren: ["course_3ren", "course_3ren_3y", "course_3", "course_stats_3y", "course3y"],
+      kimarite: ["kimarite", "course_kimarite", "kimarite_3y", "course_stats_3y", "course3y"]
     };
 
     const keys = directMap[kind] || [];
@@ -141,30 +131,22 @@
 
       if (courseObj && typeof courseObj === "object") {
         if (kind === "avgSt") {
-          const v = pickNumber(courseObj, [
-            "avg_st", "st", "st_avg", "average_st", "start_average"
-          ]);
+          const v = pickNumber(courseObj, ["avg_st", "st", "st_avg", "average_st", "start_average"]);
           return formatST(v);
         }
 
         if (kind === "course2ren") {
-          const v = pickNumber(courseObj, [
-            "rate2", "ren2", "two", "two_rate", "niren", "niren_rate", "percent_2"
-          ]);
+          const v = pickNumber(courseObj, ["rate2", "ren2", "two", "two_rate", "niren", "niren_rate", "percent_2"]);
           return formatRate(v);
         }
 
         if (kind === "course3ren") {
-          const v = pickNumber(courseObj, [
-            "rate3", "ren3", "three", "three_rate", "sanren", "sanren_rate", "percent_3"
-          ]);
+          const v = pickNumber(courseObj, ["rate3", "ren3", "three", "three_rate", "sanren", "sanren_rate", "percent_3"]);
           return formatRate(v);
         }
       }
 
-      if (kind === "kimarite") {
-        return courseObj || bucket;
-      }
+      if (kind === "kimarite") return courseObj || bucket;
     }
 
     if (kind === "avgSt") {
@@ -241,9 +223,7 @@
   };
 
   const getAvgStValue = (boat) => {
-    const v = pickNumber(boat, [
-      "avg_st", "st_avg", "ave_st", "average_st", "start_average"
-    ]);
+    const v = pickNumber(boat, ["avg_st", "st_avg", "ave_st", "average_st", "start_average"]);
     return formatST(v);
   };
 
@@ -271,29 +251,90 @@
     return v !== "" ? formatDash(v) : "—";
   };
 
-  const getGradeText = (boat) => {
-    return formatDash(boat?.grade || "—");
+  const getGradeText = (boat) => formatDash(boat?.grade || "—");
+  const getFText = (boat) => formatDash(pickValue(boat, ["f_count", "f", "F", "f_num"]) || "—");
+  const getLText = (boat) => formatDash(pickValue(boat, ["l_count", "l", "L", "l_num"]) || "—");
+
+  const getRowValue = (rowDef, boat) => {
+    switch (rowDef.key) {
+      case "avgSt":
+        return getAvgStValue(boat);
+      case "meetAvgSt":
+        return getMeetAvgStValue(boat);
+      case "recent":
+        return getRecentValue(boat);
+      case "grade":
+        return getGradeText(boat);
+      case "f":
+        return getFText(boat);
+      case "l":
+        return getLText(boat);
+      default:
+        if (rowDef.groupKey === "courseAvgSt") {
+          return getCourseCell(boat, rowDef.courseNo, "avgSt");
+        }
+        if (rowDef.groupKey === "course2ren") {
+          return getCourseCell(boat, rowDef.courseNo, "course2ren");
+        }
+        if (rowDef.groupKey === "course3ren") {
+          return getCourseCell(boat, rowDef.courseNo, "course3ren");
+        }
+        if (rowDef.groupKey === "kimarite") {
+          return getKimariteCell(boat, rowDef.kimariteKey);
+        }
+        return "—";
+    }
   };
 
-  const getFText = (boat) => {
-    return formatDash(pickValue(boat, ["f_count", "f", "F", "f_num"]) || "—");
-  };
-
-  const getLText = (boat) => {
-    return formatDash(pickValue(boat, ["l_count", "l", "L", "l_num"]) || "—");
-  };
-
-  const renderHeader = (boats) => `
-    <div class="courseGridHeader" data-row-key="waku">
+  const renderHeadRow = (boats) => `
+    <div class="courseGridRow courseGridRow--head" data-row-key="waku">
       ${boats.map((boat) => `
-        <div class="courseGridHeaderCell w${esc(boat.waku)}">${esc(boat.waku)}</div>
+        <div class="courseGridCell courseGridCell--head w${esc(boat.waku)}">${esc(boat.waku)}</div>
       `).join("")}
+      <button type="button" class="courseGridCell courseGridLabel${state.activeGroup === "waku" ? " is-active" : ""}" data-group-key="waku">枠</button>
     </div>
   `;
 
-  const renderRow = (rowHtml, rowClass, rowKey) => `
-    <div class="courseGridRow ${rowClass}" data-row-key="${esc(rowKey)}">
-      ${rowHtml}
+  const renderNameRow = (boats) => `
+    <div class="courseGridRow courseGridRow--name" data-row-key="name">
+      ${boats.map((boat) => `
+        <div class="courseGridCell courseGridCell--name">
+          <div class="courseGridNameVertical">${esc(formatDash(boat?.name || "—"))}</div>
+        </div>
+      `).join("")}
+      <button type="button" class="courseGridCell courseGridLabel${state.activeGroup === "name" ? " is-active" : ""}" data-group-key="name">選手名</button>
+    </div>
+  `;
+
+  const renderSimpleRow = (rowDef, boats) => `
+    <div class="courseGridRow ${rowDef.className}" data-row-key="${esc(rowDef.key)}">
+      ${boats.map((boat) => `
+        <div class="courseGridCell${rowDef.key === "grade" ? " courseGridCell--grade" : ""}">
+          ${
+            rowDef.key === "grade"
+              ? `<div class="courseGridGradeBlock"><div class="courseGridGradeMain">${esc(getRowValue(rowDef, boat))}</div></div>`
+              : `<div class="courseGridMetric${rowDef.key === "f" || rowDef.key === "l" || rowDef.key === "recent" ? " courseGridMetric--small" : ""}">${esc(getRowValue(rowDef, boat))}</div>`
+          }
+        </div>
+      `).join("")}
+      <button type="button" class="courseGridCell courseGridLabel${state.activeGroup === rowDef.key ? " is-active" : ""}" data-group-key="${esc(rowDef.key)}">${esc(rowDef.label)}</button>
+    </div>
+  `;
+
+  const renderGroupedRow = (rowDef, boats) => `
+    <div class="courseGridRow ${rowDef.className}" data-row-key="${esc(rowDef.key)}">
+      ${boats.map((boat) => `
+        <div class="courseGridCell">
+          <div class="courseGridMetric courseGridMetric--small">${esc(getRowValue(rowDef, boat))}</div>
+        </div>
+      `).join("")}
+      <button
+        type="button"
+        class="courseGridCell courseGridLabel${state.activeGroup === rowDef.groupKey ? " is-active" : ""}"
+        data-group-key="${esc(rowDef.groupKey)}"
+      >
+        ${esc(rowDef.label)}
+      </button>
     </div>
   `;
 
@@ -302,163 +343,52 @@
 
     return `
       <div class="courseGrid">
-        ${renderHeader(boats)}
-
-        ${renderRow(
-          boats.map((boat) => `
-            <div class="courseGridCell courseGridCell--name">
-              <div class="courseGridNameVertical">${esc(formatDash(boat?.name || "—"))}</div>
-            </div>
-          `).join(""),
-          "courseGridRow--name",
-          "name"
-        )}
-
-        ${renderRow(
-          boats.map((boat) => `
-            <div class="courseGridCell courseGridCell--grade">
-              <div class="courseGridGradeBlock">
-                <div class="courseGridGradeMain">${esc(getGradeText(boat))}</div>
-              </div>
-            </div>
-          `).join(""),
-          "courseGridRow--grade",
-          "grade"
-        )}
-
-        ${renderRow(
-          boats.map((boat) => `
-            <div class="courseGridCell">
-              <div class="courseGridMetric courseGridMetric--small">${esc(getFText(boat))}</div>
-            </div>
-          `).join(""),
-          "courseGridRow--f",
-          "f"
-        )}
-
-        ${renderRow(
-          boats.map((boat) => `
-            <div class="courseGridCell">
-              <div class="courseGridMetric courseGridMetric--small">${esc(getLText(boat))}</div>
-            </div>
-          `).join(""),
-          "courseGridRow--l",
-          "l"
-        )}
-
-        ${renderRow(
-          boats.map((boat) => `
-            <div class="courseGridCell">
-              <div class="courseGridMetric">${esc(getAvgStValue(boat))}</div>
-            </div>
-          `).join(""),
-          "courseGridRow--avgst",
-          "avgSt"
-        )}
-
-        ${renderRow(
-          boats.map((boat) => `
-            <div class="courseGridCell">
-              <div class="courseGridMetric">${esc(getMeetAvgStValue(boat))}</div>
-            </div>
-          `).join(""),
-          "courseGridRow--meetavgst",
-          "meetAvgSt"
-        )}
-
-        ${renderRow(
-          boats.map((boat) => `
-            <div class="courseGridCell">
-              <div class="courseGridMetric courseGridMetric--small">${esc(getRecentValue(boat))}</div>
-            </div>
-          `).join(""),
-          "courseGridRow--recent",
-          "recent"
-        )}
-
-        ${[1,2,3,4,5,6].map((courseNo, index) => renderRow(
-          boats.map((boat) => `
-            <div class="courseGridCell">
-              <div class="courseGridMetric courseGridMetric--small">${esc(getCourseCell(boat, courseNo, "avgSt"))}</div>
-            </div>
-          `).join(""),
-          "courseGridRow--course",
-          index === 0 ? "courseAvgSt" : "courseAvgSt-sub"
-        )).join("")}
-
-        ${[
-          { key: "sashi" },
-          { key: "makuri" },
-          { key: "makurizashi" }
-        ].map((row, index) => renderRow(
-          boats.map((boat) => `
-            <div class="courseGridCell">
-              <div class="courseGridMetric courseGridMetric--small">${esc(getKimariteCell(boat, row.key))}</div>
-            </div>
-          `).join(""),
-          "courseGridRow--kimarite",
-          index === 0 ? "kimarite" : "kimarite-sub"
-        )).join("")}
-
-        ${[1,2,3,4,5,6].map((courseNo, index) => renderRow(
-          boats.map((boat) => `
-            <div class="courseGridCell">
-              <div class="courseGridMetric courseGridMetric--small">${esc(getCourseCell(boat, courseNo, "course2ren"))}</div>
-            </div>
-          `).join(""),
-          "courseGridRow--course",
-          index === 0 ? "course2ren" : "course2ren-sub"
-        )).join("")}
-
-        ${[1,2,3,4,5,6].map((courseNo, index) => renderRow(
-          boats.map((boat) => `
-            <div class="courseGridCell">
-              <div class="courseGridMetric courseGridMetric--small">${esc(getCourseCell(boat, courseNo, "course3ren"))}</div>
-            </div>
-          `).join(""),
-          "courseGridRow--course",
-          index === 0 ? "course3ren" : "course3ren-sub"
-        )).join("")}
+        ${renderHeadRow(boats)}
+        ${renderNameRow(boats)}
+        ${renderSimpleRow(ROW_DEFS.find(v => v.key === "grade"), boats)}
+        ${renderSimpleRow(ROW_DEFS.find(v => v.key === "f"), boats)}
+        ${renderSimpleRow(ROW_DEFS.find(v => v.key === "l"), boats)}
+        ${renderSimpleRow(ROW_DEFS.find(v => v.key === "avgSt"), boats)}
+        ${renderSimpleRow(ROW_DEFS.find(v => v.key === "meetAvgSt"), boats)}
+        ${renderSimpleRow(ROW_DEFS.find(v => v.key === "recent"), boats)}
+        ${ROW_DEFS.filter(v => v.groupKey === "courseAvgSt").map((rowDef) => renderGroupedRow(rowDef, boats)).join("")}
+        ${ROW_DEFS.filter(v => v.groupKey === "kimarite").map((rowDef) => renderGroupedRow(rowDef, boats)).join("")}
+        ${ROW_DEFS.filter(v => v.groupKey === "course2ren").map((rowDef) => renderGroupedRow(rowDef, boats)).join("")}
+        ${ROW_DEFS.filter(v => v.groupKey === "course3ren").map((rowDef) => renderGroupedRow(rowDef, boats)).join("")}
       </div>
     `;
   };
 
-  const getRowHeight = (rowClass) => {
-    switch (rowClass) {
-      case "courseGridHeader": return 58;
-      case "courseGridRow--name": return 146;
-      case "courseGridRow--grade": return 70;
-      case "courseGridRow--f":
-      case "courseGridRow--l":
-      case "courseGridRow--avgst":
-      case "courseGridRow--meetavgst":
-      case "courseGridRow--recent":
-      case "courseGridRow--course":
-      case "courseGridRow--kimarite":
-        return 52;
-      default:
-        return 52;
-    }
-  };
-
-  const bindTabEvents = (root) => {
+  const scrollToGroup = (root, groupKey) => {
     const panelBody = root.querySelector("#coursePanelBody");
     if (!panelBody) return;
 
-    root.querySelectorAll(".courseSideTab").forEach((btn) => {
+    let selector = `[data-row-key="${groupKey}"]`;
+
+    if (groupKey === "courseAvgSt") selector = `[data-row-key="courseAvgSt-1"]`;
+    if (groupKey === "kimarite") selector = `[data-row-key="kimarite-sashi"]`;
+    if (groupKey === "course2ren") selector = `[data-row-key="course2ren-1"]`;
+    if (groupKey === "course3ren") selector = `[data-row-key="course3ren-1"]`;
+
+    const target = root.querySelector(selector);
+    if (!target) return;
+
+    panelBody.scrollTo({
+      top: target.offsetTop,
+      behavior: "smooth"
+    });
+  };
+
+  const bindLabelEvents = (root) => {
+    root.querySelectorAll("[data-group-key]").forEach((btn) => {
       btn.addEventListener("click", () => {
-        const nextKey = btn.dataset.courseKey || "avgSt";
-        state.activeTab = nextKey;
-
-        root.querySelectorAll(".courseSideTab").forEach((b) => {
-          b.classList.toggle("is-active", b.dataset.courseKey === nextKey);
+        const groupKey = btn.dataset.groupKey || "avgSt";
+        state.activeGroup = groupKey;
+        renderRoot();
+        requestAnimationFrame(() => {
+          const reroot = $("courseDataRoot");
+          if (reroot) scrollToGroup(reroot, groupKey);
         });
-
-        const target = root.querySelector(`[data-row-key="${nextKey}"]`);
-        if (target) {
-          const top = target.offsetTop;
-          panelBody.scrollTo({ top, behavior: "smooth" });
-        }
       });
     });
   };
@@ -474,23 +404,10 @@
             ${renderMainGrid()}
           </div>
         </div>
-
-        <div class="coursePanelSide" aria-label="コースデータ項目">
-          ${TAB_DEFS.map((tab) => `
-            <button
-              type="button"
-              class="courseSideTab${tab.key === state.activeTab ? " is-active" : ""}"
-              data-course-key="${esc(tab.key)}"
-              style="height:${getRowHeight(tab.rowClass)}px"
-            >
-              ${esc(tab.label)}
-            </button>
-          `).join("")}
-        </div>
       </div>
     `;
 
-    bindTabEvents(root);
+    bindLabelEvents(root);
   };
 
   const renderLoading = () => {
