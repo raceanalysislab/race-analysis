@@ -24,6 +24,7 @@ html, body{
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Hiragino Sans","Noto Sans JP","Yu Gothic",sans-serif;
   -webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale;
+  overflow-x:hidden;
 }
 
 body{
@@ -123,10 +124,6 @@ body{
   border-bottom:1px solid #d9e1eb;
 }
 
-.playerSection--basic{
-  padding-bottom:4px;
-}
-
 .playerSectionTitle{
   padding:14px 12px 10px;
   font-size:18px;
@@ -148,59 +145,22 @@ body{
   background:var(--blue-2);
 }
 
-.playerBasicGrid{
-  display:grid;
-  grid-template-columns:repeat(2, minmax(0, 1fr));
-  gap:0;
-  border-top:1px solid #c7d2e3;
-}
-
-.playerBasicItem{
-  min-height:56px;
-  border-right:1px solid #c7d2e3;
-  border-bottom:1px solid #c7d2e3;
-  padding:8px 10px;
-  background:#fff;
-}
-
-.playerBasicItem:nth-child(2n){
-  border-right:none;
-}
-
-.playerBasicLabel{
-  display:block;
-  font-size:11px;
-  line-height:1;
-  font-weight:800;
-  color:#607089;
-  margin-bottom:6px;
-}
-
-.playerBasicValue{
-  display:block;
-  font-size:16px;
-  line-height:1.1;
-  font-weight:900;
-  color:#111827;
-  word-break:break-word;
-}
-
 .playerTableWrap{
-  overflow-x:auto;
-  -webkit-overflow-scrolling:touch;
+  overflow-x:hidden;
   background:#fff;
 }
 
 .playerCourseTable,
 .playerTimingTable{
-  min-width:760px;
+  width:100%;
+  min-width:100%;
   background:#fff;
 }
 
 .playerTableHead,
 .playerTableRow{
   display:grid;
-  grid-template-columns:118px repeat(6, minmax(0, 1fr));
+  grid-template-columns:repeat(7, minmax(0, 1fr));
 }
 
 .playerTableHead{
@@ -217,9 +177,10 @@ body{
   border-bottom:1px solid var(--line);
   background:var(--blue);
   color:#fff;
-  padding:4px 6px;
+  padding:4px 4px;
   text-align:center;
   font-weight:900;
+  min-width:0;
 }
 
 .playerTableHeadCell:last-child{
@@ -238,9 +199,10 @@ body{
 }
 
 .playerCourseName{
-  font-size:18px;
-  line-height:1;
+  font-size:16px;
+  line-height:1.05;
   font-weight:900;
+  word-break:keep-all;
 }
 
 .playerTableRow{
@@ -255,9 +217,10 @@ body{
   border-bottom:1px solid var(--line);
   background:#fff;
   color:#111827;
-  padding:6px 8px;
+  padding:6px 4px;
   text-align:center;
   font-variant-numeric:tabular-nums;
+  min-width:0;
 }
 
 .playerTableCell:last-child{
@@ -267,13 +230,13 @@ body{
 .playerTableCell--label{
   background:var(--blue);
   color:#fff;
-  font-size:16px;
+  font-size:15px;
   line-height:1.1;
   font-weight:900;
 }
 
 .playerTableCell--value{
-  font-size:18px;
+  font-size:16px;
   line-height:1;
   font-weight:900;
 }
@@ -291,14 +254,14 @@ body{
 }
 
 .playerRateText{
-  font-size:17px;
+  font-size:15px;
   line-height:1;
   font-weight:900;
 }
 
 .playerRateBar{
   width:100%;
-  height:12px;
+  height:10px;
   background:#edf2fb;
   position:relative;
   overflow:hidden;
@@ -317,7 +280,7 @@ body{
 }
 
 .playerTimingTable .playerTableCell--label{
-  font-size:15px;
+  font-size:14px;
 }
 
 @media (max-width: 390px){
@@ -345,60 +308,52 @@ body{
     padding:12px 10px 9px;
   }
 
-  .playerBasicItem{
-    min-height:52px;
-    padding:7px 8px;
-  }
-
-  .playerBasicValue{
-    font-size:15px;
-  }
-
-  .playerCourseTable,
-  .playerTimingTable{
-    min-width:700px;
-  }
-
-  .playerTableHead,
-  .playerTableRow{
-    grid-template-columns:106px repeat(6, minmax(0, 1fr));
-  }
-
   .playerTableHead{
     min-height:56px;
   }
 
-  .playerTableCell--label{
-    font-size:14px;
+  .playerTableHeadCell{
+    padding:4px 2px;
   }
 
-  .playerTableCell--value{
+  .playerTableHeadCell--stub{
+    font-size:11px;
+  }
+
+  .playerCourseMark{
     font-size:16px;
-  }
-
-  .playerRateText{
-    font-size:15px;
   }
 
   .playerCourseName{
-    font-size:16px;
+    font-size:14px;
+    line-height:1.05;
   }
-}
-html,body{
-  overflow-x:hidden;
-}
 
-.playerTableWrap{
-  overflow-x:hidden;
-}
+  .playerTableRow{
+    min-height:56px;
+  }
 
-.playerCourseTable,
-.playerTimingTable{
-  width:100%;
-  min-width:100%;
-}
+  .playerTableCell{
+    padding:4px 2px;
+  }
 
-.playerTableHead,
-.playerTableRow{
-  grid-template-columns:110px repeat(6,1fr);
+  .playerTableCell--label{
+    font-size:13px;
+  }
+
+  .playerTableCell--value{
+    font-size:14px;
+  }
+
+  .playerRateText{
+    font-size:13px;
+  }
+
+  .playerRateBar{
+    height:8px;
+  }
+
+  .playerTimingTable .playerTableCell--label{
+    font-size:12px;
+  }
 }
