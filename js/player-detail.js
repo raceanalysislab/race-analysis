@@ -29,24 +29,6 @@ function esc(s){
   }[c]));
 }
 
-function basicItem(label, value){
-  return `
-    <div class="playerBasicItem">
-      <span class="playerBasicLabel">${esc(label)}</span>
-      <span class="playerBasicValue">${esc(value || "—")}</span>
-    </div>
-  `;
-}
-
-$("playerBasicGrid").innerHTML = [
-  basicItem("登録番号", regno),
-  basicItem("級", grade),
-  basicItem("支部", branch),
-  basicItem("年齢", age ? `${age}歳` : "—"),
-  basicItem("会場", venue),
-  basicItem("対象レース", race ? `${race}R` : "—")
-].join("");
-
 function makeCourseHeader(){
   const courses = [1,2,3,4,5,6];
   return `
