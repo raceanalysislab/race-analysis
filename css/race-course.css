@@ -8,7 +8,7 @@
 .coursePanel{
   min-height:100%;
   display:grid;
-  grid-template-columns:minmax(0,1fr) 44px;
+  grid-template-columns:minmax(0,1fr) 52px;
   background:#fff;
 }
 
@@ -17,6 +17,7 @@
   display:flex;
   flex-direction:column;
   border-right:1px solid var(--line);
+  background:#fff;
 }
 
 .coursePanelTitle{
@@ -52,15 +53,17 @@
   border-bottom:1px solid var(--line);
   background:#f7f8fa;
   color:#4d5868;
-  min-height:58px;
-  padding:6px 2px;
+  padding:0 2px;
   font-size:9px;
-  line-height:1.15;
+  line-height:1.1;
   font-weight:900;
   text-align:center;
   letter-spacing:-.02em;
   word-break:break-all;
   overflow-wrap:anywhere;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 
 .courseSideTab.is-active{
@@ -68,131 +71,186 @@
   color:#234ea8;
 }
 
-.courseDataGridWrap{
+.courseGrid{
   width:100%;
   border-top:1px solid var(--line);
   border-bottom:1px solid var(--line);
   background:#fff;
 }
 
-.courseDataGridHead,
-.courseDataGridNames,
-.courseDataGridRow{
+.courseGridHeader{
   display:grid;
   grid-template-columns:repeat(6, minmax(0, 1fr));
-}
-
-.courseDataGridHead{
-  min-height:44px;
-  background:#eef1f4;
+  min-height:58px;
   border-bottom:1px solid var(--line);
 }
 
-.courseDataGridHead__waku{
+.courseGridHeaderCell{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:20px;
+  line-height:1;
+  font-weight:900;
+  border-right:1px solid var(--line);
+  letter-spacing:-.02em;
+}
+
+.courseGridHeaderCell:last-child{
+  border-right:none;
+}
+
+.courseGridHeaderCell.w1{ background:#ffffff; color:#111827; }
+.courseGridHeaderCell.w2{ background:#444b55; color:#ffffff; }
+.courseGridHeaderCell.w3{ background:#ea5a50; color:#ffffff; }
+.courseGridHeaderCell.w4{ background:#4d82d8; color:#ffffff; }
+.courseGridHeaderCell.w5{ background:#e6d74a; color:#1e2430; }
+.courseGridHeaderCell.w6{ background:#39b36b; color:#ffffff; }
+
+.courseGridRow{
+  display:grid;
+  grid-template-columns:repeat(6, minmax(0, 1fr));
+  border-bottom:1px solid var(--line);
+  background:#fff;
+}
+
+.courseGridRow:last-child{
+  border-bottom:none;
+}
+
+.courseGridRow--waku{
+  min-height:54px;
+}
+
+.courseGridRow--name{
+  min-height:146px;
+}
+
+.courseGridRow--grade{
+  min-height:70px;
+}
+
+.courseGridRow--f,
+.courseGridRow--l,
+.courseGridRow--avgst,
+.courseGridRow--meetavgst,
+.courseGridRow--recent{
+  min-height:52px;
+}
+
+.courseGridRow--course,
+.courseGridRow--kimarite{
+  min-height:52px;
+}
+
+.courseGridCell{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  border-right:1px solid var(--line);
+  background:#fff;
+  color:#101722;
+  min-width:0;
+}
+
+.courseGridCell:last-child{
+  border-right:none;
+}
+
+.courseGridCell--waku{
+  padding:0;
+}
+
+.courseGridWakuInner{
+  width:42px;
+  height:42px;
   display:flex;
   align-items:center;
   justify-content:center;
   font-size:19px;
   line-height:1;
   font-weight:900;
-  border-right:1px solid var(--line);
-  letter-spacing:-.02em;
+  border:2px solid rgba(0,0,0,.08);
 }
 
-.courseDataGridHead__waku:last-child{
-  border-right:none;
+.courseGridWakuInner.w1{ background:#ffffff; color:#111827; }
+.courseGridWakuInner.w2{ background:#444b55; color:#ffffff; }
+.courseGridWakuInner.w3{ background:#ea5a50; color:#ffffff; }
+.courseGridWakuInner.w4{ background:#4d82d8; color:#ffffff; }
+.courseGridWakuInner.w5{ background:#e6d74a; color:#1e2430; }
+.courseGridWakuInner.w6{ background:#39b36b; color:#ffffff; }
+
+.courseGridCell--name{
+  padding:6px 0;
 }
 
-.courseDataGridHead__waku.w1{ background:#ffffff; color:#111827; }
-.courseDataGridHead__waku.w2{ background:#444b55; color:#ffffff; }
-.courseDataGridHead__waku.w3{ background:#ea5a50; color:#ffffff; }
-.courseDataGridHead__waku.w4{ background:#4d82d8; color:#ffffff; }
-.courseDataGridHead__waku.w5{ background:#e6d74a; color:#1e2430; }
-.courseDataGridHead__waku.w6{ background:#39b36b; color:#ffffff; }
-
-.courseDataGridNames{
-  min-height:44px;
-  background:#fff;
-  border-bottom:1px solid var(--line);
-}
-
-.courseDataGridName{
+.courseGridNameVertical{
+  height:132px;
   display:flex;
   align-items:center;
   justify-content:center;
-  padding:4px 3px;
-  border-right:1px solid var(--line);
-  font-size:12px;
-  line-height:1.05;
-  font-weight:900;
-  color:#101722;
-  background:#fff;
-  letter-spacing:-.03em;
-  text-align:center;
-  word-break:keep-all;
-  overflow:hidden;
-}
-
-.courseDataGridName:last-child{
-  border-right:none;
-}
-
-.courseDataGridRow{
-  min-height:46px;
-  background:#fff;
-  border-bottom:1px solid var(--line);
-}
-
-.courseDataGridRow:last-child{
-  border-bottom:none;
-}
-
-.courseDataGridCell{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:0 2px;
-  font-variant-numeric:tabular-nums;
-  font-size:16px;
+  writing-mode:vertical-rl;
+  text-orientation:upright;
+  font-size:19px;
   line-height:1;
-  font-weight:900;
-  color:#101722;
-  border-right:1px solid var(--line);
-  background:#fff;
-  letter-spacing:-.02em;
+  font-weight:500;
+  letter-spacing:.02em;
+  color:#111827;
   white-space:nowrap;
 }
 
-.courseDataGridCell:last-child{
-  border-right:none;
+.courseGridCell--grade{
+  padding:4px 2px;
 }
 
-.courseDataGridRow.is-course{
-  grid-template-columns:52px repeat(6, minmax(0, 1fr));
+.courseGridGradeBlock{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
 }
 
-.courseDataGridCourseLabel{
+.courseGridGradeMain{
+  font-size:15px;
+  line-height:1;
+  font-weight:900;
+  color:#111827;
+}
+
+.courseGridGradeSub{
+  font-size:11px;
+  line-height:1.1;
+  font-weight:700;
+  color:#374151;
+}
+
+.courseGridMetric{
+  font-variant-numeric:tabular-nums;
+  font-size:18px;
+  line-height:1;
+  font-weight:900;
+  letter-spacing:-.02em;
+}
+
+.courseGridMetric--small{
+  font-size:14px;
+}
+
+.courseGridCourseLabel{
   display:flex;
   align-items:center;
   justify-content:center;
-  padding:0 4px;
-  font-size:10px;
+  font-size:11px;
   line-height:1.1;
   font-weight:900;
   color:#334155;
-  border-right:1px solid var(--line);
-  background:#fff;
-  letter-spacing:-.01em;
-  white-space:nowrap;
-}
-
-.courseDataGridCell--small{
-  font-size:13px;
 }
 
 @media (max-width: 390px){
   .coursePanel{
-    grid-template-columns:minmax(0,1fr) 40px;
+    grid-template-columns:minmax(0,1fr) 46px;
   }
 
   .coursePanelTitle{
@@ -201,48 +259,68 @@
   }
 
   .courseSideTab{
-    min-height:54px;
-    padding:5px 1px;
     font-size:8px;
-    line-height:1.1;
+    line-height:1.05;
   }
 
-  .courseDataGridHead{
-    min-height:40px;
+  .courseGridHeader{
+    min-height:52px;
   }
 
-  .courseDataGridHead__waku{
+  .courseGridHeaderCell{
+    font-size:18px;
+  }
+
+  .courseGridRow--waku{
+    min-height:48px;
+  }
+
+  .courseGridRow--name{
+    min-height:132px;
+  }
+
+  .courseGridRow--grade{
+    min-height:64px;
+  }
+
+  .courseGridRow--f,
+  .courseGridRow--l,
+  .courseGridRow--avgst,
+  .courseGridRow--meetavgst,
+  .courseGridRow--recent,
+  .courseGridRow--course,
+  .courseGridRow--kimarite{
+    min-height:46px;
+  }
+
+  .courseGridWakuInner{
+    width:38px;
+    height:38px;
     font-size:17px;
   }
 
-  .courseDataGridNames{
-    min-height:40px;
+  .courseGridNameVertical{
+    height:118px;
+    font-size:17px;
   }
 
-  .courseDataGridName{
-    font-size:11px;
-    padding:3px 2px;
-  }
-
-  .courseDataGridRow{
-    min-height:42px;
-  }
-
-  .courseDataGridCell{
+  .courseGridGradeMain{
     font-size:14px;
-    padding:0 1px;
   }
 
-  .courseDataGridRow.is-course{
-    grid-template-columns:46px repeat(6, minmax(0, 1fr));
+  .courseGridGradeSub{
+    font-size:10px;
   }
 
-  .courseDataGridCourseLabel{
-    font-size:9px;
-    padding:0 2px;
+  .courseGridMetric{
+    font-size:16px;
   }
 
-  .courseDataGridCell--small{
+  .courseGridMetric--small{
     font-size:12px;
+  }
+
+  .courseGridCourseLabel{
+    font-size:10px;
   }
 }
