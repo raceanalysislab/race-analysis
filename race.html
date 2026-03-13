@@ -7,6 +7,7 @@
   <title>BOAT CORE</title>
 
   <link rel="stylesheet" href="./css/race-detail.css?v=6">
+  <link rel="stylesheet" href="./css/race-course.css?v=1">
 </head>
 
 <body>
@@ -118,37 +119,7 @@
           </div>
 
           <div class="viewPage">
-            <div class="courseWrap" id="courseDataPanel">
-
-              <div class="courseInnerTabs" id="courseInnerTabs">
-                <button type="button" class="courseInnerTab is-active" data-course-tab="year">
-                  コース別直近3年
-                </button>
-
-                <button type="button" class="courseInnerTab" data-course-tab="local">
-                  コース別当地直近5年
-                </button>
-              </div>
-
-              <div id="courseYearView">
-                <div class="courseBlock">
-                  <div class="courseBlockTitle">
-                    コース別直近3年
-                  </div>
-                  <div class="courseSimpleTable" id="courseYearBody"></div>
-                </div>
-              </div>
-
-              <div id="courseLocalView" style="display:none;">
-                <div class="courseBlock">
-                  <div class="courseBlockTitle">
-                    コース別当地直近5年
-                  </div>
-                  <div class="courseSimpleTable" id="courseLocalBody"></div>
-                </div>
-              </div>
-
-            </div>
+            <div class="courseDataRoot" id="courseDataRoot"></div>
           </div>
 
           <div class="viewPage">
@@ -172,7 +143,8 @@
 
   </div>
 
-  <script src="./js/race-detail.js?v=4"></script>
+  <script src="./js/race-course.js?v=1"></script>
+  <script src="./js/race-detail.js?v=5"></script>
 
 </body>
 </html>
