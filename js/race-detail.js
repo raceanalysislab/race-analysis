@@ -15,6 +15,7 @@ const $eventTitle = $("eventTitle");
 const $raceTop = $("raceTop");
 const $viewTrack = $("viewTrack");
 const $entryTable = $("entryTable");
+const $viewTabs = $("viewTabs");
 
 const RACES_BASE_URL =
   "https://raceanalysislab.github.io/race-analysis/data/site/races/";
@@ -23,6 +24,8 @@ $("venueName").textContent = venueName;
 
 let currentRace = 1;
 let currentDate = dateParam || getLocalYMD();
+let currentView = 0;
+
 let dragStartX = 0;
 let dragCurrentX = 0;
 let dragging = false;
@@ -194,33 +197,7 @@ function updateUrlRace(r) {
   history.replaceState(null, "", next.toString());
 }
 
-function renderRaceJSON(r, json) {
-  const raceObj = json?.race || {};
-
-  if (json?.date) {
-    currentDate = String(json.date).trim();
-  }
-
-  $raceNoLabel.textContent = `${r}R`;
-  $timeLabel.textContent = `締切: ${toHM(raceObj.cutoff)}`;
-  $dayLabel.textContent = json?.day_label || raceObj?.day_label || "—";
-
-  if ($gradeLabel) {
-    $gradeLabel.textContent = normalizeGradeLabel(
-      json?.grade_label || raceObj?.grade_label || "一般"
-    );
-  }
-
-  if ($eventTitle) {
-    const title = String(
-      json?.event_title || json?.title || raceObj?.title || ""
-    ).trim();
-    $eventTitle.textContent = title || "—";
-    $eventTitle.title = title || "";
-  }
-
-  const boats = Array.isArray(raceObj.boats) ? raceObj.boats : [];
-
+function renderEntryTable(boats) {
   $entryTable.innerHTML = boats.map((p) => `
     <div class="entryRow">
       <div class="entryWaku w${esc(p.waku)}">${esc(p.waku)}</div>
@@ -259,6 +236,62 @@ function renderRaceJSON(r, json) {
       </div>
     </div>
   `).join("");
+}
+
+function renderRaceJSON(r, json) {
+  const raceObj = json?.race || {};
+
+  if (json?.date) {
+    currentDate = String(json.date).trim();
+  }
+
+  $raceNoLabel.textContent = `${r}R`;
+  $timeLabel.textContent = `締切: ${toHM(raceObj.cutoff)}`;
+  $dayLabel.textContent = json?.day_label || raceObj?.day_label || "—";
+
+  if ($gradeLabel) {
+    $gradeLabel.textContent = normalizeGradeLabel(
+      json?.grade_label || raceObj?.grade_label || "一般"
+    );
+  }
+
+  if ($eventTitle) {
+    const title = String(
+      json?.event_title || json?.title || raceObj?.title || ""
+    ).trim();
+    $eventTitle.textContent = title || "—";
+    $eventTitle.title = title || "";
+  }
+
+  const boats = Array.isArray(raceObj.boats) ? raceObj.boats : [];
+  renderEntryTable(boats);
+
+  if (window.BOAT_CORE_COURSE?.render) {
+    window.BOAT_CORE_COURSE.render(json);
+  }
+
+  renderRaceTabs();
+  updateUrlRace(r);
+  setTopHeight();
+}
+
+function renderRaceError(r) {
+  $raceNoLabel.textContent = `${r}R`;
+  $timeLabel.textContent = "締切: --:--";
+  $dayLabel.textContent = "—";
+
+  if ($gradeLabel) $gradeLabel.textContent = "—";
+
+  if ($eventTitle) {
+    $eventTitle.textContent = "—";
+    $eventTitle.title = "";
+  }
+
+  $entryTable.innerHTML = `<div class="err">JSON取得失敗</div>`;
+
+  if (window.BOAT_CORE_COURSE?.renderError) {
+    window.BOAT_CORE_COURSE.renderError();
+  }
 
   renderRaceTabs();
   updateUrlRace(r);
@@ -272,23 +305,40 @@ async function setRace(r) {
   renderRaceTabs();
   $entryTable.innerHTML = `<div class="err">読み込み中…</div>`;
 
+  if (window.BOAT_CORE_COURSE?.renderLoading) {
+    window.BOAT_CORE_COURSE.renderLoading();
+  }
+
   try {
     const json = await fetchRaceJSON(r);
     renderRaceJSON(r, json);
   } catch (e) {
-    $raceNoLabel.textContent = `${r}R`;
-    $timeLabel.textContent = "締切: --:--";
-    $dayLabel.textContent = "—";
-    if ($gradeLabel) $gradeLabel.textContent = "—";
-    if ($eventTitle) {
-      $eventTitle.textContent = "—";
-      $eventTitle.title = "";
-    }
-    $entryTable.innerHTML = `<div class="err">JSON取得失敗</div>`;
-    renderRaceTabs();
-    updateUrlRace(r);
-    setTopHeight();
+    renderRaceError(r);
   }
+}
+
+function setView(viewIndex) {
+  currentView = clamp(Number(viewIndex) || 0, 0, 2);
+
+  const x = currentView * -100;
+  if ($viewTrack) {
+    $viewTrack.style.transform = `translate3d(${x}%, 0, 0)`;
+  }
+
+  $viewTabs?.querySelectorAll(".viewTab").forEach((btn) => {
+    btn.classList.toggle("is-active", Number(btn.dataset.view) === currentView);
+  });
+}
+
+function bindViewTabs() {
+  if (!$viewTabs) return;
+
+  $viewTabs.querySelectorAll(".viewTab").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const viewIndex = Number(btn.dataset.view || 0);
+      setView(viewIndex);
+    });
+  });
 }
 
 function handleSwipeStart(clientX) {
@@ -317,24 +367,24 @@ function handleSwipeEnd() {
   }
 }
 
-function bindSwipe() {
-  const target = $viewTrack || document;
+function bindRaceSwipe() {
+  const swipeArea = $raceTop || document;
 
-  target.addEventListener("touchstart", (e) => {
+  swipeArea.addEventListener("touchstart", (e) => {
     if (!e.touches?.length) return;
     handleSwipeStart(e.touches[0].clientX);
   }, { passive: true });
 
-  target.addEventListener("touchmove", (e) => {
+  swipeArea.addEventListener("touchmove", (e) => {
     if (!e.touches?.length) return;
     handleSwipeMove(e.touches[0].clientX);
   }, { passive: true });
 
-  target.addEventListener("touchend", () => {
+  swipeArea.addEventListener("touchend", () => {
     handleSwipeEnd();
   }, { passive: true });
 
-  target.addEventListener("mousedown", (e) => {
+  swipeArea.addEventListener("mousedown", (e) => {
     handleSwipeStart(e.clientX);
   });
 
@@ -349,8 +399,16 @@ function bindSwipe() {
 
 async function boot() {
   const initialRace = clamp(Number(qs.get("race") || 1), 1, 12);
+
   renderRaceTabs();
-  bindSwipe();
+  bindRaceSwipe();
+  bindViewTabs();
+  setView(0);
+
+  if (window.BOAT_CORE_COURSE?.boot) {
+    window.BOAT_CORE_COURSE.boot();
+  }
+
   await setRace(initialRace);
   requestAnimationFrame(setTopHeight);
 }
