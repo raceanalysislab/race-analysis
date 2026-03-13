@@ -43,6 +43,34 @@
     return `.${n.toFixed(2).split(".")[1]}`;
   };
 
+  const getSearchParams = () => {
+    const qs = new URLSearchParams(location.search);
+    return {
+      venueName: qs.get("name") || "",
+      jcd: qs.get("jcd") || "",
+      date: qs.get("date") || "",
+      race: qs.get("race") || ""
+    };
+  };
+
+  const buildPlayerHref = (boat) => {
+    const { venueName, jcd, date, race } = getSearchParams();
+    const next = new URL("./player.html", location.href);
+
+    next.searchParams.set("regno", String(boat?.regno || ""));
+    next.searchParams.set("name", String(boat?.name || ""));
+    next.searchParams.set("jcd", String(jcd || ""));
+    next.searchParams.set("date", String(date || ""));
+    next.searchParams.set("race", String(race || ""));
+    next.searchParams.set("venue", String(venueName || ""));
+    next.searchParams.set("waku", String(boat?.waku || ""));
+    next.searchParams.set("grade", String(boat?.grade || ""));
+    next.searchParams.set("branch", String(boat?.branch || ""));
+    next.searchParams.set("age", String(boat?.age || ""));
+
+    return next.toString();
+  };
+
   const getBoatsOrdered = () => {
     const boats = Array.isArray(state.raceJson?.race?.boats) ? state.raceJson.race.boats : [];
     const byWaku = new Map();
@@ -168,9 +196,13 @@
   const renderNameRow = (boats) => `
     <div class="courseGridRow courseGridRow--name">
       ${boats.map((boat) => `
-        <div class="courseGridCell courseGridCell--name">
+        <a
+          class="courseGridCell courseGridCell--name courseGridCell--nameLink"
+          href="${esc(buildPlayerHref(boat))}"
+          data-player-link="1"
+        >
           <div class="courseGridNameVertical">${esc(formatDash(boat?.name || "—"))}</div>
-        </div>
+        </a>
       `).join("")}
       <div class="courseGridLabel">選手名</div>
     </div>
@@ -207,6 +239,14 @@
     `;
   };
 
+  const bindNameLinks = (root) => {
+    root.querySelectorAll('[data-player-link="1"]').forEach((link) => {
+      link.addEventListener("click", () => {
+        /* 通常遷移 */
+      });
+    });
+  };
+
   const renderRoot = () => {
     const root = $("courseDataRoot");
     if (!root) return;
@@ -220,6 +260,8 @@
         </div>
       </div>
     `;
+
+    bindNameLinks(root);
   };
 
   const renderLoading = () => {
