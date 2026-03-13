@@ -384,3 +384,21 @@ body{
     font-size:16px;
   }
 }
+html,body{
+  overflow-x:hidden;
+}
+
+.playerTableWrap{
+  overflow-x:hidden;
+}
+
+.playerCourseTable,
+.playerTimingTable{
+  width:100%;
+  min-width:100%;
+}
+
+.playerTableHead,
+.playerTableRow{
+  grid-template-columns:110px repeat(6,1fr);
+}
