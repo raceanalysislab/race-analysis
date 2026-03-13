@@ -1,326 +1,572 @@
-.courseDataRoot{
-  flex:1 1 auto;
-  min-height:0;
-  height:100%;
-  background:#fff;
-}
+(() => {
+  const TAB_DEFS = [
+    { key: "waku", label: "枠", rowClass: "courseGridRow--waku" },
+    { key: "name", label: "選手名", rowClass: "courseGridRow--name" },
+    { key: "grade", label: "級", rowClass: "courseGridRow--grade" },
+    { key: "f", label: "F", rowClass: "courseGridRow--f" },
+    { key: "l", label: "L", rowClass: "courseGridRow--l" },
+    { key: "avgSt", label: "平均ST", rowClass: "courseGridRow--avgst" },
+    { key: "meetAvgSt", label: "今節平均ST", rowClass: "courseGridRow--meetavgst" },
+    { key: "recent", label: "近況データ", rowClass: "courseGridRow--recent" },
+    { key: "courseAvgSt", label: "コース別平均ST", rowClass: "courseGridRow--course" },
+    { key: "kimarite", label: "決まり手", rowClass: "courseGridRow--kimarite" },
+    { key: "course2ren", label: "コース別2連対率", rowClass: "courseGridRow--course" },
+    { key: "course3ren", label: "コース別3連対率", rowClass: "courseGridRow--course" }
+  ];
 
-.coursePanel{
-  min-height:100%;
-  display:grid;
-  grid-template-columns:minmax(0,1fr) 52px;
-  background:#fff;
-}
+  const ORDER = [6, 5, 4, 3, 2, 1];
 
-.coursePanelMain{
-  min-width:0;
-  display:flex;
-  flex-direction:column;
-  border-right:1px solid var(--line);
-  background:#fff;
-}
+  const state = {
+    activeTab: "avgSt",
+    raceJson: null
+  };
 
-.coursePanelTitle{
-  flex:0 0 auto;
-  padding:10px 12px 8px;
-  border-bottom:1px solid var(--line);
-  font-size:12px;
-  line-height:1.2;
-  font-weight:900;
-  color:#111826;
-  letter-spacing:-.01em;
-  background:#fff;
-}
+  const $ = (id) => document.getElementById(id);
 
-.coursePanelBody{
-  flex:1 1 auto;
-  min-height:0;
-  overflow-y:auto;
-  overflow-x:hidden;
-  background:#fff;
-  -webkit-overflow-scrolling:touch;
-}
+  const esc = (s) =>
+    String(s ?? "").replace(/[&<>"']/g, (c) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    }[c]));
 
-.coursePanelSide{
-  display:flex;
-  flex-direction:column;
-  background:#f7f8fa;
-}
+  const pickValue = (obj, keys) => {
+    for (const key of keys) {
+      const v = obj?.[key];
+      if (v !== undefined && v !== null && v !== "") return v;
+    }
+    return "";
+  };
 
-.courseSideTab{
-  appearance:none;
-  border:0;
-  border-bottom:1px solid var(--line);
-  background:#f7f8fa;
-  color:#4d5868;
-  padding:0 2px;
-  font-size:9px;
-  line-height:1.1;
-  font-weight:900;
-  text-align:center;
-  letter-spacing:-.02em;
-  word-break:break-all;
-  overflow-wrap:anywhere;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
+  const pickNumber = (obj, keys) => {
+    const v = pickValue(obj, keys);
+    if (v === "" || v === null || v === undefined) return null;
+    const n = Number(v);
+    return Number.isFinite(n) ? n : null;
+  };
 
-.courseSideTab.is-active{
-  background:#e8eefc;
-  color:#234ea8;
-}
+  const formatDash = (v) => {
+    if (v === undefined || v === null || v === "") return "—";
+    return String(v);
+  };
 
-.courseGrid{
-  width:100%;
-  border-top:1px solid var(--line);
-  border-bottom:1px solid var(--line);
-  background:#fff;
-}
+  const formatST = (v) => {
+    if (v === undefined || v === null || v === "") return "—";
+    const n = Number(v);
+    if (!Number.isFinite(n)) return "—";
+    return `.${n.toFixed(2).split(".")[1]}`;
+  };
 
-.courseGridHeader{
-  display:grid;
-  grid-template-columns:repeat(6, minmax(0, 1fr));
-  min-height:58px;
-  border-bottom:1px solid var(--line);
-}
+  const formatRate = (v) => {
+    if (v === undefined || v === null || v === "") return "—";
+    const n = Number(v);
+    if (!Number.isFinite(n)) return "—";
+    return `${n.toFixed(1)}`;
+  };
 
-.courseGridHeaderCell{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:20px;
-  line-height:1;
-  font-weight:900;
-  border-right:1px solid var(--line);
-  letter-spacing:-.02em;
-}
+  const formatCount = (v) => {
+    if (v === undefined || v === null || v === "") return "—";
+    const n = Number(v);
+    if (!Number.isFinite(n)) return "—";
+    return String(Math.trunc(n));
+  };
 
-.courseGridHeaderCell:last-child{
-  border-right:none;
-}
+  const getBoatsOrdered = () => {
+    const boats = Array.isArray(state.raceJson?.race?.boats) ? state.raceJson.race.boats : [];
+    const byWaku = new Map();
 
-.courseGridHeaderCell.w1{ background:#ffffff; color:#111827; }
-.courseGridHeaderCell.w2{ background:#444b55; color:#ffffff; }
-.courseGridHeaderCell.w3{ background:#ea5a50; color:#ffffff; }
-.courseGridHeaderCell.w4{ background:#4d82d8; color:#ffffff; }
-.courseGridHeaderCell.w5{ background:#e6d74a; color:#1e2430; }
-.courseGridHeaderCell.w6{ background:#39b36b; color:#ffffff; }
+    boats.forEach((boat) => {
+      const waku = Number(boat?.waku);
+      if (waku >= 1 && waku <= 6) {
+        byWaku.set(waku, boat);
+      }
+    });
 
-.courseGridRow{
-  display:grid;
-  grid-template-columns:repeat(6, minmax(0, 1fr));
-  border-bottom:1px solid var(--line);
-  background:#fff;
-}
+    return ORDER.map((waku) => byWaku.get(waku) || { waku, name: "—" });
+  };
 
-.courseGridRow:last-child{
-  border-bottom:none;
-}
+  const getCourseBucket = (boat, kind) => {
+    const directMap = {
+      avgSt: [
+        "course_avg_st",
+        "course_st",
+        "course_st_3y",
+        "course_avg_st_3y",
+        "course_stats_3y",
+        "course3y"
+      ],
+      course2ren: [
+        "course_2ren",
+        "course_2ren_3y",
+        "course_2",
+        "course_stats_3y",
+        "course3y"
+      ],
+      course3ren: [
+        "course_3ren",
+        "course_3ren_3y",
+        "course_3",
+        "course_stats_3y",
+        "course3y"
+      ],
+      kimarite: [
+        "kimarite",
+        "course_kimarite",
+        "kimarite_3y",
+        "course_stats_3y",
+        "course3y"
+      ]
+    };
 
-.courseGridRow--waku{
-  min-height:54px;
-}
+    const keys = directMap[kind] || [];
+    for (const key of keys) {
+      const value = boat?.[key];
+      if (value && typeof value === "object") return value;
+    }
+    return null;
+  };
 
-.courseGridRow--name{
-  min-height:146px;
-}
+  const getCourseCell = (boat, courseNo, kind) => {
+    const bucket = getCourseBucket(boat, kind);
 
-.courseGridRow--grade{
-  min-height:70px;
-}
+    if (bucket) {
+      const courseObj =
+        bucket?.[courseNo] ||
+        bucket?.[String(courseNo)] ||
+        bucket?.[`c${courseNo}`] ||
+        bucket?.[`course${courseNo}`] ||
+        null;
 
-.courseGridRow--f,
-.courseGridRow--l,
-.courseGridRow--avgst,
-.courseGridRow--meetavgst,
-.courseGridRow--recent{
-  min-height:52px;
-}
+      if (courseObj && typeof courseObj === "object") {
+        if (kind === "avgSt") {
+          const v = pickNumber(courseObj, [
+            "avg_st", "st", "st_avg", "average_st", "start_average"
+          ]);
+          return formatST(v);
+        }
 
-.courseGridRow--course,
-.courseGridRow--kimarite{
-  min-height:52px;
-}
+        if (kind === "course2ren") {
+          const v = pickNumber(courseObj, [
+            "rate2", "ren2", "two", "two_rate", "niren", "niren_rate", "percent_2"
+          ]);
+          return formatRate(v);
+        }
 
-.courseGridCell{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  border-right:1px solid var(--line);
-  background:#fff;
-  color:#101722;
-  min-width:0;
-}
+        if (kind === "course3ren") {
+          const v = pickNumber(courseObj, [
+            "rate3", "ren3", "three", "three_rate", "sanren", "sanren_rate", "percent_3"
+          ]);
+          return formatRate(v);
+        }
+      }
 
-.courseGridCell:last-child{
-  border-right:none;
-}
+      if (kind === "kimarite") {
+        return courseObj || bucket;
+      }
+    }
 
-.courseGridCell--waku{
-  padding:0;
-}
+    if (kind === "avgSt") {
+      const v = pickNumber(boat, [
+        `course${courseNo}_avg_st`,
+        `course_${courseNo}_avg_st`,
+        `c${courseNo}_avg_st`,
+        `course${courseNo}_st`,
+        `course_${courseNo}_st`
+      ]);
+      return formatST(v);
+    }
 
-.courseGridWakuInner{
-  width:42px;
-  height:42px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:19px;
-  line-height:1;
-  font-weight:900;
-  border:2px solid rgba(0,0,0,.08);
-}
+    if (kind === "course2ren") {
+      const v = pickNumber(boat, [
+        `course${courseNo}_2ren`,
+        `course_${courseNo}_2ren`,
+        `course${courseNo}_2`,
+        `course_${courseNo}_2`
+      ]);
+      return formatRate(v);
+    }
 
-.courseGridWakuInner.w1{ background:#ffffff; color:#111827; }
-.courseGridWakuInner.w2{ background:#444b55; color:#ffffff; }
-.courseGridWakuInner.w3{ background:#ea5a50; color:#ffffff; }
-.courseGridWakuInner.w4{ background:#4d82d8; color:#ffffff; }
-.courseGridWakuInner.w5{ background:#e6d74a; color:#1e2430; }
-.courseGridWakuInner.w6{ background:#39b36b; color:#ffffff; }
+    if (kind === "course3ren") {
+      const v = pickNumber(boat, [
+        `course${courseNo}_3ren`,
+        `course_${courseNo}_3ren`,
+        `course${courseNo}_3`,
+        `course_${courseNo}_3`
+      ]);
+      return formatRate(v);
+    }
 
-.courseGridCell--name{
-  padding:6px 0;
-}
+    return "—";
+  };
 
-.courseGridNameVertical{
-  height:132px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  writing-mode:vertical-rl;
-  text-orientation:upright;
-  font-size:19px;
-  line-height:1;
-  font-weight:500;
-  letter-spacing:.02em;
-  color:#111827;
-  white-space:nowrap;
-}
+  const getKimariteCell = (boat, typeKey) => {
+    const bucket = getCourseBucket(boat, "kimarite");
 
-.courseGridCell--grade{
-  padding:4px 2px;
-}
+    if (bucket) {
+      const direct = pickNumber(bucket, [
+        typeKey,
+        typeKey === "sashi" ? "差し" : "",
+        typeKey === "makuri" ? "まくり" : "",
+        typeKey === "makurizashi" ? "まくり差し" : "",
+        typeKey === "makurizashi" ? "捲り差し" : ""
+      ].filter(Boolean));
 
-.courseGridGradeBlock{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:4px;
-}
+      if (direct !== null) return formatCount(direct);
 
-.courseGridGradeMain{
-  font-size:15px;
-  line-height:1;
-  font-weight:900;
-  color:#111827;
-}
+      const nested = bucket?.total || bucket?.sum || bucket?.all;
+      if (nested && typeof nested === "object") {
+        const v = pickNumber(nested, [
+          typeKey,
+          typeKey === "sashi" ? "差し" : "",
+          typeKey === "makuri" ? "まくり" : "",
+          typeKey === "makurizashi" ? "まくり差し" : "",
+          typeKey === "makurizashi" ? "捲り差し" : ""
+        ].filter(Boolean));
+        if (v !== null) return formatCount(v);
+      }
+    }
 
-.courseGridGradeSub{
-  font-size:11px;
-  line-height:1.1;
-  font-weight:700;
-  color:#374151;
-}
+    const v = pickNumber(boat, [
+      typeKey,
+      `kimarite_${typeKey}`,
+      `course_${typeKey}`,
+      typeKey === "sashi" ? "sashi_count" : "",
+      typeKey === "makuri" ? "makuri_count" : "",
+      typeKey === "makurizashi" ? "makurizashi_count" : ""
+    ].filter(Boolean));
 
-.courseGridMetric{
-  font-variant-numeric:tabular-nums;
-  font-size:18px;
-  line-height:1;
-  font-weight:900;
-  letter-spacing:-.02em;
-}
+    return formatCount(v);
+  };
 
-.courseGridMetric--small{
-  font-size:14px;
-}
+  const getAvgStValue = (boat) => {
+    const v = pickNumber(boat, [
+      "avg_st", "st_avg", "ave_st", "average_st", "start_average"
+    ]);
+    return formatST(v);
+  };
 
-.courseGridCourseLabel{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:11px;
-  line-height:1.1;
-  font-weight:900;
-  color:#334155;
-}
+  const getMeetAvgStValue = (boat) => {
+    const v = pickNumber(boat, [
+      "meet_avg_st",
+      "this_meet_avg_st",
+      "this_series_avg_st",
+      "series_avg_st",
+      "season_avg_st",
+      "recent_meet_st"
+    ]);
+    return formatST(v);
+  };
 
-@media (max-width: 390px){
-  .coursePanel{
-    grid-template-columns:minmax(0,1fr) 46px;
-  }
+  const getRecentValue = (boat) => {
+    const v = pickValue(boat, [
+      "recent_index",
+      "recent_score",
+      "recent_rate",
+      "last12m_rate",
+      "last24m_rate",
+      "recent_data"
+    ]);
+    return v !== "" ? formatDash(v) : "—";
+  };
 
-  .coursePanelTitle{
-    font-size:11px;
-    padding:8px 10px 7px;
-  }
+  const getGradeText = (boat) => {
+    return formatDash(boat?.grade || "—");
+  };
 
-  .courseSideTab{
-    font-size:8px;
-    line-height:1.05;
-  }
+  const getFText = (boat) => {
+    return formatDash(pickValue(boat, ["f_count", "f", "F", "f_num"]) || "—");
+  };
 
-  .courseGridHeader{
-    min-height:52px;
-  }
+  const getLText = (boat) => {
+    return formatDash(pickValue(boat, ["l_count", "l", "L", "l_num"]) || "—");
+  };
 
-  .courseGridHeaderCell{
-    font-size:18px;
-  }
+  const renderHeader = (boats) => {
+    return `
+      <div class="courseGridHeader">
+        ${boats.map((boat) => `
+          <div class="courseGridHeaderCell w${esc(boat.waku)}">${esc(boat.waku)}</div>
+        `).join("")}
+      </div>
+    `;
+  };
 
-  .courseGridRow--waku{
-    min-height:48px;
-  }
+  const renderRow = (rowHtml, rowClass, tabLabel) => {
+    return `
+      <div class="courseGridRow ${rowClass}" data-row-key="${esc(tabLabel)}">
+        ${rowHtml}
+      </div>
+    `;
+  };
 
-  .courseGridRow--name{
-    min-height:132px;
-  }
+  const renderMainGrid = () => {
+    const boats = getBoatsOrdered();
 
-  .courseGridRow--grade{
-    min-height:64px;
-  }
+    return `
+      <div class="courseGrid">
+        ${renderHeader(boats)}
 
-  .courseGridRow--f,
-  .courseGridRow--l,
-  .courseGridRow--avgst,
-  .courseGridRow--meetavgst,
-  .courseGridRow--recent,
-  .courseGridRow--course,
-  .courseGridRow--kimarite{
-    min-height:46px;
-  }
+        ${renderRow(
+          boats.map((boat) => `
+            <div class="courseGridCell courseGridCell--waku">
+              <div class="courseGridWakuInner w${esc(boat.waku)}">${esc(boat.waku)}</div>
+            </div>
+          `).join(""),
+          "courseGridRow--waku",
+          "waku"
+        )}
 
-  .courseGridWakuInner{
-    width:38px;
-    height:38px;
-    font-size:17px;
-  }
+        ${renderRow(
+          boats.map((boat) => `
+            <div class="courseGridCell courseGridCell--name">
+              <div class="courseGridNameVertical">${esc(formatDash(boat?.name || "—"))}</div>
+            </div>
+          `).join(""),
+          "courseGridRow--name",
+          "name"
+        )}
 
-  .courseGridNameVertical{
-    height:118px;
-    font-size:17px;
-  }
+        ${renderRow(
+          boats.map((boat) => `
+            <div class="courseGridCell courseGridCell--grade">
+              <div class="courseGridGradeBlock">
+                <div class="courseGridGradeMain">${esc(getGradeText(boat))}</div>
+              </div>
+            </div>
+          `).join(""),
+          "courseGridRow--grade",
+          "grade"
+        )}
 
-  .courseGridGradeMain{
-    font-size:14px;
-  }
+        ${renderRow(
+          boats.map((boat) => `
+            <div class="courseGridCell">
+              <div class="courseGridMetric courseGridMetric--small">${esc(getFText(boat))}</div>
+            </div>
+          `).join(""),
+          "courseGridRow--f",
+          "f"
+        )}
 
-  .courseGridGradeSub{
-    font-size:10px;
-  }
+        ${renderRow(
+          boats.map((boat) => `
+            <div class="courseGridCell">
+              <div class="courseGridMetric courseGridMetric--small">${esc(getLText(boat))}</div>
+            </div>
+          `).join(""),
+          "courseGridRow--l",
+          "l"
+        )}
 
-  .courseGridMetric{
-    font-size:16px;
-  }
+        ${renderRow(
+          boats.map((boat) => `
+            <div class="courseGridCell">
+              <div class="courseGridMetric">${esc(getAvgStValue(boat))}</div>
+            </div>
+          `).join(""),
+          "courseGridRow--avgst",
+          "avgSt"
+        )}
 
-  .courseGridMetric--small{
-    font-size:12px;
-  }
+        ${renderRow(
+          boats.map((boat) => `
+            <div class="courseGridCell">
+              <div class="courseGridMetric">${esc(getMeetAvgStValue(boat))}</div>
+            </div>
+          `).join(""),
+          "courseGridRow--meetavgst",
+          "meetAvgSt"
+        )}
 
-  .courseGridCourseLabel{
-    font-size:10px;
-  }
-}
+        ${renderRow(
+          boats.map((boat) => `
+            <div class="courseGridCell">
+              <div class="courseGridMetric courseGridMetric--small">${esc(getRecentValue(boat))}</div>
+            </div>
+          `).join(""),
+          "courseGridRow--recent",
+          "recent"
+        )}
+
+        ${[1,2,3,4,5,6].map((courseNo) => renderRow(
+          boats.map((boat, idx) => {
+            if (idx === 0) {
+              return `
+                <div class="courseGridCell">
+                  <div class="courseGridCourseLabel">${courseNo}コース</div>
+                </div>
+              `;
+            }
+            return `
+              <div class="courseGridCell">
+                <div class="courseGridMetric courseGridMetric--small">${esc(getCourseCell(boat, courseNo, "avgSt"))}</div>
+              </div>
+            `;
+          }).join(""),
+          "courseGridRow--course",
+          "courseAvgSt"
+        )).join("")}
+
+        ${[
+          { label: "差し", key: "sashi" },
+          { label: "まくり", key: "makuri" },
+          { label: "まく差", key: "makurizashi" }
+        ].map((row) => renderRow(
+          boats.map((boat, idx) => {
+            if (idx === 0) {
+              return `
+                <div class="courseGridCell">
+                  <div class="courseGridCourseLabel">${esc(row.label)}</div>
+                </div>
+              `;
+            }
+            return `
+              <div class="courseGridCell">
+                <div class="courseGridMetric courseGridMetric--small">${esc(getKimariteCell(boat, row.key))}</div>
+              </div>
+            `;
+          }).join(""),
+          "courseGridRow--kimarite",
+          "kimarite"
+        )).join("")}
+
+        ${[1,2,3,4,5,6].map((courseNo) => renderRow(
+          boats.map((boat, idx) => {
+            if (idx === 0) {
+              return `
+                <div class="courseGridCell">
+                  <div class="courseGridCourseLabel">${courseNo}コース</div>
+                </div>
+              `;
+            }
+            return `
+              <div class="courseGridCell">
+                <div class="courseGridMetric courseGridMetric--small">${esc(getCourseCell(boat, courseNo, "course2ren"))}</div>
+              </div>
+            `;
+          }).join(""),
+          "courseGridRow--course",
+          "course2ren"
+        )).join("")}
+
+        ${[1,2,3,4,5,6].map((courseNo) => renderRow(
+          boats.map((boat, idx) => {
+            if (idx === 0) {
+              return `
+                <div class="courseGridCell">
+                  <div class="courseGridCourseLabel">${courseNo}コース</div>
+                </div>
+              `;
+            }
+            return `
+              <div class="courseGridCell">
+                <div class="courseGridMetric courseGridMetric--small">${esc(getCourseCell(boat, courseNo, "course3ren"))}</div>
+              </div>
+            `;
+          }).join(""),
+          "courseGridRow--course",
+          "course3ren"
+        )).join("")}
+      </div>
+    `;
+  };
+
+  const bindTabEvents = (root) => {
+    const allRows = root.querySelectorAll(".courseGridRow");
+
+    root.querySelectorAll(".courseSideTab").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const nextKey = btn.dataset.courseKey || "avgSt";
+        state.activeTab = nextKey;
+
+        root.querySelectorAll(".courseSideTab").forEach((b) => {
+          b.classList.toggle("is-active", b.dataset.courseKey === nextKey);
+        });
+
+        const target = Array.from(allRows).find((row) => row.dataset.rowKey === nextKey);
+        if (target) {
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      });
+    });
+  };
+
+  const renderRoot = () => {
+    const root = $("courseDataRoot");
+    if (!root) return;
+
+    root.innerHTML = `
+      <div class="coursePanel">
+        <div class="coursePanelMain">
+          <div class="coursePanelTitle">コースデータ</div>
+          <div class="coursePanelBody" id="coursePanelBody">
+            ${renderMainGrid()}
+          </div>
+        </div>
+
+        <div class="coursePanelSide" aria-label="コースデータ項目">
+          ${TAB_DEFS.map((tab) => `
+            <button
+              type="button"
+              class="courseSideTab${tab.key === state.activeTab ? " is-active" : ""}"
+              data-course-key="${esc(tab.key)}"
+              style="height:${getRowHeight(tab.rowClass)}px"
+            >
+              ${esc(tab.label)}
+            </button>
+          `).join("")}
+        </div>
+      </div>
+    `;
+
+    bindTabEvents(root);
+  };
+
+  const getRowHeight = (rowClass) => {
+    switch (rowClass) {
+      case "courseGridRow--waku": return 54;
+      case "courseGridRow--name": return 146;
+      case "courseGridRow--grade": return 70;
+      case "courseGridRow--f":
+      case "courseGridRow--l":
+      case "courseGridRow--avgst":
+      case "courseGridRow--meetavgst":
+      case "courseGridRow--recent":
+      case "courseGridRow--course":
+      case "courseGridRow--kimarite":
+        return 52;
+      default:
+        return 52;
+    }
+  };
+
+  const renderLoading = () => {
+    const root = $("courseDataRoot");
+    if (!root) return;
+    root.innerHTML = `<div class="err">読み込み中…</div>`;
+  };
+
+  const renderError = () => {
+    const root = $("courseDataRoot");
+    if (!root) return;
+    root.innerHTML = `<div class="err">コースデータ取得失敗</div>`;
+  };
+
+  const render = (json) => {
+    state.raceJson = json || null;
+    renderRoot();
+  };
+
+  const boot = () => {
+    renderRoot();
+  };
+
+  window.BOAT_CORE_COURSE = {
+    boot,
+    render,
+    renderLoading,
+    renderError
+  };
+})();
