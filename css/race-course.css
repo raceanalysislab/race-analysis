@@ -1,0 +1,206 @@
+.courseDataRoot{
+  flex:1 1 auto;
+  min-height:0;
+  height:100%;
+  background:#fff;
+}
+
+.coursePanel{
+  min-height:100%;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 86px;
+  background:#fff;
+}
+
+.coursePanelMain{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  border-right:1px solid var(--line);
+}
+
+.coursePanelTitle{
+  flex:0 0 auto;
+  padding:10px 12px 8px;
+  border-bottom:1px solid var(--line);
+  font-size:12px;
+  line-height:1.2;
+  font-weight:900;
+  color:#111826;
+  letter-spacing:-.01em;
+  background:#fff;
+}
+
+.coursePanelBody{
+  flex:1 1 auto;
+  min-height:0;
+  overflow-y:auto;
+  overflow-x:hidden;
+  background:#fff;
+  -webkit-overflow-scrolling:touch;
+}
+
+.coursePanelSide{
+  display:flex;
+  flex-direction:column;
+  background:#f7f8fa;
+}
+
+.courseSideTab{
+  appearance:none;
+  border:0;
+  border-bottom:1px solid var(--line);
+  background:#f7f8fa;
+  color:#4d5868;
+  min-height:58px;
+  padding:8px 6px;
+  font-size:11px;
+  line-height:1.25;
+  font-weight:900;
+  text-align:center;
+  letter-spacing:-.01em;
+}
+
+.courseSideTab.is-active{
+  background:#e8eefc;
+  color:#234ea8;
+}
+
+.courseDataGridWrap{
+  width:100%;
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  background:#fff;
+}
+
+.courseDataGridHead,
+.courseDataGridRow{
+  display:grid;
+  grid-template-columns:56px repeat(6, minmax(0, 1fr));
+}
+
+.courseDataGridHead{
+  min-height:38px;
+  background:#eef1f4;
+  border-bottom:1px solid var(--line);
+}
+
+.courseDataGridHead__label{
+  border-right:1px solid var(--line);
+}
+
+.courseDataGridHead__waku{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:13px;
+  line-height:1;
+  font-weight:900;
+  border-right:1px solid var(--line);
+  letter-spacing:-.02em;
+}
+
+.courseDataGridHead__waku:last-child{
+  border-right:none;
+}
+
+.courseDataGridHead__waku.w1{ background:#ffffff; color:#111827; }
+.courseDataGridHead__waku.w2{ background:#444b55; color:#ffffff; }
+.courseDataGridHead__waku.w3{ background:#ea5a50; color:#ffffff; }
+.courseDataGridHead__waku.w4{ background:#4d82d8; color:#ffffff; }
+.courseDataGridHead__waku.w5{ background:#e6d74a; color:#1e2430; }
+.courseDataGridHead__waku.w6{ background:#39b36b; color:#ffffff; }
+
+.courseDataGridRow{
+  min-height:44px;
+  background:#fff;
+  border-bottom:1px solid var(--line);
+}
+
+.courseDataGridRow:last-child{
+  border-bottom:none;
+}
+
+.courseDataGridLabel{
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  padding:0 8px;
+  font-size:11px;
+  line-height:1.1;
+  font-weight:900;
+  color:#334155;
+  border-right:1px solid var(--line);
+  background:#fff;
+  letter-spacing:-.01em;
+  white-space:nowrap;
+}
+
+.courseDataGridLabel.is-course{
+  justify-content:center;
+  padding:0 4px;
+}
+
+.courseDataGridCell{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0 2px;
+  font-variant-numeric:tabular-nums;
+  font-size:11px;
+  line-height:1;
+  font-weight:900;
+  color:#101722;
+  border-right:1px solid var(--line);
+  background:#fff;
+  letter-spacing:-.02em;
+  white-space:nowrap;
+}
+
+.courseDataGridCell:last-child{
+  border-right:none;
+}
+
+@media (max-width: 390px){
+  .coursePanel{
+    grid-template-columns:minmax(0,1fr) 80px;
+  }
+
+  .coursePanelTitle{
+    font-size:11px;
+    padding:8px 10px 7px;
+  }
+
+  .courseSideTab{
+    min-height:54px;
+    padding:7px 4px;
+    font-size:10px;
+  }
+
+  .courseDataGridHead,
+  .courseDataGridRow{
+    grid-template-columns:50px repeat(6, minmax(0, 1fr));
+  }
+
+  .courseDataGridHead{
+    min-height:36px;
+  }
+
+  .courseDataGridHead__waku{
+    font-size:12px;
+  }
+
+  .courseDataGridRow{
+    min-height:42px;
+  }
+
+  .courseDataGridLabel{
+    font-size:10px;
+    padding:0 6px;
+  }
+
+  .courseDataGridCell{
+    font-size:10px;
+    padding:0 1px;
+  }
+}
