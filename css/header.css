@@ -279,6 +279,8 @@ html[data-theme="pro"] .playerSearchItem{
   padding:8px 16px;
   text-decoration:none;
   color:inherit;
+  min-width:0;
+  overflow:hidden;
 }
 
 .nextRaceBox:visited,
@@ -298,13 +300,17 @@ html[data-theme="pro"] .playerSearchItem{
 }
 
 .nextRaceBox__main{
-  font-size:17px;
+  display:block;
+  width:100%;
+  min-width:0;
+  font-size:15px;
   line-height:1.08;
   font-weight:900;
   color:var(--text,#111827);
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
+  letter-spacing:-.01em;
 }
 
 .nextRaceBox[aria-disabled="true"]{
@@ -382,7 +388,7 @@ html[data-theme="pro"] .top__sub{
   }
 
   .nextRaceBox__main{
-    font-size:15px;
+    font-size:14px;
   }
 
   .playerSearchItem{
