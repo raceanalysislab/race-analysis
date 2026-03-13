@@ -23,14 +23,14 @@
   flex:1 1 auto;
   min-height:0;
   overflow-y:auto;
-  overflow-x:auto;
+  overflow-x:hidden;
   background:#fff;
   -webkit-overflow-scrolling:touch;
 }
 
 .courseGrid{
   width:100%;
-  min-width:100%;
+  min-width:0;
   border-top:1px solid var(--line);
   border-bottom:1px solid var(--line);
   background:#fff;
@@ -38,7 +38,7 @@
 
 .courseGridRow{
   display:grid;
-  grid-template-columns:repeat(6, minmax(0, 1fr)) 54px;
+  grid-template-columns:repeat(6, minmax(0, 1fr)) 44px;
   border-bottom:1px solid var(--line);
   background:#fff;
 }
@@ -48,15 +48,15 @@
 }
 
 .courseGridRow--head{
-  min-height:58px;
+  min-height:52px;
 }
 
 .courseGridRow--name{
-  min-height:146px;
+  min-height:126px;
 }
 
 .courseGridRow--grade{
-  min-height:70px;
+  min-height:56px;
 }
 
 .courseGridRow--f,
@@ -64,12 +64,12 @@
 .courseGridRow--avgst,
 .courseGridRow--meetavgst,
 .courseGridRow--recent{
-  min-height:52px;
+  min-height:44px;
 }
 
 .courseGridRow--course,
 .courseGridRow--kimarite{
-  min-height:52px;
+  min-height:44px;
 }
 
 .courseGridCell{
@@ -81,6 +81,7 @@
   background:#fff;
   color:#101722;
   min-width:0;
+  overflow:hidden;
 }
 
 .courseGridCell:last-child{
@@ -88,7 +89,7 @@
 }
 
 .courseGridCell--head{
-  font-size:20px;
+  font-size:18px;
   line-height:1;
   font-weight:900;
   letter-spacing:-.02em;
@@ -102,26 +103,26 @@
 .courseGridCell--head.w6{ background:#39b36b; color:#ffffff; }
 
 .courseGridCell--name{
-  padding:6px 0;
+  padding:4px 0;
 }
 
 .courseGridNameVertical{
-  height:132px;
+  height:112px;
   display:flex;
   align-items:center;
   justify-content:center;
   writing-mode:vertical-rl;
   text-orientation:upright;
-  font-size:19px;
+  font-size:15px;
   line-height:1;
   font-weight:500;
-  letter-spacing:.02em;
+  letter-spacing:.01em;
   color:#111827;
   white-space:nowrap;
 }
 
 .courseGridCell--grade{
-  padding:4px 2px;
+  padding:2px 1px;
 }
 
 .courseGridGradeBlock{
@@ -129,36 +130,39 @@
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  gap:4px;
+  gap:2px;
+  min-width:0;
 }
 
 .courseGridGradeMain{
-  font-size:15px;
+  font-size:12px;
   line-height:1;
   font-weight:900;
   color:#111827;
+  white-space:nowrap;
 }
 
 .courseGridMetric{
   font-variant-numeric:tabular-nums;
-  font-size:18px;
+  font-size:12px;
   line-height:1;
   font-weight:900;
   letter-spacing:-.02em;
+  white-space:nowrap;
 }
 
 .courseGridMetric--small{
-  font-size:14px;
+  font-size:10px;
 }
 
 .courseGridLabel{
   background:#f3f6fb;
   color:#425066;
-  font-size:11px;
-  line-height:1.1;
+  font-size:9px;
+  line-height:1.05;
   font-weight:900;
   letter-spacing:-.02em;
-  padding:0 4px;
+  padding:0 2px;
   word-break:break-all;
   overflow-wrap:anywhere;
 }
@@ -170,19 +174,19 @@
 
 @media (max-width: 390px){
   .courseGridRow{
-    grid-template-columns:repeat(6, minmax(0, 1fr)) 48px;
+    grid-template-columns:repeat(6, minmax(0, 1fr)) 40px;
   }
 
   .courseGridRow--head{
-    min-height:52px;
+    min-height:48px;
   }
 
   .courseGridRow--name{
-    min-height:132px;
+    min-height:116px;
   }
 
   .courseGridRow--grade{
-    min-height:64px;
+    min-height:52px;
   }
 
   .courseGridRow--f,
@@ -192,32 +196,32 @@
   .courseGridRow--recent,
   .courseGridRow--course,
   .courseGridRow--kimarite{
-    min-height:46px;
+    min-height:42px;
   }
 
   .courseGridCell--head{
-    font-size:18px;
-  }
-
-  .courseGridNameVertical{
-    height:118px;
-    font-size:17px;
-  }
-
-  .courseGridGradeMain{
-    font-size:14px;
-  }
-
-  .courseGridMetric{
     font-size:16px;
   }
 
+  .courseGridNameVertical{
+    height:102px;
+    font-size:14px;
+  }
+
+  .courseGridGradeMain{
+    font-size:11px;
+  }
+
+  .courseGridMetric{
+    font-size:11px;
+  }
+
   .courseGridMetric--small{
-    font-size:12px;
+    font-size:9px;
   }
 
   .courseGridLabel{
-    font-size:10px;
-    padding:0 2px;
+    font-size:8px;
+    padding:0 1px;
   }
 }
