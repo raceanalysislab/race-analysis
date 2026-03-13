@@ -1,68 +1,187 @@
+.courseDataRoot{
+  flex:1 1 auto;
+  min-height:0;
+  height:100%;
+  background:#fff;
+}
+
+.coursePanel{
+  min-height:100%;
+  display:block;
+  background:#fff;
+}
+
+.coursePanelMain{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  background:#fff;
+  min-height:100%;
+}
+
 .coursePanelBody{
-overflow-y:auto;
-background:#fff;
+  flex:1 1 auto;
+  min-height:0;
+  overflow-y:auto;
+  overflow-x:hidden;
+  background:#fff;
+  -webkit-overflow-scrolling:touch;
 }
 
 .courseGrid{
-width:100%;
-border-top:1px solid var(--line);
-border-bottom:1px solid var(--line);
+  width:100%;
+  min-width:0;
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  background:#fff;
 }
 
 .courseGridRow{
-display:grid;
-grid-template-columns:repeat(6,1fr) 44px;
-border-bottom:1px solid var(--line);
+  display:grid;
+  grid-template-columns:15.2% 15.2% 15.2% 15.2% 15.2% 15.2% 8.8%;
+  min-width:0;
+  background:#fff;
+  border-bottom:1px solid var(--line);
 }
 
 .courseGridRow:last-child{
-border-bottom:none;
+  border-bottom:none;
+}
+
+.courseGridRow--head{
+  min-height:50px;
+}
+
+.courseGridRow--name{
+  min-height:118px;
+}
+
+.courseGridRow--grade{
+  min-height:52px;
+}
+
+.courseGridRow--f,
+.courseGridRow--l,
+.courseGridRow--avgst,
+.courseGridRow--meetavgst,
+.courseGridRow--course{
+  min-height:42px;
 }
 
 .courseGridCell{
-display:flex;
-align-items:center;
-justify-content:center;
-border-right:1px solid var(--line);
-min-height:42px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  background:#fff;
+  color:#101722;
+  min-width:0;
+  overflow:hidden;
+  padding:0;
+  box-shadow:inset -1px 0 0 var(--line);
 }
 
 .courseGridCell:last-child{
-border-right:none;
+  box-shadow:none;
 }
 
 .courseGridCell--head{
-font-weight:900;
-font-size:16px;
+  font-size:16px;
+  line-height:1;
+  font-weight:900;
+  letter-spacing:-.02em;
 }
 
-.w1{background:#fff;color:#111;}
-.w2{background:#444;color:#fff;}
-.w3{background:#e6534d;color:#fff;}
-.w4{background:#4c7edb;color:#fff;}
-.w5{background:#e6d74a;color:#111;}
-.w6{background:#3ab56c;color:#fff;}
+.courseGridCell--head.w1{ background:#ffffff; color:#111827; }
+.courseGridCell--head.w2{ background:#444b55; color:#ffffff; }
+.courseGridCell--head.w3{ background:#ea5a50; color:#ffffff; }
+.courseGridCell--head.w4{ background:#4d82d8; color:#ffffff; }
+.courseGridCell--head.w5{ background:#e6d74a; color:#1e2430; }
+.courseGridCell--head.w6{ background:#39b36b; color:#ffffff; }
 
-.courseGridRow--name{
-min-height:110px;
+.courseGridCell--name{
+  padding:2px 0;
 }
 
 .courseGridNameVertical{
-writing-mode:vertical-rl;
-text-orientation:upright;
-font-size:14px;
+  height:104px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  writing-mode:vertical-rl;
+  text-orientation:upright;
+  font-size:13px;
+  line-height:1;
+  font-weight:500;
+  letter-spacing:0;
+  color:#111827;
+  white-space:nowrap;
 }
 
 .courseGridMetric{
-font-weight:800;
-font-size:12px;
+  font-variant-numeric:tabular-nums;
+  font-size:11px;
+  line-height:1;
+  font-weight:900;
+  letter-spacing:-.02em;
+  white-space:nowrap;
 }
 
 .courseGridLabel{
-display:flex;
-align-items:center;
-justify-content:center;
-background:#f3f6fb;
-font-size:10px;
-font-weight:800;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#f3f6fb;
+  color:#425066;
+  font-size:8px;
+  line-height:1;
+  font-weight:900;
+  letter-spacing:-.03em;
+  padding:0 1px;
+  word-break:break-all;
+  overflow-wrap:anywhere;
+}
+
+@media (max-width: 390px){
+  .courseGridRow{
+    grid-template-columns:15.25% 15.25% 15.25% 15.25% 15.25% 15.25% 8.5%;
+  }
+
+  .courseGridRow--head{
+    min-height:46px;
+  }
+
+  .courseGridRow--name{
+    min-height:108px;
+  }
+
+  .courseGridRow--grade{
+    min-height:48px;
+  }
+
+  .courseGridRow--f,
+  .courseGridRow--l,
+  .courseGridRow--avgst,
+  .courseGridRow--meetavgst,
+  .courseGridRow--course{
+    min-height:40px;
+  }
+
+  .courseGridCell--head{
+    font-size:15px;
+  }
+
+  .courseGridNameVertical{
+    height:96px;
+    font-size:12px;
+  }
+
+  .courseGridMetric{
+    font-size:10px;
+  }
+
+  .courseGridLabel{
+    font-size:7px;
+    padding:0;
+  }
 }
