@@ -32,7 +32,7 @@ const RADAR_VALUE_MAX_R = 96;
 const RADAR_INNER_SCALE = 0.82;
 
 /* 数字を少し外周寄りへ */
-const RADAR_LABEL_R = 130;
+const RADAR_LABEL_R = 140;
 
 const RADAR_ANGLES = [-90, -30, 30, 90, 150, 210].map((deg) => deg * Math.PI / 180);
 
