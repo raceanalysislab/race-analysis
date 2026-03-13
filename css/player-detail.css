@@ -123,6 +123,7 @@ body{
 
 .playerBody{
   padding:12px 0 calc(22px + var(--safe-bottom));
+  overflow-x:hidden;
 }
 
 .playerSection{
@@ -135,11 +136,11 @@ body{
 .playerSection--hero{
   background:transparent;
   border:0;
-  margin:0 12px 14px;
+  margin:0 10px 14px;
 }
 
 .playerSectionTitle{
-  padding:14px 14px 10px;
+  padding:14px 12px 10px;
   font-size:18px;
   line-height:1.1;
   font-weight:900;
@@ -148,33 +149,38 @@ body{
   border-bottom:1px solid var(--line-soft);
 }
 
-/* hero card */
+/* hero */
 .courseHeroCard{
   background:#fff;
   border:1px solid #d8e0ed;
   border-radius:22px;
-  box-shadow:0 10px 26px rgba(33,52,96,.09);
+  box-shadow:0 8px 22px rgba(33,52,96,.09);
   overflow:hidden;
+  width:100%;
+  max-width:100%;
 }
 
 .courseHeroTabs{
   display:grid;
   grid-template-columns:repeat(6, minmax(0, 1fr));
   gap:0;
-  padding:14px 14px 0;
+  padding:12px 12px 0;
+  width:100%;
 }
 
 .courseHeroTab{
   appearance:none;
   border:1px solid #d9e0ec;
   border-right:0;
-  height:48px;
-  font-size:15px;
+  height:42px;
+  font-size:14px;
   font-weight:900;
   letter-spacing:-.02em;
   color:#1d2433;
   background:#fff;
   position:relative;
+  min-width:0;
+  overflow:hidden;
 }
 
 .courseHeroTab:first-child{
@@ -194,34 +200,39 @@ body{
 .courseHeroTab[data-course="6"]{ background:var(--waku6); color:#fff; }
 
 .courseHeroTab.is-active{
-  transform:translateY(-6px);
-  box-shadow:0 8px 18px rgba(30,72,155,.22);
+  transform:translateY(-4px);
+  box-shadow:0 6px 14px rgba(30,72,155,.18);
   z-index:2;
   border-right:1px solid rgba(0,0,0,.05);
 }
 
 .courseHeroBody{
   display:grid;
-  grid-template-columns:1.15fr .95fr;
-  gap:14px;
-  padding:14px;
+  grid-template-columns:1fr;
+  gap:10px;
+  padding:12px;
+  width:100%;
+  max-width:100%;
 }
 
 .courseRadarCard{
   min-width:0;
-  border-radius:20px;
-  padding:12px;
+  width:100%;
+  border-radius:18px;
+  padding:10px;
   background:
     radial-gradient(circle at 50% 45%, rgba(105,227,255,.22), rgba(37,87,193,.0) 52%),
     linear-gradient(145deg, #123b90 0%, #265ed0 40%, #74dbe0 100%);
   box-shadow:inset 0 0 0 1px rgba(255,255,255,.18);
+  overflow:hidden;
 }
 
 .courseRadarStage{
   position:relative;
-  aspect-ratio:1/1;
-  min-height:260px;
-  border-radius:18px;
+  width:100%;
+  aspect-ratio:1 / 1;
+  min-height:0;
+  border-radius:16px;
   overflow:hidden;
   background:
     radial-gradient(circle at center, rgba(255,255,255,.20) 0, rgba(255,255,255,.06) 28%, rgba(255,255,255,0) 48%),
@@ -233,7 +244,7 @@ body{
   inset:0;
   background:
     radial-gradient(circle at center, rgba(255,255,255,.13), transparent 50%),
-    repeating-radial-gradient(circle at center, rgba(255,255,255,.08) 0 2px, transparent 2px 28px);
+    repeating-radial-gradient(circle at center, rgba(255,255,255,.08) 0 2px, transparent 2px 24px);
   opacity:.55;
 }
 
@@ -259,58 +270,60 @@ body{
   fill:rgba(91,246,233,.32);
   stroke:#e5ffff;
   stroke-width:3;
-  filter:drop-shadow(0 0 12px rgba(124,244,255,.35));
+  filter:drop-shadow(0 0 10px rgba(124,244,255,.35));
 }
 
 .courseRadarLabels .radarLabel{
   position:absolute;
-  min-width:64px;
-  padding:9px 10px;
-  border-radius:14px;
-  background:rgba(255,255,255,.92);
+  min-width:56px;
+  padding:8px 8px;
+  border-radius:12px;
+  background:rgba(255,255,255,.94);
   color:#43506b;
-  font-size:15px;
+  font-size:13px;
   line-height:1;
   font-weight:900;
   text-align:center;
-  box-shadow:0 6px 14px rgba(0,0,0,.10);
+  box-shadow:0 4px 10px rgba(0,0,0,.08);
 }
 
-.radarLabel--1{ top:10px; left:50%; transform:translateX(-50%); }
-.radarLabel--2{ top:68px; right:10px; }
-.radarLabel--3{ right:16px; bottom:62px; }
-.radarLabel--4{ left:50%; bottom:12px; transform:translateX(-50%); }
-.radarLabel--5{ left:14px; bottom:62px; }
-.radarLabel--6{ top:68px; left:10px; }
+.radarLabel--1{ top:8px; left:50%; transform:translateX(-50%); }
+.radarLabel--2{ top:54px; right:8px; }
+.radarLabel--3{ right:12px; bottom:56px; }
+.radarLabel--4{ left:50%; bottom:10px; transform:translateX(-50%); }
+.radarLabel--5{ left:12px; bottom:56px; }
+.radarLabel--6{ top:54px; left:8px; }
 
 .courseTypePill{
   position:absolute;
-  left:20px;
-  right:20px;
-  bottom:22px;
-  height:42px;
+  left:16px;
+  right:16px;
+  bottom:18px;
+  height:38px;
   border-radius:999px;
   background:linear-gradient(90deg, #2e64d2, #4de0cd);
   color:#fff;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:22px;
+  font-size:20px;
   font-weight:900;
   letter-spacing:-.02em;
-  box-shadow:0 10px 20px rgba(16,42,111,.22);
+  box-shadow:0 8px 18px rgba(16,42,111,.18);
 }
 
 .courseStatCard{
   min-width:0;
-  border-radius:20px;
+  width:100%;
+  border-radius:18px;
   background:#fff;
   border:1px solid #dbe2ef;
-  box-shadow:0 8px 18px rgba(26,56,120,.08);
-  padding:14px;
+  box-shadow:0 6px 14px rgba(26,56,120,.08);
+  padding:12px;
   display:flex;
   flex-direction:column;
   justify-content:space-between;
+  overflow:hidden;
 }
 
 .courseStatHead{
@@ -322,23 +335,25 @@ body{
 }
 
 .courseStatHead__course{
-  font-size:19px;
+  font-size:18px;
   line-height:1;
   font-weight:900;
   color:#0a1731;
 }
 
 .courseStatHead__type{
-  min-height:34px;
-  padding:0 14px;
+  min-height:32px;
+  padding:0 12px;
   border-radius:999px;
   background:linear-gradient(90deg, #2d66d0, #4fe0ca);
   color:#fff;
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  font-size:15px;
+  font-size:14px;
   font-weight:900;
+  white-space:nowrap;
+  max-width:48%;
 }
 
 .courseStatRows{
@@ -355,14 +370,14 @@ body{
 }
 
 .courseStatLabel{
-  font-size:14px;
+  font-size:13px;
   line-height:1;
   font-weight:900;
   color:#354158;
 }
 
 .courseStatValue{
-  font-size:19px;
+  font-size:18px;
   line-height:1;
   font-weight:900;
   color:#0d1730;
@@ -371,7 +386,7 @@ body{
 .meter{
   position:relative;
   width:100%;
-  height:16px;
+  height:14px;
   border-radius:999px;
   overflow:hidden;
   background:#e8edf6;
@@ -384,8 +399,8 @@ body{
   inset:0;
   background:repeating-linear-gradient(
     90deg,
-    rgba(255,255,255,.22) 0 12px,
-    rgba(255,255,255,0) 12px 16px
+    rgba(255,255,255,.22) 0 10px,
+    rgba(255,255,255,0) 10px 14px
   );
   pointer-events:none;
 }
@@ -426,7 +441,7 @@ body{
 }
 
 .kimariteMain{
-  font-size:24px;
+  font-size:22px;
   line-height:1;
   font-weight:900;
   color:#0d1730;
@@ -434,33 +449,37 @@ body{
 }
 
 .kimariteSub{
-  font-size:14px;
-  line-height:1.4;
+  font-size:13px;
+  line-height:1.45;
   font-weight:700;
   color:#5f6b81;
+  word-break:break-word;
 }
 
-/* tables */
+/* table area */
 .playerTableWrap{
-  overflow-x:auto;
-  -webkit-overflow-scrolling:touch;
+  overflow-x:hidden;
+  -webkit-overflow-scrolling:auto;
   background:#fff;
+  width:100%;
 }
 
 .playerCourseTable,
 .playerTimingTable{
-  min-width:760px;
+  width:100%;
+  min-width:0;
   background:#fff;
 }
 
 .playerTableHead,
 .playerTableRow{
   display:grid;
-  grid-template-columns:118px repeat(6, minmax(0, 1fr));
+  width:100%;
+  grid-template-columns:90px repeat(6, minmax(0, 1fr));
 }
 
 .playerTableHead{
-  min-height:58px;
+  min-height:50px;
 }
 
 .playerTableHeadCell{
@@ -473,9 +492,11 @@ body{
   border-bottom:1px solid var(--line);
   background:linear-gradient(180deg, #2d67cf, #2257b3);
   color:#fff;
-  padding:4px 4px;
+  padding:4px 2px;
   text-align:center;
   font-weight:900;
+  min-width:0;
+  overflow:hidden;
 }
 
 .playerTableHeadCell:last-child{
@@ -483,22 +504,20 @@ body{
 }
 
 .playerTableHeadCell--stub{
-  font-size:11px;
-  line-height:1.15;
-}
-
-.playerCourseMark{
-  display:none;
+  font-size:10px;
+  line-height:1.1;
 }
 
 .playerCourseName{
-  font-size:15px;
-  line-height:1;
+  font-size:11px;
+  line-height:1.05;
   font-weight:900;
+  letter-spacing:-.03em;
+  white-space:nowrap;
 }
 
 .playerTableRow{
-  min-height:52px;
+  min-height:44px;
 }
 
 .playerTableCell{
@@ -509,9 +528,11 @@ body{
   border-bottom:1px solid var(--line);
   background:#fff;
   color:#111827;
-  padding:4px 4px;
+  padding:3px 2px;
   text-align:center;
   font-variant-numeric:tabular-nums;
+  min-width:0;
+  overflow:hidden;
 }
 
 .playerTableCell:last-child{
@@ -521,15 +542,17 @@ body{
 .playerTableCell--label{
   background:linear-gradient(180deg, #2d67cf, #2257b3);
   color:#fff;
-  font-size:14px;
-  line-height:1.1;
+  font-size:11px;
+  line-height:1.05;
   font-weight:900;
+  padding:2px 3px;
 }
 
 .playerTableCell--value{
-  font-size:16px;
+  font-size:13px;
   line-height:1;
   font-weight:900;
+  letter-spacing:-.02em;
 }
 
 .playerTableCell--value.is-highlight{
@@ -541,11 +564,11 @@ body{
   display:flex;
   flex-direction:column;
   align-items:center;
-  gap:4px;
+  gap:3px;
 }
 
 .playerRateText{
-  font-size:15px;
+  font-size:12px;
   line-height:1;
   font-weight:900;
   white-space:nowrap;
@@ -553,7 +576,7 @@ body{
 
 .playerRateBar{
   width:100%;
-  height:8px;
+  height:6px;
   background:#edf2fb;
   position:relative;
   overflow:hidden;
@@ -568,95 +591,50 @@ body{
 }
 
 .playerTimingTable .playerTableRow{
-  min-height:46px;
+  min-height:40px;
 }
 
 .playerTimingTable .playerTableCell--label{
-  font-size:13px;
+  font-size:11px;
 }
 
-@media (max-width: 390px){
-  .playerHead{
-    padding:10px 10px 8px;
-  }
-
-  .playerName{
-    font-size:27px;
-  }
-
-  .playerMetaInline{
-    font-size:12px;
-  }
-
-  .playerBackBtn{
-    min-width:74px;
-    height:48px;
-    font-size:16px;
-    padding:0 12px;
-  }
-
-  .playerSection--hero{
-    margin:0 10px 12px;
-  }
-
-  .courseHeroTabs{
-    padding:12px 12px 0;
-  }
-
-  .courseHeroTab{
-    height:42px;
-    font-size:14px;
-  }
-
+@media (min-width: 768px){
   .courseHeroBody{
-    grid-template-columns:1fr;
-    padding:12px;
+    grid-template-columns:1.06fr .94fr;
+    gap:12px;
   }
 
   .courseRadarStage{
-    min-height:250px;
+    min-height:300px;
   }
 
-  .courseTypePill{
-    font-size:20px;
-  }
-
-  .courseStatHead__course{
-    font-size:18px;
-  }
-
-  .courseStatHead__type{
-    font-size:14px;
-  }
-
-  .playerSectionTitle{
-    font-size:17px;
-    padding:12px 10px 9px;
-  }
-
-  .playerCourseTable,
-  .playerTimingTable{
-    min-width:700px;
+  .courseHeroTab{
+    height:46px;
+    font-size:15px;
   }
 
   .playerTableHead,
   .playerTableRow{
-    grid-template-columns:104px repeat(6, minmax(0, 1fr));
+    grid-template-columns:110px repeat(6, minmax(0, 1fr));
   }
 
-  .playerTableHead{
-    min-height:52px;
+  .playerCourseName{
+    font-size:14px;
   }
 
   .playerTableCell--label{
-    font-size:13px;
+    font-size:14px;
   }
 
   .playerTableCell--value{
-    font-size:15px;
+    font-size:16px;
   }
 
   .playerRateText{
-    font-size:14px;
+    font-size:15px;
+  }
+
+  .playerRateBar{
+    height:8px;
   }
 }
