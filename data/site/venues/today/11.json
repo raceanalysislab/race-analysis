@@ -1,13 +1,13 @@
 {
   "slot": "today",
-  "date": "2026-03-13",
+  "date": "2026-03-14",
   "name": "びわこ",
   "jcd": "11",
   "next_race": 1,
   "next_display": "1R 10:31",
-  "day": 2,
+  "day": 3,
   "total_days": null,
-  "day_label": "2日目",
+  "day_label": "3日目",
   "grade_label": "一般",
   "event_title": "報知新聞社杯争奪第48回びわこ王座決定戦",
   "first_race_time": "10:31",
@@ -20,19 +20,19 @@
     },
     {
       "rno": 2,
-      "cutoff": "11:00"
+      "cutoff": "11:09"
     },
     {
       "rno": 3,
-      "cutoff": "11:30"
+      "cutoff": "11:40"
     },
     {
       "rno": 4,
-      "cutoff": "11:59"
+      "cutoff": "12:07"
     },
     {
       "rno": 5,
-      "cutoff": "12:36"
+      "cutoff": "12:35"
     },
     {
       "rno": 6,
@@ -40,27 +40,27 @@
     },
     {
       "rno": 7,
-      "cutoff": "13:32"
+      "cutoff": "13:31"
     },
     {
       "rno": 8,
-      "cutoff": "14:05"
+      "cutoff": "14:00"
     },
     {
       "rno": 9,
-      "cutoff": "14:37"
+      "cutoff": "14:34"
     },
     {
       "rno": 10,
-      "cutoff": "15:06"
+      "cutoff": "15:07"
     },
     {
       "rno": 11,
-      "cutoff": "15:39"
+      "cutoff": "15:48"
     },
     {
       "rno": 12,
-      "cutoff": "16:18"
+      "cutoff": "16:26"
     }
   ]
 }

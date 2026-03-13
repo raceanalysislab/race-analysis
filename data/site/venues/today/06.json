@@ -1,13 +1,13 @@
 {
   "slot": "today",
-  "date": "2026-03-13",
+  "date": "2026-03-14",
   "name": "浜名湖",
   "jcd": "06",
   "next_race": 1,
   "next_display": "1R 11:32",
-  "day": 2,
+  "day": 3,
   "total_days": null,
-  "day_label": "2日目",
+  "day_label": "3日目",
   "grade_label": "一般",
   "event_title": "ＤａｉｉｃｈｉーＴＶファイティングカップ",
   "first_race_time": "11:32",
@@ -20,11 +20,11 @@
     },
     {
       "rno": 2,
-      "cutoff": "11:57"
+      "cutoff": "11:59"
     },
     {
       "rno": 3,
-      "cutoff": "12:28"
+      "cutoff": "12:31"
     },
     {
       "rno": 4,
@@ -36,19 +36,19 @@
     },
     {
       "rno": 6,
-      "cutoff": "14:01"
+      "cutoff": "13:53"
     },
     {
       "rno": 7,
-      "cutoff": "14:32"
+      "cutoff": "14:23"
     },
     {
       "rno": 8,
-      "cutoff": "15:02"
+      "cutoff": "14:50"
     },
     {
       "rno": 9,
-      "cutoff": "15:35"
+      "cutoff": "15:36"
     },
     {
       "rno": 10,
@@ -56,7 +56,7 @@
     },
     {
       "rno": 11,
-      "cutoff": "16:33"
+      "cutoff": "16:38"
     },
     {
       "rno": 12,
