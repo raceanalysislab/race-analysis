@@ -206,7 +206,6 @@ body{
   border-right:1px solid rgba(0,0,0,.05);
 }
 
-/* コンパクト化 */
 .courseHeroBody{
   display:grid;
   grid-template-columns:minmax(0, .88fr) minmax(0, 1.12fr);
@@ -223,7 +222,7 @@ body{
   border-radius:18px;
   padding:8px;
   background:
-    radial-gradient(circle at 50% 42%, rgba(126,231,255,.18), rgba(37,87,193,0) 52%),
+    radial-gradient(circle at 50% 46%, rgba(126,231,255,.18), rgba(37,87,193,0) 56%),
     linear-gradient(145deg, #13398b 0%, #265fd2 42%, #69d7d9 100%);
   box-shadow:
     inset 0 0 0 1px rgba(255,255,255,.16),
@@ -257,7 +256,7 @@ body{
   inset:0;
   pointer-events:none;
   background:
-    radial-gradient(circle at center, rgba(116,236,255,.15) 0, rgba(116,236,255,.07) 22%, rgba(116,236,255,0) 55%);
+    radial-gradient(circle at 50% 52%, rgba(116,236,255,.15) 0, rgba(116,236,255,.07) 22%, rgba(116,236,255,0) 55%);
   mix-blend-mode:screen;
 }
 
@@ -301,23 +300,30 @@ body{
 
 .courseRadarNode{
   position:absolute;
-  width:7px;
-  height:7px;
-  margin-left:-3.5px;
-  margin-top:-3.5px;
+  width:6px;
+  height:6px;
+  margin-left:-3px;
+  margin-top:-3px;
   border-radius:50%;
   background:#eaffff;
   box-shadow:
-    0 0 0 2px rgba(124,231,255,.24),
-    0 0 6px rgba(124,231,255,.28);
+    0 0 0 2px rgba(124,231,255,.22),
+    0 0 5px rgba(124,231,255,.24);
   opacity:.95;
+  z-index:2;
 }
 
-/* ラベルを外へ逃がす */
+.courseRadarLabels{
+  position:absolute;
+  inset:0;
+  z-index:4;
+  pointer-events:none;
+}
+
 .courseRadarLabels .radarLabel{
   position:absolute;
-  min-width:42px;
-  padding:6px 5px;
+  min-width:46px;
+  padding:6px 6px;
   border-radius:10px;
   background:rgba(255,255,255,.94);
   color:#43506b;
@@ -326,47 +332,46 @@ body{
   font-weight:900;
   text-align:center;
   box-shadow:0 4px 10px rgba(0,0,0,.08);
-  z-index:4;
+  white-space:nowrap;
 }
 
 .radarLabel--1{
-  top:6px;
+  top:10px;
   left:50%;
   transform:translateX(-50%);
 }
 
 .radarLabel--2{
-  top:44px;
-  right:4px;
+  top:42px;
+  right:10px;
 }
 
 .radarLabel--3{
-  right:8px;
-  bottom:76px;
+  top:94px;
+  right:4px;
 }
 
 .radarLabel--4{
   left:50%;
-  bottom:48px;
+  bottom:64px;
   transform:translateX(-50%);
 }
 
 .radarLabel--5{
-  left:8px;
-  bottom:76px;
+  left:10px;
+  bottom:84px;
 }
 
 .radarLabel--6{
-  top:44px;
+  top:94px;
   left:4px;
 }
 
-/* イン型帯を下へ移動 */
 .courseTypePill{
   position:absolute;
-  left:18px;
-  right:18px;
-  bottom:12px;
+  left:20px;
+  right:20px;
+  bottom:10px;
   height:30px;
   border-radius:999px;
   background:linear-gradient(90deg, rgba(46,100,210,.92), rgba(77,224,205,.92));
@@ -496,12 +501,10 @@ body{
   background:linear-gradient(90deg, #2c7fd2, #46e0a6);
 }
 
-/* 決まり手は消す */
 .kimariteCard{
-  display:none;
+  display:none !important;
 }
 
-/* table area */
 .playerTableWrap{
   overflow-x:hidden;
   -webkit-overflow-scrolling:auto;
@@ -661,37 +664,37 @@ body{
   }
 
   .radarLabel--1{
-    top:8px;
+    top:12px;
   }
 
   .radarLabel--2{
-    top:50px;
-    right:6px;
+    top:48px;
+    right:16px;
   }
 
   .radarLabel--3{
-    right:10px;
-    bottom:82px;
+    top:112px;
+    right:8px;
   }
 
   .radarLabel--4{
-    bottom:52px;
+    bottom:72px;
   }
 
   .radarLabel--5{
-    left:10px;
-    bottom:82px;
+    left:16px;
+    bottom:94px;
   }
 
   .radarLabel--6{
-    top:50px;
-    left:6px;
+    top:112px;
+    left:8px;
   }
 
   .courseTypePill{
-    left:20px;
-    right:20px;
-    bottom:14px;
+    left:22px;
+    right:22px;
+    bottom:12px;
     height:34px;
     font-size:19px;
   }
