@@ -30,7 +30,7 @@
 
 .courseGrid{
   width:100%;
-  min-width:100%;
+  min-width:0;
   border-top:1px solid var(--line);
   border-bottom:1px solid var(--line);
   background:#fff;
@@ -38,9 +38,10 @@
 
 .courseGridRow{
   display:grid;
-  grid-template-columns:15.2% 15.2% 15.2% 15.2% 15.2% 15.2% 8.8%;
-  border-bottom:1px solid var(--line);
+  grid-template-columns:repeat(6, minmax(0, 1fr)) 40px;
+  min-width:0;
   background:#fff;
+  border-bottom:1px solid var(--line);
 }
 
 .courseGridRow:last-child{
@@ -77,16 +78,16 @@
   align-items:center;
   justify-content:center;
   text-align:center;
-  border-right:1px solid var(--line);
   background:#fff;
   color:#101722;
   min-width:0;
   overflow:hidden;
   padding:0;
+  box-shadow:inset -1px 0 0 var(--line);
 }
 
 .courseGridCell:last-child{
-  border-right:none;
+  box-shadow:none;
 }
 
 .courseGridCell--head{
@@ -175,7 +176,7 @@
 
 @media (max-width: 390px){
   .courseGridRow{
-    grid-template-columns:15.25% 15.25% 15.25% 15.25% 15.25% 15.25% 8.5%;
+    grid-template-columns:repeat(6, minmax(0, 1fr)) 36px;
   }
 
   .courseGridRow--head{
