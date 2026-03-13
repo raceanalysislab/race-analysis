@@ -1,287 +1,114 @@
-.courseDataRoot{
-  flex:1 1 auto;
-  min-height:0;
-  height:100%;
-  background:#fff;
-}
+(() => {
 
-.coursePanel{
-  min-height:100%;
-  display:block;
-  background:#fff;
-}
+const ORDER = [6,5,4,3,2,1];
 
-.coursePanelMain{
-  min-width:0;
-  display:flex;
-  flex-direction:column;
-  background:#fff;
-  min-height:100%;
-}
+const state = {
+  raceJson:null
+};
 
-.coursePanelBody{
-  flex:1 1 auto;
-  min-height:0;
-  overflow-y:auto;
-  overflow-x:hidden;
-  background:#fff;
-  -webkit-overflow-scrolling:touch;
-}
+const $ = id => document.getElementById(id);
 
-.courseGrid{
-  width:100%;
-  min-width:0;
-  border-top:1px solid var(--line);
-  border-bottom:1px solid var(--line);
-  background:#fff;
-}
+const format = v => {
+  if(v===undefined || v===null || v==="") return "—";
+  return String(v);
+};
 
-.courseGridTopBlock{
-  background:#fff;
-}
+const formatST = v => {
+  if(v===undefined || v===null || v==="") return "—";
+  const n = Number(v);
+  if(!Number.isFinite(n)) return "—";
+  return "."+n.toFixed(2).split(".")[1];
+};
 
-.courseGridRow{
-  display:grid;
-  grid-template-columns:15.2% 15.2% 15.2% 15.2% 15.2% 15.2% 8.8%;
-  min-width:0;
-  background:#fff;
-  border-bottom:1px solid var(--line);
-}
+const getBoats = () => {
 
-.courseGridRow:last-child{
-  border-bottom:none;
-}
+  const boats = state.raceJson?.race?.boats || [];
+  const map = new Map();
 
-.courseGridRow--top{
-  border-bottom:none;
-}
+  boats.forEach(b=>{
+    map.set(Number(b.waku), b);
+  });
 
-.courseGridTopBlock .courseGridRow:last-child{
-  border-bottom:1px solid var(--line);
-}
+  return ORDER.map(w=>map.get(w)||{waku:w});
+};
 
-.courseGridRow--head{
-  min-height:50px;
-}
+const row = (boats,label,valueFn) => `
+<div class="courseGridRow">
+${boats.map(b=>`
+<div class="courseGridCell">
+<div class="courseGridMetric">${valueFn(b)}</div>
+</div>
+`).join("")}
+<div class="courseGridLabel">${label}</div>
+</div>
+`;
 
-.courseGridRow--name{
-  min-height:118px;
-}
+const nameRow = boats => `
+<div class="courseGridRow courseGridRow--name">
+${boats.map(b=>`
+<div class="courseGridCell">
+<div class="courseGridNameVertical">${format(b.name)}</div>
+</div>
+`).join("")}
+<div class="courseGridLabel">選手名</div>
+</div>
+`;
 
-.courseGridRow--grade{
-  min-height:52px;
-}
+const headRow = boats => `
+<div class="courseGridRow courseGridRow--head">
+${boats.map(b=>`
+<div class="courseGridCell courseGridCell--head w${b.waku}">
+${b.waku}
+</div>
+`).join("")}
+<div class="courseGridLabel">枠</div>
+</div>
+`;
 
-.courseGridRow--f,
-.courseGridRow--l,
-.courseGridRow--avgst,
-.courseGridRow--meetavgst{
-  min-height:42px;
-}
+const render = () => {
 
-.courseGridRow--course,
-.courseGridRow--kimarite{
-  min-height:42px;
-}
+  const root = $("courseDataRoot");
+  if(!root) return;
 
-.courseGridRow--section{
-  min-height:38px;
-  background:#f8fafc;
-}
+  const boats = getBoats();
 
-.courseGridCell{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  background:#fff;
-  color:#101722;
-  min-width:0;
-  overflow:hidden;
-  padding:0;
-  box-shadow:inset -1px 0 0 var(--line);
-}
+  root.innerHTML = `
+<div class="coursePanel">
+<div class="coursePanelBody">
 
-.courseGridCell:last-child{
-  box-shadow:none;
-}
+<div class="courseGrid">
 
-.courseGridCell--head{
-  font-size:16px;
-  line-height:1;
-  font-weight:900;
-  letter-spacing:-.02em;
-}
+${headRow(boats)}
 
-.courseGridCell--head.w1{ background:#ffffff; color:#111827; }
-.courseGridCell--head.w2{ background:#444b55; color:#ffffff; }
-.courseGridCell--head.w3{ background:#ea5a50; color:#ffffff; }
-.courseGridCell--head.w4{ background:#4d82d8; color:#ffffff; }
-.courseGridCell--head.w5{ background:#e6d74a; color:#1e2430; }
-.courseGridCell--head.w6{ background:#39b36b; color:#ffffff; }
+${nameRow(boats)}
 
-.courseGridCell--name{
-  padding:2px 0;
-}
+${row(boats,"級",b=>format(b.grade))}
 
-.courseGridNameVertical{
-  height:104px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  writing-mode:vertical-rl;
-  text-orientation:upright;
-  font-size:13px;
-  line-height:1;
-  font-weight:500;
-  letter-spacing:0;
-  color:#111827;
-  white-space:nowrap;
-}
+${row(boats,"F",b=>format(b.f_count))}
 
-.courseGridCell--grade{
-  padding:0 1px;
-}
+${row(boats,"L",b=>format(b.l_count))}
 
-.courseGridGradeBlock{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:1px;
-  min-width:0;
-}
+${row(boats,"平均ST",b=>formatST(b.avg_st))}
 
-.courseGridGradeMain{
-  font-size:11px;
-  line-height:1;
-  font-weight:900;
-  color:#111827;
-  white-space:nowrap;
-}
+${row(boats,"今節平均ST",b=>formatST(b.meet_avg_st))}
 
-.courseGridMetric{
-  font-variant-numeric:tabular-nums;
-  font-size:11px;
-  line-height:1;
-  font-weight:900;
-  letter-spacing:-.02em;
-  white-space:nowrap;
-}
+${row(boats,"コース別決まり手",b=>"—")}
 
-.courseGridMetric--small{
-  font-size:9px;
-}
+${row(boats,"コース別平均ST",b=>"—")}
 
-.courseGridLabel{
-  background:#f3f6fb;
-  color:#425066;
-  font-size:8px;
-  line-height:1;
-  font-weight:900;
-  letter-spacing:-.03em;
-  padding:0 1px;
-  word-break:break-all;
-  overflow-wrap:anywhere;
-}
+${row(boats,"コース別2連対",b=>"—")}
 
-.courseGridLabel.is-active{
-  background:#e8eefc;
-  color:#234ea8;
-}
+${row(boats,"コース別3連対",b=>"—")}
 
-.courseGridLabel--section{
-  background:#edf3ff;
-  color:#234ea8;
-}
+</div>
 
-.courseGridSectionTitle{
-  display:flex;
-  align-items:center;
-  justify-content:flex-start;
-  padding:0 10px;
-  font-size:11px;
-  font-weight:900;
-  color:#334155;
-  background:#f8fafc;
-  box-shadow:inset -1px 0 0 var(--line);
-}
+</div>
+</div>
+`;
+};
 
-.courseGridSubLabel{
-  background:#f7f8fa;
-  color:#4b5563;
-  font-size:8px;
-  line-height:1;
-  font-weight:900;
-  letter-spacing:-.03em;
-  padding:0 1px;
-  word-break:break-all;
-  overflow-wrap:anywhere;
-}
+window.BOAT_CORE_COURSE = {
+render
+};
 
-@media (max-width: 390px){
-  .courseGridRow{
-    grid-template-columns:15.25% 15.25% 15.25% 15.25% 15.25% 15.25% 8.5%;
-  }
-
-  .courseGridRow--head{
-    min-height:46px;
-  }
-
-  .courseGridRow--name{
-    min-height:108px;
-  }
-
-  .courseGridRow--grade{
-    min-height:48px;
-  }
-
-  .courseGridRow--f,
-  .courseGridRow--l,
-  .courseGridRow--avgst,
-  .courseGridRow--meetavgst,
-  .courseGridRow--course,
-  .courseGridRow--kimarite{
-    min-height:40px;
-  }
-
-  .courseGridRow--section{
-    min-height:34px;
-  }
-
-  .courseGridCell--head{
-    font-size:15px;
-  }
-
-  .courseGridNameVertical{
-    height:96px;
-    font-size:12px;
-  }
-
-  .courseGridGradeMain{
-    font-size:10px;
-  }
-
-  .courseGridMetric{
-    font-size:10px;
-  }
-
-  .courseGridMetric--small{
-    font-size:8px;
-  }
-
-  .courseGridLabel{
-    font-size:7px;
-    padding:0;
-  }
-
-  .courseGridSectionTitle{
-    font-size:10px;
-    padding:0 8px;
-  }
-
-  .courseGridSubLabel{
-    font-size:7px;
-    padding:0;
-  }
-}
+})();
