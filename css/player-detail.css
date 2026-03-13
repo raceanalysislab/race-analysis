@@ -206,9 +206,10 @@ body{
   border-right:1px solid rgba(0,0,0,.05);
 }
 
+/* コンパクト化 */
 .courseHeroBody{
   display:grid;
-  grid-template-columns:minmax(0, 1.12fr) minmax(0, .88fr);
+  grid-template-columns:minmax(0, .88fr) minmax(0, 1.12fr);
   gap:10px;
   padding:12px;
   width:100%;
@@ -220,7 +221,7 @@ body{
   min-width:0;
   width:100%;
   border-radius:18px;
-  padding:10px;
+  padding:8px;
   background:
     radial-gradient(circle at 50% 42%, rgba(126,231,255,.18), rgba(37,87,193,0) 52%),
     linear-gradient(145deg, #13398b 0%, #265fd2 42%, #69d7d9 100%);
@@ -300,26 +301,26 @@ body{
 
 .courseRadarNode{
   position:absolute;
-  width:10px;
-  height:10px;
-  margin-left:-5px;
-  margin-top:-5px;
+  width:8px;
+  height:8px;
+  margin-left:-4px;
+  margin-top:-4px;
   border-radius:50%;
   background:#eaffff;
   box-shadow:
-    0 0 0 2px rgba(124,231,255,.34),
-    0 0 8px rgba(124,231,255,.45);
+    0 0 0 2px rgba(124,231,255,.28),
+    0 0 8px rgba(124,231,255,.36);
   opacity:.95;
 }
 
 .courseRadarLabels .radarLabel{
   position:absolute;
-  min-width:48px;
-  padding:7px 6px;
-  border-radius:12px;
+  min-width:42px;
+  padding:6px 5px;
+  border-radius:10px;
   background:rgba(255,255,255,.94);
   color:#43506b;
-  font-size:11px;
+  font-size:10px;
   line-height:1;
   font-weight:900;
   text-align:center;
@@ -327,25 +328,25 @@ body{
 }
 
 .radarLabel--1{ top:8px; left:50%; transform:translateX(-50%); }
-.radarLabel--2{ top:50px; right:6px; }
-.radarLabel--3{ right:10px; bottom:52px; }
-.radarLabel--4{ left:50%; bottom:10px; transform:translateX(-50%); }
-.radarLabel--5{ left:10px; bottom:52px; }
-.radarLabel--6{ top:50px; left:6px; }
+.radarLabel--2{ top:48px; right:6px; }
+.radarLabel--3{ right:8px; bottom:48px; }
+.radarLabel--4{ left:50%; bottom:8px; transform:translateX(-50%); }
+.radarLabel--5{ left:8px; bottom:48px; }
+.radarLabel--6{ top:48px; left:6px; }
 
 .courseTypePill{
   position:absolute;
-  left:16px;
-  right:16px;
-  bottom:18px;
-  height:38px;
+  left:14px;
+  right:14px;
+  bottom:14px;
+  height:34px;
   border-radius:999px;
   background:linear-gradient(90deg, rgba(46,100,210,.92), rgba(77,224,205,.92));
   color:#fff;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:20px;
+  font-size:18px;
   font-weight:900;
   letter-spacing:-.02em;
   box-shadow:0 8px 18px rgba(16,42,111,.18);
@@ -362,7 +363,7 @@ body{
   padding:12px;
   display:flex;
   flex-direction:column;
-  justify-content:space-between;
+  justify-content:flex-start;
   overflow:hidden;
 }
 
@@ -466,36 +467,9 @@ body{
   background:linear-gradient(90deg, #2c7fd2, #46e0a6);
 }
 
+/* 決まり手は消す */
 .kimariteCard{
-  margin-top:12px;
-  border:1px solid #dbe3f0;
-  border-radius:16px;
-  background:#f8fbff;
-  padding:12px;
-}
-
-.kimariteHead{
-  font-size:12px;
-  line-height:1;
-  font-weight:900;
-  color:#43607e;
-  margin-bottom:8px;
-}
-
-.kimariteMain{
-  font-size:20px;
-  line-height:1;
-  font-weight:900;
-  color:#0d1730;
-  margin-bottom:6px;
-}
-
-.kimariteSub{
-  font-size:12px;
-  line-height:1.4;
-  font-weight:700;
-  color:#5f6b81;
-  word-break:break-word;
+  display:none;
 }
 
 /* table area */
@@ -642,28 +616,33 @@ body{
 
 @media (min-width: 768px){
   .courseHeroBody{
-    grid-template-columns:minmax(0, 1.06fr) minmax(0, .94fr);
+    grid-template-columns:minmax(0, .92fr) minmax(0, 1.08fr);
     gap:12px;
   }
-
-  .courseRadarLabels .radarLabel{
-    min-width:64px;
-    font-size:14px;
-    padding:9px 10px;
-  }
-
-  .radarLabel--2{ top:64px; right:10px; }
-  .radarLabel--3{ right:14px; bottom:58px; }
-  .radarLabel--5{ left:14px; bottom:58px; }
-  .radarLabel--6{ top:64px; left:10px; }
 
   .courseHeroTab{
     height:46px;
     font-size:15px;
   }
 
+  .courseRadarLabels .radarLabel{
+    min-width:58px;
+    font-size:13px;
+    padding:8px 8px;
+  }
+
+  .radarLabel--2{ top:56px; right:10px; }
+  .radarLabel--3{ right:12px; bottom:56px; }
+  .radarLabel--5{ left:12px; bottom:56px; }
+  .radarLabel--6{ top:56px; left:10px; }
+
+  .courseTypePill{
+    height:38px;
+    font-size:20px;
+  }
+
   .courseStatHead__course{
-    font-size:19px;
+    font-size:18px;
   }
 
   .courseStatHead__type{
@@ -676,23 +655,11 @@ body{
   }
 
   .courseStatValue{
-    font-size:19px;
+    font-size:20px;
   }
 
   .meter{
     height:14px;
-  }
-
-  .kimariteHead{
-    font-size:13px;
-  }
-
-  .kimariteMain{
-    font-size:22px;
-  }
-
-  .kimariteSub{
-    font-size:13px;
   }
 
   .playerTableHead,
