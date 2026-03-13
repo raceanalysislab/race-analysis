@@ -30,7 +30,7 @@
 
 .courseGrid{
   width:100%;
-  min-width:0;
+  min-width:100%;
   border-top:1px solid var(--line);
   border-bottom:1px solid var(--line);
   background:#fff;
@@ -38,7 +38,7 @@
 
 .courseGridRow{
   display:grid;
-  grid-template-columns:repeat(6, minmax(0, 1fr)) minmax(0, .62fr);
+  grid-template-columns:15.2% 15.2% 15.2% 15.2% 15.2% 15.2% 8.8%;
   border-bottom:1px solid var(--line);
   background:#fff;
 }
@@ -48,15 +48,15 @@
 }
 
 .courseGridRow--head{
-  min-height:52px;
+  min-height:50px;
 }
 
 .courseGridRow--name{
-  min-height:126px;
+  min-height:118px;
 }
 
 .courseGridRow--grade{
-  min-height:56px;
+  min-height:52px;
 }
 
 .courseGridRow--f,
@@ -64,12 +64,12 @@
 .courseGridRow--avgst,
 .courseGridRow--meetavgst,
 .courseGridRow--recent{
-  min-height:44px;
+  min-height:42px;
 }
 
 .courseGridRow--course,
 .courseGridRow--kimarite{
-  min-height:44px;
+  min-height:42px;
 }
 
 .courseGridCell{
@@ -82,6 +82,7 @@
   color:#101722;
   min-width:0;
   overflow:hidden;
+  padding:0;
 }
 
 .courseGridCell:last-child{
@@ -89,7 +90,7 @@
 }
 
 .courseGridCell--head{
-  font-size:18px;
+  font-size:16px;
   line-height:1;
   font-weight:900;
   letter-spacing:-.02em;
@@ -103,11 +104,11 @@
 .courseGridCell--head.w6{ background:#39b36b; color:#ffffff; }
 
 .courseGridCell--name{
-  padding:4px 0;
+  padding:2px 0;
 }
 
 .courseGridNameVertical{
-  height:112px;
+  height:104px;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -116,13 +117,13 @@
   font-size:13px;
   line-height:1;
   font-weight:500;
-  letter-spacing:.01em;
+  letter-spacing:0;
   color:#111827;
   white-space:nowrap;
 }
 
 .courseGridCell--grade{
-  padding:2px 1px;
+  padding:0 1px;
 }
 
 .courseGridGradeBlock{
@@ -130,12 +131,12 @@
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  gap:2px;
+  gap:1px;
   min-width:0;
 }
 
 .courseGridGradeMain{
-  font-size:12px;
+  font-size:11px;
   line-height:1;
   font-weight:900;
   color:#111827;
@@ -144,7 +145,7 @@
 
 .courseGridMetric{
   font-variant-numeric:tabular-nums;
-  font-size:12px;
+  font-size:11px;
   line-height:1;
   font-weight:900;
   letter-spacing:-.02em;
@@ -152,17 +153,17 @@
 }
 
 .courseGridMetric--small{
-  font-size:10px;
+  font-size:9px;
 }
 
 .courseGridLabel{
   background:#f3f6fb;
   color:#425066;
-  font-size:9px;
-  line-height:1.05;
+  font-size:8px;
+  line-height:1;
   font-weight:900;
-  letter-spacing:-.02em;
-  padding:0 2px;
+  letter-spacing:-.03em;
+  padding:0 1px;
   word-break:break-all;
   overflow-wrap:anywhere;
 }
@@ -174,19 +175,19 @@
 
 @media (max-width: 390px){
   .courseGridRow{
-    grid-template-columns:repeat(6, minmax(0, 1fr)) minmax(0, .64fr);
+    grid-template-columns:15.25% 15.25% 15.25% 15.25% 15.25% 15.25% 8.5%;
   }
 
   .courseGridRow--head{
-    min-height:48px;
+    min-height:46px;
   }
 
   .courseGridRow--name{
-    min-height:116px;
+    min-height:108px;
   }
 
   .courseGridRow--grade{
-    min-height:52px;
+    min-height:48px;
   }
 
   .courseGridRow--f,
@@ -196,32 +197,32 @@
   .courseGridRow--recent,
   .courseGridRow--course,
   .courseGridRow--kimarite{
-    min-height:42px;
+    min-height:40px;
   }
 
   .courseGridCell--head{
-    font-size:16px;
+    font-size:15px;
   }
 
   .courseGridNameVertical{
-    height:102px;
+    height:96px;
     font-size:12px;
   }
 
   .courseGridGradeMain{
-    font-size:11px;
+    font-size:10px;
   }
 
   .courseGridMetric{
-    font-size:11px;
+    font-size:10px;
   }
 
   .courseGridMetric--small{
-    font-size:9px;
+    font-size:8px;
   }
 
   .courseGridLabel{
-    font-size:8px;
-    padding:0 1px;
+    font-size:7px;
+    padding:0;
   }
 }
