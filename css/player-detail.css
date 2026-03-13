@@ -206,7 +206,6 @@ body{
   border-right:1px solid rgba(0,0,0,.05);
 }
 
-/* ここを固定2カラム化 */
 .courseHeroBody{
   display:grid;
   grid-template-columns:minmax(0, 1.12fr) minmax(0, .88fr);
@@ -223,9 +222,11 @@ body{
   border-radius:18px;
   padding:10px;
   background:
-    radial-gradient(circle at 50% 45%, rgba(105,227,255,.22), rgba(37,87,193,.0) 52%),
-    linear-gradient(145deg, #123b90 0%, #265ed0 40%, #74dbe0 100%);
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.18);
+    radial-gradient(circle at 50% 42%, rgba(126,231,255,.18), rgba(37,87,193,0) 52%),
+    linear-gradient(145deg, #13398b 0%, #265fd2 42%, #69d7d9 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.16),
+    inset 0 10px 40px rgba(255,255,255,.05);
   overflow:hidden;
 }
 
@@ -237,17 +238,26 @@ body{
   border-radius:16px;
   overflow:hidden;
   background:
-    radial-gradient(circle at center, rgba(255,255,255,.20) 0, rgba(255,255,255,.06) 28%, rgba(255,255,255,0) 48%),
-    linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.05));
+    radial-gradient(circle at center, rgba(255,255,255,.12) 0, rgba(255,255,255,.05) 26%, rgba(255,255,255,0) 52%),
+    linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
 }
 
 .courseRadarBg{
   position:absolute;
   inset:0;
   background:
-    radial-gradient(circle at center, rgba(255,255,255,.13), transparent 50%),
-    repeating-radial-gradient(circle at center, rgba(255,255,255,.08) 0 2px, transparent 2px 24px);
-  opacity:.55;
+    radial-gradient(circle at center, rgba(255,255,255,.10), transparent 54%),
+    repeating-radial-gradient(circle at center, rgba(255,255,255,.05) 0 2px, transparent 2px 25px);
+  opacity:.8;
+}
+
+.courseRadarGlow{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at center, rgba(116,236,255,.15) 0, rgba(116,236,255,.07) 22%, rgba(116,236,255,0) 55%);
+  mix-blend-mode:screen;
 }
 
 .courseRadarSvg{
@@ -259,20 +269,47 @@ body{
 
 #courseRadarGrid polygon{
   fill:none;
-  stroke:rgba(255,255,255,.22);
-  stroke-width:1.2;
+  stroke:rgba(255,255,255,.16);
+  stroke-width:1.15;
 }
 
 #courseRadarGrid line{
-  stroke:rgba(255,255,255,.22);
-  stroke-width:1.2;
+  stroke:rgba(255,255,255,.14);
+  stroke-width:1.1;
 }
 
 #courseRadarPolygon{
-  fill:rgba(91,246,233,.32);
-  stroke:#e5ffff;
-  stroke-width:3;
-  filter:drop-shadow(0 0 10px rgba(124,244,255,.35));
+  fill:rgba(109,245,235,.14);
+  stroke:#b9ffff;
+  stroke-width:2.4;
+  filter:drop-shadow(0 0 4px rgba(126,231,255,.32));
+}
+
+#courseRadarPolygonCore{
+  fill:rgba(109,245,235,.10);
+  stroke:#7ce7ff;
+  stroke-width:1.4;
+  filter:drop-shadow(0 0 6px rgba(124,231,255,.22));
+}
+
+.courseRadarNodes{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+}
+
+.courseRadarNode{
+  position:absolute;
+  width:10px;
+  height:10px;
+  margin-left:-5px;
+  margin-top:-5px;
+  border-radius:50%;
+  background:#eaffff;
+  box-shadow:
+    0 0 0 2px rgba(124,231,255,.34),
+    0 0 8px rgba(124,231,255,.45);
+  opacity:.95;
 }
 
 .courseRadarLabels .radarLabel{
@@ -303,7 +340,7 @@ body{
   bottom:18px;
   height:38px;
   border-radius:999px;
-  background:linear-gradient(90deg, #2e64d2, #4de0cd);
+  background:linear-gradient(90deg, rgba(46,100,210,.92), rgba(77,224,205,.92));
   color:#fff;
   display:flex;
   align-items:center;
@@ -312,6 +349,7 @@ body{
   font-weight:900;
   letter-spacing:-.02em;
   box-shadow:0 8px 18px rgba(16,42,111,.18);
+  backdrop-filter:blur(2px);
 }
 
 .courseStatCard{
@@ -602,20 +640,10 @@ body{
   font-size:11px;
 }
 
-/* タブレット以上は少し広げる */
 @media (min-width: 768px){
   .courseHeroBody{
     grid-template-columns:minmax(0, 1.06fr) minmax(0, .94fr);
     gap:12px;
-  }
-
-  .courseRadarStage{
-    min-height:300px;
-  }
-
-  .courseHeroTab{
-    height:46px;
-    font-size:15px;
   }
 
   .courseRadarLabels .radarLabel{
@@ -628,6 +656,11 @@ body{
   .radarLabel--3{ right:14px; bottom:58px; }
   .radarLabel--5{ left:14px; bottom:58px; }
   .radarLabel--6{ top:64px; left:10px; }
+
+  .courseHeroTab{
+    height:46px;
+    font-size:15px;
+  }
 
   .courseStatHead__course{
     font-size:19px;
