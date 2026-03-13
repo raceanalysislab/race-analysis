@@ -1,0 +1,386 @@
+:root{
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+
+  --bg:#eef2f6;
+  --panel:#ffffff;
+  --line:#9fb2d0;
+  --line-soft:#d6dfec;
+
+  --text:#111827;
+  --muted:#5b6576;
+  --blue:#1f56ad;
+  --blue-2:#2e6dca;
+  --blue-soft:#d9e6fb;
+}
+
+*{ box-sizing:border-box; }
+
+html, body{
+  margin:0;
+  min-height:100%;
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Hiragino Sans","Noto Sans JP","Yu Gothic",sans-serif;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+body{
+  padding-top:var(--safe-top);
+}
+
+.playerTop{
+  position:sticky;
+  top:0;
+  z-index:50;
+  background:#f4f6fa;
+  border-bottom:1px solid #d3dae4;
+}
+
+.playerHead{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+  padding:10px 12px 8px;
+  background:#fff;
+}
+
+.playerHead__left{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.playerBrand{
+  font-size:10px;
+  line-height:1;
+  font-weight:800;
+  letter-spacing:.18em;
+  color:#70798a;
+}
+
+.playerTitleRow{
+  display:flex;
+  align-items:flex-end;
+  gap:8px;
+  min-width:0;
+  flex-wrap:wrap;
+}
+
+.playerName{
+  font-size:28px;
+  line-height:1;
+  font-weight:900;
+  color:#0f172a;
+  letter-spacing:-.03em;
+}
+
+.playerMetaInline{
+  font-size:12px;
+  line-height:1.2;
+  font-weight:700;
+  color:#4b5563;
+}
+
+.playerSubMeta{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.playerSubChip{
+  font-size:12px;
+  line-height:1.1;
+  font-weight:800;
+  color:#5f6978;
+}
+
+.playerBackBtn{
+  appearance:none;
+  border:1px solid #cfd6df;
+  background:#fff;
+  color:#18202c;
+  min-width:78px;
+  height:48px;
+  padding:0 14px;
+  font-size:16px;
+  font-weight:900;
+  letter-spacing:-.01em;
+  flex:0 0 auto;
+}
+
+.playerBody{
+  padding:12px 0 calc(24px + var(--safe-bottom));
+}
+
+.playerSection{
+  margin:0 0 14px;
+  background:#fff;
+  border-top:1px solid #d9e1eb;
+  border-bottom:1px solid #d9e1eb;
+}
+
+.playerSection--basic{
+  padding-bottom:4px;
+}
+
+.playerSectionTitle{
+  padding:14px 12px 10px;
+  font-size:18px;
+  line-height:1.15;
+  font-weight:900;
+  color:#000;
+  letter-spacing:-.03em;
+  border-bottom:4px solid #dfe7f4;
+  position:relative;
+}
+
+.playerSectionTitle::after{
+  content:"";
+  position:absolute;
+  left:0;
+  bottom:-4px;
+  width:132px;
+  height:4px;
+  background:var(--blue-2);
+}
+
+.playerBasicGrid{
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0, 1fr));
+  gap:0;
+  border-top:1px solid #c7d2e3;
+}
+
+.playerBasicItem{
+  min-height:56px;
+  border-right:1px solid #c7d2e3;
+  border-bottom:1px solid #c7d2e3;
+  padding:8px 10px;
+  background:#fff;
+}
+
+.playerBasicItem:nth-child(2n){
+  border-right:none;
+}
+
+.playerBasicLabel{
+  display:block;
+  font-size:11px;
+  line-height:1;
+  font-weight:800;
+  color:#607089;
+  margin-bottom:6px;
+}
+
+.playerBasicValue{
+  display:block;
+  font-size:16px;
+  line-height:1.1;
+  font-weight:900;
+  color:#111827;
+  word-break:break-word;
+}
+
+.playerTableWrap{
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+  background:#fff;
+}
+
+.playerCourseTable,
+.playerTimingTable{
+  min-width:760px;
+  background:#fff;
+}
+
+.playerTableHead,
+.playerTableRow{
+  display:grid;
+  grid-template-columns:118px repeat(6, minmax(0, 1fr));
+}
+
+.playerTableHead{
+  min-height:62px;
+}
+
+.playerTableHeadCell{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  border-right:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  background:var(--blue);
+  color:#fff;
+  padding:4px 6px;
+  text-align:center;
+  font-weight:900;
+}
+
+.playerTableHeadCell:last-child{
+  border-right:none;
+}
+
+.playerTableHeadCell--stub{
+  font-size:12px;
+  line-height:1.25;
+}
+
+.playerCourseMark{
+  font-size:18px;
+  line-height:1;
+  font-weight:900;
+}
+
+.playerCourseName{
+  font-size:18px;
+  line-height:1;
+  font-weight:900;
+}
+
+.playerTableRow{
+  min-height:60px;
+}
+
+.playerTableCell{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-right:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  background:#fff;
+  color:#111827;
+  padding:6px 8px;
+  text-align:center;
+  font-variant-numeric:tabular-nums;
+}
+
+.playerTableCell:last-child{
+  border-right:none;
+}
+
+.playerTableCell--label{
+  background:var(--blue);
+  color:#fff;
+  font-size:16px;
+  line-height:1.1;
+  font-weight:900;
+}
+
+.playerTableCell--value{
+  font-size:18px;
+  line-height:1;
+  font-weight:900;
+}
+
+.playerTableCell--value.is-highlight{
+  background:#c7d8f2;
+}
+
+.playerRateStack{
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:6px;
+}
+
+.playerRateText{
+  font-size:17px;
+  line-height:1;
+  font-weight:900;
+}
+
+.playerRateBar{
+  width:100%;
+  height:12px;
+  background:#edf2fb;
+  position:relative;
+  overflow:hidden;
+}
+
+.playerRateBarFill{
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  background:#4a97e6;
+}
+
+.playerTimingTable .playerTableRow{
+  min-height:56px;
+}
+
+.playerTimingTable .playerTableCell--label{
+  font-size:15px;
+}
+
+@media (max-width: 390px){
+  .playerHead{
+    padding:8px 10px 7px;
+  }
+
+  .playerName{
+    font-size:25px;
+  }
+
+  .playerMetaInline{
+    font-size:11px;
+  }
+
+  .playerBackBtn{
+    min-width:72px;
+    height:44px;
+    font-size:15px;
+    padding:0 12px;
+  }
+
+  .playerSectionTitle{
+    font-size:16px;
+    padding:12px 10px 9px;
+  }
+
+  .playerBasicItem{
+    min-height:52px;
+    padding:7px 8px;
+  }
+
+  .playerBasicValue{
+    font-size:15px;
+  }
+
+  .playerCourseTable,
+  .playerTimingTable{
+    min-width:700px;
+  }
+
+  .playerTableHead,
+  .playerTableRow{
+    grid-template-columns:106px repeat(6, minmax(0, 1fr));
+  }
+
+  .playerTableHead{
+    min-height:56px;
+  }
+
+  .playerTableCell--label{
+    font-size:14px;
+  }
+
+  .playerTableCell--value{
+    font-size:16px;
+  }
+
+  .playerRateText{
+    font-size:15px;
+  }
+
+  .playerCourseName{
+    font-size:16px;
+  }
+}
