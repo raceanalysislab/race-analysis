@@ -298,7 +298,7 @@ body{
 
 .entryHead{
   display:grid;
-  grid-template-columns:44px minmax(0,1.45fr) 44px 30px 64px 64px 64px;
+  grid-template-columns:44px minmax(0,1.62fr) 40px 28px 58px 58px 58px;
   align-items:stretch;
   min-height:76px;
   background:#eef1f4;
@@ -344,7 +344,7 @@ body{
 
 .entryRow{
   display:grid;
-  grid-template-columns:44px minmax(0,1.45fr) 44px 30px 64px 64px 64px;
+  grid-template-columns:44px minmax(0,1.62fr) 40px 28px 58px 58px 58px;
   min-height:64px;
   border-bottom:1px solid var(--line);
   background:#fff;
@@ -816,7 +816,7 @@ body{
   }
 
   .entryHead{
-    grid-template-columns:42px minmax(0,1.45fr) 42px 26px 58px 58px 58px;
+    grid-template-columns:42px minmax(0,1.60fr) 38px 24px 54px 54px 54px;
     min-height:72px;
   }
 
@@ -829,7 +829,7 @@ body{
   }
 
   .entryRow{
-    grid-template-columns:42px minmax(0,1.45fr) 42px 26px 58px 58px 58px;
+    grid-template-columns:42px minmax(0,1.60fr) 38px 24px 54px 54px 54px;
     min-height:60px;
   }
 
