@@ -41,6 +41,117 @@ const esc = (s) =>
     "'": "&#39;"
   }[c]));
 
+const NAME_SPLIT_DICT = {
+  "宮之原輝紀": ["宮之原", "輝紀"],
+  "鳥飼眞": ["鳥飼", "眞"],
+  "大町利克": ["大町", "利克"],
+  "長尾章平": ["長尾", "章平"],
+  "岩永雅人": ["岩永", "雅人"],
+  "奥村明日香": ["奥村", "明日香"],
+  "梶山涼斗": ["梶山", "涼斗"],
+  "吉村誠": ["吉村", "誠"],
+  "深川和仁": ["深川", "和仁"],
+  "里岡右貴": ["里岡", "右貴"],
+  "水摩敦": ["水摩", "敦"],
+  "長尾章平": ["長尾", "章平"],
+  "岩永雅人": ["岩永", "雅人"],
+  "長尾章平": ["長尾", "章平"],
+  "中島友和": ["中島", "友和"],
+  "柏野幸二": ["柏野", "幸二"],
+  "木村浩士": ["木村", "浩士"],
+  "荻野裕介": ["荻野", "裕介"],
+  "根岸真優": ["根岸", "真優"],
+  "大井清貴": ["大井", "清貴"],
+  "奥村明日香": ["奥村", "明日香"],
+  "土屋南": ["土屋", "南"],
+  "岩永雅人": ["岩永", "雅人"],
+  "山崎義明": ["山崎", "義明"],
+  "梶山涼斗": ["梶山", "涼斗"],
+  "深川和仁": ["深川", "和仁"],
+  "里岡右貴": ["里岡", "右貴"],
+  "上村慎太郎": ["上村", "慎太郎"],
+  "落合直子": ["落合", "直子"],
+  "眞田英二": ["眞田", "英二"],
+  "仲口博崇": ["仲口", "博崇"],
+  "小川晃司": ["小川", "晃司"],
+  "高橋淳美": ["高橋", "淳美"],
+  "長尾章平": ["長尾", "章平"],
+  "鳥飼眞": ["鳥飼", "眞"],
+  "土屋南": ["土屋", "南"],
+  "大町利克": ["大町", "利克"],
+  "岩永雅人": ["岩永", "雅人"]
+};
+
+const normalizePlayerName = (name) =>
+  String(name || "").replace(/\s+/g, "").trim();
+
+const splitPlayerName = (rawName) => {
+  const name = normalizePlayerName(rawName);
+  if (!name) {
+    return {
+      full: "",
+      last: "",
+      first: "",
+      spaced: ""
+    };
+  }
+
+  const dictHit = NAME_SPLIT_DICT[name];
+  if (Array.isArray(dictHit) && dictHit.length === 2) {
+    return {
+      full: name,
+      last: dictHit[0],
+      first: dictHit[1],
+      spaced: `${dictHit[0]} ${dictHit[1]}`
+    };
+  }
+
+  const len = name.length;
+
+  if (len <= 2) {
+    return {
+      full: name,
+      last: "",
+      first: "",
+      spaced: name
+    };
+  }
+
+  if (len === 3) {
+    return {
+      full: name,
+      last: name.slice(0, 2),
+      first: name.slice(2),
+      spaced: `${name.slice(0, 2)} ${name.slice(2)}`
+    };
+  }
+
+  if (len === 4) {
+    return {
+      full: name,
+      last: name.slice(0, 2),
+      first: name.slice(2),
+      spaced: `${name.slice(0, 2)} ${name.slice(2)}`
+    };
+  }
+
+  if (len === 5) {
+    return {
+      full: name,
+      last: name.slice(0, 3),
+      first: name.slice(3),
+      spaced: `${name.slice(0, 3)} ${name.slice(3)}`
+    };
+  }
+
+  return {
+    full: name,
+    last: name.slice(0, 3),
+    first: name.slice(3),
+    spaced: `${name.slice(0, 3)} ${name.slice(3)}`
+  };
+};
+
 const safeNum = (v, digits = 2) => {
   if (v === undefined || v === null || v === "") return "—";
   const n = Number(v);
@@ -220,6 +331,7 @@ function renderEntryTable(boats) {
   $entryTable.innerHTML = boats.map((p) => {
     const fCount = pickF(p);
     const lCount = pickL(p);
+    const splitName = splitPlayerName(p.name);
 
     return `
       <div class="entryRow">
@@ -229,7 +341,7 @@ function renderEntryTable(boats) {
           <div class="entryMeta">
             ${esc(p.regno)} / ${esc(p.grade)} / ${esc(p.branch)} / ${esc(p.age)}歳
           </div>
-          <div class="entryName">${esc(p.name)}</div>
+          <div class="entryName">${esc(splitName.spaced || p.name)}</div>
         </div>
 
         <div class="entryVal">${formatST(pickAvgST(p))}</div>
