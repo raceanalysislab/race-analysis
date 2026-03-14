@@ -19,9 +19,8 @@ const $viewTabs = $("viewTabs");
 
 const RACES_BASE_URL =
   "https://raceanalysislab.github.io/race-analysis/data/site/races/";
-
-const PLAYER_NAME_MASTER_URL =
-  "https://raceanalysislab.github.io/race-analysis/data/master/players_name_master.json";
+const PLAYER_MASTER_URL =
+  "https://raceanalysislab.github.io/race-analysis/data/master/players_master.json";
 
 $("venueName").textContent = venueName;
 
@@ -33,7 +32,7 @@ let dragStartX = 0;
 let dragCurrentX = 0;
 let dragging = false;
 
-let playerNameMaster = {};
+let playerMaster = {};
 
 const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
 
@@ -127,7 +126,7 @@ const buildEntryMeta = (p) => {
 
 const getPlayerDisplayName = (p) => {
   const reg = String(p?.regno ?? p?.reg ?? "").trim();
-  const master = playerNameMaster?.[reg];
+  const master = playerMaster?.[reg];
 
   if (master) {
     const sei = String(master?.sei ?? "").trim();
@@ -190,11 +189,11 @@ async function fetchJSON(url) {
   return res.json();
 }
 
-async function loadPlayerNameMaster() {
+async function loadPlayerMaster() {
   try {
-    playerNameMaster = await fetchJSON(PLAYER_NAME_MASTER_URL);
+    playerMaster = await fetchJSON(PLAYER_MASTER_URL);
   } catch (e) {
-    playerNameMaster = {};
+    playerMaster = {};
   }
 }
 
@@ -312,6 +311,165 @@ function renderEntryTable(boats) {
   }).join("");
 }
 
+function renderRaceJSON(r, json) {
+  const raceObj = json?.race || {};
+
+  if (json?.date) {
+    currentDate = String(json.date).trim();
+  }
+
+  $raceNoLabel.textContent = `${r}R`;
+  $timeLabel.textContent = `締切: ${toHM(raceObj.cutoff)}`;
+  $dayLabel.textContent = json?.day_label || raceObj?.day_label || "—";
+
+  if ($gradeLabel) {
+    $gradeLabel.textContent = normalizeGradeLabel(
+      json?.grade_label || raceObj?.grade_label || "一般"
+    );
+  }
+
+  if ($eventTitle) {
+    const title = String(
+      json?.event_title || json?.title || raceObj?.title || ""
+    ).trim();
+    $eventTitle.textContent = title || "—";
+    $eventTitle.title = title || "";
+  }
+
+  const boats = Array.isArray(raceObj.boats) ? raceObj.boats : [];
+  renderEntryTable(boats);
+
+  if (window.BOAT_CORE_COURSE?.render) {
+    window.BOAT_CORE_COURSE.render(json);
+  }
+
+  renderRaceTabs();
+  updateUrlRace(r);
+  setTopHeight();
+}
+
+function renderRaceError(r) {
+  $raceNoLabel.textContent = `${r}R`;
+  $timeLabel.textContent = "締切: --:--";
+  $dayLabel.textContent = "—";
+
+  if ($gradeLabel) $gradeLabel.textContent = "—";
+
+  if ($eventTitle) {
+    $eventTitle.textContent = "—";
+    $eventTitle.title = "";
+  }
+
+  $entryTable.innerHTML = `<div class="err">JSON取得失敗</div>`;
+
+  if (window.BOAT_CORE_COURSE?.renderError) {
+    window.BOAT_CORE_COURSE.renderError();
+  }
+
+  renderRaceTabs();
+  updateUrlRace(r);
+  setTopHeight();
+}
+
+async function setRace(r) {
+  r = clamp(Number(r) || 1, 1, 12);
+  currentRace = r;
+
+  renderRaceTabs();
+  $entryTable.innerHTML = `<div class="err">読み込み中…</div>`;
+
+  if (window.BOAT_CORE_COURSE?.renderLoading) {
+    window.BOAT_CORE_COURSE.renderLoading();
+  }
+
+  try {
+    const json = await fetchRaceJSON(r);
+    renderRaceJSON(r, json);
+  } catch (e) {
+    renderRaceError(r);
+  }
+}
+
+function setView(viewIndex) {
+  currentView = clamp(Number(viewIndex) || 0, 0, 2);
+
+  const x = currentView * -100;
+  if ($viewTrack) {
+    $viewTrack.style.transform = `translate3d(${x}%, 0, 0)`;
+  }
+
+  $viewTabs?.querySelectorAll(".viewTab").forEach((btn) => {
+    btn.classList.toggle("is-active", Number(btn.dataset.view) === currentView);
+  });
+}
+
+function bindViewTabs() {
+  if (!$viewTabs) return;
+
+  $viewTabs.querySelectorAll(".viewTab").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const viewIndex = Number(btn.dataset.view || 0);
+      setView(viewIndex);
+    });
+  });
+}
+
+function handleSwipeStart(clientX) {
+  dragStartX = clientX;
+  dragCurrentX = clientX;
+  dragging = true;
+}
+
+function handleSwipeMove(clientX) {
+  if (!dragging) return;
+  dragCurrentX = clientX;
+}
+
+function handleSwipeEnd() {
+  if (!dragging) return;
+
+  const diff = dragCurrentX - dragStartX;
+  dragging = false;
+
+  if (Math.abs(diff) < 50) return;
+
+  if (diff < 0) {
+    setRace(currentRace + 1);
+  } else {
+    setRace(currentRace - 1);
+  }
+}
+
+function bindRaceSwipe() {
+  const swipeArea = $raceTop || document;
+
+  swipeArea.addEventListener("touchstart", (e) => {
+    if (!e.touches?.length) return;
+    handleSwipeStart(e.touches[0].clientX);
+  }, { passive: true });
+
+  swipeArea.addEventListener("touchmove", (e) => {
+    if (!e.touches?.length) return;
+    handleSwipeMove(e.touches[0].clientX);
+  }, { passive: true });
+
+  swipeArea.addEventListener("touchend", () => {
+    handleSwipeEnd();
+  }, { passive: true });
+
+  swipeArea.addEventListener("mousedown", (e) => {
+    handleSwipeStart(e.clientX);
+  });
+
+  window.addEventListener("mousemove", (e) => {
+    handleSwipeMove(e.clientX);
+  });
+
+  window.addEventListener("mouseup", () => {
+    handleSwipeEnd();
+  });
+}
+
 async function boot() {
   const initialRace = clamp(Number(qs.get("race") || 1), 1, 12);
 
@@ -324,7 +482,7 @@ async function boot() {
     window.BOAT_CORE_COURSE.boot();
   }
 
-  await loadPlayerNameMaster();
+  await loadPlayerMaster();
   await setRace(initialRace);
   requestAnimationFrame(setTopHeight);
 }
