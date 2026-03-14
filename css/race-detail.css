@@ -325,7 +325,7 @@ body{
 .entryHeadMain{
   display:block;
   width:100%;
-  font-size:12px;
+  font-size:13px;
   line-height:1;
   font-weight:700;
   letter-spacing:-.02em;
@@ -337,7 +337,7 @@ body{
 .entryHeadSub{
   display:block;
   width:100%;
-  font-size:9px;
+  font-size:10px;
   line-height:1;
   font-weight:600;
   color:#6c7584;
@@ -350,7 +350,7 @@ body{
 .entryHeadMeta{
   display:block;
   width:100%;
-  font-size:7px;
+  font-size:8px;
   line-height:1;
   font-weight:600;
   color:#7a8391;
@@ -386,7 +386,7 @@ body{
   min-height:0;
   width:100%;
   margin:0;
-  font-size:12px;
+  font-size:13px;
   font-weight:700;
   line-height:1;
   letter-spacing:-.02em;
@@ -909,20 +909,20 @@ body{
   }
 
   .entryHeadMain{
-    font-size:11px;
+    font-size:12px;
   }
 
   .entryHeadSub{
-    font-size:8px;
+    font-size:9px;
   }
 
   .entryHeadMeta{
-    font-size:6px;
+    font-size:7px;
   }
 
   .entryHead__fl .entryHeadMain,
   .entryHead__fl .entryHeadSub{
-    font-size:11px;
+    font-size:12px;
   }
 
   .entryRow{
