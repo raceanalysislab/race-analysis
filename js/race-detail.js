@@ -19,6 +19,8 @@ const $viewTabs = $("viewTabs");
 
 const RACES_BASE_URL =
   "https://raceanalysislab.github.io/race-analysis/data/site/races/";
+const PLAYER_MASTER_URL =
+  "https://raceanalysislab.github.io/race-analysis/data/master/players_master.json";
 
 $("venueName").textContent = venueName;
 
@@ -30,6 +32,8 @@ let dragStartX = 0;
 let dragCurrentX = 0;
 let dragging = false;
 
+let playerMaster = {};
+
 const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
 
 const esc = (s) =>
@@ -40,106 +44,6 @@ const esc = (s) =>
     '"': "&quot;",
     "'": "&#39;"
   }[c]));
-
-const NAME_SPLIT_DICT = {
-  "宮之原輝紀": ["宮之原", "輝紀"],
-  "鳥飼眞": ["鳥飼", "眞"],
-  "大町利克": ["大町", "利克"],
-  "長尾章平": ["長尾", "章平"],
-  "岩永雅人": ["岩永", "雅人"],
-  "奥村明日香": ["奥村", "明日香"],
-  "梶山涼斗": ["梶山", "涼斗"],
-  "吉村誠": ["吉村", "誠"],
-  "深川和仁": ["深川", "和仁"],
-  "里岡右貴": ["里岡", "右貴"],
-  "水摩敦": ["水摩", "敦"],
-  "中島友和": ["中島", "友和"],
-  "柏野幸二": ["柏野", "幸二"],
-  "木村浩士": ["木村", "浩士"],
-  "荻野裕介": ["荻野", "裕介"],
-  "根岸真優": ["根岸", "真優"],
-  "大井清貴": ["大井", "清貴"],
-  "土屋南": ["土屋", "南"],
-  "山崎義明": ["山崎", "義明"],
-  "上村慎太郎": ["上村", "慎太郎"],
-  "落合直子": ["落合", "直子"],
-  "眞田英二": ["眞田", "英二"],
-  "仲口博崇": ["仲口", "博崇"],
-  "小川晃司": ["小川", "晃司"],
-  "高橋淳美": ["高橋", "淳美"],
-  "大橋純一郎": ["大橋", "純一郎"],
-  "渡邉真奈美": ["渡邉", "真奈美"],
-  "木下虎之輔": ["木下", "虎之輔"],
-  "宇佐見淳": ["宇佐見", "淳"],
-  "青木幸太郎": ["青木", "幸太郎"],
-  "中嶋健一郎": ["中嶋", "健一郎"],
-
-  "岩崎芳美": ["岩崎", "芳美"],
-  "笠野友紀恵": ["笠野", "友紀恵"],
-  "石井裕美": ["石井", "裕美"],
-  "西澤日花里": ["西澤", "日花里"],
-  "佐々木裕美": ["佐々木", "裕美"],
-  "寺田夢生": ["寺田", "夢生"]
-};
-
-const LASTNAME_DICT = [
-  "宮之原", "宇佐見", "渡邉", "中嶋", "佐々木",
-  "西澤", "笠野", "岩崎", "石井", "寺田",
-  "鳥飼", "奥村", "梶山", "深川", "里岡",
-  "岩永", "長尾", "柏野", "荻野", "根岸",
-  "大町", "大井", "上村", "落合", "眞田",
-  "仲口", "木村", "土屋", "山崎", "小川",
-  "高橋", "大橋", "木下", "青木", "中島",
-  "吉村", "水摩"
-].sort((a, b) => b.length - a.length);
-
-const normalizePlayerName = (name) =>
-  String(name || "").replace(/\s+/g, "").trim();
-
-const splitPlayerName = (rawName) => {
-  const name = normalizePlayerName(rawName);
-
-  if (!name) {
-    return {
-      full: "",
-      last: "",
-      first: "",
-      spaced: ""
-    };
-  }
-
-  const dictHit = NAME_SPLIT_DICT[name];
-  if (Array.isArray(dictHit) && dictHit.length === 2) {
-    return {
-      full: name,
-      last: dictHit[0],
-      first: dictHit[1],
-      spaced: `${dictHit[0]} ${dictHit[1]}`
-    };
-  }
-
-  for (const last of LASTNAME_DICT) {
-    if (!last) continue;
-    if (!name.startsWith(last)) continue;
-
-    const first = name.slice(last.length);
-    if (!first) break;
-
-    return {
-      full: name,
-      last,
-      first,
-      spaced: `${last} ${first}`
-    };
-  }
-
-  return {
-    full: name,
-    last: "",
-    first: "",
-    spaced: name
-  };
-};
 
 const safeNum = (v, digits = 2) => {
   if (v === undefined || v === null || v === "") return "—";
@@ -220,6 +124,21 @@ const buildEntryMeta = (p) => {
   return `${regno} / ${grade} / ${branch} / ${age}`;
 };
 
+const getPlayerDisplayName = (p) => {
+  const reg = String(p?.regno ?? p?.reg ?? "").trim();
+  const master = playerMaster?.[reg];
+
+  if (master) {
+    const sei = String(master.sei || "").trim();
+    const mei = String(master.mei || "").trim();
+
+    if (sei && mei) return `${sei} ${mei}`;
+    if (master.name) return String(master.name).trim();
+  }
+
+  return String(p?.name || "").trim();
+};
+
 const toHM = (x) => {
   const m = String(x || "").match(/(\d{1,2}):(\d{2})/);
   return m ? `${String(m[1]).padStart(2, "0")}:${m[2]}` : "--:--";
@@ -267,6 +186,14 @@ async function fetchJSON(url) {
   const res = await fetch(`${url}${joiner}t=${cacheBust}`, { cache: "no-store" });
   if (!res.ok) throw new Error(url);
   return res.json();
+}
+
+async function loadPlayerMaster() {
+  try {
+    playerMaster = await fetchJSON(PLAYER_MASTER_URL);
+  } catch (e) {
+    playerMaster = {};
+  }
 }
 
 function buildUrls(r, dateStr) {
@@ -334,7 +261,7 @@ function renderEntryTable(boats) {
   $entryTable.innerHTML = boats.map((p) => {
     const fCount = pickF(p);
     const lCount = pickL(p);
-    const splitName = splitPlayerName(p.name);
+    const displayName = getPlayerDisplayName(p);
     const metaText = buildEntryMeta(p);
 
     return `
@@ -343,7 +270,7 @@ function renderEntryTable(boats) {
 
         <div class="entryNameCell">
           <div class="entryMeta">${esc(metaText)}</div>
-          <div class="entryName">${esc(splitName.spaced || p.name)}</div>
+          <div class="entryName">${esc(displayName)}</div>
         </div>
 
         <div class="entryVal">${formatST(pickAvgST(p))}</div>
@@ -554,6 +481,7 @@ async function boot() {
     window.BOAT_CORE_COURSE.boot();
   }
 
+  await loadPlayerMaster();
   await setRace(initialRace);
   requestAnimationFrame(setTopHeight);
 }
