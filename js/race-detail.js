@@ -129,14 +129,15 @@ const getPlayerDisplayName = (p) => {
   const master = playerMaster?.[reg];
 
   if (master) {
-    const sei = String(master.sei || "").trim();
-    const mei = String(master.mei || "").trim();
+    const sei = String(master?.sei ?? "").trim();
+    const mei = String(master?.mei ?? "").trim();
+    const masterName = String(master?.name ?? "").trim();
 
     if (sei && mei) return `${sei} ${mei}`;
-    if (master.name) return String(master.name).trim();
+    if (masterName) return masterName;
   }
 
-  return String(p?.name || "").trim();
+  return String(p?.name ?? "").trim();
 };
 
 const toHM = (x) => {
