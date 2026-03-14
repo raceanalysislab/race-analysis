@@ -41,6 +41,13 @@ const esc = (s) =>
     "'": "&#39;"
   }[c]));
 
+/*
+  まずフルネーム完全一致辞書
+  ↓
+  次に名字辞書で前方一致
+  ↓
+  どちらも無ければ無理に分割しない
+*/
 const NAME_SPLIT_DICT = {
   "宮之原輝紀": ["宮之原", "輝紀"],
   "鳥飼眞": ["鳥飼", "眞"],
@@ -53,40 +60,44 @@ const NAME_SPLIT_DICT = {
   "深川和仁": ["深川", "和仁"],
   "里岡右貴": ["里岡", "右貴"],
   "水摩敦": ["水摩", "敦"],
-  "長尾章平": ["長尾", "章平"],
-  "岩永雅人": ["岩永", "雅人"],
-  "長尾章平": ["長尾", "章平"],
   "中島友和": ["中島", "友和"],
   "柏野幸二": ["柏野", "幸二"],
   "木村浩士": ["木村", "浩士"],
   "荻野裕介": ["荻野", "裕介"],
   "根岸真優": ["根岸", "真優"],
   "大井清貴": ["大井", "清貴"],
-  "奥村明日香": ["奥村", "明日香"],
   "土屋南": ["土屋", "南"],
-  "岩永雅人": ["岩永", "雅人"],
   "山崎義明": ["山崎", "義明"],
-  "梶山涼斗": ["梶山", "涼斗"],
-  "深川和仁": ["深川", "和仁"],
-  "里岡右貴": ["里岡", "右貴"],
   "上村慎太郎": ["上村", "慎太郎"],
   "落合直子": ["落合", "直子"],
   "眞田英二": ["眞田", "英二"],
   "仲口博崇": ["仲口", "博崇"],
   "小川晃司": ["小川", "晃司"],
   "高橋淳美": ["高橋", "淳美"],
-  "長尾章平": ["長尾", "章平"],
-  "鳥飼眞": ["鳥飼", "眞"],
-  "土屋南": ["土屋", "南"],
-  "大町利克": ["大町", "利克"],
-  "岩永雅人": ["岩永", "雅人"]
+  "大橋純一郎": ["大橋", "純一郎"],
+  "渡邉真奈美": ["渡邉", "真奈美"],
+  "木下虎之輔": ["木下", "虎之輔"],
+  "宇佐見淳": ["宇佐見", "淳"],
+  "青木幸太郎": ["青木", "幸太郎"],
+  "中嶋健一郎": ["中嶋", "健一郎"]
 };
+
+const LASTNAME_DICT = [
+  "宮之原", "宇佐見", "渡邉", "中嶋", "鳥飼",
+  "奥村", "梶山", "深川", "里岡", "岩永",
+  "長尾", "柏野", "荻野", "根岸", "大町",
+  "大井", "上村", "落合", "眞田", "仲口",
+  "木村", "土屋", "山崎", "小川", "高橋",
+  "大橋", "木下", "青木", "中島", "吉村",
+  "水摩"
+].sort((a, b) => b.length - a.length);
 
 const normalizePlayerName = (name) =>
   String(name || "").replace(/\s+/g, "").trim();
 
 const splitPlayerName = (rawName) => {
   const name = normalizePlayerName(rawName);
+
   if (!name) {
     return {
       full: "",
@@ -106,49 +117,26 @@ const splitPlayerName = (rawName) => {
     };
   }
 
-  const len = name.length;
+  for (const last of LASTNAME_DICT) {
+    if (!last) continue;
+    if (!name.startsWith(last)) continue;
 
-  if (len <= 2) {
+    const first = name.slice(last.length);
+    if (!first) break;
+
     return {
       full: name,
-      last: "",
-      first: "",
-      spaced: name
-    };
-  }
-
-  if (len === 3) {
-    return {
-      full: name,
-      last: name.slice(0, 2),
-      first: name.slice(2),
-      spaced: `${name.slice(0, 2)} ${name.slice(2)}`
-    };
-  }
-
-  if (len === 4) {
-    return {
-      full: name,
-      last: name.slice(0, 2),
-      first: name.slice(2),
-      spaced: `${name.slice(0, 2)} ${name.slice(2)}`
-    };
-  }
-
-  if (len === 5) {
-    return {
-      full: name,
-      last: name.slice(0, 3),
-      first: name.slice(3),
-      spaced: `${name.slice(0, 3)} ${name.slice(3)}`
+      last,
+      first,
+      spaced: `${last} ${first}`
     };
   }
 
   return {
     full: name,
-    last: name.slice(0, 3),
-    first: name.slice(3),
-    spaced: `${name.slice(0, 3)} ${name.slice(3)}`
+    last: "",
+    first: "",
+    spaced: name
   };
 };
 
