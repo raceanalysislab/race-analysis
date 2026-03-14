@@ -298,7 +298,7 @@ body{
 
 .entryHead{
   display:grid;
-  grid-template-columns:44px minmax(0,1.32fr) 44px 42px 64px 64px 64px;
+  grid-template-columns:44px minmax(0,1.45fr) 44px 30px 64px 64px 64px;
   align-items:stretch;
   min-height:76px;
   background:#eef1f4;
@@ -344,7 +344,7 @@ body{
 
 .entryRow{
   display:grid;
-  grid-template-columns:44px minmax(0,1.32fr) 44px 42px 64px 64px 64px;
+  grid-template-columns:44px minmax(0,1.45fr) 44px 30px 64px 64px 64px;
   min-height:64px;
   border-bottom:1px solid var(--line);
   background:#fff;
@@ -391,7 +391,7 @@ body{
 }
 
 .entryName{
-  font-size:15px;
+  font-size:16px;
   line-height:1.02;
   font-weight:900;
   color:#151b24;
@@ -423,7 +423,7 @@ body{
 }
 
 .entryVal--fl{
-  padding:2px 0;
+  padding:0;
 }
 
 .entryStatBlock,
@@ -438,7 +438,7 @@ body{
 }
 
 .entryStatBlock--fl{
-  gap:3px;
+  gap:0;
 }
 
 .entryStatMain{
@@ -467,6 +467,11 @@ body{
 
 .entryStatMain--f,
 .entryStatSub--l{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  min-height:18px;
   font-size:10px;
   line-height:1;
   font-weight:900;
@@ -475,10 +480,13 @@ body{
 
 .entryStatMain--f{
   color:#d92d20;
+  border-bottom:1px solid var(--line);
+  padding-bottom:1px;
 }
 
 .entryStatSub--l{
   color:#2563eb;
+  padding-top:1px;
 }
 
 .entryMotorNo{
@@ -808,7 +816,7 @@ body{
   }
 
   .entryHead{
-    grid-template-columns:42px minmax(0,1.30fr) 42px 38px 58px 58px 58px;
+    grid-template-columns:42px minmax(0,1.45fr) 42px 26px 58px 58px 58px;
     min-height:72px;
   }
 
@@ -821,7 +829,7 @@ body{
   }
 
   .entryRow{
-    grid-template-columns:42px minmax(0,1.30fr) 42px 38px 58px 58px 58px;
+    grid-template-columns:42px minmax(0,1.45fr) 42px 26px 58px 58px 58px;
     min-height:60px;
   }
 
@@ -835,7 +843,7 @@ body{
   }
 
   .entryName{
-    font-size:15px;
+    font-size:16px;
   }
 
   .entryVal{
@@ -856,7 +864,8 @@ body{
 
   .entryStatMain--f,
   .entryStatSub--l{
-    font-size:9px;
+    min-height:16px;
+    font-size:8px;
   }
 
   .entryMotorNo{
