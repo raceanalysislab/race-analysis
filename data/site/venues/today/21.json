@@ -1,13 +1,13 @@
 {
   "slot": "today",
-  "date": "2026-03-14",
+  "date": "2026-03-15",
   "name": "芦屋",
   "jcd": "21",
-  "next_race": null,
-  "next_display": null,
-  "day": 3,
+  "next_race": 1,
+  "next_display": "1R 08:35",
+  "day": 4,
   "total_days": null,
-  "day_label": "3日目",
+  "day_label": "4日目",
   "grade_label": "一般",
   "event_title": "西スポ杯争奪芦屋カップ",
   "first_race_time": "08:35",
@@ -52,15 +52,15 @@
     },
     {
       "rno": 10,
-      "cutoff": "13:02"
+      "cutoff": "13:03"
     },
     {
       "rno": 11,
-      "cutoff": "13:38"
+      "cutoff": "13:39"
     },
     {
       "rno": 12,
-      "cutoff": "14:14"
+      "cutoff": "14:16"
     }
   ]
 }
