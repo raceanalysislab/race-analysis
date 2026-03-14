@@ -205,6 +205,20 @@ const renderFLValue = (label, count) => {
   return `${label}${count}`;
 };
 
+const buildEntryMeta = (p) => {
+  const regno = safeInt(p?.regno);
+  const grade = String(p?.grade ?? "").trim() || "—";
+  const branch = String(p?.branch ?? "").trim() || "—";
+
+  let age = "—";
+  if (p?.age !== undefined && p?.age !== null && p?.age !== "") {
+    const n = Number(p.age);
+    age = Number.isFinite(n) ? `${Math.trunc(n)}歳` : `${String(p.age).trim()}歳`;
+  }
+
+  return `${regno} / ${grade} / ${branch} / ${age}`;
+};
+
 const toHM = (x) => {
   const m = String(x || "").match(/(\d{1,2}):(\d{2})/);
   return m ? `${String(m[1]).padStart(2, "0")}:${m[2]}` : "--:--";
@@ -320,15 +334,14 @@ function renderEntryTable(boats) {
     const fCount = pickF(p);
     const lCount = pickL(p);
     const splitName = splitPlayerName(p.name);
+    const metaText = buildEntryMeta(p);
 
     return `
       <div class="entryRow">
         <div class="entryWaku w${esc(p.waku)}">${esc(p.waku)}</div>
 
         <div class="entryNameCell">
-          <div class="entryMeta">
-            ${esc(p.regno)} / ${esc(p.grade)} / ${esc(p.branch)} / ${esc(p.age)}歳
-          </div>
+          <div class="entryMeta">${esc(metaText)}</div>
           <div class="entryName">${esc(splitName.spaced || p.name)}</div>
         </div>
 
