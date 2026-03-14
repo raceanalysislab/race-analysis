@@ -87,6 +87,25 @@ const pickNat3 = (p) => pickValue(p, ["nat_3", "nat3", "nat_three"]);
 const pickLoc3 = (p) => pickValue(p, ["loc_3", "loc3", "loc_three"]);
 const pickMotor3 = (p) => pickValue(p, ["motor_3", "motor3", "motor_three"]);
 
+const pickF = (p) => {
+  const v = pickValue(p, ["f", "F", "f_count", "fCount", "f_num", "fNum"]);
+  if (v === "" || v === null || v === undefined) return 0;
+  const n = Number(v);
+  return Number.isFinite(n) ? Math.max(0, Math.trunc(n)) : 0;
+};
+
+const pickL = (p) => {
+  const v = pickValue(p, ["l", "L", "l_count", "lCount", "l_num", "lNum"]);
+  if (v === "" || v === null || v === undefined) return 0;
+  const n = Number(v);
+  return Number.isFinite(n) ? Math.max(0, Math.trunc(n)) : 0;
+};
+
+const renderFLValue = (label, count) => {
+  if (!count) return "—";
+  return `${label}${count}`;
+};
+
 const toHM = (x) => {
   const m = String(x || "").match(/(\d{1,2}):(\d{2})/);
   return m ? `${String(m[1]).padStart(2, "0")}:${m[2]}` : "--:--";
@@ -198,44 +217,56 @@ function updateUrlRace(r) {
 }
 
 function renderEntryTable(boats) {
-  $entryTable.innerHTML = boats.map((p) => `
-    <div class="entryRow">
-      <div class="entryWaku w${esc(p.waku)}">${esc(p.waku)}</div>
+  $entryTable.innerHTML = boats.map((p) => {
+    const fCount = pickF(p);
+    const lCount = pickL(p);
 
-      <div class="entryNameCell">
-        <div class="entryMeta">
-          ${esc(p.regno)} / ${esc(p.grade)} / ${esc(p.branch)} / ${esc(p.age)}歳
+    return `
+      <div class="entryRow">
+        <div class="entryWaku w${esc(p.waku)}">${esc(p.waku)}</div>
+
+        <div class="entryNameCell">
+          <div class="entryMeta">
+            ${esc(p.regno)} / ${esc(p.grade)} / ${esc(p.branch)} / ${esc(p.age)}歳
+          </div>
+          <div class="entryName">${esc(p.name)}</div>
         </div>
-        <div class="entryName">${esc(p.name)}</div>
-      </div>
 
-      <div class="entryVal">${formatST(pickAvgST(p))}</div>
+        <div class="entryVal">${formatST(pickAvgST(p))}</div>
 
-      <div class="entryVal entryVal--stack">
-        <div class="entryStatBlock">
-          <div class="entryStatMain">${safeNum(p.nat_win)}</div>
-          <div class="entryStatSub">${safeNum(p.nat_2)}</div>
-          <div class="entryStatSub">${safeNum(pickNat3(p))}</div>
+        <div class="entryVal entryVal--stack entryVal--fl">
+          <div class="entryStatBlock entryStatBlock--fl">
+            <div class="entryStatMain entryStatMain--f">${esc(renderFLValue("F", fCount))}</div>
+            <div class="entryStatSub entryStatSub--l">${esc(renderFLValue("L", lCount))}</div>
+          </div>
+        </div>
+
+        <div class="entryVal entryVal--stack">
+          <div class="entryStatBlock">
+            <div class="entryStatMain">${safeNum(p.nat_win)}</div>
+            <div class="entryStatSub">${safeNum(p.nat_2)}</div>
+            <div class="entryStatSub">${safeNum(pickNat3(p))}</div>
+          </div>
+        </div>
+
+        <div class="entryVal entryVal--stack">
+          <div class="entryStatBlock">
+            <div class="entryStatMain">${safeNum(p.loc_win)}</div>
+            <div class="entryStatSub">${safeNum(p.loc_2)}</div>
+            <div class="entryStatSub">${safeNum(pickLoc3(p))}</div>
+          </div>
+        </div>
+
+        <div class="entryVal entryVal--stack">
+          <div class="entryMotorBlock">
+            <div class="entryMotorNo">${safeInt(p.motor_no)}</div>
+            <div class="entryMotorRate">${safeNum(p.motor_2)}</div>
+            <div class="entryMotorRate">${safeNum(pickMotor3(p))}</div>
+          </div>
         </div>
       </div>
-
-      <div class="entryVal entryVal--stack">
-        <div class="entryStatBlock">
-          <div class="entryStatMain">${safeNum(p.loc_win)}</div>
-          <div class="entryStatSub">${safeNum(p.loc_2)}</div>
-          <div class="entryStatSub">${safeNum(pickLoc3(p))}</div>
-        </div>
-      </div>
-
-      <div class="entryVal entryVal--stack">
-        <div class="entryMotorBlock">
-          <div class="entryMotorNo">${safeInt(p.motor_no)}</div>
-          <div class="entryMotorRate">${safeNum(p.motor_2)}</div>
-          <div class="entryMotorRate">${safeNum(pickMotor3(p))}</div>
-        </div>
-      </div>
-    </div>
-  `).join("");
+    `;
+  }).join("");
 }
 
 function renderRaceJSON(r, json) {
