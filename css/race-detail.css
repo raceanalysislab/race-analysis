@@ -381,15 +381,15 @@ body{
 }
 
 .entryMeta{
-  font-size:9px;
-  line-height:1.14;
+  font-size:8.5px;
+  line-height:1.12;
   color:#6e7785;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
-  margin-bottom:2px;
+  margin-bottom:3px;
   font-weight:600;
-  letter-spacing:.01em;
+  letter-spacing:0;
   text-align:center;
   width:100%;
 }
@@ -402,13 +402,12 @@ body{
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
-  letter-spacing:-.015em;
+  letter-spacing:.02em;
   text-align:center;
   width:100%;
   font-kerning:normal;
   font-feature-settings:"palt" 1;
-  transform:scaleX(.98);
-  transform-origin:center center;
+  transform:none;
 }
 
 .entryVal{
@@ -849,8 +848,8 @@ body{
 
   .entryMeta{
     font-size:8px;
-    line-height:1.12;
-    margin-bottom:1px;
+    line-height:1.1;
+    margin-bottom:2px;
     font-weight:600;
     letter-spacing:0;
   }
@@ -859,8 +858,7 @@ body{
     font-size:16px;
     line-height:1.03;
     font-weight:800;
-    letter-spacing:-.02em;
-    transform:scaleX(.985);
+    letter-spacing:.015em;
   }
 
   .entryVal{
