@@ -298,7 +298,7 @@ body{
 
 .entryHead{
   display:grid;
-  grid-template-columns:44px minmax(0,1.32fr) 44px 64px 64px 64px;
+  grid-template-columns:44px minmax(0,1.32fr) 44px 42px 64px 64px 64px;
   align-items:stretch;
   min-height:76px;
   background:#eef1f4;
@@ -344,7 +344,7 @@ body{
 
 .entryRow{
   display:grid;
-  grid-template-columns:44px minmax(0,1.32fr) 44px 64px 64px 64px;
+  grid-template-columns:44px minmax(0,1.32fr) 44px 42px 64px 64px 64px;
   min-height:64px;
   border-bottom:1px solid var(--line);
   background:#fff;
@@ -422,6 +422,10 @@ body{
   padding:2px 1px;
 }
 
+.entryVal--fl{
+  padding:2px 0;
+}
+
 .entryStatBlock,
 .entryMotorBlock{
   width:100%;
@@ -431,6 +435,10 @@ body{
   align-items:center;
   justify-content:center;
   gap:2px;
+}
+
+.entryStatBlock--fl{
+  gap:3px;
 }
 
 .entryStatMain{
@@ -455,6 +463,22 @@ body{
   white-space:nowrap;
   text-align:center;
   letter-spacing:-.02em;
+}
+
+.entryStatMain--f,
+.entryStatSub--l{
+  font-size:10px;
+  line-height:1;
+  font-weight:900;
+  letter-spacing:-.02em;
+}
+
+.entryStatMain--f{
+  color:#d92d20;
+}
+
+.entryStatSub--l{
+  color:#2563eb;
 }
 
 .entryMotorNo{
@@ -784,7 +808,7 @@ body{
   }
 
   .entryHead{
-    grid-template-columns:42px minmax(0,1.30fr) 42px 58px 58px 58px;
+    grid-template-columns:42px minmax(0,1.30fr) 42px 38px 58px 58px 58px;
     min-height:72px;
   }
 
@@ -797,7 +821,7 @@ body{
   }
 
   .entryRow{
-    grid-template-columns:42px minmax(0,1.30fr) 42px 58px 58px 58px;
+    grid-template-columns:42px minmax(0,1.30fr) 42px 38px 58px 58px 58px;
     min-height:60px;
   }
 
@@ -827,6 +851,11 @@ body{
   }
 
   .entryStatSub{
+    font-size:9px;
+  }
+
+  .entryStatMain--f,
+  .entryStatSub--l{
     font-size:9px;
   }
 
