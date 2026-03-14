@@ -102,7 +102,7 @@ const pickL = (p) => {
 };
 
 const renderFLValue = (label, count) => {
-  if (!count) return "—";
+  if (!count) return "";
   return `${label}${count}`;
 };
 
