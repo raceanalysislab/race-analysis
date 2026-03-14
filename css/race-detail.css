@@ -21,11 +21,12 @@ html, body{
   min-height:100%;
   background:var(--bg);
   color:var(--text);
-  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Hiragino Sans","Noto Sans JP","Yu Gothic",sans-serif;
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic UI","Yu Gothic","Noto Sans JP",sans-serif;
   -webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale;
   text-rendering:optimizeLegibility;
   overscroll-behavior-y:none;
+  font-feature-settings:"kern" 1;
 }
 
 body{
@@ -61,8 +62,8 @@ body{
 .raceBrand{
   font-size:10px;
   line-height:1;
-  font-weight:800;
-  letter-spacing:.18em;
+  font-weight:700;
+  letter-spacing:.16em;
   color:var(--muted);
 }
 
@@ -76,8 +77,8 @@ body{
 .raceVenue{
   font-size:29px;
   line-height:1;
-  font-weight:900;
-  letter-spacing:-.03em;
+  font-weight:800;
+  letter-spacing:-.02em;
   color:#101722;
   white-space:nowrap;
   flex:0 0 auto;
@@ -93,10 +94,11 @@ body{
   background:#fff;
   font-size:11px;
   line-height:1;
-  font-weight:900;
+  font-weight:700;
   color:#2a3240;
   white-space:nowrap;
   flex:0 0 auto;
+  letter-spacing:-.01em;
 }
 
 .raceEventTitle{
@@ -108,7 +110,7 @@ body{
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
-  letter-spacing:-.01em;
+  letter-spacing:-.015em;
 }
 
 .raceMeta{
@@ -128,9 +130,9 @@ body{
   white-space:nowrap;
   font-size:12px;
   line-height:1.1;
-  font-weight:800;
+  font-weight:700;
   color:#5f6978;
-  letter-spacing:-.01em;
+  letter-spacing:-.015em;
 }
 
 .raceBtn{
@@ -142,7 +144,7 @@ body{
   height:48px;
   padding:0 14px;
   font-size:16px;
-  font-weight:900;
+  font-weight:800;
   flex:0 0 auto;
   letter-spacing:-.01em;
 }
@@ -170,9 +172,9 @@ body{
   background:#f7f8fa;
   color:#3e4858;
   font-size:15px;
-  font-weight:900;
+  font-weight:700;
   line-height:1;
-  letter-spacing:-.01em;
+  letter-spacing:-.015em;
 }
 
 .raceTab:first-child{
@@ -210,8 +212,8 @@ body{
 
 .sectionTitle{
   font-size:14px;
-  font-weight:900;
-  letter-spacing:-.01em;
+  font-weight:800;
+  letter-spacing:-.015em;
   color:#111826;
 }
 
@@ -237,11 +239,11 @@ body{
   height:42px;
   padding:0 14px;
   font-size:14px;
-  font-weight:900;
+  font-weight:700;
   white-space:nowrap;
   flex:1 0 auto;
   min-width:104px;
-  letter-spacing:-.01em;
+  letter-spacing:-.015em;
 }
 
 .viewTab:first-child{
@@ -325,8 +327,8 @@ body{
   width:100%;
   font-size:11px;
   line-height:1;
-  font-weight:900;
-  letter-spacing:-.03em;
+  font-weight:700;
+  letter-spacing:-.02em;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:clip;
@@ -337,9 +339,9 @@ body{
   width:100%;
   font-size:9px;
   line-height:1;
-  font-weight:800;
+  font-weight:600;
   color:#6c7584;
-  letter-spacing:-.03em;
+  letter-spacing:-.02em;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:clip;
@@ -350,9 +352,9 @@ body{
   width:100%;
   font-size:7px;
   line-height:1;
-  font-weight:800;
+  font-weight:600;
   color:#7a8391;
-  letter-spacing:-.03em;
+  letter-spacing:-.02em;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:clip;
@@ -406,9 +408,9 @@ body{
   align-items:center;
   justify-content:center;
   font-size:19px;
-  font-weight:900;
+  font-weight:800;
   border-right:1px solid var(--line);
-  letter-spacing:-.02em;
+  letter-spacing:-.015em;
 }
 
 .entryWaku.w1{ background:#ffffff; color:#111827; }
@@ -437,8 +439,8 @@ body{
   overflow:hidden;
   text-overflow:ellipsis;
   margin-bottom:4px;
-  font-weight:700;
-  letter-spacing:-.01em;
+  font-weight:600;
+  letter-spacing:-.015em;
   text-align:center;
   width:100%;
 }
@@ -446,16 +448,16 @@ body{
 .entryName{
   font-size:17px;
   line-height:1.04;
-  font-weight:900;
+  font-weight:700;
   color:#151b24;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
-  letter-spacing:.01em;
+  letter-spacing:-.01em;
   text-align:center;
   width:100%;
   font-kerning:normal;
-  font-feature-settings:"palt" 1;
+  font-feature-settings:"kern" 1;
   transform:none;
 }
 
@@ -467,12 +469,12 @@ body{
   font-variant-numeric:tabular-nums;
   font-size:17px;
   line-height:1;
-  font-weight:900;
+  font-weight:700;
   color:#101722;
   padding:0 2px;
   border-right:1px solid var(--line);
   min-width:0;
-  letter-spacing:-.02em;
+  letter-spacing:-.015em;
 }
 .entryVal:last-child{ border-right:none; }
 
@@ -508,11 +510,12 @@ body{
   width:100%;
   font-size:17px;
   line-height:1;
-  font-weight:900;
+  font-weight:700;
   color:#101722;
   white-space:nowrap;
   text-align:center;
-  letter-spacing:-.02em;
+  letter-spacing:-.015em;
+  font-variant-numeric:tabular-nums;
 }
 
 .entryStatSub{
@@ -520,11 +523,12 @@ body{
   width:100%;
   font-size:17px;
   line-height:1;
-  font-weight:900;
+  font-weight:700;
   color:#424b59;
   white-space:nowrap;
   text-align:center;
-  letter-spacing:-.02em;
+  letter-spacing:-.015em;
+  font-variant-numeric:tabular-nums;
 }
 
 .entryStatMain--f,
@@ -537,9 +541,10 @@ body{
   min-height:0;
   font-size:17px;
   line-height:1;
-  font-weight:900;
-  letter-spacing:-.02em;
+  font-weight:700;
+  letter-spacing:-.015em;
   text-align:center;
+  font-variant-numeric:tabular-nums;
 }
 
 .entryStatMain--f{
@@ -555,24 +560,26 @@ body{
   display:block;
   width:100%;
   font-size:17px;
-  font-weight:900;
+  font-weight:700;
   line-height:1;
   color:#101722;
   white-space:nowrap;
   text-align:center;
-  letter-spacing:-.02em;
+  letter-spacing:-.015em;
+  font-variant-numeric:tabular-nums;
 }
 
 .entryMotorRate{
   display:block;
   width:100%;
   font-size:17px;
-  font-weight:900;
+  font-weight:700;
   line-height:1;
   color:#424b59;
   white-space:nowrap;
   text-align:center;
-  letter-spacing:-.02em;
+  letter-spacing:-.015em;
+  font-variant-numeric:tabular-nums;
 }
 
 /* course */
@@ -607,11 +614,11 @@ body{
   height:40px;
   padding:0 12px;
   font-size:11px;
-  font-weight:900;
+  font-weight:700;
   white-space:nowrap;
   flex:1 0 auto;
   min-width:150px;
-  letter-spacing:-.01em;
+  letter-spacing:-.015em;
 }
 
 .courseInnerTab:first-child{
@@ -635,11 +642,11 @@ body{
 .courseBlockTitle{
   font-size:12px;
   line-height:1.2;
-  font-weight:900;
+  font-weight:800;
   color:#111826;
   padding:10px 12px 8px;
   border-bottom:1px solid var(--line);
-  letter-spacing:-.01em;
+  letter-spacing:-.015em;
 }
 
 .courseBlockSub{
@@ -683,7 +690,7 @@ body{
   text-align:center;
   font-size:9px;
   line-height:1.1;
-  font-weight:800;
+  font-weight:700;
   color:#5f6978;
   padding:0 4px;
   border-right:1px solid var(--line);
@@ -691,7 +698,7 @@ body{
   writing-mode:horizontal-tb;
   text-orientation:mixed;
   word-break:keep-all;
-  letter-spacing:-.01em;
+  letter-spacing:-.015em;
 }
 
 .courseGridHead__name{
@@ -721,8 +728,9 @@ body{
   align-items:center;
   justify-content:center;
   font-size:18px;
-  font-weight:900;
+  font-weight:800;
   border-right:1px solid var(--line);
+  letter-spacing:-.015em;
 }
 
 .courseGridWaku.w1{ background:#ffffff; color:#111827; }
@@ -749,16 +757,19 @@ body{
   overflow:hidden;
   text-overflow:ellipsis;
   margin-bottom:2px;
+  font-weight:600;
+  letter-spacing:-.015em;
 }
 
 .courseGridPlayer{
   font-size:13px;
   line-height:1.03;
-  font-weight:900;
+  font-weight:700;
   color:#151b24;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
+  letter-spacing:-.01em;
 }
 
 .courseGridCell{
@@ -769,11 +780,12 @@ body{
   font-variant-numeric:tabular-nums;
   font-size:11px;
   line-height:1.05;
-  font-weight:900;
+  font-weight:700;
   color:#101722;
   padding:0 5px;
   border-right:1px solid var(--line);
   white-space:nowrap;
+  letter-spacing:-.015em;
 }
 .courseGridCell:last-child{ border-right:none; }
 
@@ -793,9 +805,10 @@ body{
 
 .panelPlaceholder__title{
   font-size:17px;
-  font-weight:900;
+  font-weight:800;
   color:#0f172a;
   margin-bottom:8px;
+  letter-spacing:-.015em;
 }
 
 .panelPlaceholder__text{
@@ -803,6 +816,8 @@ body{
   line-height:1.7;
   color:#64748b;
   max-width:260px;
+  font-weight:500;
+  letter-spacing:-.01em;
 }
 
 .err{
@@ -813,6 +828,8 @@ body{
   font-size:12px;
   line-height:1.7;
   word-break:break-word;
+  font-weight:600;
+  letter-spacing:-.01em;
 }
 
 @media (max-width: 390px){
@@ -907,15 +924,15 @@ body{
     font-size:7.5px;
     line-height:1.08;
     margin-bottom:4px;
-    font-weight:700;
-    letter-spacing:-.01em;
+    font-weight:600;
+    letter-spacing:-.015em;
   }
 
   .entryName{
     font-size:16px;
     line-height:1.03;
-    font-weight:900;
-    letter-spacing:.01em;
+    font-weight:700;
+    letter-spacing:-.01em;
   }
 
   .entryVal{
