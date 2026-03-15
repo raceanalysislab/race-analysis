@@ -99,9 +99,18 @@
 .courseGridCell--head.w5{ background:#e6d74a; color:#1e2430; }
 .courseGridCell--head.w6{ background:#39b36b; color:#ffffff; }
 
+/* 名前セル：枠色に合わせた薄背景 */
 .courseGridCell--name{
   padding:4px 0;
+  background:#fff;
 }
+
+.courseGridCell--name.w1{ background:#f7f7f8; }
+.courseGridCell--name.w2{ background:#eef1f5; }
+.courseGridCell--name.w3{ background:#fbeaea; }
+.courseGridCell--name.w4{ background:#eaf2ff; }
+.courseGridCell--name.w5{ background:#faf7df; }
+.courseGridCell--name.w6{ background:#edf8f0; }
 
 .courseGridNameVertical{
   height:104px;
@@ -123,6 +132,47 @@
   font-kerning:normal;
   font-feature-settings:"kern" 1;
   text-shadow:0 0 0.01px rgba(0,0,0,.35);
+}
+
+/* 級表示 */
+.courseGridCell--grade{
+  background:#fff;
+}
+
+.courseGrade{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-variant-numeric:tabular-nums;
+  font-size:11px;
+  line-height:1;
+  font-weight:900;
+  letter-spacing:-.02em;
+  white-space:nowrap;
+}
+
+.grade-A1,
+.courseGrade.grade-A1,
+.courseGridCell--grade.grade-A1{
+  color:#c9a227;
+}
+
+.grade-A2,
+.courseGrade.grade-A2,
+.courseGridCell--grade.grade-A2{
+  color:#111827;
+}
+
+.grade-B1,
+.courseGrade.grade-B1,
+.courseGridCell--grade.grade-B1{
+  color:#8a94a6;
+}
+
+.grade-B2,
+.courseGrade.grade-B2,
+.courseGridCell--grade.grade-B2{
+  color:#1fa84a;
 }
 
 .courseGridMetric{
@@ -186,6 +236,7 @@
     letter-spacing:.03em;
   }
 
+  .courseGrade,
   .courseGridMetric{
     font-size:10px;
   }
