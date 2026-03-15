@@ -56,7 +56,6 @@
   min-height:118px;
 }
 
-/* ここを詰める */
 .courseGridRow--grade{
   min-height:42px;
 }
@@ -68,8 +67,9 @@
   min-height:34px;
 }
 
+/* コース系をまとめて圧縮 */
 .courseGridRow--course{
-  min-height:42px;
+  min-height:34px;
 }
 
 .courseGridCell{
@@ -103,7 +103,6 @@
 .courseGridCell--head.w5{ background:#e6d74a; color:#1e2430; }
 .courseGridCell--head.w6{ background:#39b36b; color:#ffffff; }
 
-/* 名前セル：枠色に合わせた薄背景 */
 .courseGridCell--name{
   padding:4px 0;
   background:#fff;
@@ -126,19 +125,16 @@
   white-space:nowrap;
   overflow:hidden;
   text-overflow:clip;
-
   font-size:17px;
   line-height:1.05;
   font-weight:800;
   letter-spacing:.04em;
   color:#0f172a;
-
   font-kerning:normal;
   font-feature-settings:"kern" 1;
   text-shadow:0 0 0.01px rgba(0,0,0,.35);
 }
 
-/* 級表示：名前セルと同じ薄背景を敷く */
 .courseGridCell--grade{
   background:#fff;
 }
@@ -162,7 +158,6 @@
   white-space:nowrap;
 }
 
-/* 級色 */
 .grade-A1,
 .courseGrade.grade-A1,
 .courseGridCell--grade.grade-A1{
@@ -189,7 +184,7 @@
 
 .courseGridMetric{
   font-variant-numeric:tabular-nums;
-  font-size:11px;
+  font-size:10px;
   line-height:1;
   font-weight:900;
   letter-spacing:-.02em;
@@ -224,7 +219,6 @@
     min-height:108px;
   }
 
-  /* ここも詰める */
   .courseGridRow--grade{
     min-height:40px;
   }
@@ -237,7 +231,7 @@
   }
 
   .courseGridRow--course{
-    min-height:40px;
+    min-height:32px;
   }
 
   .courseGridCell--head{
@@ -254,7 +248,7 @@
 
   .courseGrade,
   .courseGridMetric{
-    font-size:10px;
+    font-size:9px;
   }
 
   .courseGridLabel{
