@@ -431,7 +431,7 @@ body{
 
 .entryNameCell{
   min-width:0;
-  padding:5px 8px;
+  padding:6px 6px;
   border-right:1px solid var(--line);
   display:flex;
   flex-direction:column;
@@ -447,26 +447,27 @@ body{
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
-  margin-bottom:4px;
+  margin-bottom:5px;
   font-weight:600;
-  letter-spacing:-.015em;
+  letter-spacing:-.01em;
   text-align:center;
   width:100%;
 }
 
 .entryName{
-  font-size:17px;
-  line-height:1.04;
-  font-weight:700;
-  color:#151b24;
+  font-size:18px;
+  line-height:1.06;
+  font-weight:800;
+  color:#0f172a;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
-  letter-spacing:-.01em;
+  letter-spacing:.02em;
   text-align:center;
   width:100%;
   font-kerning:normal;
   font-feature-settings:"kern" 1;
+  text-shadow:0 0 0.01px rgba(0,0,0,.35);
   transform:none;
 }
 
@@ -939,14 +940,14 @@ body{
     line-height:1.08;
     margin-bottom:4px;
     font-weight:600;
-    letter-spacing:-.015em;
+    letter-spacing:-.01em;
   }
 
   .entryName{
     font-size:17px;
-    line-height:1.03;
-    font-weight:700;
-    letter-spacing:-.01em;
+    line-height:1.05;
+    font-weight:800;
+    letter-spacing:.01em;
   }
 
   .entryVal{
