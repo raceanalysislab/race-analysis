@@ -85,7 +85,7 @@
       }
     });
 
-    return ORDER.map((waku) => byWaku.get(waku) || { waku, name: "—" });
+    return ORDER.map((waku) => byWaku.get(waku) || { waku, name: "—", grade: "—" });
   };
 
   const getAvgStValue = (boat) => {
@@ -109,6 +109,22 @@
       "recent_meet_st"
     ]);
     return formatST(v);
+  };
+
+  const normalizeGrade = (grade) => {
+    const g = String(grade ?? "").trim().toUpperCase();
+    if (g === "A1" || g === "A2" || g === "B1" || g === "B2") return g;
+    return "";
+  };
+
+  const getGradeClass = (boat) => {
+    const g = normalizeGrade(boat?.grade);
+    return g ? `grade-${g}` : "";
+  };
+
+  const getWakuClass = (boat) => {
+    const w = Number(boat?.waku);
+    return w >= 1 && w <= 6 ? `w${w}` : "";
   };
 
   const getGradeText = (boat) => {
@@ -188,7 +204,7 @@
   const renderHeadRow = (boats) => `
     <div class="courseGridRow courseGridRow--head">
       ${boats.map((boat) => `
-        <div class="courseGridCell courseGridCell--head w${esc(boat.waku)}">
+        <div class="courseGridCell courseGridCell--head ${esc(getWakuClass(boat))}">
           ${esc(boat.waku)}
         </div>
       `).join("")}
@@ -200,7 +216,7 @@
     <div class="courseGridRow courseGridRow--name">
       ${boats.map((boat) => `
         <a
-          class="courseGridCell courseGridCell--name courseGridCell--nameLink"
+          class="courseGridCell courseGridCell--name courseGridCell--nameLink ${esc(getWakuClass(boat))}"
           href="${esc(buildPlayerHref(boat))}"
           data-player-link="1"
         >
@@ -208,6 +224,17 @@
         </a>
       `).join("")}
       <div class="courseGridLabel">選手名</div>
+    </div>
+  `;
+
+  const renderGradeRow = (boats) => `
+    <div class="courseGridRow courseGridRow--grade">
+      ${boats.map((boat) => `
+        <div class="courseGridCell courseGridCell--grade ${esc(getGradeClass(boat))}">
+          <div class="courseGrade ${esc(getGradeClass(boat))}">${esc(getGradeText(boat))}</div>
+        </div>
+      `).join("")}
+      <div class="courseGridLabel">級</div>
     </div>
   `;
 
@@ -229,7 +256,7 @@
       <div class="courseGrid">
         ${renderHeadRow(boats)}
         ${renderNameRow(boats)}
-        ${renderSimpleRow(boats, "級", getGradeText, "courseGridRow--grade")}
+        ${renderGradeRow(boats)}
         ${renderSimpleRow(boats, "F", getFText, "courseGridRow--f")}
         ${renderSimpleRow(boats, "L", getLText, "courseGridRow--l")}
         ${renderSimpleRow(boats, "平均ST", getAvgStValue, "courseGridRow--avgst")}
