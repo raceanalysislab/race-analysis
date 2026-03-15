@@ -1,493 +1,376 @@
-const qs = new URLSearchParams(location.search);
+(() => {
+  const ORDER = [6, 5, 4, 3, 2, 1];
 
-const venueName = decodeURIComponent(qs.get("name") || "会場");
-const jcd = String(qs.get("jcd") || "").padStart(2, "0");
-const dateParam = String(qs.get("date") || "").trim();
+  const state = {
+    raceJson: null
+  };
 
-const $ = (id) => document.getElementById(id);
+  const $ = (id) => document.getElementById(id);
 
-const $tabs = $("tabs");
-const $raceNoLabel = $("raceNoLabel");
-const $timeLabel = $("timeLabel");
-const $dayLabel = $("dayLabel");
-const $gradeLabel = $("gradeLabel");
-const $eventTitle = $("eventTitle");
-const $raceTop = $("raceTop");
-const $viewTrack = $("viewTrack");
-const $entryTable = $("entryTable");
-const $viewTabs = $("viewTabs");
+  const esc = (s) =>
+    String(s ?? "").replace(/[&<>"']/g, (c) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    }[c]));
 
-const RACES_BASE_URL =
-  "https://raceanalysislab.github.io/race-analysis/data/site/races/";
-const PLAYER_MASTER_URL =
-  "https://raceanalysislab.github.io/race-analysis/data/master/players_master.json";
-
-$("venueName").textContent = venueName;
-
-let currentRace = 1;
-let currentDate = dateParam || getLocalYMD();
-let currentView = 0;
-
-let dragStartX = 0;
-let dragCurrentX = 0;
-let dragging = false;
-
-let playerMaster = {};
-
-const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
-
-const esc = (s) =>
-  String(s ?? "").replace(/[&<>"']/g, (c) => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;"
-  }[c]));
-
-const safeNum = (v, digits = 2) => {
-  if (v === undefined || v === null || v === "") return "—";
-  const n = Number(v);
-  return Number.isFinite(n) ? n.toFixed(digits) : "—";
-};
-
-const safeInt = (v) => {
-  if (v === undefined || v === null || v === "") return "—";
-  const n = Number(v);
-  return Number.isFinite(n) ? String(Math.trunc(n)) : "—";
-};
-
-const formatST = (v) => {
-  if (v === undefined || v === null || v === "") return "—";
-  const n = Number(v);
-  if (!Number.isFinite(n)) return "—";
-  return `.${n.toFixed(2).split(".")[1]}`;
-};
-
-const pickAvgST = (p) => {
-  const candidates = [
-    p?.avg_st,
-    p?.st_avg,
-    p?.ave_st,
-    p?.average_st,
-    p?.start_average
-  ];
-
-  for (const v of candidates) {
-    if (v !== undefined && v !== null && v !== "") return v;
-  }
-  return "";
-};
-
-const pickValue = (obj, keys) => {
-  for (const key of keys) {
-    const v = obj?.[key];
-    if (v !== undefined && v !== null && v !== "") return v;
-  }
-  return "";
-};
-
-const pickNat3 = (p) => pickValue(p, ["nat_3", "nat3", "nat_three"]);
-const pickLoc3 = (p) => pickValue(p, ["loc_3", "loc3", "loc_three"]);
-const pickMotor3 = (p) => pickValue(p, ["motor_3", "motor3", "motor_three"]);
-
-const pickF = (p) => {
-  const v = pickValue(p, ["f", "F", "f_count", "fCount", "f_num", "fNum"]);
-  if (v === "" || v === null || v === undefined) return 0;
-  const n = Number(v);
-  return Number.isFinite(n) ? Math.max(0, Math.trunc(n)) : 0;
-};
-
-const pickL = (p) => {
-  const v = pickValue(p, ["l", "L", "l_count", "lCount", "l_num", "lNum"]);
-  if (v === "" || v === null || v === undefined) return 0;
-  const n = Number(v);
-  return Number.isFinite(n) ? Math.max(0, Math.trunc(n)) : 0;
-};
-
-const renderFLValue = (label, count) => {
-  if (!count) return "";
-  return `${label}${count}`;
-};
-
-const buildEntryMeta = (p) => {
-  const regno = safeInt(p?.regno);
-  const grade = String(p?.grade ?? "").trim() || "—";
-  const branch = String(p?.branch ?? "").trim() || "—";
-
-  let age = "—";
-  if (p?.age !== undefined && p?.age !== null && p?.age !== "") {
-    const n = Number(p.age);
-    age = Number.isFinite(n) ? `${Math.trunc(n)}歳` : `${String(p.age).trim()}歳`;
-  }
-
-  return `${regno} / ${grade} / ${branch} / ${age}`;
-};
-
-const getPlayerDisplayName = (p) => {
-  const reg = String(p?.regno ?? p?.reg ?? "").trim();
-  const master = playerMaster?.[reg];
-
-  if (master) {
-    const sei = String(master?.sei ?? "").trim();
-    const mei = String(master?.mei ?? "").trim();
-    const masterName = String(master?.name ?? "").replace(/\s+/g, "").trim();
-
-    if (sei && mei) return `${sei}${mei}`;
-    if (masterName) return masterName;
-  }
-
-  return String(p?.name ?? "").replace(/\s+/g, "").trim();
-};
-
-const toHM = (x) => {
-  const m = String(x || "").match(/(\d{1,2}):(\d{2})/);
-  return m ? `${String(m[1]).padStart(2, "0")}:${m[2]}` : "--:--";
-};
-
-function getLocalYMD() {
-  const d = new Date();
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
-}
-
-function addDaysYMD(ymd, days) {
-  const [y, m, d] = String(ymd).split("-").map(Number);
-  const dt = new Date(y, m - 1, d);
-  dt.setDate(dt.getDate() + days);
-  const yy = dt.getFullYear();
-  const mm = String(dt.getMonth() + 1).padStart(2, "0");
-  const dd = String(dt.getDate()).padStart(2, "0");
-  return `${yy}-${mm}-${dd}`;
-}
-
-function normalizeGradeLabel(v) {
-  const raw = String(v ?? "").trim();
-  const s = raw.toUpperCase();
-
-  if (s.includes("SG")) return "SG";
-  if (s.includes("G1") || s.includes("GI")) return "G1";
-  if (s.includes("G2") || s.includes("GII")) return "G2";
-  if (s.includes("G3") || s.includes("GIII")) return "G3";
-  if (raw.includes("一般")) return "一般";
-
-  return raw || "一般";
-}
-
-function setTopHeight() {
-  const h = $raceTop?.getBoundingClientRect().height || 96;
-  document.documentElement.style.setProperty("--raceTopH", `${Math.ceil(h)}px`);
-}
-
-async function fetchJSON(url) {
-  const joiner = url.includes("?") ? "&" : "?";
-  const cacheBust = Math.floor(Date.now() / 60000);
-  const res = await fetch(`${url}${joiner}t=${cacheBust}`, { cache: "no-store" });
-  if (!res.ok) throw new Error(url);
-  return res.json();
-}
-
-async function loadPlayerMaster() {
-  try {
-    playerMaster = await fetchJSON(PLAYER_MASTER_URL);
-  } catch (e) {
-    playerMaster = {};
-  }
-}
-
-function buildUrls(r, dateStr) {
-  const fileName = `${jcd}_${r}R.json`;
-  const candidates = [
-    `${RACES_BASE_URL}${dateStr}/${fileName}`,
-    `${RACES_BASE_URL}${addDaysYMD(dateStr, 1)}/${fileName}`,
-    `${RACES_BASE_URL}${addDaysYMD(dateStr, -1)}/${fileName}`
-  ];
-  return candidates;
-}
-
-async function fetchRaceJSON(r) {
-  let lastErr = null;
-
-  for (const url of buildUrls(r, currentDate)) {
-    try {
-      const json = await fetchJSON(url);
-      if (json?.date) {
-        currentDate = String(json.date).trim();
-      }
-      return json;
-    } catch (e) {
-      lastErr = e;
+  const pickValue = (obj, keys) => {
+    for (const key of keys) {
+      const v = obj?.[key];
+      if (v !== undefined && v !== null && v !== "") return v;
     }
-  }
+    return "";
+  };
 
-  throw lastErr;
-}
+  const pickNumber = (obj, keys) => {
+    const v = pickValue(obj, keys);
+    if (v === "" || v === null || v === undefined) return null;
+    const n = Number(v);
+    return Number.isFinite(n) ? n : null;
+  };
 
-function renderRaceTabs() {
-  if (!$tabs) return;
+  const formatDash = (v) => {
+    if (v === undefined || v === null || v === "") return "—";
+    return String(v);
+  };
 
-  $tabs.innerHTML = Array.from({ length: 12 }, (_, i) => {
-    const race = i + 1;
-    const activeClass = race === currentRace ? " is-active" : "";
-    return `<button type="button" class="raceTab${activeClass}" data-race="${race}">${race}R</button>`;
-  }).join("");
+  const formatST = (v) => {
+    if (v === undefined || v === null || v === "") return "—";
+    const n = Number(v);
+    if (!Number.isFinite(n)) return "—";
+    return `.${n.toFixed(2).split(".")[1]}`;
+  };
 
-  $tabs.querySelectorAll(".raceTab").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const race = Number(btn.dataset.race || 1);
-      setRace(race);
+  const formatRate = (v) => {
+    if (v === undefined || v === null || v === "") return "—";
+    const n = Number(v);
+    if (!Number.isFinite(n)) return formatDash(v);
+    return n.toFixed(1);
+  };
+
+  const normalizeName = (name) =>
+    String(name ?? "").replace(/\s+/g, "").trim();
+
+  const getSearchParams = () => {
+    const qs = new URLSearchParams(location.search);
+    return {
+      venueName: qs.get("name") || "",
+      jcd: qs.get("jcd") || "",
+      date: qs.get("date") || "",
+      race: qs.get("race") || ""
+    };
+  };
+
+  const buildPlayerHref = (boat) => {
+    const { venueName, jcd, date, race } = getSearchParams();
+    const next = new URL("./player.html", location.href);
+
+    next.searchParams.set("regno", String(boat?.regno || ""));
+    next.searchParams.set("name", normalizeName(boat?.name || ""));
+    next.searchParams.set("jcd", String(jcd || ""));
+    next.searchParams.set("date", String(date || ""));
+    next.searchParams.set("race", String(race || ""));
+    next.searchParams.set("venue", String(venueName || ""));
+    next.searchParams.set("waku", String(boat?.waku || ""));
+    next.searchParams.set("grade", String(boat?.grade || ""));
+    next.searchParams.set("branch", String(boat?.branch || ""));
+    next.searchParams.set("age", String(boat?.age || ""));
+
+    return next.toString();
+  };
+
+  const getBoatsOrdered = () => {
+    const boats = Array.isArray(state.raceJson?.race?.boats) ? state.raceJson.race.boats : [];
+    const byWaku = new Map();
+
+    boats.forEach((boat) => {
+      const waku = Number(boat?.waku);
+      if (waku >= 1 && waku <= 6) {
+        byWaku.set(waku, boat);
+      }
     });
-  });
 
-  const activeBtn = $tabs.querySelector(`.raceTab[data-race="${currentRace}"]`);
-  if (activeBtn && typeof activeBtn.scrollIntoView === "function") {
-    activeBtn.scrollIntoView({
-      behavior: "smooth",
-      inline: "center",
-      block: "nearest"
-    });
-  }
-}
+    return ORDER.map((waku) => byWaku.get(waku) || { waku, name: "—", grade: "—" });
+  };
 
-function updateUrlRace(r) {
-  const next = new URL(location.href);
-  next.searchParams.set("race", String(r));
-  if (currentDate) next.searchParams.set("date", currentDate);
-  history.replaceState(null, "", next.toString());
-}
+  const getAvgStValue = (boat) => {
+    const v = pickNumber(boat, [
+      "avg_st",
+      "st_avg",
+      "ave_st",
+      "average_st",
+      "start_average"
+    ]);
+    return formatST(v);
+  };
 
-function renderEntryTable(boats) {
-  $entryTable.innerHTML = boats.map((p) => {
-    const fCount = pickF(p);
-    const lCount = pickL(p);
-    const displayName = getPlayerDisplayName(p);
-    const metaText = buildEntryMeta(p);
+  const getMeetAvgStValue = (boat) => {
+    const v = pickNumber(boat, [
+      "meet_avg_st",
+      "this_meet_avg_st",
+      "this_series_avg_st",
+      "series_avg_st",
+      "season_avg_st",
+      "recent_meet_st"
+    ]);
+    return formatST(v);
+  };
+
+  const normalizeGrade = (grade) => {
+    const g = String(grade ?? "").trim().toUpperCase();
+    if (g === "A1" || g === "A2" || g === "B1" || g === "B2") return g;
+    return "";
+  };
+
+  const getGradeClass = (boat) => {
+    const g = normalizeGrade(boat?.grade);
+    return g ? `grade-${g}` : "";
+  };
+
+  const getWakuClass = (boat) => {
+    const w = Number(boat?.waku);
+    return w >= 1 && w <= 6 ? `w${w}` : "";
+  };
+
+  const getGradeText = (boat) => formatDash(boat?.grade || "—");
+
+  const getFText = (boat) => {
+    return formatDash(
+      pickValue(boat, ["f_count", "f", "F", "f_num"]) || "—"
+    );
+  };
+
+  const getLText = (boat) => {
+    return formatDash(
+      pickValue(boat, ["l_count", "l", "L", "l_num"]) || "—"
+    );
+  };
+
+  const getCourseWinText = (boat) => {
+    const v = pickValue(boat, [
+      "course_win",
+      "course_win_rate",
+      "course_1着率",
+      "course_win_1y",
+      "course_win_3y"
+    ]);
+    return formatRate(v);
+  };
+
+  const getCourseKimariteParts = (boat) => {
+    const sashi = pickValue(boat, [
+      "course_sashi",
+      "course_kimarite_sashi",
+      "kimarite_sashi",
+      "sashi_rate"
+    ]);
+
+    const makuri = pickValue(boat, [
+      "course_makuri",
+      "course_kimarite_makuri",
+      "kimarite_makuri",
+      "makuri_rate"
+    ]);
+
+    const makurisashi = pickValue(boat, [
+      "course_makurisashi",
+      "course_kimarite_makurisashi",
+      "kimarite_makurisashi",
+      "makurisashi_rate"
+    ]);
+
+    return {
+      sashi: formatRate(sashi),
+      makuri: formatRate(makuri),
+      makurisashi: formatRate(makurisashi)
+    };
+  };
+
+  const getCourseAvgStText = (boat) => {
+    const v = pickValue(boat, [
+      "course_avg_st",
+      "course_st",
+      "course_avg_st_1y",
+      "course_avg_st_3y"
+    ]);
+
+    if (typeof v === "object") return "—";
+    if (v === "" || v === null || v === undefined) return "—";
+
+    const n = Number(v);
+    if (Number.isFinite(n)) return formatST(n);
+
+    return formatDash(v);
+  };
+
+  const getCourse2renText = (boat) => {
+    const v = pickValue(boat, [
+      "course_2ren",
+      "course_2",
+      "course_2ren_1y",
+      "course_2ren_3y"
+    ]);
+    return formatRate(v);
+  };
+
+  const getCourse3renText = (boat) => {
+    const v = pickValue(boat, [
+      "course_3ren",
+      "course_3",
+      "course_3ren_1y",
+      "course_3ren_3y"
+    ]);
+    return formatRate(v);
+  };
+
+  const renderHeadRow = (boats) => `
+    <div class="courseGridRow courseGridRow--head">
+      ${boats.map((boat) => `
+        <div class="courseGridCell courseGridCell--head ${esc(getWakuClass(boat))}">
+          ${esc(boat.waku)}
+        </div>
+      `).join("")}
+      <div class="courseGridLabel">枠</div>
+    </div>
+  `;
+
+  const renderNameRow = (boats) => `
+    <div class="courseGridRow courseGridRow--name">
+      ${boats.map((boat) => `
+        <a
+          class="courseGridCell courseGridCell--name courseGridCell--nameLink ${esc(getWakuClass(boat))}"
+          href="${esc(buildPlayerHref(boat))}"
+          data-player-link="1"
+        >
+          <div class="courseGridNameVertical">${esc(formatDash(normalizeName(boat?.name || "—")))}</div>
+        </a>
+      `).join("")}
+      <div class="courseGridLabel">選手名</div>
+    </div>
+  `;
+
+  const renderGradeRow = (boats) => `
+    <div class="courseGridRow courseGridRow--grade">
+      ${boats.map((boat) => `
+        <div class="courseGridCell courseGridCell--grade ${esc(getWakuClass(boat))} ${esc(getGradeClass(boat))}">
+          <div class="courseGrade ${esc(getGradeClass(boat))}">${esc(getGradeText(boat))}</div>
+        </div>
+      `).join("")}
+      <div class="courseGridLabel">級</div>
+    </div>
+  `;
+
+  const renderSimpleRow = (boats, label, valueFn, rowClass = "") => `
+    <div class="courseGridRow ${rowClass}">
+      ${boats.map((boat) => `
+        <div class="courseGridCell">
+          <div class="courseGridMetric">${esc(valueFn(boat))}</div>
+        </div>
+      `).join("")}
+      <div class="courseGridLabel">${esc(label)}</div>
+    </div>
+  `;
+
+  const renderKimariteRow = (boats) => `
+    <div class="courseGridRow courseGridRow--kimarite">
+      ${boats.map((boat) => {
+        const parts = getCourseKimariteParts(boat);
+        return `
+          <div class="courseGridCell courseGridCell--kimarite">
+            <div class="courseKimariteBox">
+              <div class="courseKimariteCol">
+                <div class="courseKimariteHead">差</div>
+                <div class="courseKimariteVal">${esc(parts.sashi)}</div>
+              </div>
+              <div class="courseKimariteCol">
+                <div class="courseKimariteHead">捲</div>
+                <div class="courseKimariteVal">${esc(parts.makuri)}</div>
+              </div>
+              <div class="courseKimariteCol">
+                <div class="courseKimariteHead">捲差</div>
+                <div class="courseKimariteVal">${esc(parts.makurisashi)}</div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("")}
+      <div class="courseGridLabel">コース別決まり手</div>
+    </div>
+  `;
+
+  const renderMainGrid = () => {
+    const boats = getBoatsOrdered();
 
     return `
-      <div class="entryRow">
-        <div class="entryWaku w${esc(p.waku)}">${esc(p.waku)}</div>
+      <div class="courseGrid">
+        ${renderHeadRow(boats)}
+        ${renderNameRow(boats)}
+        ${renderGradeRow(boats)}
+        ${renderSimpleRow(boats, "F", getFText, "courseGridRow--f")}
+        ${renderSimpleRow(boats, "L", getLText, "courseGridRow--l")}
+        ${renderSimpleRow(boats, "平均ST", getAvgStValue, "courseGridRow--avgst")}
+        ${renderSimpleRow(boats, "今節平均ST", getMeetAvgStValue, "courseGridRow--meetavgst")}
+        ${renderSimpleRow(boats, "コース勝率", getCourseWinText, "courseGridRow--course")}
+        ${renderKimariteRow(boats)}
+        ${renderSimpleRow(boats, "コース別平均ST", getCourseAvgStText, "courseGridRow--course")}
+        ${renderSimpleRow(boats, "コース別2連対", getCourse2renText, "courseGridRow--course")}
+        ${renderSimpleRow(boats, "コース別3連対", getCourse3renText, "courseGridRow--course")}
+      </div>
+    `;
+  };
 
-        <div class="entryNameCell">
-          <div class="entryMeta">${esc(metaText)}</div>
-          <div class="entryName">${esc(displayName)}</div>
-        </div>
+  const bindNameLinks = (root) => {
+    root.querySelectorAll('[data-player-link="1"]').forEach((link) => {
+      link.addEventListener("click", () => {
+        /* 通常遷移 */
+      });
+    });
+  };
 
-        <div class="entryVal">${formatST(pickAvgST(p))}</div>
+  const renderRoot = () => {
+    const root = $("courseDataRoot");
+    if (!root) return;
 
-        <div class="entryVal entryVal--stack entryVal--fl">
-          <div class="entryStatBlock entryStatBlock--fl">
-            <div class="entryStatMain entryStatMain--f">${esc(renderFLValue("F", fCount))}</div>
-            <div class="entryStatSub entryStatSub--l">${esc(renderFLValue("L", lCount))}</div>
-          </div>
-        </div>
-
-        <div class="entryVal entryVal--stack">
-          <div class="entryStatBlock">
-            <div class="entryStatMain">${safeNum(p.nat_win)}</div>
-            <div class="entryStatSub">${safeNum(p.nat_2)}</div>
-            <div class="entryStatSub">${safeNum(pickNat3(p))}</div>
-          </div>
-        </div>
-
-        <div class="entryVal entryVal--stack">
-          <div class="entryStatBlock">
-            <div class="entryStatMain">${safeNum(p.loc_win)}</div>
-            <div class="entryStatSub">${safeNum(p.loc_2)}</div>
-            <div class="entryStatSub">${safeNum(pickLoc3(p))}</div>
-          </div>
-        </div>
-
-        <div class="entryVal entryVal--stack">
-          <div class="entryMotorBlock">
-            <div class="entryMotorNo">${safeInt(p.motor_no)}</div>
-            <div class="entryMotorRate">${safeNum(p.motor_2)}</div>
-            <div class="entryMotorRate">${safeNum(pickMotor3(p))}</div>
+    root.innerHTML = `
+      <div class="coursePanel">
+        <div class="coursePanelMain">
+          <div class="coursePanelBody">
+            ${renderMainGrid()}
           </div>
         </div>
       </div>
     `;
-  }).join("");
-}
 
-function renderRaceJSON(r, json) {
-  const raceObj = json?.race || {};
+    bindNameLinks(root);
+  };
 
-  if (json?.date) {
-    currentDate = String(json.date).trim();
-  }
+  const renderLoading = () => {
+    const root = $("courseDataRoot");
+    if (!root) return;
+    root.innerHTML = `<div class="err">読み込み中…</div>`;
+  };
 
-  $raceNoLabel.textContent = `${r}R`;
-  $timeLabel.textContent = `締切: ${toHM(raceObj.cutoff)}`;
-  $dayLabel.textContent = json?.day_label || raceObj?.day_label || "—";
+  const renderError = () => {
+    const root = $("courseDataRoot");
+    if (!root) return;
+    root.innerHTML = `<div class="err">コースデータ取得失敗</div>`;
+  };
 
-  if ($gradeLabel) {
-    $gradeLabel.textContent = normalizeGradeLabel(
-      json?.grade_label || raceObj?.grade_label || "一般"
-    );
-  }
+  const render = (json) => {
+    state.raceJson = json || null;
+    renderRoot();
+  };
 
-  if ($eventTitle) {
-    const title = String(
-      json?.event_title || json?.title || raceObj?.title || ""
-    ).trim();
-    $eventTitle.textContent = title || "—";
-    $eventTitle.title = title || "";
-  }
+  const boot = () => {
+    renderRoot();
+  };
 
-  const boats = Array.isArray(raceObj.boats) ? raceObj.boats : [];
-  renderEntryTable(boats);
-
-  if (window.BOAT_CORE_COURSE?.render) {
-    window.BOAT_CORE_COURSE.render(json);
-  }
-
-  renderRaceTabs();
-  updateUrlRace(r);
-  setTopHeight();
-}
-
-function renderRaceError(r) {
-  $raceNoLabel.textContent = `${r}R`;
-  $timeLabel.textContent = "締切: --:--";
-  $dayLabel.textContent = "—";
-
-  if ($gradeLabel) $gradeLabel.textContent = "—";
-
-  if ($eventTitle) {
-    $eventTitle.textContent = "—";
-    $eventTitle.title = "";
-  }
-
-  $entryTable.innerHTML = `<div class="err">JSON取得失敗</div>`;
-
-  if (window.BOAT_CORE_COURSE?.renderError) {
-    window.BOAT_CORE_COURSE.renderError();
-  }
-
-  renderRaceTabs();
-  updateUrlRace(r);
-  setTopHeight();
-}
-
-async function setRace(r) {
-  r = clamp(Number(r) || 1, 1, 12);
-  currentRace = r;
-
-  renderRaceTabs();
-  $entryTable.innerHTML = `<div class="err">読み込み中…</div>`;
-
-  if (window.BOAT_CORE_COURSE?.renderLoading) {
-    window.BOAT_CORE_COURSE.renderLoading();
-  }
-
-  try {
-    const json = await fetchRaceJSON(r);
-    renderRaceJSON(r, json);
-  } catch (e) {
-    renderRaceError(r);
-  }
-}
-
-function setView(viewIndex) {
-  currentView = clamp(Number(viewIndex) || 0, 0, 2);
-
-  const x = currentView * -100;
-  if ($viewTrack) {
-    $viewTrack.style.transform = `translate3d(${x}%, 0, 0)`;
-  }
-
-  $viewTabs?.querySelectorAll(".viewTab").forEach((btn) => {
-    btn.classList.toggle("is-active", Number(btn.dataset.view) === currentView);
-  });
-}
-
-function bindViewTabs() {
-  if (!$viewTabs) return;
-
-  $viewTabs.querySelectorAll(".viewTab").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const viewIndex = Number(btn.dataset.view || 0);
-      setView(viewIndex);
-    });
-  });
-}
-
-function handleSwipeStart(clientX) {
-  dragStartX = clientX;
-  dragCurrentX = clientX;
-  dragging = true;
-}
-
-function handleSwipeMove(clientX) {
-  if (!dragging) return;
-  dragCurrentX = clientX;
-}
-
-function handleSwipeEnd() {
-  if (!dragging) return;
-
-  const diff = dragCurrentX - dragStartX;
-  dragging = false;
-
-  if (Math.abs(diff) < 50) return;
-
-  if (diff < 0) {
-    setRace(currentRace + 1);
-  } else {
-    setRace(currentRace - 1);
-  }
-}
-
-function bindRaceSwipe() {
-  const swipeArea = $raceTop || document;
-
-  swipeArea.addEventListener("touchstart", (e) => {
-    if (!e.touches?.length) return;
-    handleSwipeStart(e.touches[0].clientX);
-  }, { passive: true });
-
-  swipeArea.addEventListener("touchmove", (e) => {
-    if (!e.touches?.length) return;
-    handleSwipeMove(e.touches[0].clientX);
-  }, { passive: true });
-
-  swipeArea.addEventListener("touchend", () => {
-    handleSwipeEnd();
-  }, { passive: true });
-
-  swipeArea.addEventListener("mousedown", (e) => {
-    handleSwipeStart(e.clientX);
-  });
-
-  window.addEventListener("mousemove", (e) => {
-    handleSwipeMove(e.clientX);
-  });
-
-  window.addEventListener("mouseup", () => {
-    handleSwipeEnd();
-  });
-}
-
-async function boot() {
-  const initialRace = clamp(Number(qs.get("race") || 1), 1, 12);
-
-  renderRaceTabs();
-  bindRaceSwipe();
-  bindViewTabs();
-  setView(0);
-
-  if (window.BOAT_CORE_COURSE?.boot) {
-    window.BOAT_CORE_COURSE.boot();
-  }
-
-  await loadPlayerMaster();
-  await setRace(initialRace);
-  requestAnimationFrame(setTopHeight);
-}
-
-addEventListener("resize", setTopHeight, { passive: true });
-$("btnBack").addEventListener("click", () => history.back());
-
-boot();
+  window.BOAT_CORE_COURSE = {
+    boot,
+    render,
+    renderLoading,
+    renderError
+  };
+})();
