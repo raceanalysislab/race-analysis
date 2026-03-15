@@ -43,6 +43,13 @@
     return `.${n.toFixed(2).split(".")[1]}`;
   };
 
+  const formatRate = (v) => {
+    if (v === undefined || v === null || v === "") return "—";
+    const n = Number(v);
+    if (!Number.isFinite(n)) return formatDash(v);
+    return n.toFixed(1);
+  };
+
   const normalizeName = (name) =>
     String(name ?? "").replace(/\s+/g, "").trim();
 
@@ -127,9 +134,7 @@
     return w >= 1 && w <= 6 ? `w${w}` : "";
   };
 
-  const getGradeText = (boat) => {
-    return formatDash(boat?.grade || "—");
-  };
+  const getGradeText = (boat) => formatDash(boat?.grade || "—");
 
   const getFText = (boat) => {
     return formatDash(
@@ -151,15 +156,10 @@
       "course_win_1y",
       "course_win_3y"
     ]);
-
-    if (typeof v === "object") return "—";
-    if (v === "" || v === null || v === undefined) return "—";
-
-    const n = Number(v);
-    return Number.isFinite(n) ? n.toFixed(1) : formatDash(v);
+    return formatRate(v);
   };
 
-  const getCourseKimariteText = (boat) => {
+  const getCourseKimariteParts = (boat) => {
     const sashi = pickValue(boat, [
       "course_sashi",
       "course_kimarite_sashi",
@@ -181,22 +181,11 @@
       "makurisashi_rate"
     ]);
 
-    const out = [
-      sashi !== "" && sashi !== null && sashi !== undefined ? `差${sashi}` : "",
-      makuri !== "" && makuri !== null && makuri !== undefined ? `捲${makuri}` : "",
-      makurisashi !== "" && makurisashi !== null && makurisashi !== undefined ? `捲差${makurisashi}` : ""
-    ].filter(Boolean);
-
-    if (out.length) return out.join(" / ");
-
-    return formatDash(
-      pickValue(boat, [
-        "course_kimarite",
-        "kimarite",
-        "kimarite_1y",
-        "kimarite_3y"
-      ]) || "—"
-    );
+    return {
+      sashi: formatRate(sashi),
+      makuri: formatRate(makuri),
+      makurisashi: formatRate(makurisashi)
+    };
   };
 
   const getCourseAvgStText = (boat) => {
@@ -223,12 +212,7 @@
       "course_2ren_1y",
       "course_2ren_3y"
     ]);
-
-    if (typeof v === "object") return "—";
-    if (v === "" || v === null || v === undefined) return "—";
-
-    const n = Number(v);
-    return Number.isFinite(n) ? n.toFixed(1) : formatDash(v);
+    return formatRate(v);
   };
 
   const getCourse3renText = (boat) => {
@@ -238,12 +222,7 @@
       "course_3ren_1y",
       "course_3ren_3y"
     ]);
-
-    if (typeof v === "object") return "—";
-    if (v === "" || v === null || v === undefined) return "—";
-
-    const n = Number(v);
-    return Number.isFinite(n) ? n.toFixed(1) : formatDash(v);
+    return formatRate(v);
   };
 
   const renderHeadRow = (boats) => `
@@ -294,6 +273,33 @@
     </div>
   `;
 
+  const renderKimariteRow = (boats) => `
+    <div class="courseGridRow courseGridRow--kimarite">
+      ${boats.map((boat) => {
+        const parts = getCourseKimariteParts(boat);
+        return `
+          <div class="courseGridCell courseGridCell--kimarite">
+            <div class="courseKimariteBox">
+              <div class="courseKimariteCol">
+                <div class="courseKimariteHead">差</div>
+                <div class="courseKimariteVal">${esc(parts.sashi)}</div>
+              </div>
+              <div class="courseKimariteCol">
+                <div class="courseKimariteHead">捲</div>
+                <div class="courseKimariteVal">${esc(parts.makuri)}</div>
+              </div>
+              <div class="courseKimariteCol">
+                <div class="courseKimariteHead">捲差</div>
+                <div class="courseKimariteVal">${esc(parts.makurisashi)}</div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("")}
+      <div class="courseGridLabel">コース別決まり手</div>
+    </div>
+  `;
+
   const renderMainGrid = () => {
     const boats = getBoatsOrdered();
 
@@ -307,7 +313,7 @@
         ${renderSimpleRow(boats, "平均ST", getAvgStValue, "courseGridRow--avgst")}
         ${renderSimpleRow(boats, "今節平均ST", getMeetAvgStValue, "courseGridRow--meetavgst")}
         ${renderSimpleRow(boats, "コース勝率", getCourseWinText, "courseGridRow--course")}
-        ${renderSimpleRow(boats, "コース別決まり手", getCourseKimariteText, "courseGridRow--course")}
+        ${renderKimariteRow(boats)}
         ${renderSimpleRow(boats, "コース別平均ST", getCourseAvgStText, "courseGridRow--course")}
         ${renderSimpleRow(boats, "コース別2連対", getCourse2renText, "courseGridRow--course")}
         ${renderSimpleRow(boats, "コース別3連対", getCourse3renText, "courseGridRow--course")}
