@@ -56,14 +56,18 @@
   min-height:118px;
 }
 
+/* ここを詰める */
 .courseGridRow--grade{
-  min-height:52px;
+  min-height:42px;
 }
 
 .courseGridRow--f,
 .courseGridRow--l,
 .courseGridRow--avgst,
-.courseGridRow--meetavgst,
+.courseGridRow--meetavgst{
+  min-height:34px;
+}
+
 .courseGridRow--course{
   min-height:42px;
 }
@@ -220,14 +224,18 @@
     min-height:108px;
   }
 
+  /* ここも詰める */
   .courseGridRow--grade{
-    min-height:48px;
+    min-height:40px;
   }
 
   .courseGridRow--f,
   .courseGridRow--l,
   .courseGridRow--avgst,
-  .courseGridRow--meetavgst,
+  .courseGridRow--meetavgst{
+    min-height:32px;
+  }
+
   .courseGridRow--course{
     min-height:40px;
   }
