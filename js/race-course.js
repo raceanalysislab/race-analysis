@@ -43,6 +43,9 @@
     return `.${n.toFixed(2).split(".")[1]}`;
   };
 
+  const normalizeName = (name) =>
+    String(name ?? "").replace(/\s+/g, "").trim();
+
   const getSearchParams = () => {
     const qs = new URLSearchParams(location.search);
     return {
@@ -58,7 +61,7 @@
     const next = new URL("./player.html", location.href);
 
     next.searchParams.set("regno", String(boat?.regno || ""));
-    next.searchParams.set("name", String(boat?.name || ""));
+    next.searchParams.set("name", normalizeName(boat?.name || ""));
     next.searchParams.set("jcd", String(jcd || ""));
     next.searchParams.set("date", String(date || ""));
     next.searchParams.set("race", String(race || ""));
@@ -201,7 +204,7 @@
           href="${esc(buildPlayerHref(boat))}"
           data-player-link="1"
         >
-          <div class="courseGridNameVertical">${esc(formatDash(boat?.name || "—"))}</div>
+          <div class="courseGridNameVertical">${esc(formatDash(normalizeName(boat?.name || "—")))}</div>
         </a>
       `).join("")}
       <div class="courseGridLabel">選手名</div>
