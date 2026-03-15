@@ -230,7 +230,7 @@
   const renderGradeRow = (boats) => `
     <div class="courseGridRow courseGridRow--grade">
       ${boats.map((boat) => `
-        <div class="courseGridCell courseGridCell--grade ${esc(getGradeClass(boat))}">
+        <div class="courseGridCell courseGridCell--grade ${esc(getWakuClass(boat))} ${esc(getGradeClass(boat))}">
           <div class="courseGrade ${esc(getGradeClass(boat))}">${esc(getGradeText(boat))}</div>
         </div>
       `).join("")}
