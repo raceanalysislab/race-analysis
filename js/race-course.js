@@ -143,7 +143,52 @@
     );
   };
 
+  const getCourseWinText = (boat) => {
+    const v = pickValue(boat, [
+      "course_win",
+      "course_win_rate",
+      "course_1着率",
+      "course_win_1y",
+      "course_win_3y"
+    ]);
+
+    if (typeof v === "object") return "—";
+    if (v === "" || v === null || v === undefined) return "—";
+
+    const n = Number(v);
+    return Number.isFinite(n) ? n.toFixed(1) : formatDash(v);
+  };
+
   const getCourseKimariteText = (boat) => {
+    const sashi = pickValue(boat, [
+      "course_sashi",
+      "course_kimarite_sashi",
+      "kimarite_sashi",
+      "sashi_rate"
+    ]);
+
+    const makuri = pickValue(boat, [
+      "course_makuri",
+      "course_kimarite_makuri",
+      "kimarite_makuri",
+      "makuri_rate"
+    ]);
+
+    const makurisashi = pickValue(boat, [
+      "course_makurisashi",
+      "course_kimarite_makurisashi",
+      "kimarite_makurisashi",
+      "makurisashi_rate"
+    ]);
+
+    const out = [
+      sashi !== "" && sashi !== null && sashi !== undefined ? `差${sashi}` : "",
+      makuri !== "" && makuri !== null && makuri !== undefined ? `捲${makuri}` : "",
+      makurisashi !== "" && makurisashi !== null && makurisashi !== undefined ? `捲差${makurisashi}` : ""
+    ].filter(Boolean);
+
+    if (out.length) return out.join(" / ");
+
     return formatDash(
       pickValue(boat, [
         "course_kimarite",
@@ -261,6 +306,7 @@
         ${renderSimpleRow(boats, "L", getLText, "courseGridRow--l")}
         ${renderSimpleRow(boats, "平均ST", getAvgStValue, "courseGridRow--avgst")}
         ${renderSimpleRow(boats, "今節平均ST", getMeetAvgStValue, "courseGridRow--meetavgst")}
+        ${renderSimpleRow(boats, "コース勝率", getCourseWinText, "courseGridRow--course")}
         ${renderSimpleRow(boats, "コース別決まり手", getCourseKimariteText, "courseGridRow--course")}
         ${renderSimpleRow(boats, "コース別平均ST", getCourseAvgStText, "courseGridRow--course")}
         ${renderSimpleRow(boats, "コース別2連対", getCourse2renText, "courseGridRow--course")}
