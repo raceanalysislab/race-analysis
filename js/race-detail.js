@@ -70,6 +70,9 @@ const formatST = (v) => {
   return `.${n.toFixed(2).split(".")[1]}`;
 };
 
+const normalizeName = (name) =>
+  String(name ?? "").replace(/\s+/g, "").trim();
+
 const pickAvgST = (p) => {
   const candidates = [
     p?.avg_st,
@@ -143,7 +146,7 @@ const getPlayerDisplayName = (p) => {
     if (masterName) return masterName;
   }
 
-  return String(p?.name ?? "").replace(/\s+/g, "").trim();
+  return normalizeName(p?.name ?? "");
 };
 
 const toHM = (x) => {
@@ -151,10 +154,19 @@ const toHM = (x) => {
   return m ? `${String(m[1]).padStart(2, "0")}:${m[2]}` : "--:--";
 };
 
+const VENUE_FILE_ALIAS = {
+  "琵琶湖": "びわこ"
+};
+
 const safeFilenamePart = (s) =>
   String(s ?? "")
     .trim()
     .replace(/[\/\\:*?"<>|]/g, "_");
+
+function normalizeVenueForMeetFile(v) {
+  const raw = String(v ?? "").trim();
+  return VENUE_FILE_ALIAS[raw] || raw;
+}
 
 function getLocalYMD() {
   const d = new Date();
@@ -218,7 +230,7 @@ async function loadPlayerCourseStats() {
 }
 
 function buildMeetAvgStUrl(venue, date) {
-  const venuePart = safeFilenamePart(venue);
+  const venuePart = safeFilenamePart(normalizeVenueForMeetFile(venue));
   const datePart = String(date || "").trim();
   return `${MEET_AVG_ST_BASE_URL}${venuePart}_${datePart}.json`;
 }
@@ -329,9 +341,27 @@ function enrichBoatWithCourseStats(boat) {
   };
 }
 
-function enrichBoatWithMeetAvgSt(boat, meetPlayers) {
+function findMeetStObject(boat, meetPlayers) {
   const reg = String(boat?.regno ?? boat?.reg ?? "").trim();
-  const stObj = meetPlayers?.[reg];
+
+  if (reg && meetPlayers?.[reg]) {
+    return meetPlayers[reg];
+  }
+
+  const targetName = normalizeName(boat?.name || "");
+  if (!targetName) return null;
+
+  for (const value of Object.values(meetPlayers || {})) {
+    if (normalizeName(value?.name || "") === targetName) {
+      return value;
+    }
+  }
+
+  return null;
+}
+
+function enrichBoatWithMeetAvgSt(boat, meetPlayers) {
+  const stObj = findMeetStObject(boat, meetPlayers);
 
   if (!stObj) return { ...boat };
 
