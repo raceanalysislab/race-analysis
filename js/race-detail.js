@@ -301,6 +301,7 @@ function enrichBoatWithCourseStats(boat) {
 
   return {
     ...boat,
+    course_starts: course.starts,
     course_win: course.win_rate,
     course_2ren: course.ren2_rate,
     course_3ren: course.ren3_rate,
