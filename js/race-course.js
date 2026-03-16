@@ -57,6 +57,13 @@
     return String(Math.round(n));
   };
 
+  const formatStarts = (v) => {
+    if (v === undefined || v === null || v === "") return "—";
+    const n = Number(v);
+    if (!Number.isFinite(n)) return "—";
+    return String(Math.trunc(n));
+  };
+
   const normalizeName = (name) =>
     String(name ?? "").replace(/\s+/g, "").trim();
 
@@ -123,6 +130,17 @@
       "recent_meet_st"
     ]);
     return formatST(v);
+  };
+
+  const getMeetStartsText = (boat) => {
+    const v = pickValue(boat, [
+      "meet_starts",
+      "this_meet_starts",
+      "series_starts",
+      "meet_count",
+      "count"
+    ]);
+    return formatStarts(v);
   };
 
   const normalizeGrade = (grade) => {
@@ -295,6 +313,26 @@
     </div>
   `;
 
+  const renderFLRow = (boats) => `
+    <div class="courseGridRow courseGridRow--fl">
+      ${boats.map((boat) => `
+        <div class="courseGridCell courseGridCell--fl">
+          <div class="courseFLBox">
+            <div class="courseFLCol">
+              <div class="courseFLHead">F</div>
+              <div class="courseFLVal courseFLVal--f">${esc(getFText(boat))}</div>
+            </div>
+            <div class="courseFLCol">
+              <div class="courseFLHead">L</div>
+              <div class="courseFLVal courseFLVal--l">${esc(getLText(boat))}</div>
+            </div>
+          </div>
+        </div>
+      `).join("")}
+      <div class="courseGridLabel">F/L</div>
+    </div>
+  `;
+
   const renderCourseWinRow = (boats) => `
     <div class="courseGridRow courseGridRow--course">
       ${boats.map((boat) => `
@@ -341,10 +379,10 @@
         ${renderHeadRow(boats)}
         ${renderNameRow(boats)}
         ${renderGradeRow(boats)}
-        ${renderSimpleRow(boats, "F", getFText, "courseGridRow--f")}
-        ${renderSimpleRow(boats, "L", getLText, "courseGridRow--l")}
+        ${renderFLRow(boats)}
         ${renderSimpleRow(boats, "平均ST", getAvgStValue, "courseGridRow--avgst")}
         ${renderSimpleRow(boats, "今節平均ST", getMeetAvgStValue, "courseGridRow--meetavgst")}
+        ${renderSimpleRow(boats, "出走数", getMeetStartsText, "courseGridRow--starts")}
         ${renderCourseWinRow(boats)}
         ${renderKimariteRow(boats)}
         ${renderSimpleRow(boats, "コース別平均ST", getCourseAvgStText, "courseGridRow--course")}
