@@ -21,6 +21,8 @@ const RACES_BASE_URL =
   "https://raceanalysislab.github.io/race-analysis/data/site/races/";
 const PLAYER_MASTER_URL =
   "https://raceanalysislab.github.io/race-analysis/data/master/players_master.json";
+const PLAYER_COURSE_STATS_URL =
+  "https://raceanalysislab.github.io/race-analysis/data/player_course_stats.json";
 
 $("venueName").textContent = venueName;
 
@@ -33,6 +35,7 @@ let dragCurrentX = 0;
 let dragging = false;
 
 let playerMaster = {};
+let playerCourseStats = null;
 
 const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
 
@@ -197,6 +200,15 @@ async function loadPlayerMaster() {
   }
 }
 
+async function loadPlayerCourseStats() {
+  try {
+    const json = await fetchJSON(PLAYER_COURSE_STATS_URL);
+    playerCourseStats = json?.players || {};
+  } catch (e) {
+    playerCourseStats = {};
+  }
+}
+
 function buildUrls(r, dateStr) {
   const fileName = `${jcd}_${r}R.json`;
   const candidates = [
@@ -258,6 +270,41 @@ function updateUrlRace(r) {
   history.replaceState(null, "", next.toString());
 }
 
+function enrichBoatWithCourseStats(boat) {
+  const reg = String(boat?.regno ?? boat?.reg ?? "").trim();
+  const courseKey = String(boat?.waku ?? "");
+  const player = playerCourseStats?.[reg];
+  const course = player?.courses?.[courseKey];
+
+  if (!course) return { ...boat };
+
+  const kimarite = course.kimarite || {};
+
+  return {
+    ...boat,
+    course_win: course.win_rate,
+    course_2ren: course.ren2_rate,
+    course_3ren: course.ren3_rate,
+    course_avg_st: course.avg_st,
+    course_sashi: kimarite["差"],
+    course_makuri: kimarite["まくり"],
+    course_makurisashi: kimarite["まくり差し"]
+  };
+}
+
+function enrichRaceJSON(json) {
+  const race = json?.race || {};
+  const boats = Array.isArray(race.boats) ? race.boats : [];
+
+  return {
+    ...json,
+    race: {
+      ...race,
+      boats: boats.map(enrichBoatWithCourseStats)
+    }
+  };
+}
+
 function renderEntryTable(boats) {
   $entryTable.innerHTML = boats.map((p) => {
     const fCount = pickF(p);
@@ -311,7 +358,8 @@ function renderEntryTable(boats) {
   }).join("");
 }
 
-function renderRaceJSON(r, json) {
+function renderRaceJSON(r, rawJson) {
+  const json = enrichRaceJSON(rawJson);
   const raceObj = json?.race || {};
 
   if (json?.date) {
@@ -482,7 +530,11 @@ async function boot() {
     window.BOAT_CORE_COURSE.boot();
   }
 
-  await loadPlayerMaster();
+  await Promise.all([
+    loadPlayerMaster(),
+    loadPlayerCourseStats()
+  ]);
+
   await setRace(initialRace);
   requestAnimationFrame(setTopHeight);
 }
