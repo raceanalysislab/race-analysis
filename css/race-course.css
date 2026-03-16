@@ -56,9 +56,9 @@
   min-height:118px;
 }
 
-/* 級の行を少し広げる */
+/* 級をさらに圧縮 */
 .courseGridRow--grade{
-  min-height:48px;
+  min-height:36px;
 }
 
 .courseGridRow--f,
@@ -72,7 +72,6 @@
   min-height:34px;
 }
 
-/* 決まり手は専用で広め */
 .courseGridRow--kimarite{
   min-height:50px;
 }
@@ -196,7 +195,6 @@
   white-space:nowrap;
 }
 
-/* 決まり手 3分割 */
 .courseGridCell--kimarite{
   padding:0;
 }
@@ -268,7 +266,7 @@
   }
 
   .courseGridRow--grade{
-    min-height:44px;
+    min-height:34px;
   }
 
   .courseGridRow--f,
