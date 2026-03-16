@@ -46,8 +46,15 @@
   const formatRate = (v) => {
     if (v === undefined || v === null || v === "") return "—";
     const n = Number(v);
-    if (!Number.isFinite(n)) return formatDash(v);
-    return n.toFixed(1);
+    if (!Number.isFinite(n)) return "—";
+    return `${n.toFixed(1)}%`;
+  };
+
+  const formatKimarite = (v) => {
+    if (v === undefined || v === null || v === "") return "—";
+    const n = Number(v);
+    if (!Number.isFinite(n)) return "—";
+    return String(Math.round(n));
   };
 
   const normalizeName = (name) =>
@@ -159,6 +166,21 @@
     return formatRate(v);
   };
 
+  const getCourseWinClass = (boat) => {
+    const v = Number(pickValue(boat, [
+      "course_win",
+      "course_win_rate",
+      "course_1着率",
+      "course_win_1y",
+      "course_win_3y"
+    ]));
+    const waku = Number(boat?.waku);
+
+    if (!Number.isFinite(v)) return "";
+    if (waku === 1 && v >= 80) return "courseWinGold";
+    return "courseWinBlue";
+  };
+
   const getCourseKimariteParts = (boat) => {
     const sashi = pickValue(boat, [
       "course_sashi",
@@ -182,9 +204,9 @@
     ]);
 
     return {
-      sashi: formatRate(sashi),
-      makuri: formatRate(makuri),
-      makurisashi: formatRate(makurisashi)
+      sashi: formatKimarite(sashi),
+      makuri: formatKimarite(makuri),
+      makurisashi: formatKimarite(makurisashi)
     };
   };
 
@@ -273,6 +295,17 @@
     </div>
   `;
 
+  const renderCourseWinRow = (boats) => `
+    <div class="courseGridRow courseGridRow--course">
+      ${boats.map((boat) => `
+        <div class="courseGridCell ${esc(getCourseWinClass(boat))}">
+          <div class="courseGridMetric">${esc(getCourseWinText(boat))}</div>
+        </div>
+      `).join("")}
+      <div class="courseGridLabel">コース勝率</div>
+    </div>
+  `;
+
   const renderKimariteRow = (boats) => `
     <div class="courseGridRow courseGridRow--kimarite">
       ${boats.map((boat) => {
@@ -312,7 +345,7 @@
         ${renderSimpleRow(boats, "L", getLText, "courseGridRow--l")}
         ${renderSimpleRow(boats, "平均ST", getAvgStValue, "courseGridRow--avgst")}
         ${renderSimpleRow(boats, "今節平均ST", getMeetAvgStValue, "courseGridRow--meetavgst")}
-        ${renderSimpleRow(boats, "コース勝率", getCourseWinText, "courseGridRow--course")}
+        ${renderCourseWinRow(boats)}
         ${renderKimariteRow(boats)}
         ${renderSimpleRow(boats, "コース別平均ST", getCourseAvgStText, "courseGridRow--course")}
         ${renderSimpleRow(boats, "コース別2連対", getCourse2renText, "courseGridRow--course")}
