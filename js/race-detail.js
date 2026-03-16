@@ -151,12 +151,11 @@ const toHM = (x) => {
   return m ? `${String(m[1]).padStart(2, "0")}:${m[2]}` : "--:--";
 };
 
-const buildMeetKey = (venue, eventTitle, date) => {
+const buildMeetKey = (venue, eventTitle) => {
   const v = String(venue ?? "").trim();
   const e = String(eventTitle ?? "").trim();
-  const d = String(date ?? "").trim();
-  if (!v || !e || !d) return "";
-  return `${v}|${e}|${d}`;
+  if (!v || !e) return "";
+  return `${v}|${e}`;
 };
 
 function getLocalYMD() {
@@ -315,10 +314,11 @@ function enrichBoatWithCourseStats(boat) {
 function enrichBoatWithMeetAvgSt(boat, json) {
   const reg = String(boat?.regno ?? boat?.reg ?? "").trim();
   const venue = String(json?.venue || venueName || "").trim();
-  const eventTitle = String(json?.event_title || json?.title || json?.race?.title || "").trim();
-  const date = String(json?.date || currentDate || "").trim();
+  const eventTitle = String(
+    json?.event_title || json?.title || json?.race?.title || ""
+  ).trim();
 
-  const meetKey = buildMeetKey(venue, eventTitle, date);
+  const meetKey = buildMeetKey(venue, eventTitle);
   const meet = meetAvgStMap?.[meetKey];
   const stObj = meet?.[reg];
 
