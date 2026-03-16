@@ -23,6 +23,8 @@ const PLAYER_MASTER_URL =
   "https://raceanalysislab.github.io/race-analysis/data/master/players_master.json";
 const PLAYER_COURSE_STATS_URL =
   "https://raceanalysislab.github.io/race-analysis/data/player_course_stats.json";
+const MEET_AVG_ST_URL =
+  "https://raceanalysislab.github.io/race-analysis/data/meet_avg_st.json";
 
 $("venueName").textContent = venueName;
 
@@ -36,6 +38,7 @@ let dragging = false;
 
 let playerMaster = {};
 let playerCourseStats = null;
+let meetAvgStMap = null;
 
 const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
 
@@ -148,6 +151,14 @@ const toHM = (x) => {
   return m ? `${String(m[1]).padStart(2, "0")}:${m[2]}` : "--:--";
 };
 
+const buildMeetKey = (venue, eventTitle, date) => {
+  const v = String(venue ?? "").trim();
+  const e = String(eventTitle ?? "").trim();
+  const d = String(date ?? "").trim();
+  if (!v || !e || !d) return "";
+  return `${v}|${e}|${d}`;
+};
+
 function getLocalYMD() {
   const d = new Date();
   const y = d.getFullYear();
@@ -206,6 +217,15 @@ async function loadPlayerCourseStats() {
     playerCourseStats = json?.players || {};
   } catch (e) {
     playerCourseStats = {};
+  }
+}
+
+async function loadMeetAvgSt() {
+  try {
+    const json = await fetchJSON(MEET_AVG_ST_URL);
+    meetAvgStMap = json?.meets || {};
+  } catch (e) {
+    meetAvgStMap = {};
   }
 }
 
@@ -292,15 +312,37 @@ function enrichBoatWithCourseStats(boat) {
   };
 }
 
-function enrichRaceJSON(json) {
-  const race = json?.race || {};
-  const boats = Array.isArray(race.boats) ? race.boats : [];
+function enrichBoatWithMeetAvgSt(boat, json) {
+  const reg = String(boat?.regno ?? boat?.reg ?? "").trim();
+  const venue = String(json?.venue || venueName || "").trim();
+  const eventTitle = String(json?.event_title || json?.title || json?.race?.title || "").trim();
+  const date = String(json?.date || currentDate || "").trim();
+
+  const meetKey = buildMeetKey(venue, eventTitle, date);
+  const meet = meetAvgStMap?.[meetKey];
+  const stObj = meet?.[reg];
+
+  if (!stObj) return { ...boat };
 
   return {
-    ...json,
+    ...boat,
+    meet_avg_st: stObj.avg_st,
+    meet_starts: stObj.count
+  };
+}
+
+function enrichRaceJSON(rawJson) {
+  const race = rawJson?.race || {};
+  const boats = Array.isArray(race.boats) ? race.boats : [];
+
+  const boatsWithCourse = boats.map(enrichBoatWithCourseStats);
+  const boatsWithMeet = boatsWithCourse.map((boat) => enrichBoatWithMeetAvgSt(boat, rawJson));
+
+  return {
+    ...rawJson,
     race: {
       ...race,
-      boats: boats.map(enrichBoatWithCourseStats)
+      boats: boatsWithMeet
     }
   };
 }
@@ -532,7 +574,8 @@ async function boot() {
 
   await Promise.all([
     loadPlayerMaster(),
-    loadPlayerCourseStats()
+    loadPlayerCourseStats(),
+    loadMeetAvgSt()
   ]);
 
   await setRace(initialRace);
