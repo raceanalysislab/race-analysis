@@ -56,13 +56,16 @@
   min-height:118px;
 }
 
-/* 級をさらに圧縮 */
 .courseGridRow--grade{
   min-height:36px;
 }
 
+/* F/Lだけさらに圧縮 */
 .courseGridRow--f,
-.courseGridRow--l,
+.courseGridRow--l{
+  min-height:28px;
+}
+
 .courseGridRow--avgst,
 .courseGridRow--meetavgst{
   min-height:34px;
@@ -270,7 +273,10 @@
   }
 
   .courseGridRow--f,
-  .courseGridRow--l,
+  .courseGridRow--l{
+    min-height:26px;
+  }
+
   .courseGridRow--avgst,
   .courseGridRow--meetavgst{
     min-height:32px;
