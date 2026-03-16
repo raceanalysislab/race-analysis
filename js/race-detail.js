@@ -24,9 +24,9 @@ const PLAYER_MASTER_URL =
 const PLAYER_COURSE_STATS_URL =
   "https://raceanalysislab.github.io/race-analysis/data/player_course_stats.json";
 
-/* ★ ここを bot 側に変更 */
+/* 公開されているメイン側 */
 const MEET_AVG_ST_BASE_URL =
-  "https://raceanalysislab.github.io/race-data-bot/data/meet_avg_st/";
+  "https://raceanalysislab.github.io/race-analysis/data/meet_avg_st/";
 
 $("venueName").textContent = venueName;
 
@@ -73,7 +73,9 @@ const formatST = (v) => {
 };
 
 const normalizeName = (name) =>
-  String(name ?? "").replace(/\s+/g, "").trim();
+  String(name ?? "")
+    .replace(/[\s\u3000]+/g, "")
+    .trim();
 
 const pickAvgST = (p) => {
   const candidates = [
@@ -353,7 +355,10 @@ function findMeetStObject(boat, meetPlayers) {
   const targetName = normalizeName(boat?.name || "");
   if (!targetName) return null;
 
-  for (const value of Object.values(meetPlayers || {})) {
+  for (const [key, value] of Object.entries(meetPlayers || {})) {
+    if (reg && String(key).trim() === reg) {
+      return value;
+    }
     if (normalizeName(value?.name || "") === targetName) {
       return value;
     }
