@@ -60,7 +60,6 @@
   min-height:36px;
 }
 
-/* F/Lだけさらに圧縮 */
 .courseGridRow--f,
 .courseGridRow--l{
   min-height:28px;
@@ -196,6 +195,18 @@
   font-weight:900;
   letter-spacing:-.02em;
   white-space:nowrap;
+}
+
+.courseWinBlue{
+  background:#3f6fd8;
+  color:#fff;
+  font-weight:700;
+}
+
+.courseWinGold{
+  background:#f2c94c;
+  color:#1e2430;
+  font-weight:800;
 }
 
 .courseGridCell--kimarite{
