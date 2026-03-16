@@ -300,7 +300,7 @@ body{
 
 .entryHead{
   display:grid;
-  grid-template-columns:44px minmax(0,1.62fr) 38px 28px 58px 58px 58px;
+  grid-template-columns:44px minmax(0,1.46fr) 38px 38px 50px 42px 54px 54px 54px;
   align-items:stretch;
   min-height:78px;
   background:#eef1f4;
@@ -372,28 +372,20 @@ body{
 }
 
 .entryHead__fl{
-  padding:0 !important;
-  justify-content:stretch !important;
-  gap:0 !important;
+  padding:4px 2px !important;
+  justify-content:center !important;
+  gap:2px !important;
 }
 
 .entryHead__fl .entryHeadMain,
 .entryHead__fl .entryHeadSub{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  flex:1 1 50%;
-  min-height:0;
+  display:block;
   width:100%;
   margin:0;
-  font-size:13px;
+  font-size:12px;
   font-weight:700;
   line-height:1;
   letter-spacing:-.02em;
-}
-
-.entryHead__fl .entryHeadMain{
-  border-bottom:1px solid var(--line);
 }
 
 .entryTable{
@@ -404,7 +396,7 @@ body{
 
 .entryRow{
   display:grid;
-  grid-template-columns:44px minmax(0,1.62fr) 38px 28px 58px 58px 58px;
+  grid-template-columns:44px minmax(0,1.46fr) 38px 38px 50px 42px 54px 54px 54px;
   min-height:66px;
   border-bottom:1px solid var(--line);
   background:#fff;
@@ -493,7 +485,7 @@ body{
 }
 
 .entryVal--fl{
-  padding:0;
+  padding:0 2px;
 }
 
 .entryStatBlock,
@@ -511,8 +503,8 @@ body{
 }
 
 .entryStatBlock--fl{
-  gap:0;
-  justify-content:stretch;
+  gap:2px;
+  justify-content:center;
 }
 
 .entryStatMain{
@@ -543,11 +535,9 @@ body{
 
 .entryStatMain--f,
 .entryStatSub--l{
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  display:block;
   width:100%;
-  flex:1 1 50%;
+  flex:none;
   min-height:0;
   font-size:16px;
   line-height:1;
@@ -559,7 +549,7 @@ body{
 
 .entryStatMain--f{
   color:#d92d20;
-  border-bottom:1px solid var(--line);
+  border-bottom:0;
 }
 
 .entryStatSub--l{
@@ -905,7 +895,7 @@ body{
   }
 
   .entryHead{
-    grid-template-columns:42px minmax(0,1.60fr) 36px 24px 54px 54px 54px;
+    grid-template-columns:42px minmax(0,1.42fr) 36px 36px 46px 38px 52px 52px 52px;
     min-height:74px;
   }
 
@@ -923,11 +913,11 @@ body{
 
   .entryHead__fl .entryHeadMain,
   .entryHead__fl .entryHeadSub{
-    font-size:12px;
+    font-size:11px;
   }
 
   .entryRow{
-    grid-template-columns:42px minmax(0,1.60fr) 36px 24px 54px 54px 54px;
+    grid-template-columns:42px minmax(0,1.42fr) 36px 36px 46px 38px 52px 52px 52px;
     min-height:62px;
   }
 
