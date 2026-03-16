@@ -111,9 +111,19 @@ const pickL = (p) => {
   return Number.isFinite(n) ? Math.max(0, Math.trunc(n)) : 0;
 };
 
-const renderFLValue = (label, count) => {
-  if (!count) return "";
-  return `${label}${count}`;
+const renderFLCombined = (fCount, lCount) => `F${fCount}/L${lCount}`;
+
+const pickMeetStarts = (p) => {
+  const v = pickValue(p, [
+    "meet_starts",
+    "this_meet_starts",
+    "series_starts",
+    "meet_count",
+    "count"
+  ]);
+  if (v === "" || v === null || v === undefined) return "—";
+  const n = Number(v);
+  return Number.isFinite(n) ? String(Math.trunc(n)) : "—";
 };
 
 const buildEntryMeta = (p) => {
@@ -365,12 +375,11 @@ function renderEntryTable(boats) {
 
         <div class="entryVal">${formatST(pickAvgST(p))}</div>
 
-        <div class="entryVal entryVal--stack entryVal--fl">
-          <div class="entryStatBlock entryStatBlock--fl">
-            <div class="entryStatMain entryStatMain--f">${esc(renderFLValue("F", fCount))}</div>
-            <div class="entryStatSub entryStatSub--l">${esc(renderFLValue("L", lCount))}</div>
-          </div>
-        </div>
+        <div class="entryVal">${formatST(p.meet_avg_st)}</div>
+
+        <div class="entryVal">${esc(renderFLCombined(fCount, lCount))}</div>
+
+        <div class="entryVal">${esc(pickMeetStarts(p))}</div>
 
         <div class="entryVal entryVal--stack">
           <div class="entryStatBlock">
