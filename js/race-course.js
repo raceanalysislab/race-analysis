@@ -132,13 +132,12 @@
     return formatST(v);
   };
 
-  const getMeetStartsText = (boat) => {
+  const getCourseStartsText = (boat) => {
     const v = pickValue(boat, [
-      "meet_starts",
-      "this_meet_starts",
-      "series_starts",
-      "meet_count",
-      "count"
+      "course_starts",
+      "course_start_count",
+      "course_count",
+      "starts"
     ]);
     return formatStarts(v);
   };
@@ -382,7 +381,7 @@
         ${renderFLRow(boats)}
         ${renderSimpleRow(boats, "平均ST", getAvgStValue, "courseGridRow--avgst")}
         ${renderSimpleRow(boats, "今節平均ST", getMeetAvgStValue, "courseGridRow--meetavgst")}
-        ${renderSimpleRow(boats, "出走数", getMeetStartsText, "courseGridRow--starts")}
+        ${renderSimpleRow(boats, "コース出走数", getCourseStartsText, "courseGridRow--starts")}
         ${renderCourseWinRow(boats)}
         ${renderKimariteRow(boats)}
         ${renderSimpleRow(boats, "コース別平均ST", getCourseAvgStText, "courseGridRow--course")}
