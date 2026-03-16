@@ -1,13 +1,13 @@
 {
   "slot": "today",
-  "date": "2026-03-16",
+  "date": "2026-03-17",
   "name": "蒲郡",
   "jcd": "07",
   "next_race": 1,
   "next_display": "1R 15:17",
-  "day": 5,
+  "day": 6,
   "total_days": null,
-  "day_label": "5日目",
+  "day_label": "最終日",
   "grade_label": "一般",
   "event_title": "蒲郡商工会議所会頭杯争奪 ガマゴリうどんグランプリ",
   "first_race_time": "15:17",
@@ -24,7 +24,7 @@
     },
     {
       "rno": 3,
-      "cutoff": "16:06"
+      "cutoff": "16:07"
     },
     {
       "rno": 4,
@@ -56,7 +56,7 @@
     },
     {
       "rno": 11,
-      "cutoff": "20:06"
+      "cutoff": "20:04"
     },
     {
       "rno": 12,

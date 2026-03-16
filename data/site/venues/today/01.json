@@ -1,13 +1,13 @@
 {
   "slot": "today",
-  "date": "2026-03-16",
+  "date": "2026-03-17",
   "name": "桐生",
   "jcd": "01",
   "next_race": 1,
   "next_display": "1R 15:23",
-  "day": 1,
+  "day": 2,
   "total_days": null,
-  "day_label": "初日",
+  "day_label": "2日目",
   "grade_label": "一般",
   "event_title": "ルーキーシリーズ第6戦 みどり市議会議長杯",
   "first_race_time": "15:23",
@@ -24,11 +24,11 @@
     },
     {
       "rno": 3,
-      "cutoff": "16:17"
+      "cutoff": "16:19"
     },
     {
       "rno": 4,
-      "cutoff": "16:45"
+      "cutoff": "16:47"
     },
     {
       "rno": 5,
