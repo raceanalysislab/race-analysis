@@ -235,8 +235,9 @@ async function loadPlayerCourseStats() {
 
 function buildMeetAvgStUrl(venue, date) {
   const venuePart = safeFilenamePart(normalizeVenueForMeetFile(venue));
-  const datePart = String(date || "").trim();
-  return `${MEET_AVG_ST_BASE_URL}${venuePart}_${datePart}.json`;
+  const baseDate = String(date || "").trim();
+  const targetDate = addDaysYMD(baseDate, -1);
+  return `${MEET_AVG_ST_BASE_URL}${venuePart}_${targetDate}.json`;
 }
 
 async function loadMeetAvgStForRace(json) {
@@ -245,7 +246,9 @@ async function loadMeetAvgStForRace(json) {
 
   if (!venue || !date) return { players: {} };
 
-  const cacheKey = `${venue}|${date}`;
+  const targetDate = addDaysYMD(date, -1);
+  const cacheKey = `${venue}|${targetDate}`;
+
   if (meetAvgStCache[cacheKey]) {
     return meetAvgStCache[cacheKey];
   }
