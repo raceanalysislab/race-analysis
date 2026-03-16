@@ -23,8 +23,10 @@ const PLAYER_MASTER_URL =
   "https://raceanalysislab.github.io/race-analysis/data/master/players_master.json";
 const PLAYER_COURSE_STATS_URL =
   "https://raceanalysislab.github.io/race-analysis/data/player_course_stats.json";
+
+/* ★ ここを bot 側に変更 */
 const MEET_AVG_ST_BASE_URL =
-  "https://raceanalysislab.github.io/race-analysis/data/meet_avg_st/";
+  "https://raceanalysislab.github.io/race-data-bot/data/meet_avg_st/";
 
 $("venueName").textContent = venueName;
 
