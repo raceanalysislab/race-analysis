@@ -23,8 +23,8 @@ const PLAYER_MASTER_URL =
   "https://raceanalysislab.github.io/race-analysis/data/master/players_master.json";
 const PLAYER_COURSE_STATS_URL =
   "https://raceanalysislab.github.io/race-analysis/data/player_course_stats.json";
-const MEET_AVG_ST_URL =
-  "https://raceanalysislab.github.io/race-analysis/data/meet_avg_st.json";
+const MEET_AVG_ST_BASE_URL =
+  "https://raceanalysislab.github.io/race-analysis/data/meet_avg_st/";
 
 $("venueName").textContent = venueName;
 
@@ -38,7 +38,7 @@ let dragging = false;
 
 let playerMaster = {};
 let playerCourseStats = null;
-let meetAvgStMap = null;
+const meetAvgStCache = {};
 
 const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
 
@@ -151,13 +151,10 @@ const toHM = (x) => {
   return m ? `${String(m[1]).padStart(2, "0")}:${m[2]}` : "--:--";
 };
 
-const buildMeetKey = (venue, eventTitle, date) => {
-  const v = String(venue ?? "").trim();
-  const e = String(eventTitle ?? "").trim();
-  const d = String(date ?? "").trim();
-  if (!v || !e || !d) return "";
-  return `${v}|${e}|${d}`;
-};
+const safeFilenamePart = (s) =>
+  String(s ?? "")
+    .trim()
+    .replace(/[\/\\:*?"<>|]/g, "_");
 
 function getLocalYMD() {
   const d = new Date();
@@ -220,12 +217,31 @@ async function loadPlayerCourseStats() {
   }
 }
 
-async function loadMeetAvgSt() {
+function buildMeetAvgStUrl(venue, date) {
+  const venuePart = safeFilenamePart(venue);
+  const datePart = String(date || "").trim();
+  return `${MEET_AVG_ST_BASE_URL}${venuePart}_${datePart}.json`;
+}
+
+async function loadMeetAvgStForRace(json) {
+  const venue = String(json?.venue || venueName || "").trim();
+  const date = String(json?.date || currentDate || "").trim();
+
+  if (!venue || !date) return { players: {} };
+
+  const cacheKey = `${venue}|${date}`;
+  if (meetAvgStCache[cacheKey]) {
+    return meetAvgStCache[cacheKey];
+  }
+
   try {
-    const json = await fetchJSON(MEET_AVG_ST_URL);
-    meetAvgStMap = json?.meets || {};
+    const url = buildMeetAvgStUrl(venue, date);
+    const payload = await fetchJSON(url);
+    meetAvgStCache[cacheKey] = payload || { players: {} };
+    return meetAvgStCache[cacheKey];
   } catch (e) {
-    meetAvgStMap = {};
+    meetAvgStCache[cacheKey] = { players: {} };
+    return meetAvgStCache[cacheKey];
   }
 }
 
@@ -313,17 +329,9 @@ function enrichBoatWithCourseStats(boat) {
   };
 }
 
-function enrichBoatWithMeetAvgSt(boat, json) {
+function enrichBoatWithMeetAvgSt(boat, meetPlayers) {
   const reg = String(boat?.regno ?? boat?.reg ?? "").trim();
-  const venue = String(json?.venue || venueName || "").trim();
-  const eventTitle = String(
-    json?.event_title || json?.title || json?.race?.title || ""
-  ).trim();
-  const date = String(json?.date || currentDate || "").trim();
-
-  const meetKey = buildMeetKey(venue, eventTitle, date);
-  const meet = meetAvgStMap?.[meetKey];
-  const stObj = meet?.[reg];
+  const stObj = meetPlayers?.[reg];
 
   if (!stObj) return { ...boat };
 
@@ -334,12 +342,17 @@ function enrichBoatWithMeetAvgSt(boat, json) {
   };
 }
 
-function enrichRaceJSON(rawJson) {
+async function enrichRaceJSON(rawJson) {
   const race = rawJson?.race || {};
   const boats = Array.isArray(race.boats) ? race.boats : [];
 
+  const meetPayload = await loadMeetAvgStForRace(rawJson);
+  const meetPlayers = meetPayload?.players || {};
+
   const boatsWithCourse = boats.map(enrichBoatWithCourseStats);
-  const boatsWithMeet = boatsWithCourse.map((boat) => enrichBoatWithMeetAvgSt(boat, rawJson));
+  const boatsWithMeet = boatsWithCourse.map((boat) =>
+    enrichBoatWithMeetAvgSt(boat, meetPlayers)
+  );
 
   return {
     ...rawJson,
@@ -403,8 +416,8 @@ function renderEntryTable(boats) {
   }).join("");
 }
 
-function renderRaceJSON(r, rawJson) {
-  const json = enrichRaceJSON(rawJson);
+async function renderRaceJSON(r, rawJson) {
+  const json = await enrichRaceJSON(rawJson);
   const raceObj = json?.race || {};
 
   if (json?.date) {
@@ -477,7 +490,7 @@ async function setRace(r) {
 
   try {
     const json = await fetchRaceJSON(r);
-    renderRaceJSON(r, json);
+    await renderRaceJSON(r, json);
   } catch (e) {
     renderRaceError(r);
   }
@@ -577,8 +590,7 @@ async function boot() {
 
   await Promise.all([
     loadPlayerMaster(),
-    loadPlayerCourseStats(),
-    loadMeetAvgSt()
+    loadPlayerCourseStats()
   ]);
 
   await setRace(initialRace);
