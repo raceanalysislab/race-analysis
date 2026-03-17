@@ -226,25 +226,68 @@ function computeNextDisplay(v) {
       if (now < switchAt) {
         return {
           text: `${r.rno}R ${r.cutoff}`,
+          raceNo: Number(r.rno),
           danger: remainMs <= DANGER_MS && remainMs >= 0,
           soldout: false
         };
       }
     }
 
-    return { text: "発売終了", danger: false, soldout: true };
+    return { text: "発売終了", raceNo: null, danger: false, soldout: true };
   }
 
   const nextDisplay = String(v?.next_display || "").trim();
   if (nextDisplay) {
+    const m = nextDisplay.match(/^(\d+)R\s+/);
+    const raceNo = m ? Number(m[1]) : null;
+
     return {
       text: nextDisplay,
+      raceNo: Number.isFinite(raceNo) ? raceNo : null,
       danger: false,
       soldout: nextDisplay === "発売終了"
     };
   }
 
-  return { text: "発売終了", danger: false, soldout: true };
+  return { text: "発売終了", raceNo: null, danger: false, soldout: true };
+}
+
+function getLastRaceNo(v) {
+  const raceTimes = Array.isArray(v?.race_times) ? v.race_times : [];
+  const nums = raceTimes
+    .map((r) => Number(r?.rno))
+    .filter((n) => Number.isFinite(n) && n >= 1 && n <= 12);
+
+  if (!nums.length) return 12;
+  return Math.max(...nums);
+}
+
+function getTargetRaceNo(v) {
+  const next = computeNextDisplay(v);
+
+  if (Number.isFinite(next.raceNo) && next.raceNo >= 1 && next.raceNo <= 12) {
+    return next.raceNo;
+  }
+
+  const candidates = [
+    v?.race_no,
+    v?.race,
+    v?.next_race,
+    v?.current_race,
+    v?.target_race,
+    v?.raceNo
+  ];
+
+  for (const x of candidates) {
+    const n = Number(x);
+    if (Number.isFinite(n) && n >= 1 && n <= 12) return n;
+  }
+
+  if (next.soldout) {
+    return getLastRaceNo(v);
+  }
+
+  return 1;
 }
 
 function getSoonestRace(list) {
@@ -582,6 +625,7 @@ function renderBottomHtml(next) {
 
 function renderOnCard(base, v) {
   const next = computeNextDisplay(v);
+  const targetRaceNo = getTargetRaceNo(v);
   const gradeLabel = normalizeGradeLabel(v?.grade_label);
   const gradeClass = getGradeClass(v?.grade_label);
   const isGeneral = gradeLabel === "一般";
@@ -591,7 +635,7 @@ function renderOnCard(base, v) {
 
   return `
     <a class="card card--on ${isGeneral ? "card--general" : ""} ${next.soldout ? "card--soldout" : ""} ${next.danger ? "card--danger" : ""} card--tone-${esc(tone)}"
-       href="./race.html?date=${encodeURIComponent(date)}&jcd=${encodeURIComponent(base.jcd)}&name=${encodeURIComponent(base.name)}">
+       href="./race.html?date=${encodeURIComponent(date)}&jcd=${encodeURIComponent(base.jcd)}&name=${encodeURIComponent(base.name)}&race=${encodeURIComponent(targetRaceNo)}">
       <div class="card__nameRow">
         <span class="card__nameIcon card__nameIcon--empty"></span>
         <div class="card__name">${esc(base.name)}</div>
