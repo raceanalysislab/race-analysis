@@ -227,6 +227,8 @@ body{
   flex:0 0 auto;
   border-bottom:1px solid var(--line);
   background:#f7f8fa;
+  position:relative;
+  z-index:5;
 }
 .viewTabs::-webkit-scrollbar{ display:none; }
 
@@ -280,7 +282,7 @@ body{
   width:100%;
   min-width:100%;
   height:100%;
-  overflow:auto;
+  overflow:hidden;
   display:flex;
   flex-direction:column;
   min-height:0;
@@ -289,13 +291,16 @@ body{
 
 /* 出走表 */
 .entryBoard{
-  flex:0 0 auto;
+  flex:1 1 auto;
+  min-height:0;
   border-top:1px solid var(--line);
   border-bottom:1px solid var(--line);
   background:#fff;
-  overflow:hidden;
+  overflow:auto;
   display:flex;
   flex-direction:column;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior-y:contain;
 }
 
 .entryHead{
@@ -399,7 +404,7 @@ body{
 .entryTable{
   flex:1 1 auto;
   min-height:0;
-  overflow:hidden;
+  overflow:visible;
 }
 
 .entryRow{
@@ -625,8 +630,9 @@ body{
   display:flex;
   flex-direction:column;
   gap:0;
-  overflow:auto;
+  overflow:hidden;
   background:#fff;
+  overscroll-behavior-y:contain;
 }
 
 .courseInnerTabs{
@@ -693,11 +699,12 @@ body{
   display:flex;
   flex-direction:column;
   overflow-x:auto;
-  overflow-y:hidden;
+  overflow-y:auto;
   background:#fff;
   flex:1 1 auto;
   min-height:0;
   -webkit-overflow-scrolling:touch;
+  overscroll-behavior-y:contain;
 }
 
 .courseGridHead,
