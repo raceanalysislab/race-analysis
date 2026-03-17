@@ -557,13 +557,13 @@ body{
 .entryStatSub{
   display:block;
   width:100%;
-  font-size:16px;
+  font-size:13px;
   line-height:1;
-  font-weight:700;
-  color:#424b59;
+  font-weight:500;
+  color:#7f8896;
   white-space:nowrap;
   text-align:center;
-  letter-spacing:-.015em;
+  letter-spacing:-.01em;
   font-variant-numeric:tabular-nums;
 }
 
@@ -608,13 +608,13 @@ body{
 .entryMotorRate{
   display:block;
   width:100%;
-  font-size:16px;
-  font-weight:700;
+  font-size:13px;
+  font-weight:500;
   line-height:1;
-  color:#424b59;
+  color:#7f8896;
   white-space:nowrap;
   text-align:center;
-  letter-spacing:-.015em;
+  letter-spacing:-.01em;
   font-variant-numeric:tabular-nums;
 }
 
@@ -1006,7 +1006,9 @@ body{
   }
 
   .entryStatSub{
-    font-size:15px;
+    font-size:12px;
+    font-weight:500;
+    letter-spacing:-.01em;
   }
 
   .entryStatMain--f,
@@ -1019,7 +1021,9 @@ body{
   }
 
   .entryMotorRate{
-    font-size:15px;
+    font-size:12px;
+    font-weight:500;
+    letter-spacing:-.01em;
   }
 
   .courseInnerTab{
