@@ -133,7 +133,6 @@ const renderFLValue = (label, count) => {
 
 const buildEntryMeta = (p) => {
   const regno = safeInt(p?.regno);
-  const grade = String(p?.grade ?? "").trim() || "—";
   const branch = String(p?.branch ?? "").trim() || "—";
 
   let age = "—";
@@ -142,7 +141,21 @@ const buildEntryMeta = (p) => {
     age = Number.isFinite(n) ? `${Math.trunc(n)}歳` : `${String(p.age).trim()}歳`;
   }
 
-  return `${regno} / ${grade} / ${branch} / ${age}`;
+  return `${regno} / ${branch} / ${age}`;
+};
+
+const getGradeClassName = (grade) => {
+  const g = String(grade ?? "").trim().toLowerCase();
+  if (g === "a1") return "a1";
+  if (g === "a2") return "a2";
+  if (g === "b1") return "b1";
+  if (g === "b2") return "b2";
+  return "";
+};
+
+const getGradeText = (grade) => {
+  const g = String(grade ?? "").trim().toUpperCase();
+  return g || "—";
 };
 
 const getPlayerDisplayName = (p) => {
@@ -434,6 +447,8 @@ function renderEntryTable(boats) {
     const isFemale = isFemaleRacer(p);
     const displayNameRaw = getPlayerDisplayName(p);
     const metaText = buildEntryMeta(p);
+    const gradeText = getGradeText(p?.grade);
+    const gradeClass = getGradeClassName(p?.grade);
 
     return `
       <div class="entryRow">
@@ -446,6 +461,8 @@ function renderEntryTable(boats) {
             <div class="entryName">${esc(displayNameRaw)}</div>
           </div>
         </div>
+
+        <div class="entryGrade ${esc(gradeClass)}">${esc(gradeText)}</div>
 
         <div class="entryVal">${formatST(pickAvgST(p))}</div>
 
