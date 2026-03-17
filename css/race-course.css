@@ -98,7 +98,7 @@
 .courseGridCell--head{
   font-size:16px;
   line-height:1;
-  font-weight:900;
+  font-weight:800;
   letter-spacing:-.02em;
 }
 
@@ -132,9 +132,9 @@
   overflow:hidden;
   text-overflow:clip;
   font-size:18px;
-  line-height:1.08;
+  line-height:1.04;
   font-weight:700;
-  letter-spacing:0;
+  letter-spacing:.01em;
   color:#0f172a;
   font-kerning:normal;
   font-feature-settings:"kern" 1;
@@ -159,8 +159,8 @@
   font-variant-numeric:tabular-nums;
   font-size:11px;
   line-height:1;
-  font-weight:900;
-  letter-spacing:-.02em;
+  font-weight:700;
+  letter-spacing:-.01em;
   white-space:nowrap;
 }
 
@@ -190,10 +190,10 @@
 
 .courseGridMetric{
   font-variant-numeric:tabular-nums;
-  font-size:10px;
+  font-size:11px;
   line-height:1;
-  font-weight:900;
-  letter-spacing:-.02em;
+  font-weight:700;
+  letter-spacing:-.01em;
   white-space:nowrap;
 }
 
@@ -206,7 +206,7 @@
 .courseWinGold{
   background:#f2c94c;
   color:#1e2430;
-  font-weight:800;
+  font-weight:700;
 }
 
 .courseGridCell--fl{
@@ -235,7 +235,7 @@
 .courseFLHead{
   font-size:8px;
   line-height:1;
-  font-weight:900;
+  font-weight:700;
   color:#5b677a;
   margin-bottom:4px;
   white-space:nowrap;
@@ -244,7 +244,7 @@
 .courseFLVal{
   font-size:10px;
   line-height:1;
-  font-weight:900;
+  font-weight:700;
   white-space:nowrap;
   font-variant-numeric:tabular-nums;
 }
@@ -284,7 +284,7 @@
 .courseKimariteHead{
   font-size:8px;
   line-height:1;
-  font-weight:900;
+  font-weight:700;
   color:#5b677a;
   margin-bottom:4px;
   white-space:nowrap;
@@ -293,7 +293,7 @@
 .courseKimariteVal{
   font-size:9px;
   line-height:1;
-  font-weight:900;
+  font-weight:700;
   color:#101722;
   white-space:nowrap;
   font-variant-numeric:tabular-nums;
@@ -306,9 +306,9 @@
   background:#f3f6fb;
   color:#425066;
   font-size:8px;
-  line-height:1;
-  font-weight:900;
-  letter-spacing:-.03em;
+  line-height:1.08;
+  font-weight:700;
+  letter-spacing:-.01em;
   padding:0 1px;
   word-break:break-all;
   overflow-wrap:anywhere;
@@ -356,36 +356,50 @@
   .courseGridNameVertical{
     height:96px;
     font-size:17px;
-    line-height:1.06;
+    line-height:1.03;
     font-weight:700;
     letter-spacing:0;
   }
 
-  .courseGrade,
+  .courseGrade{
+    font-size:10px;
+    font-weight:700;
+    letter-spacing:-.01em;
+  }
+
   .courseGridMetric{
-    font-size:9px;
+    font-size:10px;
+    font-weight:700;
+    letter-spacing:-.01em;
   }
 
   .courseFLHead{
     font-size:7px;
     margin-bottom:3px;
+    font-weight:700;
   }
 
   .courseFLVal{
     font-size:9px;
+    font-weight:700;
   }
 
   .courseKimariteHead{
     font-size:7px;
     margin-bottom:3px;
+    font-weight:700;
   }
 
   .courseKimariteVal{
     font-size:8px;
+    font-weight:700;
   }
 
   .courseGridLabel{
     font-size:7px;
+    line-height:1.05;
+    font-weight:700;
+    letter-spacing:-.01em;
     padding:0;
   }
 }
