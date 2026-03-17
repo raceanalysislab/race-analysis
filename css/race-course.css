@@ -98,8 +98,8 @@
 .courseGridCell--head{
   font-size:16px;
   line-height:1;
-  font-weight:800;
-  letter-spacing:-.02em;
+  font-weight:700;
+  letter-spacing:-.015em;
 }
 
 .courseGridCell--head.w1{ background:#ffffff; color:#111827; }
@@ -170,10 +170,10 @@
   white-space:nowrap;
   overflow:hidden;
   text-overflow:clip;
-  font-size:17px;
+  font-size:18px;
   line-height:1.04;
-  font-weight:700;
-  letter-spacing:.04em;
+  font-weight:800;
+  letter-spacing:.035em;
   color:#0f172a;
   font-kerning:normal;
   font-feature-settings:"kern" 1;
@@ -197,35 +197,28 @@
   align-items:center;
   justify-content:center;
   font-variant-numeric:tabular-nums;
-  font-size:11px;
+  font-size:10px;
   line-height:1;
-  font-weight:700;
-  letter-spacing:-.01em;
+  font-weight:500;
+  letter-spacing:0;
   white-space:nowrap;
+  color:#1e2430 !important;
+  opacity:.72;
 }
 
 .grade-A1,
-.courseGrade.grade-A1,
-.courseGridCell--grade.grade-A1{
-  color:#c9a227;
-}
-
 .grade-A2,
-.courseGrade.grade-A2,
-.courseGridCell--grade.grade-A2{
-  color:#111827;
-}
-
 .grade-B1,
-.courseGrade.grade-B1,
-.courseGridCell--grade.grade-B1{
-  color:#8a94a6;
-}
-
 .grade-B2,
+.courseGrade.grade-A1,
+.courseGrade.grade-A2,
+.courseGrade.grade-B1,
 .courseGrade.grade-B2,
+.courseGridCell--grade.grade-A1,
+.courseGridCell--grade.grade-A2,
+.courseGridCell--grade.grade-B1,
 .courseGridCell--grade.grade-B2{
-  color:#1fa84a;
+  color:#1e2430 !important;
 }
 
 .courseGridMetric{
@@ -391,6 +384,7 @@
 
   .courseGridCell--head{
     font-size:15px;
+    font-weight:700;
   }
 
   .courseGridNameVerticalWrap{
@@ -403,16 +397,17 @@
   }
 
   .courseGridNameVertical{
-    font-size:16px;
+    font-size:17px;
     line-height:1.03;
-    font-weight:700;
-    letter-spacing:.03em;
+    font-weight:800;
+    letter-spacing:.025em;
   }
 
   .courseGrade{
-    font-size:10px;
-    font-weight:700;
-    letter-spacing:-.01em;
+    font-size:9px;
+    font-weight:500;
+    letter-spacing:0;
+    opacity:.72;
   }
 
   .courseGridMetric{
