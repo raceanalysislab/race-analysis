@@ -54,7 +54,6 @@
 
 .courseGridRow--name{
   min-height:118px;
-  border-bottom:none;
 }
 
 .courseGridRow--grade{
@@ -140,6 +139,11 @@
   line-height:1;
   font-weight:700;
   color:#e2558f;
+  position:relative;
+  z-index:2;
+  background-color:inherit;
+  padding:0 2px 2px;
+  margin-bottom:-2px;
 }
 
 .courseGridNameVertical{
@@ -380,6 +384,8 @@
 
   .courseGridFemaleMark{
     font-size:13px;
+    padding:0 2px 2px;
+    margin-bottom:-2px;
   }
 
   .courseGridNameVertical{
