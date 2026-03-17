@@ -23,6 +23,8 @@ const PLAYER_MASTER_URL =
   "https://raceanalysislab.github.io/race-analysis/data/master/players_master.json";
 const PLAYER_COURSE_STATS_URL =
   "https://raceanalysislab.github.io/race-analysis/data/player_course_stats.json";
+const RACER_GENDER_URL =
+  "https://raceanalysislab.github.io/race-analysis/data/master/racer_gender.json";
 
 /* 公開されているメイン側 */
 const MEET_AVG_ST_BASE_URL =
@@ -40,6 +42,7 @@ let dragging = false;
 
 let playerMaster = {};
 let playerCourseStats = null;
+let racerGenderMap = {};
 const meetAvgStCache = {};
 
 const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
@@ -233,6 +236,19 @@ async function loadPlayerCourseStats() {
   }
 }
 
+async function loadRacerGender() {
+  try {
+    racerGenderMap = await fetchJSON(RACER_GENDER_URL);
+  } catch (e) {
+    racerGenderMap = {};
+  }
+}
+
+function isFemaleRacer(p) {
+  const reg = String(p?.regno ?? p?.reg ?? "").trim();
+  return Number(racerGenderMap?.[reg]) === 1;
+}
+
 function buildMeetAvgStUrl(venue, date) {
   const venuePart = safeFilenamePart(normalizeVenueForMeetFile(venue));
   const baseDate = String(date || "").trim();
@@ -407,14 +423,16 @@ function renderEntryTable(boats) {
   $entryTable.innerHTML = boats.map((p) => {
     const fCount = pickF(p);
     const lCount = pickL(p);
-    const displayName = getPlayerDisplayName(p);
+    const isFemale = isFemaleRacer(p);
+    const displayNameRaw = getPlayerDisplayName(p);
+    const displayName = isFemale ? `♡ ${displayNameRaw}` : displayNameRaw;
     const metaText = buildEntryMeta(p);
 
     return `
       <div class="entryRow">
         <div class="entryWaku w${esc(p.waku)}">${esc(p.waku)}</div>
 
-        <div class="entryNameCell">
+        <div class="entryNameCell${isFemale ? " female" : ""}">
           <div class="entryMeta">${esc(metaText)}</div>
           <div class="entryName">${esc(displayName)}</div>
         </div>
@@ -630,7 +648,8 @@ async function boot() {
 
   await Promise.all([
     loadPlayerMaster(),
-    loadPlayerCourseStats()
+    loadPlayerCourseStats(),
+    loadRacerGender()
   ]);
 
   await setRace(initialRace);
