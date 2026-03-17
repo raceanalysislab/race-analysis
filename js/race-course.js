@@ -1,8 +1,11 @@
 (() => {
   const ORDER = [6, 5, 4, 3, 2, 1];
+  const RACER_GENDER_URL =
+    "https://raceanalysislab.github.io/race-analysis/data/master/racer_gender.json";
 
   const state = {
-    raceJson: null
+    raceJson: null,
+    genderMap: {}
   };
 
   const $ = (id) => document.getElementById(id);
@@ -93,6 +96,11 @@
     next.searchParams.set("age", String(boat?.age || ""));
 
     return next.toString();
+  };
+
+  const isFemaleRacer = (boat) => {
+    const reg = String(boat?.regno ?? boat?.reg ?? "").trim();
+    return Number(state.genderMap?.[reg]) === 1;
   };
 
   const getBoatsOrdered = () => {
@@ -279,11 +287,14 @@
     <div class="courseGridRow courseGridRow--name">
       ${boats.map((boat) => `
         <a
-          class="courseGridCell courseGridCell--name courseGridCell--nameLink ${esc(getWakuClass(boat))}"
+          class="courseGridCell courseGridCell--name courseGridCell--nameLink ${esc(getWakuClass(boat))}${isFemaleRacer(boat) ? " female" : ""}"
           href="${esc(buildPlayerHref(boat))}"
           data-player-link="1"
         >
-          <div class="courseGridNameVertical">${esc(formatDash(normalizeName(boat?.name || "—")))}</div>
+          <div class="courseGridNameVerticalWrap">
+            ${isFemaleRacer(boat) ? '<div class="courseGridFemaleMark">♡</div>' : ""}
+            <div class="courseGridNameVertical">${esc(formatDash(normalizeName(boat?.name || "—")))}</div>
+          </div>
         </a>
       `).join("")}
       <div class="courseGridLabel">選手名</div>
@@ -428,8 +439,22 @@
     root.innerHTML = `<div class="err">コースデータ取得失敗</div>`;
   };
 
-  const render = (json) => {
+  const fetchGenderMap = async () => {
+    try {
+      const res = await fetch(`${RACER_GENDER_URL}?t=${Math.floor(Date.now() / 60000)}`, {
+        cache: "no-store"
+      });
+      if (!res.ok) throw new Error("gender fetch failed");
+      const json = await res.json();
+      state.genderMap = json || {};
+    } catch (e) {
+      state.genderMap = {};
+    }
+  };
+
+  const render = async (json) => {
     state.raceJson = json || null;
+    await fetchGenderMap();
     renderRoot();
   };
 
