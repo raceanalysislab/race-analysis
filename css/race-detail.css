@@ -306,7 +306,7 @@ body{
 
 .entryHead{
   display:grid;
-  grid-template-columns:42px minmax(0,2.38fr) 34px 34px 24px 52px 52px 52px;
+  grid-template-columns:42px minmax(0,2.68fr) 34px 34px 24px 46px 46px 46px;
   align-items:stretch;
   min-height:78px;
   background:#eef1f4;
@@ -410,7 +410,7 @@ body{
 
 .entryRow{
   display:grid;
-  grid-template-columns:42px minmax(0,2.38fr) 34px 34px 24px 52px 52px 52px;
+  grid-template-columns:42px minmax(0,2.68fr) 34px 34px 24px 46px 46px 46px;
   min-height:66px;
   border-bottom:1px solid var(--line);
   background:#fff;
@@ -967,7 +967,7 @@ body{
   }
 
   .entryHead{
-    grid-template-columns:42px minmax(0,2.12fr) 34px 34px 24px 52px 52px 52px;
+    grid-template-columns:42px minmax(0,2.38fr) 34px 34px 24px 46px 46px 46px;
     min-height:74px;
   }
 
@@ -989,7 +989,7 @@ body{
   }
 
   .entryRow{
-    grid-template-columns:42px minmax(0,2.12fr) 34px 34px 24px 52px 52px 52px;
+    grid-template-columns:42px minmax(0,2.38fr) 34px 34px 24px 46px 46px 46px;
     min-height:62px;
   }
 
