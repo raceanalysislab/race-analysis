@@ -305,7 +305,7 @@ body{
 
 .entryHead{
   display:grid;
-  grid-template-columns:44px minmax(0,1.62fr) 38px 28px 58px 58px 58px;
+  grid-template-columns:44px minmax(0,1.56fr) 42px 38px 28px 58px 58px 58px;
   align-items:stretch;
   min-height:78px;
   background:#eef1f4;
@@ -409,7 +409,7 @@ body{
 
 .entryRow{
   display:grid;
-  grid-template-columns:44px minmax(0,1.62fr) 38px 28px 58px 58px 58px;
+  grid-template-columns:44px minmax(0,1.56fr) 42px 38px 28px 58px 58px 58px;
   min-height:66px;
   border-bottom:1px solid var(--line);
   background:#fff;
@@ -502,20 +502,39 @@ body{
   transform:none;
 }
 
+.entryGrade{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  font-size:14px;
+  line-height:1;
+  font-weight:800;
+  letter-spacing:-.01em;
+  border-right:1px solid var(--line);
+  background:#fff;
+  white-space:nowrap;
+}
+
+.entryGrade.a1{ color:#c9a227; }
+.entryGrade.a2{ color:#111827; }
+.entryGrade.b1{ color:#8a94a6; }
+.entryGrade.b2{ color:#1fa84a; }
+
 .entryVal{
   display:flex;
   align-items:center;
   justify-content:center;
   text-align:center;
   font-variant-numeric:tabular-nums;
-  font-size:16px;
+  font-size:15px;
   line-height:1;
-  font-weight:700;
+  font-weight:600;
   color:#101722;
   padding:0 2px;
   border-right:1px solid var(--line);
   min-width:0;
-  letter-spacing:-.015em;
+  letter-spacing:-.01em;
 }
 .entryVal:last-child{ border-right:none; }
 
@@ -549,13 +568,13 @@ body{
 .entryStatMain{
   display:block;
   width:100%;
-  font-size:16px;
+  font-size:15px;
   line-height:1;
-  font-weight:700;
+  font-weight:600;
   color:#101722;
   white-space:nowrap;
   text-align:center;
-  letter-spacing:-.015em;
+  letter-spacing:-.01em;
   font-variant-numeric:tabular-nums;
 }
 
@@ -580,10 +599,10 @@ body{
   width:100%;
   flex:1 1 50%;
   min-height:0;
-  font-size:16px;
+  font-size:15px;
   line-height:1;
   font-weight:700;
-  letter-spacing:-.015em;
+  letter-spacing:-.01em;
   text-align:center;
   font-variant-numeric:tabular-nums;
 }
@@ -600,13 +619,13 @@ body{
 .entryMotorNo{
   display:block;
   width:100%;
-  font-size:16px;
+  font-size:15px;
   font-weight:700;
   line-height:1;
   color:#101722;
   white-space:nowrap;
   text-align:center;
-  letter-spacing:-.015em;
+  letter-spacing:-.01em;
   font-variant-numeric:tabular-nums;
 }
 
@@ -947,7 +966,7 @@ body{
   }
 
   .entryHead{
-    grid-template-columns:42px minmax(0,1.60fr) 36px 24px 54px 54px 54px;
+    grid-template-columns:42px minmax(0,1.54fr) 38px 36px 24px 54px 54px 54px;
     min-height:74px;
   }
 
@@ -969,7 +988,7 @@ body{
   }
 
   .entryRow{
-    grid-template-columns:42px minmax(0,1.60fr) 36px 24px 54px 54px 54px;
+    grid-template-columns:42px minmax(0,1.54fr) 38px 36px 24px 54px 54px 54px;
     min-height:62px;
   }
 
@@ -1000,8 +1019,14 @@ body{
     letter-spacing:0;
   }
 
+  .entryGrade{
+    font-size:13px;
+    font-weight:800;
+  }
+
   .entryVal{
-    font-size:15px;
+    font-size:14px;
+    font-weight:600;
   }
 
   .entryVal--stack{
@@ -1009,7 +1034,8 @@ body{
   }
 
   .entryStatMain{
-    font-size:15px;
+    font-size:14px;
+    font-weight:600;
   }
 
   .entryStatSub{
@@ -1020,11 +1046,11 @@ body{
 
   .entryStatMain--f,
   .entryStatSub--l{
-    font-size:15px;
+    font-size:14px;
   }
 
   .entryMotorNo{
-    font-size:15px;
+    font-size:14px;
   }
 
   .entryMotorRate{
