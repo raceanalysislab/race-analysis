@@ -440,6 +440,10 @@ body{
   text-align:center;
 }
 
+.entryNameCell.female{
+  background:#ffe4ec;
+}
+
 .entryMeta{
   font-size:9px;
   line-height:1.08;
