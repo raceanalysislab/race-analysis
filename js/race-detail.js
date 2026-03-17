@@ -37,13 +37,18 @@ let currentDate = dateParam || getLocalYMD();
 let currentView = 0;
 
 let dragStartX = 0;
+let dragStartY = 0;
 let dragCurrentX = 0;
+let dragCurrentY = 0;
 let dragging = false;
 
 let playerMaster = {};
 let playerCourseStats = null;
 let racerGenderMap = {};
 const meetAvgStCache = {};
+
+const SWIPE_THRESHOLD_X = 56;
+const SWIPE_THRESHOLD_Y = 28;
 
 const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
 
@@ -207,8 +212,11 @@ function normalizeGradeLabel(v) {
 }
 
 function setTopHeight() {
-  const h = $raceTop?.getBoundingClientRect().height || 96;
-  document.documentElement.style.setProperty("--raceTopH", `${Math.ceil(h)}px`);
+  const raceTopH = Math.ceil($raceTop?.getBoundingClientRect().height || 96);
+  const viewTabsH = Math.ceil($viewTabs?.getBoundingClientRect().height || 42);
+
+  document.documentElement.style.setProperty("--raceTopH", `${raceTopH}px`);
+  document.documentElement.style.setProperty("--viewTabsH", `${viewTabsH}px`);
 }
 
 async function fetchJSON(url) {
@@ -511,7 +519,7 @@ async function renderRaceJSON(r, rawJson) {
 
   renderRaceTabs();
   updateUrlRace(r);
-  setTopHeight();
+  requestAnimationFrame(setTopHeight);
 }
 
 function renderRaceError(r) {
@@ -534,7 +542,7 @@ function renderRaceError(r) {
 
   renderRaceTabs();
   updateUrlRace(r);
-  setTopHeight();
+  requestAnimationFrame(setTopHeight);
 }
 
 async function setRace(r) {
@@ -567,6 +575,8 @@ function setView(viewIndex) {
   $viewTabs?.querySelectorAll(".viewTab").forEach((btn) => {
     btn.classList.toggle("is-active", Number(btn.dataset.view) === currentView);
   });
+
+  requestAnimationFrame(setTopHeight);
 }
 
 function bindViewTabs() {
@@ -580,10 +590,24 @@ function bindViewTabs() {
   });
 }
 
+function isInteractiveTarget(target) {
+  if (!target || !(target instanceof Element)) return false;
+
+  return Boolean(
+    target.closest("a") ||
+    target.closest("button") ||
+    target.closest("input") ||
+    target.closest("textarea") ||
+    target.closest("select") ||
+    target.closest("[data-player-link]")
+  );
+}
+
 function isSwipeIgnoreTarget(target) {
   if (!target || !(target instanceof Element)) return false;
 
   return Boolean(
+    isInteractiveTarget(target) ||
     target.closest(".raceTabs") ||
     target.closest(".raceTab") ||
     target.closest(".viewTabs") ||
@@ -593,26 +617,32 @@ function isSwipeIgnoreTarget(target) {
   );
 }
 
-function handleSwipeStart(clientX) {
+function handleSwipeStart(clientX, clientY) {
   dragStartX = clientX;
+  dragStartY = clientY;
   dragCurrentX = clientX;
+  dragCurrentY = clientY;
   dragging = true;
 }
 
-function handleSwipeMove(clientX) {
+function handleSwipeMove(clientX, clientY) {
   if (!dragging) return;
   dragCurrentX = clientX;
+  dragCurrentY = clientY;
 }
 
 function handleSwipeEnd() {
   if (!dragging) return;
 
-  const diff = dragCurrentX - dragStartX;
+  const diffX = dragCurrentX - dragStartX;
+  const diffY = dragCurrentY - dragStartY;
   dragging = false;
 
-  if (Math.abs(diff) < 50) return;
+  if (Math.abs(diffX) < SWIPE_THRESHOLD_X) return;
+  if (Math.abs(diffY) > SWIPE_THRESHOLD_Y) return;
+  if (Math.abs(diffY) > Math.abs(diffX) * 0.55) return;
 
-  if (diff < 0) {
+  if (diffX < 0) {
     setRace(currentRace + 1);
   } else {
     setRace(currentRace - 1);
@@ -620,7 +650,7 @@ function handleSwipeEnd() {
 }
 
 function bindRaceSwipe() {
-  const swipeArea = $raceTop || document;
+  const swipeArea = document;
 
   swipeArea.addEventListener("touchstart", (e) => {
     if (!e.touches?.length) return;
@@ -628,13 +658,13 @@ function bindRaceSwipe() {
       dragging = false;
       return;
     }
-    handleSwipeStart(e.touches[0].clientX);
+    handleSwipeStart(e.touches[0].clientX, e.touches[0].clientY);
   }, { passive: true });
 
   swipeArea.addEventListener("touchmove", (e) => {
     if (!e.touches?.length) return;
     if (!dragging) return;
-    handleSwipeMove(e.touches[0].clientX);
+    handleSwipeMove(e.touches[0].clientX, e.touches[0].clientY);
   }, { passive: true });
 
   swipeArea.addEventListener("touchend", () => {
@@ -647,12 +677,12 @@ function bindRaceSwipe() {
       dragging = false;
       return;
     }
-    handleSwipeStart(e.clientX);
+    handleSwipeStart(e.clientX, e.clientY);
   });
 
   window.addEventListener("mousemove", (e) => {
     if (!dragging) return;
-    handleSwipeMove(e.clientX);
+    handleSwipeMove(e.clientX, e.clientY);
   });
 
   window.addEventListener("mouseup", () => {
@@ -683,7 +713,14 @@ async function boot() {
   requestAnimationFrame(setTopHeight);
 }
 
-addEventListener("resize", setTopHeight, { passive: true });
+addEventListener("resize", () => {
+  requestAnimationFrame(setTopHeight);
+}, { passive: true });
+
+addEventListener("orientationchange", () => {
+  requestAnimationFrame(setTopHeight);
+}, { passive: true });
+
 $("btnBack").addEventListener("click", () => history.back());
 
 boot();
