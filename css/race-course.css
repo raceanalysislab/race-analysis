@@ -110,7 +110,7 @@
 .courseGridCell--head.w6{ background:#39b36b; color:#ffffff; }
 
 .courseGridCell--name{
-  padding:4px 0;
+  padding:6px 0;
   background:#fff;
 }
 
@@ -131,14 +131,14 @@
   white-space:nowrap;
   overflow:hidden;
   text-overflow:clip;
-  font-size:17px;
-  line-height:1.05;
-  font-weight:800;
-  letter-spacing:.04em;
+  font-size:18px;
+  line-height:1.08;
+  font-weight:700;
+  letter-spacing:0;
   color:#0f172a;
   font-kerning:normal;
   font-feature-settings:"kern" 1;
-  text-shadow:0 0 0.01px rgba(0,0,0,.35);
+  text-shadow:none;
 }
 
 .courseGridCell--grade{
@@ -355,10 +355,10 @@
 
   .courseGridNameVertical{
     height:96px;
-    font-size:16px;
-    line-height:1.04;
-    font-weight:800;
-    letter-spacing:.03em;
+    font-size:17px;
+    line-height:1.06;
+    font-weight:700;
+    letter-spacing:0;
   }
 
   .courseGrade,
