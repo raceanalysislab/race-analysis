@@ -425,7 +425,6 @@ function renderEntryTable(boats) {
     const lCount = pickL(p);
     const isFemale = isFemaleRacer(p);
     const displayNameRaw = getPlayerDisplayName(p);
-    const displayName = isFemale ? `♡ ${displayNameRaw}` : displayNameRaw;
     const metaText = buildEntryMeta(p);
 
     return `
@@ -434,7 +433,10 @@ function renderEntryTable(boats) {
 
         <div class="entryNameCell${isFemale ? " female" : ""}">
           <div class="entryMeta">${esc(metaText)}</div>
-          <div class="entryName">${esc(displayName)}</div>
+          <div class="entryNameWrap">
+            ${isFemale ? '<span class="entryFemaleMark" aria-label="女子レーサー">♡</span>' : ""}
+            <div class="entryName">${esc(displayNameRaw)}</div>
+          </div>
         </div>
 
         <div class="entryVal">${formatST(pickAvgST(p))}</div>
