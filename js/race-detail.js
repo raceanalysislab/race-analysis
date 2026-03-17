@@ -580,6 +580,19 @@ function bindViewTabs() {
   });
 }
 
+function isSwipeIgnoreTarget(target) {
+  if (!target || !(target instanceof Element)) return false;
+
+  return Boolean(
+    target.closest(".raceTabs") ||
+    target.closest(".raceTab") ||
+    target.closest(".viewTabs") ||
+    target.closest(".viewTab") ||
+    target.closest(".courseInnerTabs") ||
+    target.closest(".courseInnerTab")
+  );
+}
+
 function handleSwipeStart(clientX) {
   dragStartX = clientX;
   dragCurrentX = clientX;
@@ -611,27 +624,39 @@ function bindRaceSwipe() {
 
   swipeArea.addEventListener("touchstart", (e) => {
     if (!e.touches?.length) return;
+    if (isSwipeIgnoreTarget(e.target)) {
+      dragging = false;
+      return;
+    }
     handleSwipeStart(e.touches[0].clientX);
   }, { passive: true });
 
   swipeArea.addEventListener("touchmove", (e) => {
     if (!e.touches?.length) return;
+    if (!dragging) return;
     handleSwipeMove(e.touches[0].clientX);
   }, { passive: true });
 
   swipeArea.addEventListener("touchend", () => {
+    if (!dragging) return;
     handleSwipeEnd();
   }, { passive: true });
 
   swipeArea.addEventListener("mousedown", (e) => {
+    if (isSwipeIgnoreTarget(e.target)) {
+      dragging = false;
+      return;
+    }
     handleSwipeStart(e.clientX);
   });
 
   window.addEventListener("mousemove", (e) => {
+    if (!dragging) return;
     handleSwipeMove(e.clientX);
   });
 
   window.addEventListener("mouseup", () => {
+    if (!dragging) return;
     handleSwipeEnd();
   });
 }
