@@ -121,8 +121,31 @@
 .courseGridCell--name.w5{ background:#faf7df; }
 .courseGridCell--name.w6{ background:#edf8f0; }
 
-.courseGridNameVertical{
+.courseGridCell--name.female{
+  background:#ffe4ec !important;
+}
+
+.courseGridNameVerticalWrap{
   height:104px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+}
+
+.courseGridFemaleMark{
+  flex:0 0 auto;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:14px;
+  line-height:1;
+  font-weight:700;
+  color:#e2558f;
+}
+
+.courseGridNameVertical{
   display:flex;
   align-items:center;
   justify-content:center;
@@ -353,8 +376,16 @@
     font-size:15px;
   }
 
-  .courseGridNameVertical{
+  .courseGridNameVerticalWrap{
     height:96px;
+    gap:3px;
+  }
+
+  .courseGridFemaleMark{
+    font-size:13px;
+  }
+
+  .courseGridNameVertical{
     font-size:16px;
     line-height:1.03;
     font-weight:700;
