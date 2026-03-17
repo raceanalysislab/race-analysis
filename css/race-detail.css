@@ -410,3 +410,707 @@ body{
 .entryRow{
   display:grid;
   grid-template-columns:42px minmax(0,2.25fr) 38px 34px 24px 52px 52px 52px;
+  min-height:66px;
+  border-bottom:1px solid var(--line);
+  background:#fff;
+}
+.entryRow:last-child{ border-bottom:none; }
+
+.entryWaku{
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:19px;
+  font-weight:800;
+  border-right:1px solid var(--line);
+  letter-spacing:-.015em;
+}
+
+.entryWaku.w1{ background:#ffffff; color:#111827; }
+.entryWaku.w2{ background:#444b55; color:#ffffff; }
+.entryWaku.w3{ background:#ea5a50; color:#ffffff; }
+.entryWaku.w4{ background:#4d82d8; color:#ffffff; }
+.entryWaku.w5{ background:#e6d74a; color:#1e2430; }
+.entryWaku.w6{ background:#39b36b; color:#ffffff; }
+
+.entryNameCell{
+  min-width:0;
+  padding:6px 6px;
+  border-right:1px solid var(--line);
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+}
+
+.entryNameCell.female{
+  background:#ffe4ec;
+}
+
+.entryMeta{
+  font-size:9px;
+  line-height:1.08;
+  color:#6b7280;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  margin-bottom:5px;
+  font-weight:600;
+  letter-spacing:-.01em;
+  text-align:center;
+  width:100%;
+}
+
+.entryNameWrap{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  width:100%;
+  min-width:0;
+}
+
+.entryFemaleMark{
+  flex:0 0 auto;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-size:14px;
+  line-height:1;
+  font-weight:700;
+  color:#e2558f;
+  transform:translateY(-1px);
+}
+
+.entryName{
+  font-size:18px;
+  line-height:1.08;
+  font-weight:700;
+  color:#0f172a;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  letter-spacing:0;
+  text-align:center;
+  width:auto;
+  max-width:100%;
+  font-kerning:normal;
+  font-feature-settings:"kern" 1;
+  text-shadow:none;
+  transform:none;
+}
+
+.entryGrade{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  font-size:14px;
+  line-height:1;
+  font-weight:800;
+  letter-spacing:-.01em;
+  border-right:1px solid var(--line);
+  background:#fff;
+  white-space:nowrap;
+}
+
+.entryGrade.a1{ color:#c9a227; }
+.entryGrade.a2{ color:#111827; }
+.entryGrade.b1{ color:#8a94a6; }
+.entryGrade.b2{ color:#1fa84a; }
+
+.entryVal{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  font-variant-numeric:tabular-nums;
+  font-size:15px;
+  line-height:1;
+  font-weight:600;
+  color:#101722;
+  padding:0 2px;
+  border-right:1px solid var(--line);
+  min-width:0;
+  letter-spacing:-.01em;
+}
+.entryVal:last-child{ border-right:none; }
+
+.entryVal--stack{
+  padding:0;
+}
+
+.entryVal--fl{
+  padding:0;
+}
+
+.entryStatBlock,
+.entryMotorBlock{
+  width:100%;
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+}
+
+.entryStatBlock{
+  gap:2px;
+}
+
+.entryStatBlock--fl{
+  gap:0;
+  justify-content:stretch;
+}
+
+.entryStatMain{
+  display:block;
+  width:100%;
+  font-size:15px;
+  line-height:1;
+  font-weight:600;
+  color:#101722;
+  white-space:nowrap;
+  text-align:center;
+  letter-spacing:-.01em;
+  font-variant-numeric:tabular-nums;
+}
+
+.entryStatSub{
+  display:block;
+  width:100%;
+  font-size:13px;
+  line-height:1;
+  font-weight:500;
+  color:#7f8896;
+  white-space:nowrap;
+  text-align:center;
+  letter-spacing:-.01em;
+  font-variant-numeric:tabular-nums;
+}
+
+.entryStatMain--f,
+.entryStatSub--l{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  flex:1 1 50%;
+  min-height:0;
+  font-size:15px;
+  line-height:1;
+  font-weight:700;
+  letter-spacing:-.01em;
+  text-align:center;
+  font-variant-numeric:tabular-nums;
+}
+
+.entryStatMain--f{
+  color:#d92d20;
+  border-bottom:1px solid var(--line);
+}
+
+.entryStatSub--l{
+  color:#2563eb;
+}
+
+.entryMotorNo{
+  display:block;
+  width:100%;
+  font-size:15px;
+  font-weight:700;
+  line-height:1;
+  color:#101722;
+  white-space:nowrap;
+  text-align:center;
+  letter-spacing:-.01em;
+  font-variant-numeric:tabular-nums;
+}
+
+.entryMotorRate{
+  display:block;
+  width:100%;
+  font-size:13px;
+  font-weight:500;
+  line-height:1;
+  color:#7f8896;
+  white-space:nowrap;
+  text-align:center;
+  letter-spacing:-.01em;
+  font-variant-numeric:tabular-nums;
+}
+
+/* course */
+.courseWrap{
+  flex:1 1 auto;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  gap:0;
+  overflow:hidden;
+  background:#fff;
+  overscroll-behavior-y:contain;
+}
+
+.courseInnerTabs{
+  display:flex;
+  gap:0;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+  flex:0 0 auto;
+  border-bottom:1px solid var(--line);
+  background:#f7f8fa;
+}
+.courseInnerTabs::-webkit-scrollbar{ display:none; }
+
+.courseInnerTab{
+  appearance:none;
+  border:0;
+  border-right:1px solid #d9e0e8;
+  background:#f7f8fa;
+  color:#4d5868;
+  height:40px;
+  padding:0 12px;
+  font-size:11px;
+  font-weight:700;
+  white-space:nowrap;
+  flex:1 0 auto;
+  min-width:150px;
+  letter-spacing:-.015em;
+}
+
+.courseInnerTab:first-child{
+  border-left:1px solid #d9e0e8;
+}
+
+.courseInnerTab.is-active{
+  background:#e8eefc;
+  color:#234ea8;
+}
+
+.courseBlock{
+  background:#fff;
+  padding:0;
+  flex:1 1 auto;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+}
+
+.courseBlockTitle{
+  font-size:12px;
+  line-height:1.2;
+  font-weight:800;
+  color:#111826;
+  padding:10px 12px 8px;
+  border-bottom:1px solid var(--line);
+  letter-spacing:-.015em;
+}
+
+.courseBlockSub{
+  display:none;
+}
+
+.courseSimpleTable{
+  display:flex;
+  flex-direction:column;
+  overflow-x:auto;
+  overflow-y:auto;
+  background:#fff;
+  flex:1 1 auto;
+  min-height:0;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior-y:contain;
+}
+
+.courseGridHead,
+.courseGridRow{
+  min-width:540px;
+  display:grid;
+  grid-template-columns:50px minmax(92px,0.78fr) 46px 56px 66px 66px 66px;
+}
+
+.courseGridHead{
+  flex:0 0 auto;
+  min-height:34px;
+  background:#eef1f4;
+  border-bottom:1px solid var(--line);
+}
+
+.courseGridHead__waku{
+  border-right:1px solid var(--line);
+}
+
+.courseGridHead__name,
+.courseGridHead__cell{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  font-size:9px;
+  line-height:1.1;
+  font-weight:700;
+  color:#5f6978;
+  padding:0 4px;
+  border-right:1px solid var(--line);
+  white-space:nowrap;
+  writing-mode:horizontal-tb;
+  text-orientation:mixed;
+  word-break:keep-all;
+  letter-spacing:-.015em;
+}
+
+.courseGridHead__name{
+  justify-content:flex-start;
+  text-align:left;
+  padding-left:8px;
+}
+
+.courseGridHead__cell:last-child{
+  border-right:none;
+}
+
+.courseGridRow{
+  flex:0 0 auto;
+  min-height:60px;
+  border-bottom:1px solid var(--line);
+  background:#fff;
+}
+
+.courseGridRow:last-child{
+  border-bottom:none;
+}
+
+.courseGridWaku{
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:18px;
+  font-weight:800;
+  border-right:1px solid var(--line);
+  letter-spacing:-.015em;
+}
+
+.courseGridWaku.w1{ background:#ffffff; color:#111827; }
+.courseGridWaku.w2{ background:#444b55; color:#ffffff; }
+.courseGridWaku.w3{ background:#ea5a50; color:#ffffff; }
+.courseGridWaku.w4{ background:#4d82d8; color:#ffffff; }
+.courseGridWaku.w5{ background:#e6d74a; color:#1e2430; }
+.courseGridWaku.w6{ background:#39b36b; color:#ffffff; }
+
+.courseGridName{
+  min-width:0;
+  padding:6px 6px;
+  border-right:1px solid var(--line);
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+}
+
+.courseGridMeta{
+  font-size:9px;
+  line-height:1.08;
+  color:#6b7280;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  margin-bottom:5px;
+  font-weight:600;
+  letter-spacing:-.01em;
+  text-align:center;
+  width:100%;
+}
+
+.courseGridPlayer{
+  font-size:18px;
+  line-height:1.08;
+  font-weight:700;
+  color:#0f172a;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  letter-spacing:0;
+  text-align:center;
+  width:100%;
+  font-kerning:normal;
+  font-feature-settings:"kern" 1;
+  text-shadow:none;
+}
+
+.courseGridCell{
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  text-align:left;
+  font-variant-numeric:tabular-nums;
+  font-size:11px;
+  line-height:1.05;
+  font-weight:700;
+  color:#101722;
+  padding:0 5px;
+  border-right:1px solid var(--line);
+  white-space:nowrap;
+  letter-spacing:-.015em;
+}
+.courseGridCell:last-child{ border-right:none; }
+
+.panelPlaceholder{
+  flex:1 1 auto;
+  min-height:0;
+  border-top:1px solid var(--line);
+  background:#fff;
+  padding:20px 14px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  color:#334155;
+}
+
+.panelPlaceholder__title{
+  font-size:17px;
+  font-weight:800;
+  color:#0f172a;
+  margin-bottom:8px;
+  letter-spacing:-.015em;
+}
+
+.panelPlaceholder__text{
+  font-size:12px;
+  line-height:1.7;
+  color:#64748b;
+  max-width:260px;
+  font-weight:500;
+  letter-spacing:-.01em;
+}
+
+.err{
+  padding:12px;
+  border-top:1px solid var(--line);
+  background:#f8fafc;
+  color:#475569;
+  font-size:12px;
+  line-height:1.7;
+  word-break:break-word;
+  font-weight:600;
+  letter-spacing:-.01em;
+}
+
+@media (max-width: 390px){
+  .raceHead{
+    padding:7px 10px 6px;
+    gap:8px;
+  }
+
+  .raceBrand{
+    font-size:9px;
+    letter-spacing:.14em;
+  }
+
+  .raceVenueRow{
+    gap:5px;
+  }
+
+  .raceVenue{
+    font-size:26px;
+  }
+
+  .raceGrade{
+    min-height:22px;
+    padding:0 7px;
+    font-size:10px;
+  }
+
+  .raceEventTitle{
+    font-size:11px;
+  }
+
+  .metaChip{
+    font-size:11px;
+  }
+
+  .raceBtn{
+    min-width:72px;
+    height:44px;
+    font-size:15px;
+    padding:0 12px;
+  }
+
+  .raceTab{
+    min-width:58px;
+    height:40px;
+    font-size:14px;
+    padding:0 10px;
+  }
+
+  .sectionHead{
+    padding:7px 10px 6px;
+  }
+
+  .sectionTitle{
+    font-size:13px;
+  }
+
+  .viewTab{
+    height:40px;
+    min-width:98px;
+    font-size:13px;
+    padding:0 10px;
+  }
+
+  .entryHead{
+    grid-template-columns:42px minmax(0,1.54fr) 38px 36px 24px 54px 54px 54px;
+    min-height:74px;
+  }
+
+  .entryHeadMain{
+    font-size:12px;
+  }
+
+  .entryHeadSub{
+    font-size:9px;
+  }
+
+  .entryHeadMeta{
+    font-size:7px;
+  }
+
+  .entryHead__fl .entryHeadMain,
+  .entryHead__fl .entryHeadSub{
+    font-size:12px;
+  }
+
+  .entryRow{
+    grid-template-columns:42px minmax(0,1.54fr) 38px 36px 24px 54px 54px 54px;
+    min-height:62px;
+  }
+
+  .entryWaku{
+    font-size:18px;
+  }
+
+  .entryMeta{
+    font-size:8px;
+    line-height:1.08;
+    margin-bottom:4px;
+    font-weight:600;
+    letter-spacing:-.01em;
+  }
+
+  .entryNameWrap{
+    gap:3px;
+  }
+
+  .entryFemaleMark{
+    font-size:13px;
+  }
+
+  .entryName{
+    font-size:17px;
+    line-height:1.06;
+    font-weight:700;
+    letter-spacing:0;
+  }
+
+  .entryGrade{
+    font-size:13px;
+    font-weight:800;
+  }
+
+  .entryVal{
+    font-size:14px;
+    font-weight:600;
+  }
+
+  .entryVal--stack{
+    padding:0;
+  }
+
+  .entryStatMain{
+    font-size:14px;
+    font-weight:600;
+  }
+
+  .entryStatSub{
+    font-size:12px;
+    font-weight:500;
+    letter-spacing:-.01em;
+  }
+
+  .entryStatMain--f,
+  .entryStatSub--l{
+    font-size:14px;
+  }
+
+  .entryMotorNo{
+    font-size:14px;
+  }
+
+  .entryMotorRate{
+    font-size:12px;
+    font-weight:500;
+    letter-spacing:-.01em;
+  }
+
+  .courseInnerTab{
+    height:38px;
+    font-size:10px;
+    min-width:138px;
+  }
+
+  .courseBlockTitle{
+    font-size:11px;
+    padding:8px 10px 7px;
+  }
+
+  .courseGridHead,
+  .courseGridRow{
+    min-width:500px;
+    grid-template-columns:46px minmax(82px,0.74fr) 42px 52px 62px 62px 62px;
+  }
+
+  .courseGridHead{
+    min-height:32px;
+  }
+
+  .courseGridRow{
+    min-height:56px;
+  }
+
+  .courseGridWaku{
+    font-size:17px;
+  }
+
+  .courseGridMeta{
+    font-size:8px;
+    line-height:1.08;
+    margin-bottom:4px;
+    font-weight:600;
+    letter-spacing:-.01em;
+  }
+
+  .courseGridPlayer{
+    font-size:17px;
+    line-height:1.06;
+    font-weight:700;
+    letter-spacing:0;
+  }
+
+  .courseGridCell{
+    font-size:10px;
+    padding:0 4px;
+  }
+
+  .courseGridHead__name,
+  .courseGridHead__cell{
+    font-size:8px;
+    padding:0 3px;
+  }
+}
