@@ -54,6 +54,7 @@
 
 .courseGridRow--name{
   min-height:118px;
+  border-bottom:none;
 }
 
 .courseGridRow--grade{
