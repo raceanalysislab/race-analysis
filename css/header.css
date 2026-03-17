@@ -305,7 +305,7 @@ html[data-theme="pro"] .playerSearchItem{
   min-width:0;
   font-size:15px;
   line-height:1.08;
-  font-weight:900;
+  font-weight:600;
   color:var(--text,#111827);
   white-space:nowrap;
   overflow:hidden;
