@@ -121,10 +121,6 @@
 .courseGridCell--name.w5{ background:#faf7df; }
 .courseGridCell--name.w6{ background:#edf8f0; }
 
-.courseGridCell--name.female{
-  background:#ffe4ec !important;
-}
-
 .courseGridNameVerticalWrap{
   height:104px;
   display:flex;
