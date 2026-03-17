@@ -291,12 +291,13 @@ body{
 
 /* 出走表 */
 .entryBoard{
-  flex:1 1 auto;
+  flex:0 0 auto;
   min-height:0;
+  height:auto;
   border-top:1px solid var(--line);
   border-bottom:1px solid var(--line);
   background:#fff;
-  overflow:auto;
+  overflow:visible;
   display:flex;
   flex-direction:column;
   -webkit-overflow-scrolling:touch;
@@ -305,7 +306,7 @@ body{
 
 .entryHead{
   display:grid;
-  grid-template-columns:42px minmax(0,2.25fr) 38px 34px 24px 52px 52px 52px;
+  grid-template-columns:42px minmax(0,2.38fr) 34px 34px 24px 52px 52px 52px;
   align-items:stretch;
   min-height:78px;
   background:#eef1f4;
@@ -409,7 +410,7 @@ body{
 
 .entryRow{
   display:grid;
-  grid-template-columns:42px minmax(0,2.25fr) 38px 34px 24px 52px 52px 52px;
+  grid-template-columns:42px minmax(0,2.38fr) 34px 34px 24px 52px 52px 52px;
   min-height:66px;
   border-bottom:1px solid var(--line);
   background:#fff;
@@ -507,10 +508,10 @@ body{
   align-items:center;
   justify-content:center;
   text-align:center;
-  font-size:14px;
+  font-size:13px;
   line-height:1;
-  font-weight:800;
-  letter-spacing:-.01em;
+  font-weight:600;
+  letter-spacing:-.005em;
   border-right:1px solid var(--line);
   background:#fff;
   white-space:nowrap;
@@ -966,7 +967,7 @@ body{
   }
 
   .entryHead{
-    grid-template-columns:42px minmax(0,1.54fr) 38px 36px 24px 54px 54px 54px;
+    grid-template-columns:42px minmax(0,2.12fr) 34px 34px 24px 52px 52px 52px;
     min-height:74px;
   }
 
@@ -988,7 +989,7 @@ body{
   }
 
   .entryRow{
-    grid-template-columns:42px minmax(0,1.54fr) 38px 36px 24px 54px 54px 54px;
+    grid-template-columns:42px minmax(0,2.12fr) 34px 34px 24px 52px 52px 52px;
     min-height:62px;
   }
 
@@ -1020,8 +1021,8 @@ body{
   }
 
   .entryGrade{
-    font-size:13px;
-    font-weight:800;
+    font-size:12px;
+    font-weight:600;
   }
 
   .entryVal{
