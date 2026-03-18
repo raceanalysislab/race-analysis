@@ -387,7 +387,7 @@ function makeCourseHeader(){
       </div>
       ${COURSE_ORDER.map((course) => `
         <div class="playerTableHeadCell playerTableHeadCell--c${course}">
-          <div class="playerCourseName">${course}コース</div>
+          <div class="playerCourseName">${course}</div>
         </div>
       `).join("")}
     </div>
