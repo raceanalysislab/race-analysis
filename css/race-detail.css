@@ -517,10 +517,10 @@ body{
   white-space:nowrap;
 }
 
-.entryGrade.a1{ color:#c9a227; }
+.entryGrade.a1{ color:#d92d20; }
 .entryGrade.a2{ color:#111827; }
-.entryGrade.b1{ color:#8a94a6; }
-.entryGrade.b2{ color:#1fa84a; }
+.entryGrade.b1{ color:#111827; }
+.entryGrade.b2{ color:#16a34a; }
 
 .entryVal{
   display:flex;
