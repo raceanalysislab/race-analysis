@@ -183,10 +183,7 @@ body{
   overflow:hidden;
 }
 
-.courseHeroTab:first-child{
-  border-radius:14px 0 0 14px;
-}
-
+.courseHeroTab:first-child{ border-radius:14px 0 0 14px; }
 .courseHeroTab:last-child{
   border-right:1px solid #d9e0ec;
   border-radius:0 14px 14px 0;
@@ -348,7 +345,6 @@ body{
   font-weight:900;
 }
 
-/* JSで最終配置する前の初期値 */
 .radarLabel--1{ left:50%; top:8%; background:var(--waku1); border:1px solid #d8dde8; }
 .radarLabel--1::before{ content:"1"; color:#111827; }
 
@@ -367,7 +363,6 @@ body{
 .radarLabel--6{ left:18%; top:72%; background:var(--waku6); }
 .radarLabel--6::before{ content:"6"; color:#fff; }
 
-/* イン型はいったん消す */
 .courseTypePill{
   display:none !important;
 }
@@ -497,8 +492,7 @@ body{
   width:100%;
 }
 
-.playerCourseTable,
-.playerTimingTable{
+.playerCourseTable{
   width:100%;
   min-width:0;
   background:#fff;
@@ -523,7 +517,6 @@ body{
   gap:2px;
   border-right:1px solid var(--line);
   border-bottom:1px solid var(--line);
-  background:linear-gradient(180deg, #2d67cf, #2257b3);
   color:#fff;
   padding:4px 2px;
   text-align:center;
@@ -537,9 +530,17 @@ body{
 }
 
 .playerTableHeadCell--stub{
-  font-size:10px;
+  background:linear-gradient(180deg, #2d67cf, #2257b3);
+  font-size:11px;
   line-height:1.1;
 }
+
+.playerTableHeadCell--c1{ background:var(--waku1); color:#111827; }
+.playerTableHeadCell--c2{ background:var(--waku2); color:#fff; }
+.playerTableHeadCell--c3{ background:var(--waku3); color:#fff; }
+.playerTableHeadCell--c4{ background:var(--waku4); color:#fff; }
+.playerTableHeadCell--c5{ background:var(--waku5); color:#162033; }
+.playerTableHeadCell--c6{ background:var(--waku6); color:#fff; }
 
 .playerCourseName{
   font-size:11px;
@@ -621,14 +622,6 @@ body{
   top:0;
   bottom:0;
   background:#4a97e6;
-}
-
-.playerTimingTable .playerTableRow{
-  min-height:40px;
-}
-
-.playerTimingTable .playerTableCell--label{
-  font-size:11px;
 }
 
 @media (min-width: 768px){
