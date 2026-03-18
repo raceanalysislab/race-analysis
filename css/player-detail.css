@@ -10,7 +10,6 @@
   --text:#121a2b;
   --muted:#667085;
   --blue:#2c66cf;
-  --blue-dark:#17479f;
   --cyan:#30b7d5;
   --green:#34c89a;
 
@@ -23,6 +22,28 @@
 
   --stub-bg:#f2f4f8;
   --stub-text:#475467;
+
+  /* default = B1 */
+  --hero-accent-1:#2d66d0;
+  --hero-accent-2:#4fded0;
+  --hero-accent-3:#aeeeff;
+  --hero-card-border:#cfe0ff;
+  --hero-card-shadow:rgba(37,82,170,.16);
+  --hero-radar-bg:
+    radial-gradient(circle at 50% 47%, rgba(126,231,255,.18), rgba(37,87,193,0) 57%),
+    linear-gradient(145deg, #13398b 0%, #265fd2 42%, #69d7d9 100%);
+  --hero-radar-grid:rgba(255,255,255,.16);
+  --hero-radar-line:#b9ffff;
+  --hero-radar-line-core:#7ce7ff;
+  --hero-radar-fill:rgba(109,245,235,.14);
+  --hero-radar-fill-core:rgba(109,245,235,.10);
+  --hero-node:#eaffff;
+  --hero-node-ring:rgba(124,231,255,.22);
+  --hero-node-glow:rgba(124,231,255,.24);
+  --hero-pill-bg:linear-gradient(90deg, #2d66d0, #4fded0);
+  --hero-meter-1:linear-gradient(90deg, #2865d4, #4f9bf1);
+  --hero-meter-2:linear-gradient(90deg, #2e69d2, #39d1d0);
+  --hero-meter-3:linear-gradient(90deg, #2c7fd2, #46e0a6);
 }
 
 *{ box-sizing:border-box; }
@@ -41,6 +62,102 @@ html, body{
 body{
   padding-top:var(--safe-top);
 }
+
+/* ========= Grade Theme ========= */
+
+body.grade-theme-a1{
+  --hero-accent-1:#b88a2a;
+  --hero-accent-2:#f3d37a;
+  --hero-accent-3:#fff2c8;
+  --hero-card-border:#ead79c;
+  --hero-card-shadow:rgba(166,126,36,.16);
+  --hero-radar-bg:
+    radial-gradient(circle at 50% 47%, rgba(255,236,172,.24), rgba(140,104,28,0) 57%),
+    linear-gradient(145deg, #72541c 0%, #c89a31 42%, #f3d37a 100%);
+  --hero-radar-grid:rgba(255,248,228,.20);
+  --hero-radar-line:#fff0b8;
+  --hero-radar-line-core:#ffe08a;
+  --hero-radar-fill:rgba(255,214,105,.16);
+  --hero-radar-fill-core:rgba(255,214,105,.11);
+  --hero-node:#fff8de;
+  --hero-node-ring:rgba(255,224,138,.26);
+  --hero-node-glow:rgba(255,224,138,.30);
+  --hero-pill-bg:linear-gradient(90deg, #a97813, #e8c458);
+  --hero-meter-1:linear-gradient(90deg, #af7a16, #edc55d);
+  --hero-meter-2:linear-gradient(90deg, #b38422, #f0d98b);
+  --hero-meter-3:linear-gradient(90deg, #98701a, #e7bf57);
+}
+
+body.grade-theme-a2{
+  --hero-accent-1:#8d96a5;
+  --hero-accent-2:#dfe6f1;
+  --hero-accent-3:#f9fbff;
+  --hero-card-border:#d8dee9;
+  --hero-card-shadow:rgba(109,122,146,.14);
+  --hero-radar-bg:
+    radial-gradient(circle at 50% 47%, rgba(241,246,255,.26), rgba(126,142,170,0) 57%),
+    linear-gradient(145deg, #6f7b90 0%, #aeb7c7 42%, #edf2fa 100%);
+  --hero-radar-grid:rgba(255,255,255,.22);
+  --hero-radar-line:#f6fbff;
+  --hero-radar-line-core:#dce8f7;
+  --hero-radar-fill:rgba(223,234,247,.18);
+  --hero-radar-fill-core:rgba(223,234,247,.12);
+  --hero-node:#ffffff;
+  --hero-node-ring:rgba(220,232,247,.26);
+  --hero-node-glow:rgba(220,232,247,.30);
+  --hero-pill-bg:linear-gradient(90deg, #7f8b9d, #cfd8e4);
+  --hero-meter-1:linear-gradient(90deg, #7f8b9d, #c8d1dd);
+  --hero-meter-2:linear-gradient(90deg, #8f9bad, #d5dde8);
+  --hero-meter-3:linear-gradient(90deg, #8793a4, #d1d9e5);
+}
+
+body.grade-theme-b1{
+  --hero-accent-1:#2d66d0;
+  --hero-accent-2:#4fded0;
+  --hero-accent-3:#aeeeff;
+  --hero-card-border:#cfe0ff;
+  --hero-card-shadow:rgba(37,82,170,.16);
+  --hero-radar-bg:
+    radial-gradient(circle at 50% 47%, rgba(126,231,255,.18), rgba(37,87,193,0) 57%),
+    linear-gradient(145deg, #13398b 0%, #265fd2 42%, #69d7d9 100%);
+  --hero-radar-grid:rgba(255,255,255,.16);
+  --hero-radar-line:#b9ffff;
+  --hero-radar-line-core:#7ce7ff;
+  --hero-radar-fill:rgba(109,245,235,.14);
+  --hero-radar-fill-core:rgba(109,245,235,.10);
+  --hero-node:#eaffff;
+  --hero-node-ring:rgba(124,231,255,.22);
+  --hero-node-glow:rgba(124,231,255,.24);
+  --hero-pill-bg:linear-gradient(90deg, #2d66d0, #4fded0);
+  --hero-meter-1:linear-gradient(90deg, #2865d4, #4f9bf1);
+  --hero-meter-2:linear-gradient(90deg, #2e69d2, #39d1d0);
+  --hero-meter-3:linear-gradient(90deg, #2c7fd2, #46e0a6);
+}
+
+body.grade-theme-b2{
+  --hero-accent-1:#5d6778;
+  --hero-accent-2:#97a3b6;
+  --hero-accent-3:#e1e7f0;
+  --hero-card-border:#d4dbe6;
+  --hero-card-shadow:rgba(79,91,112,.14);
+  --hero-radar-bg:
+    radial-gradient(circle at 50% 47%, rgba(219,228,239,.18), rgba(75,88,112,0) 57%),
+    linear-gradient(145deg, #4c5668 0%, #728096 42%, #a8b4c5 100%);
+  --hero-radar-grid:rgba(255,255,255,.14);
+  --hero-radar-line:#eef3fa;
+  --hero-radar-line-core:#d8e1ec;
+  --hero-radar-fill:rgba(214,223,235,.14);
+  --hero-radar-fill-core:rgba(214,223,235,.10);
+  --hero-node:#f5f8fc;
+  --hero-node-ring:rgba(216,225,236,.22);
+  --hero-node-glow:rgba(216,225,236,.24);
+  --hero-pill-bg:linear-gradient(90deg, #596476, #9aa7ba);
+  --hero-meter-1:linear-gradient(90deg, #627082, #a8b4c4);
+  --hero-meter-2:linear-gradient(90deg, #6a7587, #b1bccb);
+  --hero-meter-3:linear-gradient(90deg, #5d6879, #9ca7b8);
+}
+
+/* ========= layout ========= */
 
 .playerTop{
   position:sticky;
@@ -188,12 +305,16 @@ body{
   color:#fff;
 }
 
-/* hero */
+/* ========= hero ========= */
+
 .courseHeroCard{
-  background:#fff;
-  border:1px solid #d8e0ed;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.98), rgba(249,251,255,.96));
+  border:1px solid var(--hero-card-border);
   border-radius:22px;
-  box-shadow:0 8px 22px rgba(33,52,96,.09);
+  box-shadow:
+    0 10px 24px var(--hero-card-shadow),
+    inset 0 0 0 1px rgba(255,255,255,.55);
   overflow:hidden;
   width:100%;
   max-width:100%;
@@ -257,12 +378,11 @@ body{
   width:100%;
   border-radius:18px;
   padding:8px 8px 34px;
-  background:
-    radial-gradient(circle at 50% 47%, rgba(126,231,255,.18), rgba(37,87,193,0) 57%),
-    linear-gradient(145deg, #13398b 0%, #265fd2 42%, #69d7d9 100%);
+  background:var(--hero-radar-bg);
   box-shadow:
     inset 0 0 0 1px rgba(255,255,255,.16),
-    inset 0 10px 40px rgba(255,255,255,.05);
+    inset 0 10px 40px rgba(255,255,255,.05),
+    0 8px 20px var(--hero-card-shadow);
   overflow:visible;
   position:relative;
 }
@@ -295,7 +415,7 @@ body{
   pointer-events:none;
   border-radius:16px;
   background:
-    radial-gradient(circle at 50% 54%, rgba(116,236,255,.15) 0, rgba(116,236,255,.07) 22%, rgba(116,236,255,0) 55%);
+    radial-gradient(circle at 50% 54%, color-mix(in srgb, var(--hero-accent-3) 45%, transparent) 0, transparent 55%);
   mix-blend-mode:screen;
 }
 
@@ -308,27 +428,27 @@ body{
 
 #courseRadarGrid polygon{
   fill:none;
-  stroke:rgba(255,255,255,.16);
+  stroke:var(--hero-radar-grid);
   stroke-width:1.15;
 }
 
 #courseRadarGrid line{
-  stroke:rgba(255,255,255,.14);
+  stroke:var(--hero-radar-grid);
   stroke-width:1.1;
 }
 
 #courseRadarPolygon{
-  fill:rgba(109,245,235,.14);
-  stroke:#b9ffff;
+  fill:var(--hero-radar-fill);
+  stroke:var(--hero-radar-line);
   stroke-width:2.4;
-  filter:drop-shadow(0 0 4px rgba(126,231,255,.32));
+  filter:drop-shadow(0 0 4px color-mix(in srgb, var(--hero-radar-line) 35%, transparent));
 }
 
 #courseRadarPolygonCore{
-  fill:rgba(109,245,235,.10);
-  stroke:#7ce7ff;
+  fill:var(--hero-radar-fill-core);
+  stroke:var(--hero-radar-line-core);
   stroke-width:1.4;
-  filter:drop-shadow(0 0 6px rgba(124,231,255,.22));
+  filter:drop-shadow(0 0 6px color-mix(in srgb, var(--hero-radar-line-core) 28%, transparent));
 }
 
 .courseRadarNodes{
@@ -344,11 +464,11 @@ body{
   margin-left:-2.5px;
   margin-top:-2.5px;
   border-radius:50%;
-  background:#eaffff;
+  background:var(--hero-node);
   box-shadow:
-    0 0 0 2px rgba(124,231,255,.22),
-    0 0 5px rgba(124,231,255,.24);
-  opacity:.95;
+    0 0 0 2px var(--hero-node-ring),
+    0 0 5px var(--hero-node-glow);
+  opacity:.98;
   z-index:2;
 }
 
@@ -410,9 +530,12 @@ body{
   min-width:0;
   width:100%;
   border-radius:18px;
-  background:#fff;
-  border:1px solid #dbe2ef;
-  box-shadow:0 6px 14px rgba(26,56,120,.08);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.97), rgba(250,252,255,.95));
+  border:1px solid color-mix(in srgb, var(--hero-card-border) 80%, white);
+  box-shadow:
+    0 6px 16px var(--hero-card-shadow),
+    inset 0 0 0 1px rgba(255,255,255,.55);
   padding:12px;
   display:flex;
   flex-direction:column;
@@ -440,7 +563,7 @@ body{
   min-height:30px;
   padding:0 10px;
   border-radius:999px;
-  background:linear-gradient(90deg, #2d66d0, #4fe0ca);
+  background:var(--hero-pill-bg);
   color:#fff;
   display:inline-flex;
   align-items:center;
@@ -450,6 +573,7 @@ body{
   white-space:nowrap;
   max-width:46%;
   flex:0 0 auto;
+  box-shadow:0 4px 12px color-mix(in srgb, var(--hero-accent-1) 22%, transparent);
 }
 
 .courseStatRows{
@@ -508,21 +632,15 @@ body{
   transition:width .28s ease;
 }
 
-.meter--blue .meterFill{
-  background:linear-gradient(90deg, #2865d4, #4f9bf1);
-}
-
-.meter--cyan .meterFill{
-  background:linear-gradient(90deg, #2e69d2, #39d1d0);
-}
-
-.meter--green .meterFill{
-  background:linear-gradient(90deg, #2c7fd2, #46e0a6);
-}
+.meter--blue .meterFill{ background:var(--hero-meter-1); }
+.meter--cyan .meterFill{ background:var(--hero-meter-2); }
+.meter--green .meterFill{ background:var(--hero-meter-3); }
 
 .kimariteCard{
   display:none !important;
 }
+
+/* ========= table ========= */
 
 .playerTableWrap{
   overflow-x:hidden;
