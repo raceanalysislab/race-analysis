@@ -1,4 +1,4 @@
-const qs = new URLSearchParams(location.search);
+　const qs = new URLSearchParams(location.search);
 
 const playerName = decodeURIComponent(qs.get("name") || "選手情報");
 const regno = String(qs.get("regno") || "").trim();
@@ -29,7 +29,6 @@ const RADAR_GRID_MAX_R = 112;
 const RADAR_VALUE_MAX_R = 90;
 const RADAR_INNER_SCALE = 0.82;
 const RADAR_LABEL_R = 126;
-
 const RADAR_ANGLES = [-90, -30, 30, 90, 150, 210].map((deg) => deg * Math.PI / 180);
 
 const BASE_COURSE_DATA = {
@@ -97,19 +96,9 @@ function applyHeroGradeTheme(){
     "hero-grade-b2"
   );
 
-  if (grade === "A1") {
-    document.body.classList.add("hero-grade-a1");
-    return;
-  }
-  if (grade === "A2") {
-    document.body.classList.add("hero-grade-a2");
-    return;
-  }
-  if (grade === "B2") {
-    document.body.classList.add("hero-grade-b2");
-    return;
-  }
-
+  if (grade === "A1") return document.body.classList.add("hero-grade-a1");
+  if (grade === "A2") return document.body.classList.add("hero-grade-a2");
+  if (grade === "B2") return document.body.classList.add("hero-grade-b2");
   document.body.classList.add("hero-grade-b1");
 }
 
@@ -123,16 +112,13 @@ function makeCourseTabs(){
       class="courseHeroTab${n === selectedCourse ? " is-active" : ""}"
       data-course="${n}"
       aria-pressed="${n === selectedCourse ? "true" : "false"}"
-    >
-      ${n}
-    </button>
+    >${n}</button>
   `).join("");
 
   root.querySelectorAll(".courseHeroTab").forEach((btn) => {
     btn.addEventListener("click", () => {
       const nextCourse = Number(btn.dataset.course || 1);
       if (nextCourse === selectedCourse) return;
-
       selectedCourse = nextCourse;
       makeCourseTabs();
       renderHeroText();
@@ -243,9 +229,9 @@ function ensureRadarLabels(){
     stage.appendChild(labels);
   }
 
-  labels.innerHTML = COURSE_ORDER.map((course) => (
+  labels.innerHTML = COURSE_ORDER.map((course) =>
     `<div class="radarLabel radarLabel--${course}" data-course="${course}" aria-hidden="true"></div>`
-  )).join("");
+  ).join("");
 }
 
 function getRadarValues(){
@@ -324,7 +310,6 @@ function drawRadar(progress = 1){
 
   polygon.setAttribute("points", pointObjectsToString(outerPoints));
   core.setAttribute("points", pointObjectsToString(innerPoints));
-
   layoutRadarNodes(outerPoints);
 }
 
