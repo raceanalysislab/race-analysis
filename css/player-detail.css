@@ -20,6 +20,9 @@
   --waku4:#3d78d8;
   --waku5:#e4d447;
   --waku6:#37b56a;
+
+  --stub-bg:#f2f4f8;
+  --stub-text:#475467;
 }
 
 *{ box-sizing:border-box; }
@@ -139,14 +142,50 @@ body{
   margin:0 10px 14px;
 }
 
-.playerSectionTitle{
+.playerSectionHead{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
   padding:14px 12px 10px;
+  border-bottom:1px solid var(--line-soft);
+}
+
+.playerSectionTitle{
   font-size:18px;
   line-height:1.1;
   font-weight:900;
   color:#071126;
   letter-spacing:-.03em;
-  border-bottom:1px solid var(--line-soft);
+}
+
+.playerDataTabs{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:0;
+  border:1px solid #d7dfeb;
+  border-radius:12px;
+  overflow:hidden;
+  background:#fff;
+}
+
+.playerDataTab{
+  appearance:none;
+  border:0;
+  background:#fff;
+  color:#4b5565;
+  height:40px;
+  font-size:14px;
+  font-weight:900;
+  letter-spacing:-.02em;
+}
+
+.playerDataTab + .playerDataTab{
+  border-left:1px solid #d7dfeb;
+}
+
+.playerDataTab.is-active{
+  background:var(--blue);
+  color:#fff;
 }
 
 /* hero */
@@ -487,7 +526,6 @@ body{
 
 .playerTableWrap{
   overflow-x:hidden;
-  -webkit-overflow-scrolling:auto;
   background:#fff;
   width:100%;
 }
@@ -502,7 +540,7 @@ body{
 .playerTableRow{
   display:grid;
   width:100%;
-  grid-template-columns:90px repeat(6, minmax(0, 1fr));
+  grid-template-columns:72px repeat(6, minmax(0, 1fr));
 }
 
 .playerTableHead{
@@ -530,7 +568,8 @@ body{
 }
 
 .playerTableHeadCell--stub{
-  background:linear-gradient(180deg, #2d67cf, #2257b3);
+  background:var(--stub-bg);
+  color:var(--stub-text);
   font-size:11px;
   line-height:1.1;
 }
@@ -574,8 +613,8 @@ body{
 }
 
 .playerTableCell--label{
-  background:linear-gradient(180deg, #2d67cf, #2257b3);
-  color:#fff;
+  background:var(--stub-bg);
+  color:var(--stub-text);
   font-size:11px;
   line-height:1.05;
   font-weight:900;
@@ -679,7 +718,7 @@ body{
 
   .playerTableHead,
   .playerTableRow{
-    grid-template-columns:110px repeat(6, minmax(0, 1fr));
+    grid-template-columns:88px repeat(6, minmax(0, 1fr));
   }
 
   .playerCourseName{
