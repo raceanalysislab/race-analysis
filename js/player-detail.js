@@ -31,16 +31,66 @@ const RADAR_INNER_SCALE = 0.82;
 const RADAR_LABEL_R = 140;
 const RADAR_ANGLES = [-90, -30, 30, 90, 150, 210].map((deg) => deg * Math.PI / 180);
 
-const courseData = {
-  1: { win: 77.7, ren2: 84.4, ren3: 88.8, type: "イン型",     kimariteMain: "逃げ 94%",     kimariteSub: "差し 2.7% / まくり 1.1%" },
-  2: { win: 4.4,  ren2: 33.3, ren3: 55.5, type: "差し型",     kimariteMain: "差し 58%",     kimariteSub: "まくり 18% / 抜き 9%" },
-  3: { win: 8.8,  ren2: 35.5, ren3: 57.7, type: "センター型", kimariteMain: "まくり 41%",   kimariteSub: "まくり差し 21% / 差し 10%" },
-  4: { win: 4.4,  ren2: 17.7, ren3: 31.1, type: "カド型",     kimariteMain: "まくり 29%",   kimariteSub: "差し 13% / まくり差し 8%" },
-  5: { win: 2.2,  ren2: 22.2, ren3: 48.8, type: "アウト型",   kimariteMain: "差し 16%",     kimariteSub: "まくり差し 7% / 抜き 5%" },
-  6: { win: 2.2,  ren2: 6.8,  ren3: 18.1, type: "大外型",     kimariteMain: "差し 7%",      kimariteSub: "まくり差し 3% / 抜き 1%" }
+const DATASETS = {
+  "1y": {
+    title: "直近1年コースデータ",
+    courseData: {
+      1: { win: 77.7, ren2: 84.4, ren3: 88.8, type: "イン型",     kimariteMain: "逃げ 94%",     kimariteSub: "差し 2.7% / まくり 1.1%" },
+      2: { win: 4.4,  ren2: 33.3, ren3: 55.5, type: "差し型",     kimariteMain: "差し 58%",     kimariteSub: "まくり 18% / 抜き 9%" },
+      3: { win: 8.8,  ren2: 35.5, ren3: 57.7, type: "センター型", kimariteMain: "まくり 41%",   kimariteSub: "まくり差し 21% / 差し 10%" },
+      4: { win: 4.4,  ren2: 17.7, ren3: 31.1, type: "カド型",     kimariteMain: "まくり 29%",   kimariteSub: "差し 13% / まくり差し 8%" },
+      5: { win: 2.2,  ren2: 22.2, ren3: 48.8, type: "アウト型",   kimariteMain: "差し 16%",     kimariteSub: "まくり差し 7% / 抜き 5%" },
+      6: { win: 2.2,  ren2: 6.8,  ren3: 18.1, type: "大外型",     kimariteMain: "差し 7%",      kimariteSub: "まくり差し 3% / 抜き 1%" }
+    },
+    table: {
+      starts: ["45","45","45","45","45","44"],
+      first: ["35","2","4","2","1","1"],
+      second: ["3","13","12","6","9","2"],
+      third: ["2","10","10","6","12","5"],
+      winRate: ["77.7 %","4.4 %","8.8 %","4.4 %","2.2 %","2.2 %"],
+      ren2Rate: ["84.4 %","33.3 %","35.5 %","17.7 %","22.2 %","6.8 %"],
+      ren3Rate: ["88.8 %","55.5 %","57.7 %","31.1 %","48.8 %","18.1 %"],
+      avgSt: ["0.13","0.14","0.13","0.15","0.16","0.14"],
+      nige: ["34","0","0","0","0","0"],
+      sashi: ["0","1","0","0","1","0"],
+      makuri: ["0","1","2","2","0","0"],
+      makurisashi: ["0","0","1","0","0","1"],
+      nuki: ["1","0","1","0","0","0"],
+      megumare: ["0","0","0","0","0","0"]
+    }
+  },
+
+  "3y": {
+    title: "直近3年コースデータ",
+    courseData: {
+      1: { win: 77.7, ren2: 84.4, ren3: 88.8, type: "イン型",     kimariteMain: "逃げ 94%",     kimariteSub: "差し 2.7% / まくり 1.1%" },
+      2: { win: 4.4,  ren2: 33.3, ren3: 55.5, type: "差し型",     kimariteMain: "差し 58%",     kimariteSub: "まくり 18% / 抜き 9%" },
+      3: { win: 8.8,  ren2: 35.5, ren3: 57.7, type: "センター型", kimariteMain: "まくり 41%",   kimariteSub: "まくり差し 21% / 差し 10%" },
+      4: { win: 4.4,  ren2: 17.7, ren3: 31.1, type: "カド型",     kimariteMain: "まくり 29%",   kimariteSub: "差し 13% / まくり差し 8%" },
+      5: { win: 2.2,  ren2: 22.2, ren3: 48.8, type: "アウト型",   kimariteMain: "差し 16%",     kimariteSub: "まくり差し 7% / 抜き 5%" },
+      6: { win: 2.2,  ren2: 6.8,  ren3: 18.1, type: "大外型",     kimariteMain: "差し 7%",      kimariteSub: "まくり差し 3% / 抜き 1%" }
+    },
+    table: {
+      starts: ["45","45","45","45","45","44"],
+      first: ["35","2","4","2","1","1"],
+      second: ["3","13","12","6","9","2"],
+      third: ["2","10","10","6","12","5"],
+      winRate: ["77.7 %","4.4 %","8.8 %","4.4 %","2.2 %","2.2 %"],
+      ren2Rate: ["84.4 %","33.3 %","35.5 %","17.7 %","22.2 %","6.8 %"],
+      ren3Rate: ["88.8 %","55.5 %","57.7 %","31.1 %","48.8 %","18.1 %"],
+      avgSt: ["0.13","0.14","0.13","0.15","0.16","0.14"],
+      nige: ["34","0","0","0","0","0"],
+      sashi: ["0","1","0","0","1","0"],
+      makuri: ["0","1","2","2","0","0"],
+      makurisashi: ["0","0","1","0","0","1"],
+      nuki: ["1","0","1","0","0","0"],
+      megumare: ["0","0","0","0","0","0"]
+    }
+  }
 };
 
 let selectedCourse = Math.min(6, Math.max(1, Number.isFinite(waku) ? waku : 1));
+let selectedRange = "1y";
 let radarAnimationFrame = null;
 
 function esc(s){
@@ -51,6 +101,10 @@ function esc(s){
     '"':"&quot;",
     "'":"&#39;"
   }[c]));
+}
+
+function getCurrentDataset(){
+  return DATASETS[selectedRange] || DATASETS["1y"];
 }
 
 function makeCourseTabs(){
@@ -77,6 +131,31 @@ function makeCourseTabs(){
       makeCourseTabs();
       renderHeroText();
       layoutRadarLabels();
+      animateRadar();
+    });
+  });
+}
+
+function bindRangeTabs(){
+  const root = $("playerDataTabs");
+  if (!root) return;
+
+  root.querySelectorAll(".playerDataTab").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const nextRange = String(btn.dataset.range || "1y");
+      if (nextRange === selectedRange) return;
+
+      selectedRange = nextRange;
+
+      root.querySelectorAll(".playerDataTab").forEach((tab) => {
+        tab.classList.toggle("is-active", tab.dataset.range === selectedRange);
+      });
+
+      const title = $("playerDataTitle");
+      if (title) title.textContent = getCurrentDataset().title;
+
+      renderTables();
+      renderHeroText();
       animateRadar();
     });
   });
@@ -164,8 +243,9 @@ function ensureRadarLabels(){
 }
 
 function getRadarValues(){
+  const dataset = getCurrentDataset();
   return COURSE_ORDER.map((course) => {
-    const data = courseData[course] || { win: 0 };
+    const data = dataset.courseData[course] || { win: 0 };
     return Number(data.win) || 0;
   });
 }
@@ -276,7 +356,8 @@ function setMeter(idFill, value){
 }
 
 function renderHeroText(){
-  const data = courseData[selectedCourse] || courseData[1];
+  const dataset = getCurrentDataset();
+  const data = dataset.courseData[selectedCourse] || dataset.courseData[1];
 
   $("selectedCourseTitle").textContent = `${selectedCourse}コース進入時`;
   $("selectedCourseType").textContent = data.type;
@@ -349,31 +430,37 @@ function rateRow(label, values){
 }
 
 function renderTables(){
+  const t = getCurrentDataset().table;
+
   $("playerCourseStats").innerHTML = [
     makeCourseHeader(),
-    valueRow("出走数", ["45","45","45","45","45","44"], true),
-    valueRow("1着", ["35","2","4","2","1","1"], true),
-    valueRow("2着", ["3","13","12","6","9","2"], true),
-    valueRow("3着", ["2","10","10","6","12","5"], true),
-    rateRow("1着率", ["77.7 %","4.4 %","8.8 %","4.4 %","2.2 %","2.2 %"]),
-    rateRow("2連対率", ["84.4 %","33.3 %","35.5 %","17.7 %","22.2 %","6.8 %"]),
-    rateRow("3連対率", ["88.8 %","55.5 %","57.7 %","31.1 %","48.8 %","18.1 %"]),
-    valueRow("平均ST", ["0.13","0.14","0.13","0.15","0.16","0.14"], false),
-    valueRow("逃げ", ["34","0","0","0","0","0"], true),
-    valueRow("差し", ["0","1","0","0","1","0"], true),
-    valueRow("まくり", ["0","1","2","2","0","0"], true),
-    valueRow("まくり差し", ["0","0","1","0","0","1"], true),
-    valueRow("抜き", ["1","0","1","0","0","0"], true),
-    valueRow("恵まれ", ["0","0","0","0","0","0"], true)
+    valueRow("出走数", t.starts, true),
+    valueRow("1着", t.first, true),
+    valueRow("2着", t.second, true),
+    valueRow("3着", t.third, true),
+    rateRow("1着率", t.winRate),
+    rateRow("2連対率", t.ren2Rate),
+    rateRow("3連対率", t.ren3Rate),
+    valueRow("平均ST", t.avgSt, false),
+    valueRow("逃げ", t.nige, true),
+    valueRow("差し", t.sashi, true),
+    valueRow("まくり", t.makuri, true),
+    valueRow("まくり差し", t.makurisashi, true),
+    valueRow("抜き", t.nuki, true),
+    valueRow("恵まれ", t.megumare, true)
   ].join("");
 }
 
 function boot(){
+  const title = $("playerDataTitle");
+  if (title) title.textContent = getCurrentDataset().title;
+
   buildRadarGrid();
   ensureRadarExtraLayers();
   ensureRadarLabels();
   renderTables();
   makeCourseTabs();
+  bindRangeTabs();
   renderHeroText();
   layoutRadarLabels();
   drawRadar(0);
