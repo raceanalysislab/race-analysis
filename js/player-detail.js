@@ -22,63 +22,118 @@ $("btnBack").addEventListener("click", () => history.back());
 
 const COURSE_ORDER = [1, 2, 3, 4, 5, 6];
 
+/* 余白改善版 */
 const RADAR_SIZE = 320;
 const RADAR_CX = 160;
-const RADAR_CY = 160;
-const RADAR_GRID_MAX_R = 118;
-const RADAR_VALUE_MAX_R = 98;
-const RADAR_INNER_SCALE = 0.84;
-const RADAR_LABEL_R = 136;
+const RADAR_CY = 154;
+const RADAR_GRID_MAX_R = 112;
+const RADAR_VALUE_MAX_R = 90;
+const RADAR_INNER_SCALE = 0.82;
+const RADAR_LABEL_R = 126;
+
 const RADAR_ANGLES = [-90, -30, 30, 90, 150, 210].map((deg) => deg * Math.PI / 180);
 
-const courseData1Y = {
-  1: { starts: "45", winCount: "35", second: "3", third: "2", win: 77.7, ren2: 84.4, ren3: 88.8, nige: "34", sashi: "0", makuri: "0", makurisashi: "0", nuki: "1", megumare: "0", st: "0.13", f: "0", l: "0" },
-  2: { starts: "45", winCount: "2",  second: "13", third: "10", win: 4.4,  ren2: 33.3, ren3: 55.5, nige: "0",  sashi: "1", makuri: "1", makurisashi: "0", nuki: "0", megumare: "0", st: "0.14", f: "0", l: "0" },
-  3: { starts: "45", winCount: "4",  second: "12", third: "10", win: 8.8,  ren2: 35.5, ren3: 57.7, nige: "0",  sashi: "0", makuri: "2", makurisashi: "1", nuki: "1", megumare: "0", st: "0.13", f: "0", l: "0" },
-  4: { starts: "45", winCount: "2",  second: "6",  third: "6",  win: 4.4,  ren2: 17.7, ren3: 31.1, nige: "0",  sashi: "0", makuri: "2", makurisashi: "0", nuki: "0", megumare: "0", st: "0.15", f: "0", l: "0" },
-  5: { starts: "45", winCount: "1",  second: "9",  third: "12", win: 2.2,  ren2: 22.2, ren3: 48.8, nige: "0",  sashi: "1", makuri: "0", makurisashi: "0", nuki: "0", megumare: "0", st: "0.16", f: "0", l: "0" },
-  6: { starts: "44", winCount: "1",  second: "2",  third: "5",  win: 2.2,  ren2: 6.8,  ren3: 18.1, nige: "0",  sashi: "0", makuri: "0", makurisashi: "1", nuki: "0", megumare: "0", st: "0.14", f: "0", l: "0" }
-};
+const DATASETS = {
+  "1y": {
+    title: "直近1年コースデータ",
+    courseData: {
+      1: { win: 77.7, ren2: 84.4, ren3: 88.8, type: "イン型",     kimariteMain: "逃げ 94%",     kimariteSub: "差し 2.7% / まくり 1.1%" },
+      2: { win: 4.4,  ren2: 33.3, ren3: 55.5, type: "差し型",     kimariteMain: "差し 58%",     kimariteSub: "まくり 18% / 抜き 9%" },
+      3: { win: 8.8,  ren2: 35.5, ren3: 57.7, type: "センター型", kimariteMain: "まくり 41%",   kimariteSub: "まくり差し 21% / 差し 10%" },
+      4: { win: 4.4,  ren2: 17.7, ren3: 31.1, type: "カド型",     kimariteMain: "まくり 29%",   kimariteSub: "差し 13% / まくり差し 8%" },
+      5: { win: 2.2,  ren2: 22.2, ren3: 48.8, type: "アウト型",   kimariteMain: "差し 16%",     kimariteSub: "まくり差し 7% / 抜き 5%" },
+      6: { win: 2.2,  ren2: 6.8,  ren3: 18.1, type: "大外型",     kimariteMain: "差し 7%",      kimariteSub: "まくり差し 3% / 抜き 1%" }
+    },
+    table: {
+      starts: ["45","45","45","45","45","44"],
+      first: ["35","2","4","2","1","1"],
+      second: ["3","13","12","6","9","2"],
+      third: ["2","10","10","6","12","5"],
+      winRate: ["77.7 %","4.4 %","8.8 %","4.4 %","2.2 %","2.2 %"],
+      ren2Rate: ["84.4 %","33.3 %","35.5 %","17.7 %","22.2 %","6.8 %"],
+      ren3Rate: ["88.8 %","55.5 %","57.7 %","31.1 %","48.8 %","18.1 %"],
+      avgSt: ["0.13","0.14","0.13","0.15","0.16","0.14"],
+      nige: ["34","0","0","0","0","0"],
+      sashi: ["0","1","0","0","1","0"],
+      makuri: ["0","1","2","2","0","0"],
+      makurisashi: ["0","0","1","0","0","1"],
+      nuki: ["1","0","1","0","0","0"],
+      megumare: ["0","0","0","0","0","0"]
+    }
+  },
 
-const courseData3Y = JSON.parse(JSON.stringify(courseData1Y));
+  "3y": {
+    title: "直近3年コースデータ",
+    courseData: {
+      1: { win: 77.7, ren2: 84.4, ren3: 88.8, type: "イン型",     kimariteMain: "逃げ 94%",     kimariteSub: "差し 2.7% / まくり 1.1%" },
+      2: { win: 4.4,  ren2: 33.3, ren3: 55.5, type: "差し型",     kimariteMain: "差し 58%",     kimariteSub: "まくり 18% / 抜き 9%" },
+      3: { win: 8.8,  ren2: 35.5, ren3: 57.7, type: "センター型", kimariteMain: "まくり 41%",   kimariteSub: "まくり差し 21% / 差し 10%" },
+      4: { win: 4.4,  ren2: 17.7, ren3: 31.1, type: "カド型",     kimariteMain: "まくり 29%",   kimariteSub: "差し 13% / まくり差し 8%" },
+      5: { win: 2.2,  ren2: 22.2, ren3: 48.8, type: "アウト型",   kimariteMain: "差し 16%",     kimariteSub: "まくり差し 7% / 抜き 5%" },
+      6: { win: 2.2,  ren2: 6.8,  ren3: 18.1, type: "大外型",     kimariteMain: "差し 7%",      kimariteSub: "まくり差し 3% / 抜き 1%" }
+    },
+    table: {
+      starts: ["45","45","45","45","45","44"],
+      first: ["35","2","4","2","1","1"],
+      second: ["3","13","12","6","9","2"],
+      third: ["2","10","10","6","12","5"],
+      winRate: ["77.7 %","4.4 %","8.8 %","4.4 %","2.2 %","2.2 %"],
+      ren2Rate: ["84.4 %","33.3 %","35.5 %","17.7 %","22.2 %","6.8 %"],
+      ren3Rate: ["88.8 %","55.5 %","57.7 %","31.1 %","48.8 %","18.1 %"],
+      avgSt: ["0.13","0.14","0.13","0.15","0.16","0.14"],
+      nige: ["34","0","0","0","0","0"],
+      sashi: ["0","1","0","0","1","0"],
+      makuri: ["0","1","2","2","0","0"],
+      makurisashi: ["0","0","1","0","0","1"],
+      nuki: ["1","0","1","0","0","0"],
+      megumare: ["0","0","0","0","0","0"]
+    }
+  }
+};
 
 let selectedCourse = Math.min(6, Math.max(1, Number.isFinite(waku) ? waku : 1));
 let selectedRange = "1y";
 let radarAnimationFrame = null;
 
-function esc(s) {
+function esc(s){
   return String(s ?? "").replace(/[&<>"']/g, (c) => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;"
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
   }[c]));
 }
 
-function normalizeGradeClass(g) {
-  const x = String(g || "").trim().toUpperCase();
-  if (x === "A1") return "a1";
-  if (x === "A2") return "a2";
-  if (x === "B1") return "b1";
-  if (x === "B2") return "b2";
-  return "b1";
+function getCurrentDataset(){
+  return DATASETS[selectedRange] || DATASETS["1y"];
 }
 
-function applyGradeTheme() {
-  document.body.setAttribute("data-player-grade", normalizeGradeClass(grade));
+function applyHeroGradeTheme(){
+  document.body.classList.remove(
+    "hero-grade-a1",
+    "hero-grade-a2",
+    "hero-grade-b1",
+    "hero-grade-b2"
+  );
+
+  if (grade === "A1") {
+    document.body.classList.add("hero-grade-a1");
+    return;
+  }
+  if (grade === "A2") {
+    document.body.classList.add("hero-grade-a2");
+    return;
+  }
+  if (grade === "B2") {
+    document.body.classList.add("hero-grade-b2");
+    return;
+  }
+
+  document.body.classList.add("hero-grade-b1");
 }
 
-function getActiveCourseMap() {
-  return selectedRange === "3y" ? courseData3Y : courseData1Y;
-}
-
-function getSelectedData() {
-  const map = getActiveCourseMap();
-  return map[selectedCourse] || map[1];
-}
-
-function makeCourseTabs() {
+function makeCourseTabs(){
   const root = $("courseHeroTabs");
   if (!root) return;
 
@@ -100,36 +155,39 @@ function makeCourseTabs() {
 
       selectedCourse = nextCourse;
       makeCourseTabs();
-      renderHeroCompact();
+      renderHeroText();
       layoutRadarLabels();
       animateRadar();
     });
   });
 }
 
-function makeRangeTabs() {
-  const root = $("playerRangeTabs");
+function bindRangeTabs(){
+  const root = $("playerDataTabs");
   if (!root) return;
 
-  root.innerHTML = `
-    <button type="button" class="playerRangeTab${selectedRange === "1y" ? " is-active" : ""}" data-range="1y">直近1年データ</button>
-    <button type="button" class="playerRangeTab${selectedRange === "3y" ? " is-active" : ""}" data-range="3y">直近3年データ</button>
-  `;
-
-  root.querySelectorAll(".playerRangeTab").forEach((btn) => {
+  root.querySelectorAll(".playerDataTab").forEach((btn) => {
     btn.addEventListener("click", () => {
       const nextRange = String(btn.dataset.range || "1y");
       if (nextRange === selectedRange) return;
+
       selectedRange = nextRange;
-      makeRangeTabs();
+
+      root.querySelectorAll(".playerDataTab").forEach((tab) => {
+        tab.classList.toggle("is-active", tab.dataset.range === selectedRange);
+      });
+
+      const title = $("playerDataTitle");
+      if (title) title.textContent = getCurrentDataset().title;
+
       renderTables();
-      renderHeroCompact();
+      renderHeroText();
       animateRadar();
     });
   });
 }
 
-function polygonPointsFromRadius(r) {
+function polygonPointsFromRadius(r){
   return RADAR_ANGLES.map((a) => {
     const x = RADAR_CX + Math.cos(a) * r;
     const y = RADAR_CY + Math.sin(a) * r;
@@ -137,11 +195,11 @@ function polygonPointsFromRadius(r) {
   }).join(" ");
 }
 
-function buildRadarGrid() {
+function buildRadarGrid(){
   const g = $("courseRadarGrid");
   if (!g) return;
 
-  const levels = [24, 46, 68, 90, RADAR_GRID_MAX_R];
+  const levels = [28, 50, 72, 92, RADAR_GRID_MAX_R];
   g.innerHTML = "";
 
   levels.forEach((r) => {
@@ -162,7 +220,7 @@ function buildRadarGrid() {
   });
 }
 
-function ensureRadarExtraLayers() {
+function ensureRadarExtraLayers(){
   const svg = document.querySelector(".courseRadarSvg");
   if (!svg) return;
 
@@ -173,6 +231,12 @@ function ensureRadarExtraLayers() {
   }
 
   const stage = document.querySelector(".courseRadarStage");
+  if (stage && !stage.querySelector(".courseRadarGlow")) {
+    const glow = document.createElement("div");
+    glow.className = "courseRadarGlow";
+    stage.insertBefore(glow, svg);
+  }
+
   if (stage && !stage.querySelector(".courseRadarNodes")) {
     const nodes = document.createElement("div");
     nodes.className = "courseRadarNodes";
@@ -188,7 +252,7 @@ function ensureRadarExtraLayers() {
   }
 }
 
-function ensureRadarLabels() {
+function ensureRadarLabels(){
   const stage = document.querySelector(".courseRadarStage");
   if (!stage) return;
 
@@ -204,15 +268,15 @@ function ensureRadarLabels() {
   )).join("");
 }
 
-function getRadarValues() {
-  const map = getActiveCourseMap();
+function getRadarValues(){
+  const dataset = getCurrentDataset();
   return COURSE_ORDER.map((course) => {
-    const data = map[course] || { win: 0 };
+    const data = dataset.courseData[course] || { win: 0 };
     return Number(data.win) || 0;
   });
 }
 
-function getRadarPointObjects(values, progress = 1, scale = 1) {
+function getRadarPointObjects(values, progress = 1, scale = 1){
   const maxValue = Math.max(...values, 1);
 
   return values.map((v, i) => {
@@ -225,11 +289,11 @@ function getRadarPointObjects(values, progress = 1, scale = 1) {
   });
 }
 
-function pointObjectsToString(points) {
+function pointObjectsToString(points){
   return points.map((p) => `${p.x},${p.y}`).join(" ");
 }
 
-function layoutRadarNodes(points) {
+function layoutRadarNodes(points){
   points.forEach((p, i) => {
     const node = $(`courseRadarNode${i + 1}`);
     if (!node) return;
@@ -238,18 +302,18 @@ function layoutRadarNodes(points) {
   });
 }
 
-function getLabelOffsets() {
+function getLabelOffsets(){
   return {
-    1: { dx: 0,  dy: -3 },
-    2: { dx: 6,  dy: -2 },
-    3: { dx: 6,  dy: 2 },
-    4: { dx: 0,  dy: 5 },
-    5: { dx: -6, dy: 2 },
-    6: { dx: -6, dy: -2 }
+    1: { dx: 0,  dy: -2 },
+    2: { dx: 8,  dy: -1 },
+    3: { dx: 8,  dy: 2 },
+    4: { dx: 0,  dy: 1 },
+    5: { dx: -8, dy: 2 },
+    6: { dx: -8, dy: -1 }
   };
 }
 
-function layoutRadarLabels() {
+function layoutRadarLabels(){
   const stage = document.querySelector(".courseRadarStage");
   if (!stage) return;
 
@@ -269,7 +333,7 @@ function layoutRadarLabels() {
   });
 }
 
-function drawRadar(progress = 1) {
+function drawRadar(progress = 1){
   const polygon = $("courseRadarPolygon");
   const core = $("courseRadarPolygonCore");
   if (!polygon || !core) return;
@@ -280,10 +344,11 @@ function drawRadar(progress = 1) {
 
   polygon.setAttribute("points", pointObjectsToString(outerPoints));
   core.setAttribute("points", pointObjectsToString(innerPoints));
+
   layoutRadarNodes(outerPoints);
 }
 
-function animateRadar() {
+function animateRadar(){
   const duration = 520;
   const start = performance.now();
 
@@ -309,42 +374,45 @@ function animateRadar() {
   radarAnimationFrame = requestAnimationFrame(tick);
 }
 
-function setGauge(idFill, value) {
+function setMeter(idFill, value){
   const el = $(idFill);
   if (!el) return;
   const width = Math.max(0, Math.min(100, Number(value) || 0));
   el.style.width = `${width}%`;
 }
 
-function renderHeroCompact() {
-  const data = getSelectedData();
+function renderHeroText(){
+  const dataset = getCurrentDataset();
+  const data = dataset.courseData[selectedCourse] || dataset.courseData[1];
 
-  if ($("selectedCourseTitle")) $("selectedCourseTitle").textContent = "";
-  if ($("selectedCourseType")) $("selectedCourseType").textContent = "";
-  if ($("courseTypePill")) $("courseTypePill").textContent = "";
+  $("selectedCourseTitle").textContent = `${selectedCourse}コース進入時`;
+  $("selectedCourseType").textContent = data.type;
+
+  const courseTypePill = $("courseTypePill");
+  if (courseTypePill) courseTypePill.textContent = data.type;
 
   $("winRateText").textContent = `${data.win.toFixed(1)}%`;
   $("ren2RateText").textContent = `${data.ren2.toFixed(1)}%`;
   $("ren3RateText").textContent = `${data.ren3.toFixed(1)}%`;
 
-  setGauge("winRateFill", data.win);
-  setGauge("ren2RateFill", data.ren2);
-  setGauge("ren3RateFill", data.ren3);
+  setMeter("winRateFill", data.win);
+  setMeter("ren2RateFill", data.ren2);
+  setMeter("ren3RateFill", data.ren3);
 
   const kimariteMain = $("kimariteMain");
   const kimariteSub = $("kimariteSub");
-  if (kimariteMain) kimariteMain.textContent = "";
-  if (kimariteSub) kimariteSub.textContent = "";
+  if (kimariteMain) kimariteMain.textContent = data.kimariteMain;
+  if (kimariteSub) kimariteSub.textContent = data.kimariteSub;
 }
 
-function makeCourseHeader() {
+function makeCourseHeader(){
   return `
     <div class="playerTableHead">
       <div class="playerTableHeadCell playerTableHeadCell--stub">
         <span>枠</span>
       </div>
       ${COURSE_ORDER.map((course) => `
-        <div class="playerTableHeadCell playerTableHeadCell--waku playerTableHeadCell--waku${course}">
+        <div class="playerTableHeadCell playerTableHeadCell--c${course}">
           <div class="playerCourseName">${course}</div>
         </div>
       `).join("")}
@@ -352,7 +420,7 @@ function makeCourseHeader() {
   `;
 }
 
-function valueRow(label, values, highlightFirst = false) {
+function valueRow(label, values, highlightFirst = false){
   return `
     <div class="playerTableRow">
       <div class="playerTableCell playerTableCell--label">${esc(label)}</div>
@@ -365,12 +433,12 @@ function valueRow(label, values, highlightFirst = false) {
   `;
 }
 
-function rateRow(label, values) {
+function rateRow(label, values){
   return `
     <div class="playerTableRow">
       <div class="playerTableCell playerTableCell--label">${esc(label)}</div>
       ${values.map((v, i) => {
-        const n = Number(String(v).replace("%", "").trim());
+        const n = Number(String(v).replace("%","").replace(/\s/g, "").trim());
         const width = Number.isFinite(n) ? Math.max(0, Math.min(n, 100)) : 0;
         return `
           <div class="playerTableCell playerTableCell--value${i === 0 ? " is-highlight" : ""}">
@@ -387,55 +455,41 @@ function rateRow(label, values) {
   `;
 }
 
-function renderTables() {
-  const map = getActiveCourseMap();
-
-  const starts = COURSE_ORDER.map((c) => map[c].starts);
-  const winCount = COURSE_ORDER.map((c) => map[c].winCount);
-  const second = COURSE_ORDER.map((c) => map[c].second);
-  const third = COURSE_ORDER.map((c) => map[c].third);
-  const winRate = COURSE_ORDER.map((c) => `${map[c].win.toFixed(1)} %`);
-  const ren2Rate = COURSE_ORDER.map((c) => `${map[c].ren2.toFixed(1)} %`);
-  const ren3Rate = COURSE_ORDER.map((c) => `${map[c].ren3.toFixed(1)} %`);
-  const avgSt = COURSE_ORDER.map((c) => map[c].st);
-  const nige = COURSE_ORDER.map((c) => map[c].nige);
-  const sashi = COURSE_ORDER.map((c) => map[c].sashi);
-  const makuri = COURSE_ORDER.map((c) => map[c].makuri);
-  const makurisashi = COURSE_ORDER.map((c) => map[c].makurisashi);
-  const nuki = COURSE_ORDER.map((c) => map[c].nuki);
-  const megumare = COURSE_ORDER.map((c) => map[c].megumare);
+function renderTables(){
+  const t = getCurrentDataset().table;
 
   $("playerCourseStats").innerHTML = [
     makeCourseHeader(),
-    valueRow("出走数", starts, true),
-    valueRow("1着", winCount, true),
-    valueRow("2着", second, true),
-    valueRow("3着", third, true),
-    rateRow("1着率", winRate),
-    rateRow("2連対率", ren2Rate),
-    rateRow("3連対率", ren3Rate),
-    valueRow("平均ST", avgSt, true),
-    valueRow("逃げ", nige, true),
-    valueRow("差し", sashi, true),
-    valueRow("まくり", makuri, true),
-    valueRow("まくり差し", makurisashi, true),
-    valueRow("抜き", nuki, true),
-    valueRow("恵まれ", megumare, true)
+    valueRow("出走数", t.starts, true),
+    valueRow("1着", t.first, true),
+    valueRow("2着", t.second, true),
+    valueRow("3着", t.third, true),
+    rateRow("1着率", t.winRate),
+    rateRow("2連対率", t.ren2Rate),
+    rateRow("3連対率", t.ren3Rate),
+    valueRow("平均ST", t.avgSt, false),
+    valueRow("逃げ", t.nige, true),
+    valueRow("差し", t.sashi, true),
+    valueRow("まくり", t.makuri, true),
+    valueRow("まくり差し", t.makurisashi, true),
+    valueRow("抜き", t.nuki, true),
+    valueRow("恵まれ", t.megumare, true)
   ].join("");
-
-  const timingWrap = $("playerTimingTable");
-  if (timingWrap) timingWrap.innerHTML = "";
 }
 
-function boot() {
-  applyGradeTheme();
+function boot(){
+  applyHeroGradeTheme();
+
+  const title = $("playerDataTitle");
+  if (title) title.textContent = getCurrentDataset().title;
+
   buildRadarGrid();
   ensureRadarExtraLayers();
   ensureRadarLabels();
-  makeCourseTabs();
-  makeRangeTabs();
   renderTables();
-  renderHeroCompact();
+  makeCourseTabs();
+  bindRangeTabs();
+  renderHeroText();
   layoutRadarLabels();
   drawRadar(0);
 
