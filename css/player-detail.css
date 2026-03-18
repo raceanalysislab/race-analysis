@@ -9,10 +9,6 @@
 
   --text:#121a2b;
   --muted:#667085;
-  --blue:#2c66cf;
-  --blue-dark:#17479f;
-  --cyan:#30b7d5;
-  --green:#34c89a;
 
   --waku1:#ffffff;
   --waku2:#2d3138;
@@ -50,10 +46,137 @@
   --hero-stat-border:#dbe2ef;
   --hero-stat-shadow:0 6px 14px rgba(26,56,120,.08);
 
-  --hero-pill-bg:linear-gradient(90deg, #2d66d0, #4fe0ca);
-  --hero-meter-blue:linear-gradient(90deg, #2f62c9, #4f90e6);
-  --hero-meter-cyan:linear-gradient(90deg, #315fb7, #53d0d3);
-  --hero-meter-green:linear-gradient(90deg, #3568bd, #58ddb5);
+  --hero-meter-1:linear-gradient(90deg, #2f62c9, #4f90e6);
+  --hero-meter-2:linear-gradient(90deg, #315fb7, #53d0d3);
+  --hero-meter-3:linear-gradient(90deg, #3568bd, #58ddb5);
+}
+
+/* A1 */
+body.hero-grade-a1{
+  --hero-card-border:#dec98a;
+  --hero-card-shadow:0 10px 24px rgba(127,98,20,.12);
+
+  --hero-radar-bg:
+    radial-gradient(circle at 50% 38%, rgba(255,235,160,.18), rgba(255,235,160,0) 18%),
+    radial-gradient(circle at 50% 58%, rgba(227,188,87,.16), rgba(227,188,87,0) 40%),
+    linear-gradient(180deg, #34280f 0%, #58421a 34%, #8c6820 68%, #4d3815 100%);
+
+  --hero-radar-grid:rgba(255,244,212,.18);
+  --hero-radar-grid-line:rgba(255,240,198,.14);
+
+  --hero-radar-fill:rgba(255,226,139,.10);
+  --hero-radar-stroke:#fff1bf;
+  --hero-radar-core-fill:rgba(255,233,167,.08);
+  --hero-radar-core-stroke:#f9dd88;
+  --hero-radar-node:#fff9ea;
+  --hero-radar-node-ring:rgba(255,226,130,.26);
+  --hero-radar-node-glow:rgba(255,209,102,.28);
+
+  --hero-glow:
+    radial-gradient(circle at 50% 46%, rgba(255,221,124,.13) 0, rgba(255,221,124,.05) 26%, rgba(255,221,124,0) 58%);
+
+  --hero-stat-border:#e5d4a5;
+  --hero-stat-shadow:0 6px 14px rgba(129,101,26,.08);
+
+  --hero-meter-1:linear-gradient(90deg, #a47a17, #d7b04b);
+  --hero-meter-2:linear-gradient(90deg, #a8831a, #e3c76c);
+  --hero-meter-3:linear-gradient(90deg, #9a7312, #e1bf58);
+}
+
+/* A2 */
+body.hero-grade-a2{
+  --hero-card-border:#d6dbe4;
+  --hero-card-shadow:0 10px 24px rgba(103,116,136,.10);
+
+  --hero-radar-bg:
+    radial-gradient(circle at 50% 38%, rgba(241,246,252,.16), rgba(241,246,252,0) 18%),
+    radial-gradient(circle at 50% 58%, rgba(201,212,229,.14), rgba(201,212,229,0) 40%),
+    linear-gradient(180deg, #2f3748 0%, #495365 34%, #667287 68%, #3e4758 100%);
+
+  --hero-radar-grid:rgba(244,248,253,.18);
+  --hero-radar-grid-line:rgba(233,239,246,.13);
+
+  --hero-radar-fill:rgba(230,237,246,.10);
+  --hero-radar-stroke:#f8fbff;
+  --hero-radar-core-fill:rgba(236,242,249,.07);
+  --hero-radar-core-stroke:#dce4ee;
+  --hero-radar-node:#ffffff;
+  --hero-radar-node-ring:rgba(224,232,241,.25);
+  --hero-radar-node-glow:rgba(219,227,238,.26);
+
+  --hero-glow:
+    radial-gradient(circle at 50% 46%, rgba(232,239,248,.12) 0, rgba(232,239,248,.05) 26%, rgba(232,239,248,0) 58%);
+
+  --hero-stat-border:#d9dee6;
+  --hero-stat-shadow:0 6px 14px rgba(97,110,130,.08);
+
+  --hero-meter-1:linear-gradient(90deg, #8893a5, #b8c2d1);
+  --hero-meter-2:linear-gradient(90deg, #8b97a8, #c5cfdd);
+  --hero-meter-3:linear-gradient(90deg, #8390a0, #b9c3d1);
+}
+
+/* B1 */
+body.hero-grade-b1{
+  --hero-card-border:#d7deea;
+  --hero-card-shadow:0 10px 24px rgba(29,52,94,.10);
+
+  --hero-radar-bg:
+    radial-gradient(circle at 50% 38%, rgba(110,198,255,.16), rgba(110,198,255,0) 18%),
+    radial-gradient(circle at 50% 58%, rgba(83,150,255,.12), rgba(83,150,255,0) 42%),
+    linear-gradient(180deg, #0f274b 0%, #17335f 34%, #1c4578 68%, #15335d 100%);
+
+  --hero-radar-grid:rgba(255,255,255,.16);
+  --hero-radar-grid-line:rgba(255,255,255,.12);
+
+  --hero-radar-fill:rgba(169,228,255,.10);
+  --hero-radar-stroke:#eefbff;
+  --hero-radar-core-fill:rgba(199,240,255,.08);
+  --hero-radar-core-stroke:#b8ecff;
+  --hero-radar-node:#f9feff;
+  --hero-radar-node-ring:rgba(174,237,255,.24);
+  --hero-radar-node-glow:rgba(154,221,255,.26);
+
+  --hero-glow:
+    radial-gradient(circle at 50% 46%, rgba(160,228,255,.12) 0, rgba(160,228,255,.05) 26%, rgba(160,228,255,0) 58%);
+
+  --hero-stat-border:#dbe2ef;
+  --hero-stat-shadow:0 6px 14px rgba(26,56,120,.08);
+
+  --hero-meter-1:linear-gradient(90deg, #2f62c9, #4f90e6);
+  --hero-meter-2:linear-gradient(90deg, #315fb7, #53d0d3);
+  --hero-meter-3:linear-gradient(90deg, #3568bd, #58ddb5);
+}
+
+/* B2 */
+body.hero-grade-b2{
+  --hero-card-border:#d9dde4;
+  --hero-card-shadow:0 10px 22px rgba(74,86,104,.10);
+
+  --hero-radar-bg:
+    radial-gradient(circle at 50% 38%, rgba(214,223,235,.14), rgba(214,223,235,0) 18%),
+    radial-gradient(circle at 50% 58%, rgba(165,180,201,.12), rgba(165,180,201,0) 40%),
+    linear-gradient(180deg, #313844 0%, #47515f 34%, #5e6978 68%, #3b4552 100%);
+
+  --hero-radar-grid:rgba(244,247,251,.15);
+  --hero-radar-grid-line:rgba(233,239,246,.11);
+
+  --hero-radar-fill:rgba(228,234,241,.08);
+  --hero-radar-stroke:#f4f7fb;
+  --hero-radar-core-fill:rgba(229,235,242,.06);
+  --hero-radar-core-stroke:#d6dde6;
+  --hero-radar-node:#f8fafc;
+  --hero-radar-node-ring:rgba(220,228,236,.22);
+  --hero-radar-node-glow:rgba(210,218,228,.24);
+
+  --hero-glow:
+    radial-gradient(circle at 50% 46%, rgba(222,228,235,.10) 0, rgba(222,228,235,.04) 26%, rgba(222,228,235,0) 58%);
+
+  --hero-stat-border:#dde2e8;
+  --hero-stat-shadow:0 6px 14px rgba(74,86,104,.08);
+
+  --hero-meter-1:linear-gradient(90deg, #667180, #a3adba);
+  --hero-meter-2:linear-gradient(90deg, #66717d, #a7b1bc);
+  --hero-meter-3:linear-gradient(90deg, #616b77, #9ba6b2);
 }
 
 *{ box-sizing:border-box; }
@@ -215,7 +338,7 @@ body{
 }
 
 .playerDataTab.is-active{
-  background:var(--blue);
+  background:#3b6bcf;
   color:#fff;
 }
 
@@ -278,12 +401,12 @@ body{
 
 .courseHeroBody{
   display:grid;
-  grid-template-columns:minmax(0, .88fr) minmax(0, 1.12fr);
+  grid-template-columns:minmax(0, .98fr) minmax(0, .72fr);
   gap:10px;
-  padding:12px 12px 16px;
+  padding:12px 12px 12px;
   width:100%;
   max-width:100%;
-  align-items:start;
+  align-items:stretch;
 }
 
 .courseRadarCard{
@@ -316,10 +439,8 @@ body{
   position:absolute;
   inset:0;
   border-radius:16px;
-  background:
-    radial-gradient(circle at center, rgba(255,255,255,.06), transparent 58%),
-    repeating-radial-gradient(circle at center, rgba(255,255,255,.03) 0 2px, transparent 2px 24px);
-  opacity:.9;
+  background:radial-gradient(circle at center, rgba(255,255,255,.05), transparent 58%);
+  opacity:.92;
 }
 
 .courseRadarGlow{
@@ -434,7 +555,11 @@ body{
 .radarLabel--6{ left:18%; top:72%; background:var(--waku6); }
 .radarLabel--6::before{ content:"6"; color:#fff; }
 
-.courseTypePill{
+.courseTypePill,
+.courseStatHead,
+.courseStatHead__course,
+.courseStatHead__type,
+.kimariteCard{
   display:none !important;
 }
 
@@ -448,51 +573,21 @@ body{
   padding:12px;
   display:flex;
   flex-direction:column;
-  justify-content:flex-start;
-  overflow:hidden;
-}
-
-.courseStatHead{
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:8px;
-  margin-bottom:10px;
-}
-
-.courseStatHead__course{
-  font-size:15px;
-  line-height:1.05;
-  font-weight:900;
-  color:#0a1731;
-  letter-spacing:-.03em;
-}
-
-.courseStatHead__type{
-  min-height:30px;
-  padding:0 10px;
-  border-radius:999px;
-  background:var(--hero-pill-bg);
-  color:#fff;
-  display:inline-flex;
-  align-items:center;
   justify-content:center;
-  font-size:13px;
-  font-weight:900;
-  white-space:nowrap;
-  max-width:46%;
-  flex:0 0 auto;
+  overflow:hidden;
 }
 
 .courseStatRows{
   display:flex;
   flex-direction:column;
-  gap:8px;
+  justify-content:center;
+  gap:10px;
+  min-height:100%;
 }
 
 .courseStatRow{
   display:flex;
-  align-items:end;
+  align-items:center;
   justify-content:space-between;
   gap:8px;
 }
@@ -505,20 +600,22 @@ body{
 }
 
 .courseStatValue{
-  font-size:17px;
+  font-size:18px;
   line-height:1;
-  font-weight:900;
+  font-weight:950;
   color:#0d1730;
+  letter-spacing:-.02em;
 }
 
 .meter{
   position:relative;
   width:100%;
-  height:12px;
+  height:10px;
   border-radius:999px;
   overflow:hidden;
   background:#e8edf6;
   box-shadow:inset 0 0 0 1px rgba(0,0,0,.02);
+  margin-top:-3px;
 }
 
 .meter::after{
@@ -527,8 +624,8 @@ body{
   inset:0;
   background:repeating-linear-gradient(
     90deg,
-    rgba(255,255,255,.22) 0 10px,
-    rgba(255,255,255,0) 10px 14px
+    rgba(255,255,255,.20) 0 10px,
+    rgba(255,255,255,0) 10px 15px
   );
   pointer-events:none;
 }
@@ -538,23 +635,12 @@ body{
   width:0%;
   border-radius:999px;
   transition:width .28s ease;
+  background-size:100% 100%;
 }
 
-.meter--blue .meterFill{
-  background:var(--hero-meter-blue);
-}
-
-.meter--cyan .meterFill{
-  background:var(--hero-meter-cyan);
-}
-
-.meter--green .meterFill{
-  background:var(--hero-meter-green);
-}
-
-.kimariteCard{
-  display:none !important;
-}
+.meter--blue .meterFill{ background:var(--hero-meter-1); }
+.meter--cyan .meterFill{ background:var(--hero-meter-2); }
+.meter--green .meterFill{ background:var(--hero-meter-3); }
 
 .playerTableWrap{
   overflow-x:hidden;
@@ -587,7 +673,6 @@ body{
   gap:2px;
   border-right:1px solid var(--line);
   border-bottom:1px solid var(--line);
-  color:#fff;
   padding:4px 2px;
   text-align:center;
   font-weight:900;
@@ -685,6 +770,7 @@ body{
   background:#edf2fb;
   position:relative;
   overflow:hidden;
+  border-radius:999px;
 }
 
 .playerRateBarFill{
@@ -695,143 +781,11 @@ body{
   background:#4a97e6;
 }
 
-/* A1 */
-body.hero-grade-a1{
-  --hero-card-border:#dec98a;
-  --hero-card-shadow:0 10px 24px rgba(127,98,20,.12);
-
-  --hero-radar-bg:
-    radial-gradient(circle at 50% 38%, rgba(255,235,160,.18), rgba(255,235,160,0) 18%),
-    radial-gradient(circle at 50% 58%, rgba(227,188,87,.16), rgba(227,188,87,0) 40%),
-    linear-gradient(180deg, #34280f 0%, #58421a 34%, #8c6820 68%, #4d3815 100%);
-
-  --hero-radar-grid:rgba(255,244,212,.18);
-  --hero-radar-grid-line:rgba(255,240,198,.14);
-
-  --hero-radar-fill:rgba(255,226,139,.10);
-  --hero-radar-stroke:#fff1bf;
-  --hero-radar-core-fill:rgba(255,233,167,.08);
-  --hero-radar-core-stroke:#f9dd88;
-  --hero-radar-node:#fff9ea;
-  --hero-radar-node-ring:rgba(255,226,130,.26);
-  --hero-radar-node-glow:rgba(255,209,102,.28);
-
-  --hero-glow:
-    radial-gradient(circle at 50% 46%, rgba(255,221,124,.13) 0, rgba(255,221,124,.05) 26%, rgba(255,221,124,0) 58%);
-
-  --hero-stat-border:#e5d4a5;
-  --hero-stat-shadow:0 6px 14px rgba(129,101,26,.08);
-
-  --hero-pill-bg:linear-gradient(90deg, #ab8220, #e0bd56);
-  --hero-meter-blue:linear-gradient(90deg, #a47a17, #d7b04b);
-  --hero-meter-cyan:linear-gradient(90deg, #a8831a, #e3c76c);
-  --hero-meter-green:linear-gradient(90deg, #9a7312, #e1bf58);
-}
-
-/* A2 */
-body.hero-grade-a2{
-  --hero-card-border:#d6dbe4;
-  --hero-card-shadow:0 10px 24px rgba(103,116,136,.10);
-
-  --hero-radar-bg:
-    radial-gradient(circle at 50% 38%, rgba(241,246,252,.16), rgba(241,246,252,0) 18%),
-    radial-gradient(circle at 50% 58%, rgba(201,212,229,.14), rgba(201,212,229,0) 40%),
-    linear-gradient(180deg, #2f3748 0%, #495365 34%, #667287 68%, #3e4758 100%);
-
-  --hero-radar-grid:rgba(244,248,253,.18);
-  --hero-radar-grid-line:rgba(233,239,246,.13);
-
-  --hero-radar-fill:rgba(230,237,246,.10);
-  --hero-radar-stroke:#f8fbff;
-  --hero-radar-core-fill:rgba(236,242,249,.07);
-  --hero-radar-core-stroke:#dce4ee;
-  --hero-radar-node:#ffffff;
-  --hero-radar-node-ring:rgba(224,232,241,.25);
-  --hero-radar-node-glow:rgba(219,227,238,.26);
-
-  --hero-glow:
-    radial-gradient(circle at 50% 46%, rgba(232,239,248,.12) 0, rgba(232,239,248,.05) 26%, rgba(232,239,248,0) 58%);
-
-  --hero-stat-border:#d9dee6;
-  --hero-stat-shadow:0 6px 14px rgba(97,110,130,.08);
-
-  --hero-pill-bg:linear-gradient(90deg, #8792a3, #bcc6d6);
-  --hero-meter-blue:linear-gradient(90deg, #8893a5, #b8c2d1);
-  --hero-meter-cyan:linear-gradient(90deg, #8b97a8, #c5cfdd);
-  --hero-meter-green:linear-gradient(90deg, #8390a0, #b9c3d1);
-}
-
-/* B1 */
-body.hero-grade-b1{
-  --hero-card-border:#d7deea;
-  --hero-card-shadow:0 10px 24px rgba(29,52,94,.10);
-
-  --hero-radar-bg:
-    radial-gradient(circle at 50% 38%, rgba(110,198,255,.16), rgba(110,198,255,0) 18%),
-    radial-gradient(circle at 50% 58%, rgba(83,150,255,.12), rgba(83,150,255,0) 42%),
-    linear-gradient(180deg, #0f274b 0%, #17335f 34%, #1c4578 68%, #15335d 100%);
-
-  --hero-radar-grid:rgba(255,255,255,.16);
-  --hero-radar-grid-line:rgba(255,255,255,.12);
-
-  --hero-radar-fill:rgba(169,228,255,.10);
-  --hero-radar-stroke:#eefbff;
-  --hero-radar-core-fill:rgba(199,240,255,.08);
-  --hero-radar-core-stroke:#b8ecff;
-  --hero-radar-node:#f9feff;
-  --hero-radar-node-ring:rgba(174,237,255,.24);
-  --hero-radar-node-glow:rgba(154,221,255,.26);
-
-  --hero-glow:
-    radial-gradient(circle at 50% 46%, rgba(160,228,255,.12) 0, rgba(160,228,255,.05) 26%, rgba(160,228,255,0) 58%);
-
-  --hero-stat-border:#dbe2ef;
-  --hero-stat-shadow:0 6px 14px rgba(26,56,120,.08);
-
-  --hero-pill-bg:linear-gradient(90deg, #2d66d0, #4fe0ca);
-  --hero-meter-blue:linear-gradient(90deg, #2f62c9, #4f90e6);
-  --hero-meter-cyan:linear-gradient(90deg, #315fb7, #53d0d3);
-  --hero-meter-green:linear-gradient(90deg, #3568bd, #58ddb5);
-}
-
-/* B2 */
-body.hero-grade-b2{
-  --hero-card-border:#d9dde4;
-  --hero-card-shadow:0 10px 22px rgba(74,86,104,.10);
-
-  --hero-radar-bg:
-    radial-gradient(circle at 50% 38%, rgba(214,223,235,.14), rgba(214,223,235,0) 18%),
-    radial-gradient(circle at 50% 58%, rgba(165,180,201,.12), rgba(165,180,201,0) 40%),
-    linear-gradient(180deg, #313844 0%, #47515f 34%, #5e6978 68%, #3b4552 100%);
-
-  --hero-radar-grid:rgba(244,247,251,.15);
-  --hero-radar-grid-line:rgba(233,239,246,.11);
-
-  --hero-radar-fill:rgba(228,234,241,.08);
-  --hero-radar-stroke:#f4f7fb;
-  --hero-radar-core-fill:rgba(229,235,242,.06);
-  --hero-radar-core-stroke:#d6dde6;
-  --hero-radar-node:#f8fafc;
-  --hero-radar-node-ring:rgba(220,228,236,.22);
-  --hero-radar-node-glow:rgba(210,218,228,.24);
-
-  --hero-glow:
-    radial-gradient(circle at 50% 46%, rgba(222,228,235,.10) 0, rgba(222,228,235,.04) 26%, rgba(222,228,235,0) 58%);
-
-  --hero-stat-border:#dde2e8;
-  --hero-stat-shadow:0 6px 14px rgba(74,86,104,.08);
-
-  --hero-pill-bg:linear-gradient(90deg, #5e6876, #9ca6b3);
-  --hero-meter-blue:linear-gradient(90deg, #667180, #a3adba);
-  --hero-meter-cyan:linear-gradient(90deg, #66717d, #a7b1bc);
-  --hero-meter-green:linear-gradient(90deg, #616b77, #9ba6b2);
-}
-
 @media (min-width: 768px){
   .courseHeroBody{
-    grid-template-columns:minmax(0, .92fr) minmax(0, 1.08fr);
+    grid-template-columns:minmax(0, .98fr) minmax(0, .72fr);
     gap:12px;
-    padding-bottom:18px;
+    padding-bottom:14px;
   }
 
   .courseHeroTab{
@@ -859,25 +813,16 @@ body.hero-grade-b2{
     font-size:13px;
   }
 
-  .courseStatHead__course{
-    font-size:18px;
-  }
-
-  .courseStatHead__type{
-    font-size:14px;
-    min-height:32px;
-  }
-
   .courseStatLabel{
     font-size:14px;
   }
 
   .courseStatValue{
-    font-size:20px;
+    font-size:21px;
   }
 
   .meter{
-    height:14px;
+    height:12px;
   }
 
   .playerTableHead,
