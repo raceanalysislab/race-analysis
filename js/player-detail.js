@@ -25,15 +25,10 @@ const COURSE_ORDER = [1, 2, 3, 4, 5, 6];
 const RADAR_SIZE = 320;
 const RADAR_CX = 160;
 const RADAR_CY = 162;
-
-/* 背景グリッドを少し拡大 */
 const RADAR_GRID_MAX_R = 122;
 const RADAR_VALUE_MAX_R = 96;
 const RADAR_INNER_SCALE = 0.82;
-
-/* 数字を少し外周寄りへ */
 const RADAR_LABEL_R = 140;
-
 const RADAR_ANGLES = [-90, -30, 30, 90, 150, 210].map((deg) => deg * Math.PI / 180);
 
 const courseData = {
@@ -201,7 +196,6 @@ function layoutRadarNodes(points){
   });
 }
 
-/* 5と6を入れ替えた位置調整 */
 function getLabelOffsets(){
   return {
     1: { dx: 0,  dy: -4 },
@@ -308,11 +302,10 @@ function makeCourseHeader(){
   return `
     <div class="playerTableHead">
       <div class="playerTableHeadCell playerTableHeadCell--stub">
-        <span>進入</span>
-        <span>選択→</span>
+        <span>枠</span>
       </div>
       ${COURSE_ORDER.map((course) => `
-        <div class="playerTableHeadCell">
+        <div class="playerTableHeadCell playerTableHeadCell--c${course}">
           <div class="playerCourseName">${course}コース</div>
         </div>
       `).join("")}
@@ -338,7 +331,7 @@ function rateRow(label, values){
     <div class="playerTableRow">
       <div class="playerTableCell playerTableCell--label">${esc(label)}</div>
       ${values.map((v, i) => {
-        const n = Number(String(v).replace("%","").trim());
+        const n = Number(String(v).replace("%","").replace(/\s/g, "").trim());
         const width = Number.isFinite(n) ? Math.max(0, Math.min(n, 100)) : 0;
         return `
           <div class="playerTableCell playerTableCell--value${i === 0 ? " is-highlight" : ""}">
@@ -365,19 +358,13 @@ function renderTables(){
     rateRow("1着率", ["77.7 %","4.4 %","8.8 %","4.4 %","2.2 %","2.2 %"]),
     rateRow("2連対率", ["84.4 %","33.3 %","35.5 %","17.7 %","22.2 %","6.8 %"]),
     rateRow("3連対率", ["88.8 %","55.5 %","57.7 %","31.1 %","48.8 %","18.1 %"]),
+    valueRow("平均ST", ["0.13","0.14","0.13","0.15","0.16","0.14"], false),
     valueRow("逃げ", ["34","0","0","0","0","0"], true),
     valueRow("差し", ["0","1","0","0","1","0"], true),
     valueRow("まくり", ["0","1","2","2","0","0"], true),
     valueRow("まくり差し", ["0","0","1","0","0","1"], true),
     valueRow("抜き", ["1","0","1","0","0","0"], true),
     valueRow("恵まれ", ["0","0","0","0","0","0"], true)
-  ].join("");
-
-  $("playerTimingTable").innerHTML = [
-    makeCourseHeader(),
-    valueRow("平均ST", ["0.13","0.14","0.13","0.15","0.16","0.14"], false),
-    valueRow("F", ["0","0","0","0","0","0"], false),
-    valueRow("L", ["0","0","0","0","0","0"], false)
   ].join("");
 }
 
