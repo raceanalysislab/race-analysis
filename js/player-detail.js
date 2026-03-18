@@ -22,13 +22,15 @@ $("btnBack").addEventListener("click", () => history.back());
 
 const COURSE_ORDER = [1, 2, 3, 4, 5, 6];
 
+/* 余白改善版 */
 const RADAR_SIZE = 320;
 const RADAR_CX = 160;
-const RADAR_CY = 162;
-const RADAR_GRID_MAX_R = 122;
-const RADAR_VALUE_MAX_R = 96;
+const RADAR_CY = 154;
+const RADAR_GRID_MAX_R = 112;
+const RADAR_VALUE_MAX_R = 90;
 const RADAR_INNER_SCALE = 0.82;
-const RADAR_LABEL_R = 140;
+const RADAR_LABEL_R = 126;
+
 const RADAR_ANGLES = [-90, -30, 30, 90, 150, 210].map((deg) => deg * Math.PI / 180);
 
 const DATASETS = {
@@ -103,31 +105,32 @@ function esc(s){
   }[c]));
 }
 
-function applyGradeTheme(){
+function getCurrentDataset(){
+  return DATASETS[selectedRange] || DATASETS["1y"];
+}
+
+function applyHeroGradeTheme(){
   document.body.classList.remove(
-    "grade-theme-a1",
-    "grade-theme-a2",
-    "grade-theme-b1",
-    "grade-theme-b2"
+    "hero-grade-a1",
+    "hero-grade-a2",
+    "hero-grade-b1",
+    "hero-grade-b2"
   );
 
   if (grade === "A1") {
-    document.body.classList.add("grade-theme-a1");
+    document.body.classList.add("hero-grade-a1");
     return;
   }
   if (grade === "A2") {
-    document.body.classList.add("grade-theme-a2");
+    document.body.classList.add("hero-grade-a2");
     return;
   }
-  if (grade === "B1") {
-    document.body.classList.add("grade-theme-b1");
+  if (grade === "B2") {
+    document.body.classList.add("hero-grade-b2");
     return;
   }
-  document.body.classList.add("grade-theme-b2");
-}
 
-function getCurrentDataset(){
-  return DATASETS[selectedRange] || DATASETS["1y"];
+  document.body.classList.add("hero-grade-b1");
 }
 
 function makeCourseTabs(){
@@ -196,7 +199,7 @@ function buildRadarGrid(){
   const g = $("courseRadarGrid");
   if (!g) return;
 
-  const levels = [28, 50, 72, 94, RADAR_GRID_MAX_R];
+  const levels = [28, 50, 72, 92, RADAR_GRID_MAX_R];
   g.innerHTML = "";
 
   levels.forEach((r) => {
@@ -301,12 +304,12 @@ function layoutRadarNodes(points){
 
 function getLabelOffsets(){
   return {
-    1: { dx: 0,  dy: -4 },
-    2: { dx: 7,  dy: -2 },
-    3: { dx: 7,  dy: 2 },
-    4: { dx: 0,  dy: 6 },
-    5: { dx: -7, dy: 2 },
-    6: { dx: -7, dy: -2 }
+    1: { dx: 0,  dy: -2 },
+    2: { dx: 8,  dy: -1 },
+    3: { dx: 8,  dy: 2 },
+    4: { dx: 0,  dy: 1 },
+    5: { dx: -8, dy: 2 },
+    6: { dx: -8, dy: -1 }
   };
 }
 
@@ -475,7 +478,7 @@ function renderTables(){
 }
 
 function boot(){
-  applyGradeTheme();
+  applyHeroGradeTheme();
 
   const title = $("playerDataTitle");
   if (title) title.textContent = getCurrentDataset().title;
