@@ -1,4 +1,4 @@
-　const qs = new URLSearchParams(location.search);
+const qs = new URLSearchParams(location.search);
 
 const playerName = decodeURIComponent(qs.get("name") || "選手情報");
 const regno = String(qs.get("regno") || "").trim();
@@ -41,30 +41,28 @@ const BASE_COURSE_DATA = {
 };
 
 const BASE_TABLE_DATA = {
-  starts: ["45","45","45","45","45","44"],
-  first: ["35","2","4","2","1","1"],
-  second: ["3","13","12","6","9","2"],
-  third: ["2","10","10","6","12","5"],
-  winRate: ["77.7 %","4.4 %","8.8 %","4.4 %","2.2 %","2.2 %"],
-  ren2Rate: ["84.4 %","33.3 %","35.5 %","17.7 %","22.2 %","6.8 %"],
-  ren3Rate: ["88.8 %","55.5 %","57.7 %","31.1 %","48.8 %","18.1 %"],
-  avgSt: ["0.13","0.14","0.13","0.15","0.16","0.14"],
-  nige: ["34","0","0","0","0","0"],
-  sashi: ["0","1","0","0","1","0"],
-  makuri: ["0","1","2","2","0","0"],
-  makurisashi: ["0","0","1","0","0","1"],
-  nuki: ["1","0","1","0","0","0"],
-  megumare: ["0","0","0","0","0","0"]
+  starts: ["45", "45", "45", "45", "45", "44"],
+  first: ["35", "2", "4", "2", "1", "1"],
+  second: ["3", "13", "12", "6", "9", "2"],
+  third: ["2", "10", "10", "6", "12", "5"],
+  winRate: ["77.7 %", "4.4 %", "8.8 %", "4.4 %", "2.2 %", "2.2 %"],
+  ren2Rate: ["84.4 %", "33.3 %", "35.5 %", "17.7 %", "22.2 %", "6.8 %"],
+  ren3Rate: ["88.8 %", "55.5 %", "57.7 %", "31.1 %", "48.8 %", "18.1 %"],
+  avgSt: ["0.13", "0.14", "0.13", "0.15", "0.16", "0.14"],
+  nige: ["34", "0", "0", "0", "0", "0"],
+  sashi: ["0", "1", "0", "0", "1", "0"],
+  makuri: ["0", "1", "2", "2", "0", "0"],
+  makurisashi: ["0", "0", "1", "0", "0", "1"],
+  nuki: ["1", "0", "1", "0", "0", "0"],
+  megumare: ["0", "0", "0", "0", "0", "0"]
 };
 
 const DATASETS = {
   "1y": {
-    title: "直近1年コースデータ",
     courseData: BASE_COURSE_DATA,
     table: BASE_TABLE_DATA
   },
   "3y": {
-    title: "直近3年コースデータ",
     courseData: BASE_COURSE_DATA,
     table: BASE_TABLE_DATA
   }
@@ -74,21 +72,21 @@ let selectedCourse = Math.min(6, Math.max(1, Number.isFinite(waku) ? waku : 1));
 let selectedRange = "1y";
 let radarAnimationFrame = null;
 
-function esc(s){
+function esc(s) {
   return String(s ?? "").replace(/[&<>"']/g, (c) => ({
-    "&":"&amp;",
-    "<":"&lt;",
-    ">":"&gt;",
-    '"':"&quot;",
-    "'":"&#39;"
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    "\"": "&quot;",
+    "'": "&#39;"
   }[c]));
 }
 
-function getCurrentDataset(){
+function getCurrentDataset() {
   return DATASETS[selectedRange] || DATASETS["1y"];
 }
 
-function applyHeroGradeTheme(){
+function applyHeroGradeTheme() {
   document.body.classList.remove(
     "hero-grade-a1",
     "hero-grade-a2",
@@ -96,13 +94,23 @@ function applyHeroGradeTheme(){
     "hero-grade-b2"
   );
 
-  if (grade === "A1") return document.body.classList.add("hero-grade-a1");
-  if (grade === "A2") return document.body.classList.add("hero-grade-a2");
-  if (grade === "B2") return document.body.classList.add("hero-grade-b2");
+  if (grade === "A1") {
+    document.body.classList.add("hero-grade-a1");
+    return;
+  }
+  if (grade === "A2") {
+    document.body.classList.add("hero-grade-a2");
+    return;
+  }
+  if (grade === "B2") {
+    document.body.classList.add("hero-grade-b2");
+    return;
+  }
+
   document.body.classList.add("hero-grade-b1");
 }
 
-function makeCourseTabs(){
+function makeCourseTabs() {
   const root = $("courseHeroTabs");
   if (!root) return;
 
@@ -119,6 +127,7 @@ function makeCourseTabs(){
     btn.addEventListener("click", () => {
       const nextCourse = Number(btn.dataset.course || 1);
       if (nextCourse === selectedCourse) return;
+
       selectedCourse = nextCourse;
       makeCourseTabs();
       renderHeroText();
@@ -128,7 +137,7 @@ function makeCourseTabs(){
   });
 }
 
-function bindRangeTabs(){
+function bindRangeTabs() {
   const root = $("playerDataTabs");
   if (!root) return;
 
@@ -143,9 +152,6 @@ function bindRangeTabs(){
         tab.classList.toggle("is-active", tab.dataset.range === selectedRange);
       });
 
-      const title = $("playerDataTitle");
-      if (title) title.textContent = getCurrentDataset().title;
-
       renderTables();
       renderHeroText();
       animateRadar();
@@ -153,7 +159,7 @@ function bindRangeTabs(){
   });
 }
 
-function polygonPointsFromRadius(r){
+function polygonPointsFromRadius(r) {
   return RADAR_ANGLES.map((a) => {
     const x = RADAR_CX + Math.cos(a) * r;
     const y = RADAR_CY + Math.sin(a) * r;
@@ -161,7 +167,7 @@ function polygonPointsFromRadius(r){
   }).join(" ");
 }
 
-function buildRadarGrid(){
+function buildRadarGrid() {
   const g = $("courseRadarGrid");
   if (!g) return;
 
@@ -186,7 +192,7 @@ function buildRadarGrid(){
   });
 }
 
-function ensureRadarExtraLayers(){
+function ensureRadarExtraLayers() {
   const svg = document.querySelector(".courseRadarSvg");
   if (!svg) return;
 
@@ -218,7 +224,7 @@ function ensureRadarExtraLayers(){
   }
 }
 
-function ensureRadarLabels(){
+function ensureRadarLabels() {
   const stage = document.querySelector(".courseRadarStage");
   if (!stage) return;
 
@@ -234,7 +240,7 @@ function ensureRadarLabels(){
   ).join("");
 }
 
-function getRadarValues(){
+function getRadarValues() {
   const dataset = getCurrentDataset();
   return COURSE_ORDER.map((course) => {
     const data = dataset.courseData[course] || { win: 0 };
@@ -242,7 +248,7 @@ function getRadarValues(){
   });
 }
 
-function getRadarPointObjects(values, progress = 1, scale = 1){
+function getRadarPointObjects(values, progress = 1, scale = 1) {
   const maxValue = Math.max(...values, 1);
 
   return values.map((v, i) => {
@@ -255,11 +261,11 @@ function getRadarPointObjects(values, progress = 1, scale = 1){
   });
 }
 
-function pointObjectsToString(points){
+function pointObjectsToString(points) {
   return points.map((p) => `${p.x},${p.y}`).join(" ");
 }
 
-function layoutRadarNodes(points){
+function layoutRadarNodes(points) {
   points.forEach((p, i) => {
     const node = $(`courseRadarNode${i + 1}`);
     if (!node) return;
@@ -268,7 +274,7 @@ function layoutRadarNodes(points){
   });
 }
 
-function getLabelOffsets(){
+function getLabelOffsets() {
   return {
     1: { dx: 0,  dy: -2 },
     2: { dx: 8,  dy: -1 },
@@ -279,7 +285,7 @@ function getLabelOffsets(){
   };
 }
 
-function layoutRadarLabels(){
+function layoutRadarLabels() {
   const stage = document.querySelector(".courseRadarStage");
   if (!stage) return;
 
@@ -299,7 +305,7 @@ function layoutRadarLabels(){
   });
 }
 
-function drawRadar(progress = 1){
+function drawRadar(progress = 1) {
   const polygon = $("courseRadarPolygon");
   const core = $("courseRadarPolygonCore");
   if (!polygon || !core) return;
@@ -313,7 +319,7 @@ function drawRadar(progress = 1){
   layoutRadarNodes(outerPoints);
 }
 
-function animateRadar(){
+function animateRadar() {
   const duration = 520;
   const start = performance.now();
 
@@ -339,14 +345,14 @@ function animateRadar(){
   radarAnimationFrame = requestAnimationFrame(tick);
 }
 
-function setMeter(idFill, value){
+function setMeter(idFill, value) {
   const el = $(idFill);
   if (!el) return;
   const width = Math.max(0, Math.min(100, Number(value) || 0));
   el.style.width = `${width}%`;
 }
 
-function renderHeroText(){
+function renderHeroText() {
   const dataset = getCurrentDataset();
   const data = dataset.courseData[selectedCourse] || dataset.courseData[1];
 
@@ -359,7 +365,7 @@ function renderHeroText(){
   setMeter("ren3RateFill", data.ren3);
 }
 
-function makeCourseHeader(){
+function makeCourseHeader() {
   return `
     <div class="playerTableHead">
       <div class="playerTableHeadCell playerTableHeadCell--stub">
@@ -374,7 +380,7 @@ function makeCourseHeader(){
   `;
 }
 
-function valueRow(label, values, highlightFirst = false){
+function valueRow(label, values, highlightFirst = false) {
   return `
     <div class="playerTableRow">
       <div class="playerTableCell playerTableCell--label">${esc(label)}</div>
@@ -387,7 +393,7 @@ function valueRow(label, values, highlightFirst = false){
   `;
 }
 
-function rateRow(label, values){
+function rateRow(label, values) {
   return `
     <div class="playerTableRow">
       <div class="playerTableCell playerTableCell--label">${esc(label)}</div>
@@ -409,7 +415,7 @@ function rateRow(label, values){
   `;
 }
 
-function renderTables(){
+function renderTables() {
   const t = getCurrentDataset().table;
 
   $("playerCourseStats").innerHTML = [
@@ -431,12 +437,8 @@ function renderTables(){
   ].join("");
 }
 
-function boot(){
+function boot() {
   applyHeroGradeTheme();
-
-  const title = $("playerDataTitle");
-  if (title) title.textContent = getCurrentDataset().title;
-
   buildRadarGrid();
   ensureRadarExtraLayers();
   ensureRadarLabels();
