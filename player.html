@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#f6f7fb">
   <title>選手情報 | BOAT CORE</title>
 
-  <link rel="stylesheet" href="./css/player-detail.css?v=3">
+  <link rel="stylesheet" href="./css/player-detail.css?v=4">
 </head>
 
 <body>
@@ -102,7 +102,15 @@
     </section>
 
     <section class="playerSection">
-      <div class="playerSectionTitle">直近1年コースデータ</div>
+      <div class="playerSectionHead">
+        <div class="playerSectionTitle" id="playerDataTitle">直近1年コースデータ</div>
+
+        <div class="playerDataTabs" id="playerDataTabs">
+          <button type="button" class="playerDataTab is-active" data-range="1y">直近1年データ</button>
+          <button type="button" class="playerDataTab" data-range="3y">直近3年データ</button>
+        </div>
+      </div>
+
       <div class="playerTableWrap">
         <div class="playerCourseTable" id="playerCourseStats"></div>
       </div>
@@ -110,6 +118,6 @@
 
   </main>
 
-  <script src="./js/player-detail.js?v=3"></script>
+  <script src="./js/player-detail.js?v=4"></script>
 </body>
 </html>
