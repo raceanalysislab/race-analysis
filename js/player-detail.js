@@ -22,7 +22,6 @@ $("btnBack").addEventListener("click", () => history.back());
 
 const COURSE_ORDER = [1, 2, 3, 4, 5, 6];
 
-/* 余白改善版 */
 const RADAR_SIZE = 320;
 const RADAR_CX = 160;
 const RADAR_CY = 154;
@@ -33,61 +32,42 @@ const RADAR_LABEL_R = 126;
 
 const RADAR_ANGLES = [-90, -30, 30, 90, 150, 210].map((deg) => deg * Math.PI / 180);
 
+const BASE_COURSE_DATA = {
+  1: { win: 77.7, ren2: 84.4, ren3: 88.8 },
+  2: { win: 4.4,  ren2: 33.3, ren3: 55.5 },
+  3: { win: 8.8,  ren2: 35.5, ren3: 57.7 },
+  4: { win: 4.4,  ren2: 17.7, ren3: 31.1 },
+  5: { win: 2.2,  ren2: 22.2, ren3: 48.8 },
+  6: { win: 2.2,  ren2: 6.8,  ren3: 18.1 }
+};
+
+const BASE_TABLE_DATA = {
+  starts: ["45","45","45","45","45","44"],
+  first: ["35","2","4","2","1","1"],
+  second: ["3","13","12","6","9","2"],
+  third: ["2","10","10","6","12","5"],
+  winRate: ["77.7 %","4.4 %","8.8 %","4.4 %","2.2 %","2.2 %"],
+  ren2Rate: ["84.4 %","33.3 %","35.5 %","17.7 %","22.2 %","6.8 %"],
+  ren3Rate: ["88.8 %","55.5 %","57.7 %","31.1 %","48.8 %","18.1 %"],
+  avgSt: ["0.13","0.14","0.13","0.15","0.16","0.14"],
+  nige: ["34","0","0","0","0","0"],
+  sashi: ["0","1","0","0","1","0"],
+  makuri: ["0","1","2","2","0","0"],
+  makurisashi: ["0","0","1","0","0","1"],
+  nuki: ["1","0","1","0","0","0"],
+  megumare: ["0","0","0","0","0","0"]
+};
+
 const DATASETS = {
   "1y": {
     title: "直近1年コースデータ",
-    courseData: {
-      1: { win: 77.7, ren2: 84.4, ren3: 88.8, type: "イン型",     kimariteMain: "逃げ 94%",     kimariteSub: "差し 2.7% / まくり 1.1%" },
-      2: { win: 4.4,  ren2: 33.3, ren3: 55.5, type: "差し型",     kimariteMain: "差し 58%",     kimariteSub: "まくり 18% / 抜き 9%" },
-      3: { win: 8.8,  ren2: 35.5, ren3: 57.7, type: "センター型", kimariteMain: "まくり 41%",   kimariteSub: "まくり差し 21% / 差し 10%" },
-      4: { win: 4.4,  ren2: 17.7, ren3: 31.1, type: "カド型",     kimariteMain: "まくり 29%",   kimariteSub: "差し 13% / まくり差し 8%" },
-      5: { win: 2.2,  ren2: 22.2, ren3: 48.8, type: "アウト型",   kimariteMain: "差し 16%",     kimariteSub: "まくり差し 7% / 抜き 5%" },
-      6: { win: 2.2,  ren2: 6.8,  ren3: 18.1, type: "大外型",     kimariteMain: "差し 7%",      kimariteSub: "まくり差し 3% / 抜き 1%" }
-    },
-    table: {
-      starts: ["45","45","45","45","45","44"],
-      first: ["35","2","4","2","1","1"],
-      second: ["3","13","12","6","9","2"],
-      third: ["2","10","10","6","12","5"],
-      winRate: ["77.7 %","4.4 %","8.8 %","4.4 %","2.2 %","2.2 %"],
-      ren2Rate: ["84.4 %","33.3 %","35.5 %","17.7 %","22.2 %","6.8 %"],
-      ren3Rate: ["88.8 %","55.5 %","57.7 %","31.1 %","48.8 %","18.1 %"],
-      avgSt: ["0.13","0.14","0.13","0.15","0.16","0.14"],
-      nige: ["34","0","0","0","0","0"],
-      sashi: ["0","1","0","0","1","0"],
-      makuri: ["0","1","2","2","0","0"],
-      makurisashi: ["0","0","1","0","0","1"],
-      nuki: ["1","0","1","0","0","0"],
-      megumare: ["0","0","0","0","0","0"]
-    }
+    courseData: BASE_COURSE_DATA,
+    table: BASE_TABLE_DATA
   },
-
   "3y": {
     title: "直近3年コースデータ",
-    courseData: {
-      1: { win: 77.7, ren2: 84.4, ren3: 88.8, type: "イン型",     kimariteMain: "逃げ 94%",     kimariteSub: "差し 2.7% / まくり 1.1%" },
-      2: { win: 4.4,  ren2: 33.3, ren3: 55.5, type: "差し型",     kimariteMain: "差し 58%",     kimariteSub: "まくり 18% / 抜き 9%" },
-      3: { win: 8.8,  ren2: 35.5, ren3: 57.7, type: "センター型", kimariteMain: "まくり 41%",   kimariteSub: "まくり差し 21% / 差し 10%" },
-      4: { win: 4.4,  ren2: 17.7, ren3: 31.1, type: "カド型",     kimariteMain: "まくり 29%",   kimariteSub: "差し 13% / まくり差し 8%" },
-      5: { win: 2.2,  ren2: 22.2, ren3: 48.8, type: "アウト型",   kimariteMain: "差し 16%",     kimariteSub: "まくり差し 7% / 抜き 5%" },
-      6: { win: 2.2,  ren2: 6.8,  ren3: 18.1, type: "大外型",     kimariteMain: "差し 7%",      kimariteSub: "まくり差し 3% / 抜き 1%" }
-    },
-    table: {
-      starts: ["45","45","45","45","45","44"],
-      first: ["35","2","4","2","1","1"],
-      second: ["3","13","12","6","9","2"],
-      third: ["2","10","10","6","12","5"],
-      winRate: ["77.7 %","4.4 %","8.8 %","4.4 %","2.2 %","2.2 %"],
-      ren2Rate: ["84.4 %","33.3 %","35.5 %","17.7 %","22.2 %","6.8 %"],
-      ren3Rate: ["88.8 %","55.5 %","57.7 %","31.1 %","48.8 %","18.1 %"],
-      avgSt: ["0.13","0.14","0.13","0.15","0.16","0.14"],
-      nige: ["34","0","0","0","0","0"],
-      sashi: ["0","1","0","0","1","0"],
-      makuri: ["0","1","2","2","0","0"],
-      makurisashi: ["0","0","1","0","0","1"],
-      nuki: ["1","0","1","0","0","0"],
-      megumare: ["0","0","0","0","0","0"]
-    }
+    courseData: BASE_COURSE_DATA,
+    table: BASE_TABLE_DATA
   }
 };
 
@@ -385,12 +365,6 @@ function renderHeroText(){
   const dataset = getCurrentDataset();
   const data = dataset.courseData[selectedCourse] || dataset.courseData[1];
 
-  $("selectedCourseTitle").textContent = `${selectedCourse}コース進入時`;
-  $("selectedCourseType").textContent = data.type;
-
-  const courseTypePill = $("courseTypePill");
-  if (courseTypePill) courseTypePill.textContent = data.type;
-
   $("winRateText").textContent = `${data.win.toFixed(1)}%`;
   $("ren2RateText").textContent = `${data.ren2.toFixed(1)}%`;
   $("ren3RateText").textContent = `${data.ren3.toFixed(1)}%`;
@@ -398,11 +372,6 @@ function renderHeroText(){
   setMeter("winRateFill", data.win);
   setMeter("ren2RateFill", data.ren2);
   setMeter("ren3RateFill", data.ren3);
-
-  const kimariteMain = $("kimariteMain");
-  const kimariteSub = $("kimariteSub");
-  if (kimariteMain) kimariteMain.textContent = data.kimariteMain;
-  if (kimariteSub) kimariteSub.textContent = data.kimariteSub;
 }
 
 function makeCourseHeader(){
@@ -438,7 +407,7 @@ function rateRow(label, values){
     <div class="playerTableRow">
       <div class="playerTableCell playerTableCell--label">${esc(label)}</div>
       ${values.map((v, i) => {
-        const n = Number(String(v).replace("%","").replace(/\s/g, "").trim());
+        const n = Number(String(v).replace("%", "").replace(/\s/g, "").trim());
         const width = Number.isFinite(n) ? Math.max(0, Math.min(n, 100)) : 0;
         return `
           <div class="playerTableCell playerTableCell--value${i === 0 ? " is-highlight" : ""}">
@@ -467,7 +436,7 @@ function renderTables(){
     rateRow("1着率", t.winRate),
     rateRow("2連対率", t.ren2Rate),
     rateRow("3連対率", t.ren3Rate),
-    valueRow("平均ST", t.avgSt, false),
+    valueRow("平均ST", t.avgSt),
     valueRow("逃げ", t.nige, true),
     valueRow("差し", t.sashi, true),
     valueRow("まくり", t.makuri, true),
