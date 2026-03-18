@@ -171,7 +171,6 @@ body{
   display:none;
 }
 
-/* グラフ直下からそのまま連結 */
 .playerDataTabs{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -206,7 +205,6 @@ body{
   color:#fff;
 }
 
-/* hero */
 .courseHeroCard{
   background:transparent;
   border:0;
@@ -434,7 +432,7 @@ body{
   background:#fff;
   border:1px solid #d9e1ec;
   box-shadow:0 4px 10px rgba(26,56,120,.06);
-  padding:10px 9px;
+  padding:10px 10px;
   display:flex;
   flex-direction:column;
   justify-content:center;
@@ -449,7 +447,7 @@ body{
 
 .courseStatRow{
   display:grid;
-  grid-template-columns:48px 1fr;
+  grid-template-columns:52px 1fr;
   align-items:center;
   gap:8px;
 }
@@ -464,7 +462,7 @@ body{
 
 .courseStatValue{
   text-align:right;
-  font-size:16px;
+  font-size:15px;
   line-height:1;
   font-weight:900;
   color:#0d1730;
@@ -759,7 +757,7 @@ body.hero-grade-b2{
 
   .courseStatCard{
     border-radius:10px;
-    padding:12px 10px;
+    padding:12px 12px;
   }
 
   .courseRadarNode{
@@ -779,7 +777,7 @@ body.hero-grade-b2{
   }
 
   .courseStatLabel{
-    font-size:12px;
+    font-size:13px;
   }
 
   .courseStatValue{
@@ -787,7 +785,7 @@ body.hero-grade-b2{
   }
 
   .meter{
-    height:10px;
+    height:11px;
   }
 
   .playerTableHead,
