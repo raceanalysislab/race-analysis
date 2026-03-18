@@ -280,17 +280,18 @@
 
   const renderHeadRow = (boats) => `
     <div class="courseGridRow courseGridRow--head">
+      <div class="courseGridLabel">枠</div>
       ${boats.map((boat) => `
         <div class="courseGridCell courseGridCell--head ${esc(getWakuClass(boat))}">
           ${esc(boat.waku)}
         </div>
       `).join("")}
-      <div class="courseGridLabel">枠</div>
     </div>
   `;
 
   const renderNameRow = (boats) => `
     <div class="courseGridRow courseGridRow--name">
+      <div class="courseGridLabel">選手名</div>
       ${boats.map((boat) => `
         <a
           class="courseGridCell courseGridCell--name courseGridCell--nameLink ${esc(getWakuClass(boat))}${isFemaleRacer(boat) ? " female" : ""}"
@@ -303,34 +304,34 @@
           </div>
         </a>
       `).join("")}
-      <div class="courseGridLabel">選手名</div>
     </div>
   `;
 
   const renderGradeRow = (boats) => `
     <div class="courseGridRow courseGridRow--grade">
+      <div class="courseGridLabel">級</div>
       ${boats.map((boat) => `
         <div class="courseGridCell courseGridCell--grade ${esc(getWakuClass(boat))} ${esc(getGradeClass(boat))}">
           <div class="courseGrade ${esc(getGradeClass(boat))}">${esc(getGradeText(boat))}</div>
         </div>
       `).join("")}
-      <div class="courseGridLabel">級</div>
     </div>
   `;
 
   const renderSimpleRow = (boats, label, valueFn, rowClass = "") => `
     <div class="courseGridRow ${rowClass}">
+      <div class="courseGridLabel">${esc(label)}</div>
       ${boats.map((boat) => `
         <div class="courseGridCell">
           <div class="courseGridMetric">${esc(valueFn(boat))}</div>
         </div>
       `).join("")}
-      <div class="courseGridLabel">${esc(label)}</div>
     </div>
   `;
 
   const renderFLRow = (boats) => `
     <div class="courseGridRow courseGridRow--fl">
+      <div class="courseGridLabel">F/L</div>
       ${boats.map((boat) => `
         <div class="courseGridCell courseGridCell--fl">
           <div class="courseFLBox">
@@ -345,23 +346,23 @@
           </div>
         </div>
       `).join("")}
-      <div class="courseGridLabel">F/L</div>
     </div>
   `;
 
   const renderCourseWinRow = (boats) => `
     <div class="courseGridRow courseGridRow--course">
+      <div class="courseGridLabel">コース勝率</div>
       ${boats.map((boat) => `
         <div class="courseGridCell ${esc(getCourseWinClass(boat))}">
           <div class="courseGridMetric">${esc(getCourseWinText(boat))}</div>
         </div>
       `).join("")}
-      <div class="courseGridLabel">コース勝率</div>
     </div>
   `;
 
   const renderKimariteRow = (boats) => `
     <div class="courseGridRow courseGridRow--kimarite">
+      <div class="courseGridLabel">コース別決まり手</div>
       ${boats.map((boat) => {
         const parts = getCourseKimariteParts(boat);
         return `
@@ -383,7 +384,6 @@
           </div>
         `;
       }).join("")}
-      <div class="courseGridLabel">コース別決まり手</div>
     </div>
   `;
 
