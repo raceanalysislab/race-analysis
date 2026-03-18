@@ -1,5 +1,5 @@
 (() => {
-  const ORDER = [6, 5, 4, 3, 2, 1];
+  const ORDER = [1, 2, 3, 4, 5, 6];
   const RACER_GENDER_URL =
     "https://raceanalysislab.github.io/race-analysis/data/master/racer_gender.json";
 
@@ -104,7 +104,9 @@
   };
 
   const getBoatsOrdered = () => {
-    const boats = Array.isArray(state.raceJson?.race?.boats) ? state.raceJson.race.boats : [];
+    const boats = Array.isArray(state.raceJson?.race?.boats)
+      ? state.raceJson.race.boats
+      : [];
     const byWaku = new Map();
 
     boats.forEach((boat) => {
@@ -114,7 +116,9 @@
       }
     });
 
-    return ORDER.map((waku) => byWaku.get(waku) || { waku, name: "—", grade: "—" });
+    return ORDER.map(
+      (waku) => byWaku.get(waku) || { waku, name: "—", grade: "—" }
+    );
   };
 
   const getAvgStValue = (boat) => {
@@ -192,13 +196,15 @@
   };
 
   const getCourseWinClass = (boat) => {
-    const v = Number(pickValue(boat, [
-      "course_win",
-      "course_win_rate",
-      "course_1着率",
-      "course_win_1y",
-      "course_win_3y"
-    ]));
+    const v = Number(
+      pickValue(boat, [
+        "course_win",
+        "course_win_rate",
+        "course_1着率",
+        "course_win_1y",
+        "course_win_3y"
+      ])
+    );
     const waku = Number(boat?.waku);
 
     if (!Number.isFinite(v)) return "";
