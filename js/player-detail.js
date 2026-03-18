@@ -2,7 +2,7 @@ const qs = new URLSearchParams(location.search);
 
 const playerName = decodeURIComponent(qs.get("name") || "選手情報");
 const regno = String(qs.get("regno") || "").trim();
-const grade = String(qs.get("grade") || "").trim();
+const grade = String(qs.get("grade") || "").trim().toUpperCase();
 const branch = String(qs.get("branch") || "").trim();
 const age = String(qs.get("age") || "").trim();
 const venue = decodeURIComponent(qs.get("venue") || "—");
@@ -101,6 +101,29 @@ function esc(s){
     '"':"&quot;",
     "'":"&#39;"
   }[c]));
+}
+
+function applyGradeTheme(){
+  document.body.classList.remove(
+    "grade-theme-a1",
+    "grade-theme-a2",
+    "grade-theme-b1",
+    "grade-theme-b2"
+  );
+
+  if (grade === "A1") {
+    document.body.classList.add("grade-theme-a1");
+    return;
+  }
+  if (grade === "A2") {
+    document.body.classList.add("grade-theme-a2");
+    return;
+  }
+  if (grade === "B1") {
+    document.body.classList.add("grade-theme-b1");
+    return;
+  }
+  document.body.classList.add("grade-theme-b2");
 }
 
 function getCurrentDataset(){
@@ -452,6 +475,8 @@ function renderTables(){
 }
 
 function boot(){
+  applyGradeTheme();
+
   const title = $("playerDataTitle");
   if (title) title.textContent = getCurrentDataset().title;
 
