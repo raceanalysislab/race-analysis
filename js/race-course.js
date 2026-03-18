@@ -351,7 +351,7 @@
 
   const renderCourseWinRow = (boats) => `
     <div class="courseGridRow courseGridRow--course">
-      <div class="courseGridLabel">コース勝率</div>
+      <div class="courseGridLabel">コース別勝率</div>
       ${boats.map((boat) => `
         <div class="courseGridCell ${esc(getCourseWinClass(boat))}">
           <div class="courseGridMetric">${esc(getCourseWinText(boat))}</div>
@@ -398,7 +398,7 @@
         ${renderFLRow(boats)}
         ${renderSimpleRow(boats, "平均ST", getAvgStValue, "courseGridRow--avgst")}
         ${renderSimpleRow(boats, "今節平均ST", getMeetAvgStValue, "courseGridRow--meetavgst")}
-        ${renderSimpleRow(boats, "コース出走数", getCourseStartsText, "courseGridRow--starts")}
+        ${renderSimpleRow(boats, "コース別出走数", getCourseStartsText, "courseGridRow--starts")}
         ${renderCourseWinRow(boats)}
         ${renderKimariteRow(boats)}
         ${renderSimpleRow(boats, "コース別平均ST", getCourseAvgStText, "courseGridRow--course")}
