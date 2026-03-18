@@ -10,6 +10,9 @@ const race = String(qs.get("race") || "").trim();
 const date = String(qs.get("date") || "").trim();
 const waku = Number(qs.get("waku") || 1);
 
+const PLAYER_COURSE_STATS_URL =
+  "https://raceanalysislab.github.io/race-analysis/data/player_course_stats.json";
+
 const $ = (id) => document.getElementById(id);
 
 $("playerName").textContent = playerName;
@@ -31,40 +34,40 @@ const RADAR_INNER_SCALE = 0.82;
 const RADAR_LABEL_R = 126;
 const RADAR_ANGLES = [-90, -30, 30, 90, 150, 210].map((deg) => deg * Math.PI / 180);
 
-const BASE_COURSE_DATA = {
-  1: { win: 77.7, ren2: 84.4, ren3: 88.8 },
-  2: { win: 4.4,  ren2: 33.3, ren3: 55.5 },
-  3: { win: 8.8,  ren2: 35.5, ren3: 57.7 },
-  4: { win: 4.4,  ren2: 17.7, ren3: 31.1 },
-  5: { win: 2.2,  ren2: 22.2, ren3: 48.8 },
-  6: { win: 2.2,  ren2: 6.8,  ren3: 18.1 }
+const EMPTY_COURSE_DATA = {
+  1: { win: null, ren2: null, ren3: null },
+  2: { win: null, ren2: null, ren3: null },
+  3: { win: null, ren2: null, ren3: null },
+  4: { win: null, ren2: null, ren3: null },
+  5: { win: null, ren2: null, ren3: null },
+  6: { win: null, ren2: null, ren3: null }
 };
 
-const BASE_TABLE_DATA = {
-  starts: ["45", "45", "45", "45", "45", "44"],
-  first: ["35", "2", "4", "2", "1", "1"],
-  second: ["3", "13", "12", "6", "9", "2"],
-  third: ["2", "10", "10", "6", "12", "5"],
-  winRate: ["77.7 %", "4.4 %", "8.8 %", "4.4 %", "2.2 %", "2.2 %"],
-  ren2Rate: ["84.4 %", "33.3 %", "35.5 %", "17.7 %", "22.2 %", "6.8 %"],
-  ren3Rate: ["88.8 %", "55.5 %", "57.7 %", "31.1 %", "48.8 %", "18.1 %"],
-  avgSt: ["0.13", "0.14", "0.13", "0.15", "0.16", "0.14"],
-  nige: ["34", "0", "0", "0", "0", "0"],
-  sashi: ["0", "1", "0", "0", "1", "0"],
-  makuri: ["0", "1", "2", "2", "0", "0"],
-  makurisashi: ["0", "0", "1", "0", "0", "1"],
-  nuki: ["1", "0", "1", "0", "0", "0"],
-  megumare: ["0", "0", "0", "0", "0", "0"]
+const EMPTY_TABLE_DATA = {
+  starts: ["—", "—", "—", "—", "—", "—"],
+  first: ["—", "—", "—", "—", "—", "—"],
+  second: ["—", "—", "—", "—", "—", "—"],
+  third: ["—", "—", "—", "—", "—", "—"],
+  winRate: ["—", "—", "—", "—", "—", "—"],
+  ren2Rate: ["—", "—", "—", "—", "—", "—"],
+  ren3Rate: ["—", "—", "—", "—", "—", "—"],
+  avgSt: ["—", "—", "—", "—", "—", "—"],
+  nige: ["—", "—", "—", "—", "—", "—"],
+  sashi: ["—", "—", "—", "—", "—", "—"],
+  makuri: ["—", "—", "—", "—", "—", "—"],
+  makurisashi: ["—", "—", "—", "—", "—", "—"],
+  nuki: ["—", "—", "—", "—", "—", "—"],
+  megumare: ["—", "—", "—", "—", "—", "—"]
 };
 
 const DATASETS = {
   "1y": {
-    courseData: BASE_COURSE_DATA,
-    table: BASE_TABLE_DATA
+    courseData: structuredClone(EMPTY_COURSE_DATA),
+    table: structuredClone(EMPTY_TABLE_DATA)
   },
   "3y": {
-    courseData: BASE_COURSE_DATA,
-    table: BASE_TABLE_DATA
+    courseData: structuredClone(EMPTY_COURSE_DATA),
+    table: structuredClone(EMPTY_TABLE_DATA)
   }
 };
 
@@ -243,8 +246,9 @@ function ensureRadarLabels() {
 function getRadarValues() {
   const dataset = getCurrentDataset();
   return COURSE_ORDER.map((course) => {
-    const data = dataset.courseData[course] || { win: 0 };
-    return Number(data.win) || 0;
+    const data = dataset.courseData[course] || {};
+    const win = Number(data.win);
+    return Number.isFinite(win) ? win : 0;
   });
 }
 
@@ -348,17 +352,41 @@ function animateRadar() {
 function setMeter(idFill, value) {
   const el = $(idFill);
   if (!el) return;
-  const width = Math.max(0, Math.min(100, Number(value) || 0));
+  const width = Number.isFinite(Number(value)) ? Math.max(0, Math.min(100, Number(value))) : 0;
   el.style.width = `${width}%`;
+}
+
+function formatRate(value) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return "—";
+  return `${n.toFixed(1)}%`;
+}
+
+function formatNumber(value) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return "—";
+  return String(Math.round(n));
+}
+
+function formatCount(value) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return "—";
+  return String(n);
+}
+
+function formatST(value) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return "—";
+  return n.toFixed(2);
 }
 
 function renderHeroText() {
   const dataset = getCurrentDataset();
-  const data = dataset.courseData[selectedCourse] || dataset.courseData[1];
+  const data = dataset.courseData[selectedCourse] || {};
 
-  $("winRateText").textContent = `${data.win.toFixed(1)}%`;
-  $("ren2RateText").textContent = `${data.ren2.toFixed(1)}%`;
-  $("ren3RateText").textContent = `${data.ren3.toFixed(1)}%`;
+  $("winRateText").textContent = formatRate(data.win);
+  $("ren2RateText").textContent = formatRate(data.ren2);
+  $("ren3RateText").textContent = formatRate(data.ren3);
 
   setMeter("winRateFill", data.win);
   setMeter("ren2RateFill", data.ren2);
@@ -437,14 +465,78 @@ function renderTables() {
   ].join("");
 }
 
-function boot() {
+function resetDatasets() {
+  DATASETS["1y"].courseData = structuredClone(EMPTY_COURSE_DATA);
+  DATASETS["1y"].table = structuredClone(EMPTY_TABLE_DATA);
+  DATASETS["3y"].courseData = structuredClone(EMPTY_COURSE_DATA);
+  DATASETS["3y"].table = structuredClone(EMPTY_TABLE_DATA);
+}
+
+function applyPlayerStats(player) {
+  resetDatasets();
+
+  if (!player || !player.courses) return;
+
+  const dataset1y = DATASETS["1y"];
+
+  COURSE_ORDER.forEach((courseNo) => {
+    const c = player.courses?.[String(courseNo)] || null;
+
+    dataset1y.courseData[courseNo] = {
+      win: Number.isFinite(Number(c?.win_rate)) ? Number(c.win_rate) : null,
+      ren2: Number.isFinite(Number(c?.ren2_rate)) ? Number(c.ren2_rate) : null,
+      ren3: Number.isFinite(Number(c?.ren3_rate)) ? Number(c.ren3_rate) : null
+    };
+
+    dataset1y.table.starts[courseNo - 1] = formatCount(c?.starts);
+    dataset1y.table.first[courseNo - 1] = "—";
+    dataset1y.table.second[courseNo - 1] = "—";
+    dataset1y.table.third[courseNo - 1] = "—";
+    dataset1y.table.winRate[courseNo - 1] = formatRate(c?.win_rate);
+    dataset1y.table.ren2Rate[courseNo - 1] = formatRate(c?.ren2_rate);
+    dataset1y.table.ren3Rate[courseNo - 1] = formatRate(c?.ren3_rate);
+    dataset1y.table.avgSt[courseNo - 1] = formatST(c?.avg_st);
+    dataset1y.table.nige[courseNo - 1] = "—";
+    dataset1y.table.sashi[courseNo - 1] = formatNumber(c?.kimarite?.["差"]);
+    dataset1y.table.makuri[courseNo - 1] = formatNumber(c?.kimarite?.["まくり"]);
+    dataset1y.table.makurisashi[courseNo - 1] = formatNumber(c?.kimarite?.["まくり差し"]);
+    dataset1y.table.nuki[courseNo - 1] = "—";
+    dataset1y.table.megumare[courseNo - 1] = "—";
+  });
+}
+
+async function loadPlayerStats() {
+  if (!regno) {
+    resetDatasets();
+    return;
+  }
+
+  try {
+    const res = await fetch(`${PLAYER_COURSE_STATS_URL}?t=${Math.floor(Date.now() / 300000)}`, {
+      cache: "no-store"
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    const json = await res.json();
+    const player = json?.players?.[regno] || null;
+    applyPlayerStats(player);
+  } catch (err) {
+    console.error("player stats load failed:", err);
+    resetDatasets();
+  }
+}
+
+async function boot() {
   applyHeroGradeTheme();
   buildRadarGrid();
   ensureRadarExtraLayers();
   ensureRadarLabels();
-  renderTables();
   makeCourseTabs();
   bindRangeTabs();
+
+  await loadPlayerStats();
+
+  renderTables();
   renderHeroText();
   layoutRadarLabels();
   drawRadar(0);
