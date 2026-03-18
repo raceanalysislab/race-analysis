@@ -265,6 +265,10 @@ function getLastRaceNo(v) {
 function getTargetRaceNo(v) {
   const next = computeNextDisplay(v);
 
+  if (next.soldout) {
+    return 12;
+  }
+
   if (Number.isFinite(next.raceNo) && next.raceNo >= 1 && next.raceNo <= 12) {
     return next.raceNo;
   }
@@ -283,10 +287,6 @@ function getTargetRaceNo(v) {
     if (Number.isFinite(n) && n >= 1 && n <= 12) return n;
   }
 
-  if (next.soldout) {
-    return getLastRaceNo(v);
-  }
-
   return 1;
 }
 
@@ -295,7 +295,7 @@ function getSoonestRace(list) {
   let best = null;
 
   for (const venue of Array.isArray(list) ? list : []) {
-    const raceTimes = Array.isArray(venue?.race_times) ? venue.race_times : [];
+    const raceTimes = Array.isArray(venue?.race_times) ? venue?.race_times : [];
     const venueName = String(venue?.name || venue?.venue_name || "").trim();
     const jcd = String(venue?.jcd || "").padStart(2, "0");
     const date = String(venue?.date || lastLoadedDataDate || lastSeenLocalDate).trim();
