@@ -135,6 +135,7 @@ function makeCourseTabs() {
 
       selectedCourse = nextCourse;
       makeCourseTabs();
+      renderTables();
       renderHeroText();
       layoutRadarLabels();
       animateRadar();
@@ -410,12 +411,12 @@ function makeCourseHeader() {
   `;
 }
 
-function valueRow(label, values, highlightFirst = false) {
+function valueRow(label, values) {
   return `
     <div class="playerTableRow">
       <div class="playerTableCell playerTableCell--label">${esc(label)}</div>
       ${values.map((v, i) => `
-        <div class="playerTableCell playerTableCell--value${highlightFirst && i === 0 ? " is-highlight" : ""}">
+        <div class="playerTableCell playerTableCell--value${i === selectedCourse - 1 ? " is-highlight" : ""}">
           ${esc(v)}
         </div>
       `).join("")}
@@ -431,7 +432,7 @@ function rateRow(label, values) {
         const n = Number(String(v).replace("%", "").replace(/\s/g, "").trim());
         const width = Number.isFinite(n) ? Math.max(0, Math.min(n, 100)) : 0;
         return `
-          <div class="playerTableCell playerTableCell--value${i === 0 ? " is-highlight" : ""}">
+          <div class="playerTableCell playerTableCell--value${i === selectedCourse - 1 ? " is-highlight" : ""}">
             <div class="playerRateStack">
               <div class="playerRateText">${esc(v)}</div>
               <div class="playerRateBar">
@@ -450,20 +451,20 @@ function renderTables() {
 
   $("playerCourseStats").innerHTML = [
     makeCourseHeader(),
-    valueRow("出走数", t.starts, true),
-    valueRow("1着", t.first, true),
-    valueRow("2着", t.second, true),
-    valueRow("3着", t.third, true),
+    valueRow("出走数", t.starts),
+    valueRow("1着", t.first),
+    valueRow("2着", t.second),
+    valueRow("3着", t.third),
     rateRow("1着率", t.winRate),
     rateRow("2連対率", t.ren2Rate),
     rateRow("3連対率", t.ren3Rate),
     valueRow("平均ST", t.avgSt),
-    valueRow("逃げ", t.nige, true),
-    valueRow("差し", t.sashi, true),
-    valueRow("まくり", t.makuri, true),
-    valueRow("まくり差し", t.makurisashi, true),
-    valueRow("抜き", t.nuki, true),
-    valueRow("恵まれ", t.megumare, true)
+    valueRow("逃げ", t.nige),
+    valueRow("差し", t.sashi),
+    valueRow("まくり", t.makuri),
+    valueRow("まくり差し", t.makurisashi),
+    valueRow("抜き", t.nuki),
+    valueRow("恵まれ", t.megumare)
   ].join("");
 }
 
