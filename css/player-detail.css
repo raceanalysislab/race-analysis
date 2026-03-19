@@ -143,7 +143,7 @@ body{
   height:52px;
   padding:0 16px;
   font-size:17px;
-  font-weight:900;
+  font-weight:800;
   letter-spacing:-.01em;
   flex:0 0 auto;
 }
@@ -203,7 +203,7 @@ body{
   color:#4b5565;
   height:42px;
   font-size:14px;
-  font-weight:900;
+  font-weight:800;
   letter-spacing:-.02em;
 }
 
@@ -240,7 +240,7 @@ body{
   border-right:0;
   height:32px;
   font-size:13px;
-  font-weight:900;
+  font-weight:800;
   letter-spacing:-.02em;
   color:#1d2433;
   background:#fff;
@@ -401,7 +401,7 @@ body{
   display:flex;
   align-items:center;
   justify-content:center;
-  font-weight:900;
+  font-weight:800;
   box-shadow:0 2px 6px rgba(0,0,0,.14);
   transform:translate(-50%, -50%);
 }
@@ -409,7 +409,7 @@ body{
 .courseRadarLabels .radarLabel::before{
   font-size:8px;
   line-height:1;
-  font-weight:900;
+  font-weight:800;
 }
 
 .radarLabel--1{ left:50%; top:8%; background:var(--waku1); border:1px solid #d8dde8; }
@@ -466,7 +466,7 @@ body{
 .courseStatLabel{
   font-size:11px;
   line-height:1;
-  font-weight:900;
+  font-weight:800;
   color:#354158;
   letter-spacing:-.02em;
 }
@@ -475,7 +475,7 @@ body{
   text-align:right;
   font-size:15px;
   line-height:1;
-  font-weight:900;
+  font-weight:800;
   color:#0d1730;
 }
 
@@ -548,7 +548,7 @@ body{
   color:#fff;
   padding:4px 2px;
   text-align:center;
-  font-weight:900;
+  font-weight:800;
   min-width:0;
   overflow:hidden;
 }
@@ -574,7 +574,7 @@ body{
 .playerCourseName{
   font-size:11px;
   line-height:1.05;
-  font-weight:900;
+  font-weight:800;
   letter-spacing:-.03em;
   white-space:nowrap;
 }
@@ -607,14 +607,14 @@ body{
   color:var(--stub-text);
   font-size:11px;
   line-height:1.05;
-  font-weight:900;
+  font-weight:700;
   padding:2px 3px;
 }
 
 .playerTableCell--value{
   font-size:13px;
   line-height:1;
-  font-weight:900;
+  font-weight:800;
   letter-spacing:-.02em;
 }
 
@@ -633,7 +633,7 @@ body{
 .playerRateText{
   font-size:12px;
   line-height:1;
-  font-weight:900;
+  font-weight:800;
   white-space:nowrap;
 }
 
@@ -813,18 +813,22 @@ body.hero-grade-b2{
 
   .playerCourseName{
     font-size:14px;
+    font-weight:800;
   }
 
   .playerTableCell--label{
     font-size:13px;
+    font-weight:700;
   }
 
   .playerTableCell--value{
     font-size:16px;
+    font-weight:800;
   }
 
   .playerRateText{
     font-size:15px;
+    font-weight:800;
   }
 
   .playerRateBar{
