@@ -87,6 +87,8 @@ const esc = (s) =>
     "'": "&#39;"
   }[c]));
 
+const labelHtml = (s) => esc(String(s ?? "")).replace(/\n/g, "<br>");
+
 const num = (v) => {
   const n = Number(v);
   return Number.isFinite(n) ? n : null;
@@ -547,7 +549,7 @@ function makeCourseHeader() {
 function valueRow(label, values) {
   return `
     <div class="playerTableRow">
-      <div class="playerTableCell playerTableCell--label">${esc(label)}</div>
+      <div class="playerTableCell playerTableCell--label">${labelHtml(label)}</div>
       ${values.map((v, i) => `
         <div class="playerTableCell playerTableCell--value${i === selectedCourse - 1 ? " is-highlight" : ""}">
           ${esc(v)}
@@ -560,7 +562,7 @@ function valueRow(label, values) {
 function rateRow(label, values) {
   return `
     <div class="playerTableRow">
-      <div class="playerTableCell playerTableCell--label">${esc(label)}</div>
+      <div class="playerTableCell playerTableCell--label">${labelHtml(label)}</div>
       ${values.map((v, i) => `
         <div class="playerTableCell playerTableCell--value${i === selectedCourse - 1 ? " is-highlight" : ""}">
           ${esc(v)}
@@ -598,14 +600,14 @@ function buildPlayerModeTable() {
 
   return [
     makeCourseHeader(),
-    valueRow("コース別出走数", rows.starts),
+    valueRow("コース別\n出走数", rows.starts),
     valueRow("1着", rows.first),
     valueRow("2着", rows.second),
     valueRow("3着", rows.third),
-    rateRow("コース別1着率", rows.winRate),
-    rateRow("コース別2連対率", rows.ren2Rate),
-    rateRow("コース別3連対率", rows.ren3Rate),
-    valueRow("コース別平均ST", rows.avgSt),
+    rateRow("コース別\n1着率", rows.winRate),
+    rateRow("コース別\n2連対率", rows.ren2Rate),
+    rateRow("コース別\n3連対率", rows.ren3Rate),
+    valueRow("コース別\n平均ST", rows.avgSt),
     valueRow("逃げ", rows.nige),
     valueRow("差し", rows.sashi),
     valueRow("まくり", rows.makuri),
@@ -660,13 +662,13 @@ function buildOtherModeTable() {
 
   return [
     makeCourseHeader(),
-    valueRow("コース別出走数", COURSE_ORDER.map(() => formatCount(refStarts))),
+    valueRow("コース別\n出走数", COURSE_ORDER.map(() => formatCount(refStarts))),
     valueRow("1着", firstRow),
     valueRow("2着", secondRow),
     valueRow("3着", thirdRow),
-    rateRow("コース別1着率", firstRateRow),
-    rateRow("コース別2連対率", ren2RateRow),
-    rateRow("コース別3連対率", ren3RateRow),
+    rateRow("コース別\n1着率", firstRateRow),
+    rateRow("コース別\n2連対率", ren2RateRow),
+    rateRow("コース別\n3連対率", ren3RateRow),
     valueRow("逃げ", nigeRow),
     valueRow("差し", sashiRow),
     valueRow("まくり", makuriRow),
