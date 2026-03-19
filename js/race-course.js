@@ -146,6 +146,10 @@
 
   const getCourseStartsText = (boat) => {
     const v = pickValue(boat, [
+      "course_starts_1y",
+      "course_start_count_1y",
+      "course_count_1y",
+      "starts_1y",
       "course_starts",
       "course_start_count",
       "course_count",
@@ -186,10 +190,12 @@
 
   const getCourseWinText = (boat) => {
     const v = pickValue(boat, [
+      "course_win_1y",
+      "course_win_rate_1y",
+      "course_1着率_1y",
       "course_win",
       "course_win_rate",
       "course_1着率",
-      "course_win_1y",
       "course_win_3y"
     ]);
     return formatRate(v);
@@ -198,10 +204,12 @@
   const getCourseWinClass = (boat) => {
     const v = Number(
       pickValue(boat, [
+        "course_win_1y",
+        "course_win_rate_1y",
+        "course_1着率_1y",
         "course_win",
         "course_win_rate",
         "course_1着率",
-        "course_win_1y",
         "course_win_3y"
       ])
     );
@@ -214,6 +222,10 @@
 
   const getCourseKimariteParts = (boat) => {
     const sashi = pickValue(boat, [
+      "course_sashi_1y",
+      "course_kimarite_sashi_1y",
+      "kimarite_sashi_1y",
+      "sashi_rate_1y",
       "course_sashi",
       "course_kimarite_sashi",
       "kimarite_sashi",
@@ -221,6 +233,10 @@
     ]);
 
     const makuri = pickValue(boat, [
+      "course_makuri_1y",
+      "course_kimarite_makuri_1y",
+      "kimarite_makuri_1y",
+      "makuri_rate_1y",
       "course_makuri",
       "course_kimarite_makuri",
       "kimarite_makuri",
@@ -228,6 +244,10 @@
     ]);
 
     const makurisashi = pickValue(boat, [
+      "course_makurisashi_1y",
+      "course_kimarite_makurisashi_1y",
+      "kimarite_makurisashi_1y",
+      "makurisashi_rate_1y",
       "course_makurisashi",
       "course_kimarite_makurisashi",
       "kimarite_makurisashi",
@@ -243,9 +263,10 @@
 
   const getCourseAvgStText = (boat) => {
     const v = pickValue(boat, [
+      "course_avg_st_1y",
+      "course_st_1y",
       "course_avg_st",
       "course_st",
-      "course_avg_st_1y",
       "course_avg_st_3y"
     ]);
 
@@ -260,9 +281,10 @@
 
   const getCourse2renText = (boat) => {
     const v = pickValue(boat, [
+      "course_2ren_1y",
+      "course_2_1y",
       "course_2ren",
       "course_2",
-      "course_2ren_1y",
       "course_2ren_3y"
     ]);
     return formatRate(v);
@@ -270,9 +292,10 @@
 
   const getCourse3renText = (boat) => {
     const v = pickValue(boat, [
+      "course_3ren_1y",
+      "course_3_1y",
       "course_3ren",
       "course_3",
-      "course_3ren_1y",
       "course_3ren_3y"
     ]);
     return formatRate(v);
