@@ -491,19 +491,19 @@ function applyPlayerStatsToDataset(datasetKey, player) {
     };
 
     dataset.table.starts[courseNo - 1] = formatCount(c?.starts);
-    dataset.table.first[courseNo - 1] = "—";
-    dataset.table.second[courseNo - 1] = "—";
-    dataset.table.third[courseNo - 1] = "—";
+    dataset.table.first[courseNo - 1] = formatCount(c?.first);
+    dataset.table.second[courseNo - 1] = formatCount(c?.second);
+    dataset.table.third[courseNo - 1] = formatCount(c?.third);
     dataset.table.winRate[courseNo - 1] = formatRate(c?.win_rate);
     dataset.table.ren2Rate[courseNo - 1] = formatRate(c?.ren2_rate);
     dataset.table.ren3Rate[courseNo - 1] = formatRate(c?.ren3_rate);
     dataset.table.avgSt[courseNo - 1] = formatST(c?.avg_st);
-    dataset.table.nige[courseNo - 1] = "—";
+    dataset.table.nige[courseNo - 1] = formatNumber(c?.kimarite?.["逃げ"]);
     dataset.table.sashi[courseNo - 1] = formatNumber(c?.kimarite?.["差"]);
     dataset.table.makuri[courseNo - 1] = formatNumber(c?.kimarite?.["まくり"]);
     dataset.table.makurisashi[courseNo - 1] = formatNumber(c?.kimarite?.["まくり差し"]);
-    dataset.table.nuki[courseNo - 1] = "—";
-    dataset.table.megumare[courseNo - 1] = "—";
+    dataset.table.nuki[courseNo - 1] = formatNumber(c?.kimarite?.["抜き"]);
+    dataset.table.megumare[courseNo - 1] = formatNumber(c?.kimarite?.["恵まれ"]);
   });
 }
 
