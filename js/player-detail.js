@@ -293,7 +293,7 @@ function ensureRadarLabels() {
   }
 
   labels.innerHTML = COURSE_ORDER.map((course) =>
-    `<div class="radarLabel radarLabel--${course}" data-course="${course}" aria-hidden="true">${course}コース</div>`
+    `<div class="radarLabel radarLabel--${course}" data-course="${course}" aria-hidden="true">${course}</div>`
   ).join("");
 }
 
@@ -765,16 +765,31 @@ function applyPlayerStatsToDataset(datasetKey, player) {
   });
 }
 
-function applyOtherBoatStatsToDataset(datasetKey, player) {
+function normalizeOtherBoatPlayer(raw) {
+  if (!raw) return null;
+  if (raw.courses) return raw;
+  if (raw.data?.courses) return raw.data;
+  if (raw.stats?.courses) return raw.stats;
+  if (raw.trends?.courses) return raw.trends;
+  return raw;
+}
+
+function applyOtherBoatStatsToDataset(datasetKey, playerRaw) {
   const dataset = DATASETS[datasetKey];
   dataset.courseData = structuredClone(EMPTY_COURSE_DATA);
   dataset.table = structuredClone(EMPTY_OTHER_BOAT_TABLE_DATA);
 
+  const player = normalizeOtherBoatPlayer(playerRaw);
   if (!player || !player.courses) return;
 
   COURSE_ORDER.forEach((courseNo) => {
-    const c = player.courses?.[String(courseNo)] || null;
-    const wk = c?.win_kimarite || {};
+    const c = player.courses?.[String(courseNo)] || player.courses?.[courseNo] || null;
+    const wk =
+      c?.win_kimarite ||
+      c?.kimarite ||
+      c?.winning_kimarite ||
+      c?.winPatterns ||
+      {};
 
     dataset.courseData[courseNo] = {
       starts: Number.isFinite(Number(c?.starts)) ? Number(c.starts) : null,
@@ -808,7 +823,7 @@ function applyOtherBoatStatsToDataset(datasetKey, player) {
   });
 }
 
-async function fetchStatsSafe(url) {
+async function fetchJsonSafe(url) {
   try {
     const res = await fetch(`${url}?t=${Math.floor(Date.now() / 300000)}`, {
       cache: "no-store"
@@ -817,12 +832,40 @@ async function fetchStatsSafe(url) {
       console.error("fetch failed:", url, res.status);
       return null;
     }
-    const json = await res.json();
-    return json?.players?.[regno] || json?.[regno] || null;
+    return await res.json();
   } catch (err) {
     console.error("fetch error:", url, err);
     return null;
   }
+}
+
+function pickPlayerFromStandardJson(json, regno) {
+  if (!json) return null;
+  return json?.players?.[regno] || json?.[regno] || null;
+}
+
+function pickPlayerFromOtherBoatJson(json, regno) {
+  if (!json) return null;
+
+  const picked =
+    json?.players?.[regno] ||
+    json?.data?.players?.[regno] ||
+    json?.stats?.players?.[regno] ||
+    json?.trends?.players?.[regno] ||
+    json?.[regno] ||
+    json?.data?.[regno] ||
+    json?.stats?.[regno] ||
+    json?.trends?.[regno] ||
+    null;
+
+  if (!picked) {
+    console.log("other boat json keys:", Object.keys(json || {}).slice(0, 20));
+    if (json?.players) {
+      console.log("other boat player keys sample:", Object.keys(json.players).slice(0, 20));
+    }
+  }
+
+  return picked;
 }
 
 async function loadPlayerStats() {
@@ -830,12 +873,17 @@ async function loadPlayerStats() {
 
   if (!regno) return;
 
-  const [player1y, player3y, other1y, other3y] = await Promise.all([
-    fetchStatsSafe(PLAYER_COURSE_STATS_1Y_URL),
-    fetchStatsSafe(PLAYER_COURSE_STATS_3Y_URL),
-    fetchStatsSafe(PLAYER_OTHER_BOAT_TRENDS_1Y_URL),
-    fetchStatsSafe(PLAYER_OTHER_BOAT_TRENDS_3Y_URL)
+  const [player1yJson, player3yJson, other1yJson, other3yJson] = await Promise.all([
+    fetchJsonSafe(PLAYER_COURSE_STATS_1Y_URL),
+    fetchJsonSafe(PLAYER_COURSE_STATS_3Y_URL),
+    fetchJsonSafe(PLAYER_OTHER_BOAT_TRENDS_1Y_URL),
+    fetchJsonSafe(PLAYER_OTHER_BOAT_TRENDS_3Y_URL)
   ]);
+
+  const player1y = pickPlayerFromStandardJson(player1yJson, regno);
+  const player3y = pickPlayerFromStandardJson(player3yJson, regno);
+  const other1y = pickPlayerFromOtherBoatJson(other1yJson, regno);
+  const other3y = pickPlayerFromOtherBoatJson(other3yJson, regno);
 
   applyPlayerStatsToDataset("1y", player1y);
   applyPlayerStatsToDataset("3y", player3y);
