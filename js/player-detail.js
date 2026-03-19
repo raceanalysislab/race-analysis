@@ -14,6 +14,10 @@ const PLAYER_COURSE_STATS_1Y_URL =
   "https://raceanalysislab.github.io/race-analysis/data/player_course_stats_1y.json";
 const PLAYER_COURSE_STATS_3Y_URL =
   "https://raceanalysislab.github.io/race-analysis/data/player_course_stats_3y.json";
+const PLAYER_OTHER_TRENDS_1Y_URL =
+  "https://raceanalysislab.github.io/race-analysis/data/player_other_boat_trends_1y.json";
+const PLAYER_OTHER_TRENDS_3Y_URL =
+  "https://raceanalysislab.github.io/race-analysis/data/player_other_boat_trends_3y.json";
 
 const $ = (id) => document.getElementById(id);
 
@@ -73,8 +77,14 @@ const DATASETS = {
   }
 };
 
+const OTHER_TRENDS = {
+  "1y": null,
+  "3y": null
+};
+
 let selectedCourse = Math.min(6, Math.max(1, Number.isFinite(waku) ? waku : 1));
-let selectedRange = "1y";
+let selectedMainTab = "1y";
+let selectedOtherRange = "1y";
 let radarAnimationFrame = null;
 
 function esc(s) {
@@ -87,8 +97,16 @@ function esc(s) {
   }[c]));
 }
 
+function getHeroDatasetKey() {
+  return selectedMainTab === "other" ? selectedOtherRange : selectedMainTab;
+}
+
 function getCurrentDataset() {
-  return DATASETS[selectedRange] || DATASETS["1y"];
+  return DATASETS[getHeroDatasetKey()] || DATASETS["1y"];
+}
+
+function getCurrentOtherTrendPlayer() {
+  return OTHER_TRENDS[selectedOtherRange] || null;
 }
 
 function applyHeroGradeTheme() {
@@ -115,6 +133,98 @@ function applyHeroGradeTheme() {
   document.body.classList.add("hero-grade-b1");
 }
 
+function getMainTabLabel(key) {
+  if (key === "1y") return "直近1年データ";
+  if (key === "3y") return "直近3年データ";
+  return "他艇傾向";
+}
+
+function getOtherRangeLabel(key) {
+  return key === "3y" ? "直近3年" : "直近1年";
+}
+
+function makeDataTabs() {
+  const root = $("playerDataTabs");
+  if (!root) return;
+
+  root.innerHTML = [
+    { key: "1y", label: "直近1年データ" },
+    { key: "3y", label: "直近3年データ" },
+    { key: "other", label: "他艇傾向" }
+  ].map((item) => `
+    <button
+      type="button"
+      class="playerDataTab${item.key === selectedMainTab ? " is-active" : ""}"
+      data-main-tab="${item.key}"
+    >${item.label}</button>
+  `).join("");
+
+  root.querySelectorAll(".playerDataTab").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const next = String(btn.dataset.mainTab || "1y");
+      if (next === selectedMainTab) return;
+
+      selectedMainTab = next;
+      makeDataTabs();
+      renderOtherSubTabs();
+      renderTables();
+      renderHeroText();
+      animateRadar();
+    });
+  });
+}
+
+function ensureOtherSubTabsRoot() {
+  const head = document.querySelector(".playerSectionHead");
+  if (!head) return null;
+
+  let sub = $("playerOtherSubTabs");
+  if (!sub) {
+    sub = document.createElement("div");
+    sub.id = "playerOtherSubTabs";
+    sub.className = "playerDataTabs";
+    sub.style.marginTop = "10px";
+    head.appendChild(sub);
+  }
+  return sub;
+}
+
+function renderOtherSubTabs() {
+  const root = ensureOtherSubTabsRoot();
+  if (!root) return;
+
+  if (selectedMainTab !== "other") {
+    root.innerHTML = "";
+    root.style.display = "none";
+    return;
+  }
+
+  root.style.display = "";
+  root.innerHTML = [
+    { key: "1y", label: "直近1年" },
+    { key: "3y", label: "直近3年" }
+  ].map((item) => `
+    <button
+      type="button"
+      class="playerDataTab${item.key === selectedOtherRange ? " is-active" : ""}"
+      data-other-range="${item.key}"
+    >${item.label}</button>
+  `).join("");
+
+  root.querySelectorAll(".playerDataTab").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const next = String(btn.dataset.otherRange || "1y");
+      if (next === selectedOtherRange) return;
+
+      selectedOtherRange = next;
+      renderOtherSubTabs();
+      renderTables();
+      renderHeroText();
+      animateRadar();
+    });
+  });
+}
+
 function makeCourseTabs() {
   const root = $("courseHeroTabs");
   if (!root) return;
@@ -138,28 +248,6 @@ function makeCourseTabs() {
       renderTables();
       renderHeroText();
       layoutRadarLabels();
-      animateRadar();
-    });
-  });
-}
-
-function bindRangeTabs() {
-  const root = $("playerDataTabs");
-  if (!root) return;
-
-  root.querySelectorAll(".playerDataTab").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const nextRange = String(btn.dataset.range || "1y");
-      if (nextRange === selectedRange) return;
-
-      selectedRange = nextRange;
-
-      root.querySelectorAll(".playerDataTab").forEach((tab) => {
-        tab.classList.toggle("is-active", tab.dataset.range === selectedRange);
-      });
-
-      renderTables();
-      renderHeroText();
       animateRadar();
     });
   });
@@ -248,7 +336,7 @@ function ensureRadarLabels() {
   }
 
   labels.innerHTML = COURSE_ORDER.map((course) =>
-    `<div class="radarLabel radarLabel--${course}" data-course="${course}" aria-hidden="true"></div>`
+    `<div class="radarLabel radarLabel--${course}" data-course="${course}" aria-hidden="true">${course}コース</div>`
   ).join("");
 }
 
@@ -480,9 +568,31 @@ function formatST(value) {
   return n.toFixed(2);
 }
 
+function getTopKimariteInfo(kimarite) {
+  const items = [
+    ["逃げ", Number(kimarite?.["逃げ"]) || 0],
+    ["差し", Number(kimarite?.["差"]) || 0],
+    ["まくり", Number(kimarite?.["まくり"]) || 0],
+    ["まくり差し", Number(kimarite?.["まくり差し"]) || 0],
+    ["抜き", Number(kimarite?.["抜き"]) || 0],
+    ["恵まれ", Number(kimarite?.["恵まれ"]) || 0]
+  ].sort((a, b) => b[1] - a[1]);
+
+  if (!items[0] || items[0][1] <= 0) {
+    return { main: "—", sub: "—" };
+  }
+
+  return {
+    main: items[0][0],
+    sub: `最多 ${items[0][1]}回`
+  };
+}
+
 function renderHeroText() {
   const dataset = getCurrentDataset();
   const data = dataset.courseData[selectedCourse] || {};
+  const heroKey = getHeroDatasetKey();
+  const topKimarite = getTopKimariteInfo(data.kimarite);
 
   $("winRateText").textContent = formatRate(data.win);
   $("ren2RateText").textContent = formatRate(data.ren2);
@@ -491,6 +601,15 @@ function renderHeroText() {
   setMeter("winRateFill", data.win);
   setMeter("ren2RateFill", data.ren2);
   setMeter("ren3RateFill", data.ren3);
+
+  $("selectedCourseTitle").textContent = `${selectedCourse}コース`;
+  $("selectedCourseType").textContent = selectedMainTab === "other"
+    ? `他艇傾向 / ${getOtherRangeLabel(selectedOtherRange)}基準`
+    : getMainTabLabel(selectedMainTab);
+
+  $("courseTypePill").textContent = heroKey === "3y" ? "直近3年" : "直近1年";
+  $("kimariteMain").textContent = topKimarite.main;
+  $("kimariteSub").textContent = topKimarite.sub;
 }
 
 function makeCourseHeader() {
@@ -508,12 +627,12 @@ function makeCourseHeader() {
   `;
 }
 
-function valueRow(label, values) {
+function valueRow(label, values, highlightSelected = true) {
   return `
     <div class="playerTableRow">
       <div class="playerTableCell playerTableCell--label">${esc(label)}</div>
       ${values.map((v, i) => `
-        <div class="playerTableCell playerTableCell--value${i === selectedCourse - 1 ? " is-highlight" : ""}">
+        <div class="playerTableCell playerTableCell--value${highlightSelected && i === selectedCourse - 1 ? " is-highlight" : ""}">
           ${esc(v)}
         </div>
       `).join("")}
@@ -521,7 +640,7 @@ function valueRow(label, values) {
   `;
 }
 
-function rateRow(label, values) {
+function rateRow(label, values, highlightSelected = true) {
   return `
     <div class="playerTableRow">
       <div class="playerTableCell playerTableCell--label">${esc(label)}</div>
@@ -529,7 +648,7 @@ function rateRow(label, values) {
         const n = Number(String(v).replace("%", "").replace(/\s/g, "").trim());
         const width = Number.isFinite(n) ? Math.max(0, Math.min(n, 100)) : 0;
         return `
-          <div class="playerTableCell playerTableCell--value${i === selectedCourse - 1 ? " is-highlight" : ""}">
+          <div class="playerTableCell playerTableCell--value${highlightSelected && i === selectedCourse - 1 ? " is-highlight" : ""}">
             <div class="playerRateStack">
               <div class="playerRateText">${esc(v)}</div>
               <div class="playerRateBar">
@@ -543,26 +662,79 @@ function rateRow(label, values) {
   `;
 }
 
-function renderTables() {
+function buildOtherTrendRowValues(key) {
+  const player = getCurrentOtherTrendPlayer();
+  const base = player?.base_courses?.[String(selectedCourse)]?.others || {};
+
+  return COURSE_ORDER.map((courseNo) => {
+    if (courseNo === selectedCourse) return "—";
+
+    const src = base[String(courseNo)] || null;
+    if (!src) return "—";
+
+    if (key === "first") return formatCount(src.first);
+    if (key === "second") return formatCount(src.second);
+    if (key === "third") return formatCount(src.third);
+    if (key === "firstRate") return formatRate(src.first_rate);
+    if (key === "ren2Rate") return formatRate(src.ren2_rate);
+    if (key === "ren3Rate") return formatRate(src.ren3_rate);
+    if (key === "nige") return formatNumber(src.kimarite?.["逃げ"]);
+    if (key === "sashi") return formatNumber(src.kimarite?.["差"]);
+    if (key === "makuri") return formatNumber(src.kimarite?.["まくり"]);
+    if (key === "makurisashi") return formatNumber(src.kimarite?.["まくり差し"]);
+    if (key === "nuki") return formatNumber(src.kimarite?.["抜き"]);
+    if (key === "megumare") return formatNumber(src.kimarite?.["恵まれ"]);
+
+    return "—";
+  });
+}
+
+function renderSelfTables() {
   const t = getCurrentDataset().table;
 
   $("playerCourseStats").innerHTML = [
     makeCourseHeader(),
-    valueRow("出走数", t.starts),
-    valueRow("1着", t.first),
-    valueRow("2着", t.second),
-    valueRow("3着", t.third),
-    rateRow("1着率", t.winRate),
-    rateRow("2連対率", t.ren2Rate),
-    rateRow("3連対率", t.ren3Rate),
-    valueRow("平均ST", t.avgSt),
-    valueRow("逃げ", t.nige),
-    valueRow("差し", t.sashi),
-    valueRow("まくり", t.makuri),
-    valueRow("まくり差し", t.makurisashi),
-    valueRow("抜き", t.nuki),
-    valueRow("恵まれ", t.megumare)
+    valueRow("出走数", t.starts, true),
+    valueRow("1着", t.first, true),
+    valueRow("2着", t.second, true),
+    valueRow("3着", t.third, true),
+    rateRow("1着率", t.winRate, true),
+    rateRow("2連対率", t.ren2Rate, true),
+    rateRow("3連対率", t.ren3Rate, true),
+    valueRow("平均ST", t.avgSt, true),
+    valueRow("逃げ", t.nige, true),
+    valueRow("差し", t.sashi, true),
+    valueRow("まくり", t.makuri, true),
+    valueRow("まくり差し", t.makurisashi, true),
+    valueRow("抜き", t.nuki, true),
+    valueRow("恵まれ", t.megumare, true)
   ].join("");
+}
+
+function renderOtherTables() {
+  $("playerCourseStats").innerHTML = [
+    makeCourseHeader(),
+    valueRow("1着", buildOtherTrendRowValues("first"), false),
+    valueRow("2着", buildOtherTrendRowValues("second"), false),
+    valueRow("3着", buildOtherTrendRowValues("third"), false),
+    rateRow("1着率", buildOtherTrendRowValues("firstRate"), false),
+    rateRow("2連対率", buildOtherTrendRowValues("ren2Rate"), false),
+    rateRow("3連対率", buildOtherTrendRowValues("ren3Rate"), false),
+    valueRow("逃げ", buildOtherTrendRowValues("nige"), false),
+    valueRow("差し", buildOtherTrendRowValues("sashi"), false),
+    valueRow("まくり", buildOtherTrendRowValues("makuri"), false),
+    valueRow("まくり差し", buildOtherTrendRowValues("makurisashi"), false),
+    valueRow("抜き", buildOtherTrendRowValues("nuki"), false),
+    valueRow("恵まれ", buildOtherTrendRowValues("megumare"), false)
+  ].join("");
+}
+
+function renderTables() {
+  if (selectedMainTab === "other") {
+    renderOtherTables();
+    return;
+  }
+  renderSelfTables();
 }
 
 function resetDatasets() {
@@ -570,6 +742,8 @@ function resetDatasets() {
   DATASETS["1y"].table = structuredClone(EMPTY_TABLE_DATA);
   DATASETS["3y"].courseData = structuredClone(EMPTY_COURSE_DATA);
   DATASETS["3y"].table = structuredClone(EMPTY_TABLE_DATA);
+  OTHER_TRENDS["1y"] = null;
+  OTHER_TRENDS["3y"] = null;
 }
 
 function applyPlayerStatsToDataset(datasetKey, player) {
@@ -630,13 +804,17 @@ async function loadPlayerStats() {
   if (!regno) return;
 
   try {
-    const [player1y, player3y] = await Promise.all([
+    const [player1y, player3y, other1y, other3y] = await Promise.all([
       fetchPlayerStats(PLAYER_COURSE_STATS_1Y_URL),
-      fetchPlayerStats(PLAYER_COURSE_STATS_3Y_URL)
+      fetchPlayerStats(PLAYER_COURSE_STATS_3Y_URL),
+      fetchPlayerStats(PLAYER_OTHER_TRENDS_1Y_URL),
+      fetchPlayerStats(PLAYER_OTHER_TRENDS_3Y_URL)
     ]);
 
     applyPlayerStatsToDataset("1y", player1y);
     applyPlayerStatsToDataset("3y", player3y);
+    OTHER_TRENDS["1y"] = other1y;
+    OTHER_TRENDS["3y"] = other3y;
   } catch (err) {
     console.error("player stats load failed:", err);
     resetDatasets();
@@ -649,7 +827,8 @@ async function boot() {
   ensureRadarExtraLayers();
   ensureRadarLabels();
   makeCourseTabs();
-  bindRangeTabs();
+  makeDataTabs();
+  renderOtherSubTabs();
 
   await loadPlayerStats();
 
