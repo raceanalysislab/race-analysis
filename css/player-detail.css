@@ -183,6 +183,7 @@ body{
 }
 
 .playerDataTabs{
+  position:relative;
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:0;
@@ -196,6 +197,19 @@ body{
   margin-top:0;
 }
 
+.playerDataTabs::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:0;
+  bottom:0;
+  width:1px;
+  background:#d7dfeb;
+  transform:translateX(-50%);
+  z-index:3;
+  pointer-events:none;
+}
+
 .playerDataTab{
   appearance:none;
   border:0;
@@ -205,10 +219,12 @@ body{
   font-size:14px;
   font-weight:700;
   letter-spacing:-.02em;
+  position:relative;
+  z-index:2;
 }
 
 .playerDataTab + .playerDataTab{
-  border-left:1px solid #d7dfeb;
+  border-left:0;
 }
 
 .playerDataTab.is-active{
