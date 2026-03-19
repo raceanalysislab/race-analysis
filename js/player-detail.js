@@ -424,6 +424,26 @@ function addStBonus(score, avgSt, threshold) {
   return clampScore(score);
 }
 
+function scoreToRadarRate(score) {
+  const s = clampScore(score);
+
+  const map = {
+    0: 0.00,
+    1: 0.18,
+    2: 0.28,
+    3: 0.38,
+    4: 0.48,
+    5: 0.58,
+    6: 0.68,
+    7: 0.78,
+    8: 0.86,
+    9: 0.93,
+    10: 1.00
+  };
+
+  return map[s] ?? 0;
+}
+
 function buildRadarScores() {
   const dataset = getCurrentDataset();
 
@@ -545,7 +565,7 @@ function buildRadarScores() {
 
 function getRadarPointObjects(values, progress = 1) {
   return values.map((v, i) => {
-    const r = RADAR_VALUE_MAX_R * (clampScore(v) / RADAR_SCORE_MAX) * progress;
+    const r = RADAR_VALUE_MAX_R * scoreToRadarRate(v) * progress;
     return pointFromAngleRadius(RADAR_ANGLES[i], r);
   });
 }
