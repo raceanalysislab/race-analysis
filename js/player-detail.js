@@ -211,8 +211,8 @@ function upgradeDataTabs() {
   root.innerHTML = `
     <button type="button" class="playerDataTab is-active" data-range="1y">直近1年データ</button>
     <button type="button" class="playerDataTab" data-range="3y">直近3年データ</button>
-    <button type="button" class="playerDataTab" data-range="other1y">他艇傾向1年</button>
-    <button type="button" class="playerDataTab" data-range="other3y">他艇傾向3年</button>
+    <button type="button" class="playerDataTab" data-range="other1y">コース別着順分布1年</button>
+    <button type="button" class="playerDataTab" data-range="other3y">コース別着順分布3年</button>
   `;
 }
 
