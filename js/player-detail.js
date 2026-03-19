@@ -14,10 +14,10 @@ const PLAYER_COURSE_STATS_1Y_URL =
   "https://raceanalysislab.github.io/race-analysis/data/player_course_stats_1y.json";
 const PLAYER_COURSE_STATS_3Y_URL =
   "https://raceanalysislab.github.io/race-analysis/data/player_course_stats_3y.json";
-const PLAYER_COURSE_OTHER_BOATS_1Y_URL =
-  "https://raceanalysislab.github.io/race-analysis/data/player_course_other_boats_1y.json";
-const PLAYER_COURSE_OTHER_BOATS_3Y_URL =
-  "https://raceanalysislab.github.io/race-analysis/data/player_course_other_boats_3y.json";
+const PLAYER_OTHER_BOAT_TRENDS_1Y_URL =
+  "https://raceanalysislab.github.io/race-analysis/data/player_other_boat_trends_1y.json";
+const PLAYER_OTHER_BOAT_TRENDS_3Y_URL =
+  "https://raceanalysislab.github.io/race-analysis/data/player_other_boat_trends_3y.json";
 
 const $ = (id) => document.getElementById(id);
 
@@ -808,13 +808,21 @@ function applyOtherBoatStatsToDataset(datasetKey, player) {
   });
 }
 
-async function fetchPlayerStats(url) {
-  const res = await fetch(`${url}?t=${Math.floor(Date.now() / 300000)}`, {
-    cache: "no-store"
-  });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const json = await res.json();
-  return json?.players?.[regno] || null;
+async function fetchStatsSafe(url) {
+  try {
+    const res = await fetch(`${url}?t=${Math.floor(Date.now() / 300000)}`, {
+      cache: "no-store"
+    });
+    if (!res.ok) {
+      console.error("fetch failed:", url, res.status);
+      return null;
+    }
+    const json = await res.json();
+    return json?.players?.[regno] || json?.[regno] || null;
+  } catch (err) {
+    console.error("fetch error:", url, err);
+    return null;
+  }
 }
 
 async function loadPlayerStats() {
@@ -822,22 +830,17 @@ async function loadPlayerStats() {
 
   if (!regno) return;
 
-  try {
-    const [player1y, player3y, other1y, other3y] = await Promise.all([
-      fetchPlayerStats(PLAYER_COURSE_STATS_1Y_URL),
-      fetchPlayerStats(PLAYER_COURSE_STATS_3Y_URL),
-      fetchPlayerStats(PLAYER_COURSE_OTHER_BOATS_1Y_URL),
-      fetchPlayerStats(PLAYER_COURSE_OTHER_BOATS_3Y_URL)
-    ]);
+  const [player1y, player3y, other1y, other3y] = await Promise.all([
+    fetchStatsSafe(PLAYER_COURSE_STATS_1Y_URL),
+    fetchStatsSafe(PLAYER_COURSE_STATS_3Y_URL),
+    fetchStatsSafe(PLAYER_OTHER_BOAT_TRENDS_1Y_URL),
+    fetchStatsSafe(PLAYER_OTHER_BOAT_TRENDS_3Y_URL)
+  ]);
 
-    applyPlayerStatsToDataset("1y", player1y);
-    applyPlayerStatsToDataset("3y", player3y);
-    applyOtherBoatStatsToDataset("other1y", other1y);
-    applyOtherBoatStatsToDataset("other3y", other3y);
-  } catch (err) {
-    console.error("player stats load failed:", err);
-    resetDatasets();
-  }
+  applyPlayerStatsToDataset("1y", player1y);
+  applyPlayerStatsToDataset("3y", player3y);
+  applyOtherBoatStatsToDataset("other1y", other1y);
+  applyOtherBoatStatsToDataset("other3y", other3y);
 }
 
 async function boot() {
