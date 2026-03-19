@@ -22,7 +22,7 @@ const RACES_BASE_URL =
 const PLAYER_MASTER_URL =
   "https://raceanalysislab.github.io/race-analysis/data/master/players_master.json";
 const PLAYER_COURSE_STATS_URL =
-  "https://raceanalysislab.github.io/race-analysis/data/player_course_stats.json";
+  "https://raceanalysislab.github.io/race-analysis/data/player_course_stats_1y.json";
 const RACER_GENDER_URL =
   "https://raceanalysislab.github.io/race-analysis/data/master/racer_gender.json";
 
