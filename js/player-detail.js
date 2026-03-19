@@ -99,15 +99,22 @@ const formatST = (v) => Number.isFinite(Number(v)) ? Number(v).toFixed(2) : "—
 const getCurrentDataset = () => DATASETS[selectedRange] || DATASETS["1y"];
 const isOtherMode = () => getCurrentDataset().type === "other";
 
+function getPlayerDatasetForCurrentOtherMode() {
+  return selectedRange === "other3y" ? DATASETS["3y"] : DATASETS["1y"];
+}
+
+function getSelfCourseDataForCurrentOtherMode() {
+  const playerDataset = getPlayerDatasetForCurrentOtherMode();
+  return playerDataset?.courseData?.[selectedCourse] || null;
+}
+
 function getCurrentOtherBase() {
   const dataset = getCurrentDataset();
   return dataset.type === "other" ? dataset.raw?.[selectedCourse] || null : null;
 }
 
 function getReferenceStartsForOtherMode() {
-  if (selectedRange === "other1y") return num(DATASETS["1y"]?.courseData?.[selectedCourse]?.starts);
-  if (selectedRange === "other3y") return num(DATASETS["3y"]?.courseData?.[selectedCourse]?.starts);
-  return null;
+  return num(getSelfCourseDataForCurrentOtherMode()?.starts);
 }
 
 function getOtherBucket(base, otherCourse) {
@@ -130,6 +137,45 @@ function getOtherBucket(base, otherCourse) {
   };
 }
 
+function getOtherModeDisplayRow(course) {
+  const selfData = getSelfCourseDataForCurrentOtherMode();
+
+  if (course === selectedCourse) {
+    return {
+      starts: num(selfData?.starts),
+      first: num(selfData?.first) ?? 0,
+      second: num(selfData?.second) ?? 0,
+      third: num(selfData?.third) ?? 0,
+      kimarite: {
+        "逃げ": num(selfData?.kimarite?.["逃げ"]) ?? 0,
+        "差": num(selfData?.kimarite?.["差"]) ?? 0,
+        "まくり": num(selfData?.kimarite?.["まくり"]) ?? 0,
+        "まくり差し": num(selfData?.kimarite?.["まくり差し"]) ?? 0,
+        "抜き": num(selfData?.kimarite?.["抜き"]) ?? 0,
+        "恵まれ": num(selfData?.kimarite?.["恵まれ"]) ?? 0
+      }
+    };
+  }
+
+  const base = getCurrentOtherBase();
+  const bucket = getOtherBucket(base, course);
+
+  return {
+    starts: getReferenceStartsForOtherMode(),
+    first: num(bucket?.first) ?? 0,
+    second: num(bucket?.second) ?? 0,
+    third: num(bucket?.third) ?? 0,
+    kimarite: {
+      "逃げ": num(bucket?.kimarite?.["逃げ"]) ?? 0,
+      "差": num(bucket?.kimarite?.["差"]) ?? 0,
+      "まくり": num(bucket?.kimarite?.["まくり"]) ?? 0,
+      "まくり差し": num(bucket?.kimarite?.["まくり差し"]) ?? 0,
+      "抜き": num(bucket?.kimarite?.["抜き"]) ?? 0,
+      "恵まれ": num(bucket?.kimarite?.["恵まれ"]) ?? 0
+    }
+  };
+}
+
 function sumOtherBase(base) {
   const out = {
     first: 0,
@@ -139,13 +185,12 @@ function sumOtherBase(base) {
   };
 
   COURSE_ORDER.forEach((course) => {
-    const b = getOtherBucket(base, course);
-    if (!b) return;
-    out.first += b.first;
-    out.second += b.second;
-    out.third += b.third;
+    const row = getOtherModeDisplayRow(course);
+    out.first += row.first;
+    out.second += row.second;
+    out.third += row.third;
     Object.keys(out.kimarite).forEach((k) => {
-      out.kimarite[k] += b.kimarite[k] || 0;
+      out.kimarite[k] += row.kimarite[k] || 0;
     });
   });
 
@@ -297,15 +342,13 @@ function buildRadarScores() {
   const dataset = getCurrentDataset();
 
   if (dataset.type === "other") {
-    const base = getCurrentOtherBase();
-    const baseStarts = getReferenceStartsForOtherMode();
+    const refStarts = getReferenceStartsForOtherMode();
 
-    return COURSE_ORDER.map((otherCourse) => {
-      if (otherCourse === selectedCourse) return 0;
-      const b = getOtherBucket(base, otherCourse);
-      const first = num(b?.first);
-      if (!Number.isFinite(baseStarts) || baseStarts <= 0 || !Number.isFinite(first)) return 0;
-      return toRate10((first / baseStarts) * 100, 70);
+    return COURSE_ORDER.map((course) => {
+      const row = getOtherModeDisplayRow(course);
+      const first = num(row.first);
+      if (!Number.isFinite(refStarts) || refStarts <= 0 || !Number.isFinite(first)) return 0;
+      return toRate10((first / refStarts) * 100, 70);
     });
   }
 
@@ -459,13 +502,21 @@ function renderHeroText() {
   const kimariteSub = $("kimariteSub");
 
   if (dataset.type === "other") {
-    const base = getCurrentOtherBase();
-    const agg = sumOtherBase(base);
-    const starts = getReferenceStartsForOtherMode();
+    const selfData = getSelfCourseDataForCurrentOtherMode();
+    const selfStarts = num(selfData?.starts);
+    const selfFirst = num(selfData?.first);
+    const selfSecond = num(selfData?.second);
+    const selfThird = num(selfData?.third);
 
-    const winRate = Number.isFinite(starts) && starts > 0 ? (agg.first / starts) * 100 : null;
-    const ren2Rate = Number.isFinite(starts) && starts > 0 ? ((agg.first + agg.second) / starts) * 100 : null;
-    const ren3Rate = Number.isFinite(starts) && starts > 0 ? ((agg.first + agg.second + agg.third) / starts) * 100 : null;
+    const winRate = Number.isFinite(selfStarts) && selfStarts > 0 && Number.isFinite(selfFirst)
+      ? (selfFirst / selfStarts) * 100
+      : null;
+    const ren2Rate = Number.isFinite(selfStarts) && selfStarts > 0 && Number.isFinite(selfFirst) && Number.isFinite(selfSecond)
+      ? ((selfFirst + selfSecond) / selfStarts) * 100
+      : null;
+    const ren3Rate = Number.isFinite(selfStarts) && selfStarts > 0 && Number.isFinite(selfFirst) && Number.isFinite(selfSecond) && Number.isFinite(selfThird)
+      ? ((selfFirst + selfSecond + selfThird) / selfStarts) * 100
+      : null;
 
     $("winRateText").textContent = formatRate(winRate);
     $("ren2RateText").textContent = formatRate(ren2Rate);
@@ -474,11 +525,11 @@ function renderHeroText() {
     setMeter("ren2RateFill", ren2Rate);
     setMeter("ren3RateFill", ren3Rate);
 
-    if (selectedCourseTitle) selectedCourseTitle.textContent = `${selectedCourse}コース時の他艇傾向`;
+    if (selectedCourseTitle) selectedCourseTitle.textContent = `${selectedCourse}コース時の全体分布`;
     if (selectedCourseType) selectedCourseType.textContent = selectedRange === "other1y" ? "直近1年" : "直近3年";
-    if (typePill) typePill.textContent = "他艇傾向";
+    if (typePill) typePill.textContent = "本人＋他艇分布";
 
-    const top = pickTopKimarite(agg.kimarite);
+    const top = pickTopKimarite(selfData?.kimarite || {});
     if (kimariteMain) kimariteMain.textContent = top.main;
     if (kimariteSub) kimariteSub.textContent = top.sub;
     return;
@@ -594,10 +645,7 @@ function buildPlayerModeTable() {
 }
 
 function buildOtherModeTable() {
-  const base = getCurrentOtherBase();
   const refStarts = getReferenceStartsForOtherMode();
-
-  const startsRow = [];
   const firstRow = [];
   const secondRow = [];
   const thirdRow = [];
@@ -611,15 +659,12 @@ function buildOtherModeTable() {
   const nukiRow = [];
   const megumareRow = [];
 
-  COURSE_ORDER.forEach((otherCourse) => {
-    const isSelf = otherCourse === selectedCourse;
-    const b = isSelf ? null : getOtherBucket(base, otherCourse);
+  COURSE_ORDER.forEach((course) => {
+    const row = getOtherModeDisplayRow(course);
+    const first = row.first;
+    const second = row.second;
+    const third = row.third;
 
-    const first = isSelf ? 0 : (num(b?.first) ?? 0);
-    const second = isSelf ? 0 : (num(b?.second) ?? 0);
-    const third = isSelf ? 0 : (num(b?.third) ?? 0);
-
-    startsRow.push(formatCount(refStarts));
     firstRow.push(formatCount(first));
     secondRow.push(formatCount(second));
     thirdRow.push(formatCount(third));
@@ -634,23 +679,23 @@ function buildOtherModeTable() {
       ren3RateRow.push("—");
     }
 
-    nigeRow.push(formatCount(isSelf ? 0 : b?.kimarite?.["逃げ"]));
-    sashiRow.push(formatCount(isSelf ? 0 : b?.kimarite?.["差"]));
-    makuriRow.push(formatCount(isSelf ? 0 : b?.kimarite?.["まくり"]));
-    makurisashiRow.push(formatCount(isSelf ? 0 : b?.kimarite?.["まくり差し"]));
-    nukiRow.push(formatCount(isSelf ? 0 : b?.kimarite?.["抜き"]));
-    megumareRow.push(formatCount(isSelf ? 0 : b?.kimarite?.["恵まれ"]));
+    nigeRow.push(formatCount(row.kimarite?.["逃げ"]));
+    sashiRow.push(formatCount(row.kimarite?.["差"]));
+    makuriRow.push(formatCount(row.kimarite?.["まくり"]));
+    makurisashiRow.push(formatCount(row.kimarite?.["まくり差し"]));
+    nukiRow.push(formatCount(row.kimarite?.["抜き"]));
+    megumareRow.push(formatCount(row.kimarite?.["恵まれ"]));
   });
 
   return [
     makeCourseHeader(),
-    valueRow("母集団", startsRow),
-    valueRow("他艇1着", firstRow),
-    valueRow("他艇2着", secondRow),
-    valueRow("他艇3着", thirdRow),
-    rateRow("他艇1着率", firstRateRow),
-    rateRow("他艇2連対率", ren2RateRow),
-    rateRow("他艇3連対率", ren3RateRow),
+    valueRow("母集団", COURSE_ORDER.map(() => formatCount(refStarts))),
+    valueRow("1着", firstRow),
+    valueRow("2着", secondRow),
+    valueRow("3着", thirdRow),
+    rateRow("1着率", firstRateRow),
+    rateRow("2連対率", ren2RateRow),
+    rateRow("3連対率", ren3RateRow),
     valueRow("逃げ", nigeRow),
     valueRow("差し", sashiRow),
     valueRow("まくり", makuriRow),
