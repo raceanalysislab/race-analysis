@@ -401,12 +401,28 @@ function drawStaticRadarLabels() {
 
 const clampScore = (v) => Math.max(0, Math.min(RADAR_SCORE_MAX, Number.isFinite(Number(v)) ? Number(v) : 0));
 
-const toRate10 = (rate, maxRate) => {
-  const n = Number(rate);
-  const max = Number(maxRate);
-  if (!Number.isFinite(n) || !Number.isFinite(max) || max <= 0) return 0;
-  return clampScore(n >= max ? 10 : Math.floor((Math.max(0, Math.min(n, max)) / max) * 10));
-};
+function scoreFromRanges(value, ranges = []) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return 0;
+
+  for (const row of ranges) {
+    const min = Number(row.min);
+    const max = Number(row.max);
+    const score = Number(row.score);
+
+    if (!Number.isFinite(min) || !Number.isFinite(max) || !Number.isFinite(score)) continue;
+    if (n >= min && n <= max) return clampScore(score);
+  }
+
+  return 0;
+}
+
+function addStBonus(score, avgSt, threshold) {
+  const st = Number(avgSt);
+  if (!Number.isFinite(st)) return clampScore(score);
+  if (st <= threshold) return clampScore(score + 1);
+  return clampScore(score);
+}
 
 function buildRadarScores() {
   const dataset = getCurrentDataset();
@@ -418,61 +434,106 @@ function buildRadarScores() {
       const row = getOtherModeDisplayRow(course);
       const first = num(row.first);
       if (!Number.isFinite(refStarts) || refStarts <= 0 || !Number.isFinite(first)) return 0;
-      return toRate10((first / refStarts) * 100, 70);
+      return clampScore(Math.floor((first / refStarts) * 100 / 7));
     });
   }
 
   const c = dataset.courseData;
 
-  const scoreNige1 = (() => {
-    const starts = num(c[1]?.starts);
-    const nige = num(c[1]?.kimarite?.["逃げ"]) ?? 0;
-    if (!Number.isFinite(starts) || starts <= 0) return 0;
-    const rate = (nige / starts) * 100;
-    if (rate >= 85) return 10;
-    if (rate >= 80) return 9;
-    if (rate >= 75) return 8;
-    if (rate >= 70) return 7;
-    if (rate >= 65) return 6;
-    if (rate >= 60) return 5;
-    if (rate >= 50) return 4;
-    if (rate >= 45) return 3;
-    if (rate >= 40) return 2;
-    if (rate >= 30) return 1;
-    return 0;
+  const score1 = (() => {
+    const nige = num(c[1]?.kimarite?.["逃げ"]);
+    const ren3 = num(c[1]?.ren3);
+    const avgSt = num(c[1]?.avgSt);
+
+    if (Number.isFinite(nige) && nige >= 80) return 10;
+    if (Number.isFinite(ren3) && ren3 >= 90) return 10;
+
+    let score = scoreFromRanges(nige, [
+      { min: 78, max: 79.999, score: 9 },
+      { min: 75, max: 77.999, score: 8 },
+      { min: 68, max: 74.999, score: 7 },
+      { min: 65, max: 67.999, score: 5 },
+      { min: 60, max: 64.999, score: 4 },
+      { min: 50, max: 59.999, score: 3 },
+      { min: 40, max: 49.999, score: 2 },
+      { min: 30, max: 39.999, score: 1 }
+    ]);
+
+    if (Number.isFinite(ren3) && ren3 >= 80) score += 1;
+    score = addStBonus(score, avgSt, 0.13);
+
+    return clampScore(score);
   })();
 
-  const score4 = (() => {
-    const ren3 = num(c[4]?.ren3);
-    const avgSt = num(c[4]?.avgSt);
-    const starts = num(c[4]?.starts);
-    const ren3Score = toRate10(ren3, 70);
+  const score234 = (courseNo) => {
+    const win = num(c[courseNo]?.win);
+    const ren3 = num(c[courseNo]?.ren3);
+    const avgSt = num(c[courseNo]?.avgSt);
 
-    let stScore = 0;
-    if (Number.isFinite(avgSt)) {
-      if (avgSt <= 0.10) stScore = 10;
-      else if (avgSt <= 0.11) stScore = 9;
-      else if (avgSt <= 0.12) stScore = 8;
-      else if (avgSt <= 0.13) stScore = 7;
-      else if (avgSt <= 0.14) stScore = 6;
-      else if (avgSt <= 0.15) stScore = 5;
-      else if (avgSt <= 0.16) stScore = 4;
-      else if (avgSt <= 0.17) stScore = 3;
-      else if (avgSt <= 0.18) stScore = 2;
-      else if (avgSt <= 0.19) stScore = 1;
-    }
+    if (Number.isFinite(win) && win >= 35) return 10;
+    if (Number.isFinite(ren3) && ren3 >= 90) return 10;
 
-    const sampleFactor = Number.isFinite(starts) && starts > 0 ? Math.min(starts / 20, 1) : 0;
-    return clampScore(Math.round(((ren3Score * 0.9) + (stScore * 0.1)) * sampleFactor));
+    let score = scoreFromRanges(win, [
+      { min: 30, max: 34.999, score: 9 },
+      { min: 28, max: 29.999, score: 8 },
+      { min: 24, max: 27.999, score: 7 },
+      { min: 20, max: 23.999, score: 6 },
+      { min: 15, max: 19.999, score: 5 },
+      { min: 10, max: 14.999, score: 4 }
+    ]);
+
+    score = addStBonus(score, avgSt, 0.12);
+    return clampScore(score);
+  };
+
+  const score5 = (() => {
+    const win = num(c[5]?.win);
+    const ren3 = num(c[5]?.ren3);
+    const avgSt = num(c[5]?.avgSt);
+
+    if (Number.isFinite(win) && win >= 20) return 10;
+    if (Number.isFinite(ren3) && ren3 >= 85) return 10;
+
+    let score = scoreFromRanges(ren3, [
+      { min: 78, max: 79.999, score: 9 },
+      { min: 77, max: 77.999, score: 8 },
+      { min: 70, max: 76.999, score: 7 },
+      { min: 68, max: 69.999, score: 6 },
+      { min: 55, max: 67.999, score: 5 },
+      { min: 50, max: 54.999, score: 4 },
+      { min: 40, max: 49.999, score: 3 },
+      { min: 30, max: 39.999, score: 2 },
+      { min: 20, max: 29.999, score: 1 }
+    ]);
+
+    score = addStBonus(score, avgSt, 0.12);
+    return clampScore(score);
+  })();
+
+  const score6 = (() => {
+    const ren3 = num(c[6]?.ren3);
+
+    return scoreFromRanges(ren3, [
+      { min: 55, max: 100, score: 10 },
+      { min: 50, max: 54.999, score: 9 },
+      { min: 45, max: 49.999, score: 8 },
+      { min: 40, max: 44.999, score: 7 },
+      { min: 35, max: 39.999, score: 6 },
+      { min: 30, max: 34.999, score: 5 },
+      { min: 25, max: 29.999, score: 4 },
+      { min: 20, max: 24.999, score: 3 },
+      { min: 15, max: 19.999, score: 2 },
+      { min: 10, max: 14.999, score: 1 }
+    ]);
   })();
 
   return [
-    scoreNige1,
-    toRate10(c[2]?.ren2, 70),
-    toRate10(c[3]?.ren2, 70),
-    score4,
-    toRate10(c[5]?.ren3, 70),
-    toRate10(c[6]?.ren3, 60)
+    score1,
+    score234(2),
+    score234(3),
+    score234(4),
+    score5,
+    score6
   ];
 }
 
