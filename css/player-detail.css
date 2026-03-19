@@ -197,7 +197,7 @@ body{
   margin-top:0;
 }
 
-.playerDataTabs::after{
+.playerDataTabs::before{
   content:"";
   position:absolute;
   left:50%;
@@ -206,6 +206,19 @@ body{
   width:1px;
   background:#d7dfeb;
   transform:translateX(-50%);
+  z-index:3;
+  pointer-events:none;
+}
+
+.playerDataTabs::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  top:50%;
+  height:1px;
+  background:#d7dfeb;
+  transform:translateY(-50%);
   z-index:3;
   pointer-events:none;
 }
