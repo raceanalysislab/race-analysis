@@ -14,6 +14,10 @@ const PLAYER_COURSE_STATS_1Y_URL =
   "https://raceanalysislab.github.io/race-analysis/data/player_course_stats_1y.json";
 const PLAYER_COURSE_STATS_3Y_URL =
   "https://raceanalysislab.github.io/race-analysis/data/player_course_stats_3y.json";
+const PLAYER_COURSE_OTHER_BOATS_1Y_URL =
+  "https://raceanalysislab.github.io/race-analysis/data/player_course_other_boats_1y.json";
+const PLAYER_COURSE_OTHER_BOATS_3Y_URL =
+  "https://raceanalysislab.github.io/race-analysis/data/player_course_other_boats_3y.json";
 
 const $ = (id) => document.getElementById(id);
 
@@ -36,9 +40,7 @@ const RADAR_GRID_MAX_R = 112;
 const RADAR_VALUE_MAX_R = RADAR_GRID_MAX_R;
 const RADAR_LABEL_R = 126;
 const RADAR_SCORE_MAX = 10;
-const RADAR_ANGLES = [-90, -30, 30, 90, 150, 210].map(
-  (deg) => (deg * Math.PI) / 180
-);
+const RADAR_ANGLES = [-90, -30, 30, 90, 150, 210].map((deg) => deg * Math.PI / 180);
 
 const EMPTY_COURSE_DATA = {
   1: { starts: null, first: null, second: null, third: null, win: null, ren2: null, ren3: null, avgSt: null, kimarite: {} },
@@ -66,14 +68,39 @@ const EMPTY_TABLE_DATA = {
   megumare: ["—", "—", "—", "—", "—", "—"]
 };
 
+const EMPTY_OTHER_BOAT_TABLE_DATA = {
+  starts: ["—", "—", "—", "—", "—", "—"],
+  first: ["—", "—", "—", "—", "—", "—"],
+  second: ["—", "—", "—", "—", "—", "—"],
+  third: ["—", "—", "—", "—", "—", "—"],
+  nige: ["—", "—", "—", "—", "—", "—"],
+  sashi: ["—", "—", "—", "—", "—", "—"],
+  makuri: ["—", "—", "—", "—", "—", "—"],
+  makurisashi: ["—", "—", "—", "—", "—", "—"],
+  nuki: ["—", "—", "—", "—", "—", "—"],
+  megumare: ["—", "—", "—", "—", "—", "—"]
+};
+
 const DATASETS = {
   "1y": {
+    type: "player",
     courseData: structuredClone(EMPTY_COURSE_DATA),
     table: structuredClone(EMPTY_TABLE_DATA)
   },
   "3y": {
+    type: "player",
     courseData: structuredClone(EMPTY_COURSE_DATA),
     table: structuredClone(EMPTY_TABLE_DATA)
+  },
+  "other1y": {
+    type: "other",
+    courseData: structuredClone(EMPTY_COURSE_DATA),
+    table: structuredClone(EMPTY_OTHER_BOAT_TABLE_DATA)
+  },
+  "other3y": {
+    type: "other",
+    courseData: structuredClone(EMPTY_COURSE_DATA),
+    table: structuredClone(EMPTY_OTHER_BOAT_TABLE_DATA)
   }
 };
 
@@ -93,6 +120,10 @@ function esc(s) {
 
 function getCurrentDataset() {
   return DATASETS[selectedRange] || DATASETS["1y"];
+}
+
+function isOtherMode() {
+  return getCurrentDataset().type === "other";
 }
 
 function applyHeroGradeTheme() {
@@ -119,53 +150,16 @@ function applyHeroGradeTheme() {
   document.body.classList.add("hero-grade-b1");
 }
 
-function getRangeLabel(rangeKey) {
-  if (rangeKey === "1y") return "直近1年";
-  if (rangeKey === "3y") return "直近3年";
-  return "—";
-}
+function upgradeDataTabs() {
+  const root = $("playerDataTabs");
+  if (!root) return;
 
-function getCourseTypeLabel(courseNo) {
-  if (courseNo === 1) return "逃げ型";
-  if (courseNo === 2) return "差し・連対型";
-  if (courseNo === 3) return "連対型";
-  if (courseNo === 4) return "まくり差し注目";
-  if (courseNo === 5) return "3連対型";
-  if (courseNo === 6) return "大外連下型";
-  return "—";
-}
-
-function getTopKimarite(course) {
-  const source = course?.kimarite || {};
-  const items = [
-    { key: "逃げ", value: Number(source["逃げ"]) || 0 },
-    { key: "差", value: Number(source["差"]) || 0 },
-    { key: "まくり", value: Number(source["まくり"]) || 0 },
-    { key: "まくり差し", value: Number(source["まくり差し"]) || 0 },
-    { key: "抜き", value: Number(source["抜き"]) || 0 },
-    { key: "恵まれ", value: Number(source["恵まれ"]) || 0 }
-  ].sort((a, b) => b.value - a.value);
-
-  const top = items[0];
-  if (!top || top.value <= 0) {
-    return {
-      main: "—",
-      sub: "決まり手データなし"
-    };
-  }
-
-  const second = items[1];
-  if (!second || second.value <= 0) {
-    return {
-      main: top.key,
-      sub: `${top.value}回`
-    };
-  }
-
-  return {
-    main: top.key,
-    sub: `${top.value}回 / 次点 ${second.key} ${second.value}回`
-  };
+  root.innerHTML = `
+    <button type="button" class="playerDataTab is-active" data-range="1y">直近1年データ</button>
+    <button type="button" class="playerDataTab" data-range="3y">直近3年データ</button>
+    <button type="button" class="playerDataTab" data-range="other1y">他艇傾向1年</button>
+    <button type="button" class="playerDataTab" data-range="other3y">他艇傾向3年</button>
+  `;
 }
 
 function makeCourseTabs() {
@@ -263,9 +257,7 @@ function ensureRadarExtraLayers() {
   if (!svg) return;
 
   const core = $("courseRadarPolygonCore");
-  if (core) {
-    core.remove();
-  }
+  if (core) core.remove();
 
   const stage = document.querySelector(".courseRadarStage");
   if (stage && !stage.querySelector(".courseRadarGlow")) {
@@ -332,7 +324,6 @@ function scoreNigeRate1Course(course) {
   if (!Number.isFinite(starts) || starts <= 0) return 0;
 
   const rate = (nige / starts) * 100;
-
   if (rate >= 85) return 10;
   if (rate >= 80) return 9;
   if (rate >= 75) return 8;
@@ -394,6 +385,16 @@ function scoreRen3Rate6Course(course) {
 
 function buildRadarScores() {
   const dataset = getCurrentDataset();
+
+  if (dataset.type === "other") {
+    return COURSE_ORDER.map((courseNo) => {
+      const c = dataset.courseData[courseNo];
+      const starts = Number(c?.starts);
+      const first = Number(c?.first);
+      if (!Number.isFinite(starts) || starts <= 0 || !Number.isFinite(first)) return 0;
+      return toRate10((first / starts) * 100, 70);
+    });
+  }
 
   return [
     scoreNigeRate1Course(dataset.courseData[1]),
@@ -526,7 +527,7 @@ function formatNumber(value) {
 function formatCount(value) {
   const n = Number(value);
   if (!Number.isFinite(n)) return "—";
-  return String(Math.trunc(n));
+  return String(n);
 }
 
 function formatST(value) {
@@ -535,13 +536,68 @@ function formatST(value) {
   return n.toFixed(2);
 }
 
+function pickTopKimarite(kimarite = {}) {
+  const items = [
+    ["逃げ", Number(kimarite["逃げ"]) || 0],
+    ["差し", Number(kimarite["差"]) || 0],
+    ["まくり", Number(kimarite["まくり"]) || 0],
+    ["まくり差し", Number(kimarite["まくり差し"]) || 0],
+    ["抜き", Number(kimarite["抜き"]) || 0],
+    ["恵まれ", Number(kimarite["恵まれ"]) || 0]
+  ].sort((a, b) => b[1] - a[1]);
+
+  const top = items[0];
+  const sub = items.filter((x) => x[1] > 0).map((x) => `${x[0]} ${x[1]}`).join(" / ");
+
+  return {
+    main: top && top[1] > 0 ? `${top[0]} ${top[1]}` : "—",
+    sub: sub || "—"
+  };
+}
+
 function renderHeroText() {
   const dataset = getCurrentDataset();
   const data = dataset.courseData[selectedCourse] || {};
+  const typePill = $("courseTypePill");
+  const selectedCourseTitle = $("selectedCourseTitle");
+  const selectedCourseType = $("selectedCourseType");
+  const kimariteMain = $("kimariteMain");
+  const kimariteSub = $("kimariteSub");
 
-  $("selectedCourseTitle").textContent = `${selectedCourse}コース`;
-  $("selectedCourseType").textContent = `${getRangeLabel(selectedRange)}データ`;
-  $("courseTypePill").textContent = getCourseTypeLabel(selectedCourse);
+  if (dataset.type === "other") {
+    const starts = Number(data.starts);
+    const first = Number(data.first);
+    const second = Number(data.second);
+    const third = Number(data.third);
+
+    const winRate = Number.isFinite(starts) && starts > 0 && Number.isFinite(first)
+      ? (first / starts) * 100
+      : null;
+    const ren2Rate = Number.isFinite(starts) && starts > 0 && Number.isFinite(first) && Number.isFinite(second)
+      ? ((first + second) / starts) * 100
+      : null;
+    const ren3Rate = Number.isFinite(starts) && starts > 0 && Number.isFinite(first) && Number.isFinite(second) && Number.isFinite(third)
+      ? ((first + second + third) / starts) * 100
+      : null;
+
+    $("winRateText").textContent = formatRate(winRate);
+    $("ren2RateText").textContent = formatRate(ren2Rate);
+    $("ren3RateText").textContent = formatRate(ren3Rate);
+
+    setMeter("winRateFill", winRate);
+    setMeter("ren2RateFill", ren2Rate);
+    setMeter("ren3RateFill", ren3Rate);
+
+    if (selectedCourseTitle) selectedCourseTitle.textContent = `${selectedCourse}コース時の他艇傾向`;
+    if (selectedCourseType) selectedCourseType.textContent = selectedRange === "other1y" ? "直近1年" : "直近3年";
+    if (typePill) typePill.textContent = "他艇傾向";
+
+    const top = pickTopKimarite(data.kimarite || {});
+    if (kimariteMain) kimariteMain.textContent = top.main;
+    if (kimariteSub) kimariteSub.textContent = top.sub;
+
+    return;
+  }
 
   $("winRateText").textContent = formatRate(data.win);
   $("ren2RateText").textContent = formatRate(data.ren2);
@@ -551,9 +607,13 @@ function renderHeroText() {
   setMeter("ren2RateFill", data.ren2);
   setMeter("ren3RateFill", data.ren3);
 
-  const topKimarite = getTopKimarite(data);
-  $("kimariteMain").textContent = topKimarite.main;
-  $("kimariteSub").textContent = topKimarite.sub;
+  if (selectedCourseTitle) selectedCourseTitle.textContent = `${selectedCourse}コース成績`;
+  if (selectedCourseType) selectedCourseType.textContent = selectedRange === "1y" ? "直近1年" : "直近3年";
+  if (typePill) typePill.textContent = "選手コース成績";
+
+  const top = pickTopKimarite(data.kimarite || {});
+  if (kimariteMain) kimariteMain.textContent = top.main;
+  if (kimariteSub) kimariteSub.textContent = top.sub;
 }
 
 function makeCourseHeader() {
@@ -609,6 +669,23 @@ function rateRow(label, values) {
 function renderTables() {
   const t = getCurrentDataset().table;
 
+  if (isOtherMode()) {
+    $("playerCourseStats").innerHTML = [
+      makeCourseHeader(),
+      valueRow("出走数", t.starts),
+      valueRow("他艇1着", t.first),
+      valueRow("他艇2着", t.second),
+      valueRow("他艇3着", t.third),
+      valueRow("逃げ", t.nige),
+      valueRow("差し", t.sashi),
+      valueRow("まくり", t.makuri),
+      valueRow("まくり差し", t.makurisashi),
+      valueRow("抜き", t.nuki),
+      valueRow("恵まれ", t.megumare)
+    ].join("");
+    return;
+  }
+
   $("playerCourseStats").innerHTML = [
     makeCourseHeader(),
     valueRow("出走数", t.starts),
@@ -631,8 +708,15 @@ function renderTables() {
 function resetDatasets() {
   DATASETS["1y"].courseData = structuredClone(EMPTY_COURSE_DATA);
   DATASETS["1y"].table = structuredClone(EMPTY_TABLE_DATA);
+
   DATASETS["3y"].courseData = structuredClone(EMPTY_COURSE_DATA);
   DATASETS["3y"].table = structuredClone(EMPTY_TABLE_DATA);
+
+  DATASETS["other1y"].courseData = structuredClone(EMPTY_COURSE_DATA);
+  DATASETS["other1y"].table = structuredClone(EMPTY_OTHER_BOAT_TABLE_DATA);
+
+  DATASETS["other3y"].courseData = structuredClone(EMPTY_COURSE_DATA);
+  DATASETS["other3y"].table = structuredClone(EMPTY_OTHER_BOAT_TABLE_DATA);
 }
 
 function applyPlayerStatsToDataset(datasetKey, player) {
@@ -681,6 +765,49 @@ function applyPlayerStatsToDataset(datasetKey, player) {
   });
 }
 
+function applyOtherBoatStatsToDataset(datasetKey, player) {
+  const dataset = DATASETS[datasetKey];
+  dataset.courseData = structuredClone(EMPTY_COURSE_DATA);
+  dataset.table = structuredClone(EMPTY_OTHER_BOAT_TABLE_DATA);
+
+  if (!player || !player.courses) return;
+
+  COURSE_ORDER.forEach((courseNo) => {
+    const c = player.courses?.[String(courseNo)] || null;
+    const wk = c?.win_kimarite || {};
+
+    dataset.courseData[courseNo] = {
+      starts: Number.isFinite(Number(c?.starts)) ? Number(c.starts) : null,
+      first: Number.isFinite(Number(c?.first)) ? Number(c.first) : null,
+      second: Number.isFinite(Number(c?.second)) ? Number(c.second) : null,
+      third: Number.isFinite(Number(c?.third)) ? Number(c.third) : null,
+      win: null,
+      ren2: null,
+      ren3: null,
+      avgSt: null,
+      kimarite: {
+        "逃げ": Number.isFinite(Number(wk?.["逃げ"])) ? Number(wk["逃げ"]) : 0,
+        "差": Number.isFinite(Number(wk?.["差"])) ? Number(wk["差"]) : 0,
+        "まくり": Number.isFinite(Number(wk?.["まくり"])) ? Number(wk["まくり"]) : 0,
+        "まくり差し": Number.isFinite(Number(wk?.["まくり差し"])) ? Number(wk["まくり差し"]) : 0,
+        "抜き": Number.isFinite(Number(wk?.["抜き"])) ? Number(wk["抜き"]) : 0,
+        "恵まれ": Number.isFinite(Number(wk?.["恵まれ"])) ? Number(wk["恵まれ"]) : 0
+      }
+    };
+
+    dataset.table.starts[courseNo - 1] = formatCount(c?.starts);
+    dataset.table.first[courseNo - 1] = formatCount(c?.first);
+    dataset.table.second[courseNo - 1] = formatCount(c?.second);
+    dataset.table.third[courseNo - 1] = formatCount(c?.third);
+    dataset.table.nige[courseNo - 1] = formatNumber(wk?.["逃げ"]);
+    dataset.table.sashi[courseNo - 1] = formatNumber(wk?.["差"]);
+    dataset.table.makuri[courseNo - 1] = formatNumber(wk?.["まくり"]);
+    dataset.table.makurisashi[courseNo - 1] = formatNumber(wk?.["まくり差し"]);
+    dataset.table.nuki[courseNo - 1] = formatNumber(wk?.["抜き"]);
+    dataset.table.megumare[courseNo - 1] = formatNumber(wk?.["恵まれ"]);
+  });
+}
+
 async function fetchPlayerStats(url) {
   const res = await fetch(`${url}?t=${Math.floor(Date.now() / 300000)}`, {
     cache: "no-store"
@@ -696,13 +823,17 @@ async function loadPlayerStats() {
   if (!regno) return;
 
   try {
-    const [player1y, player3y] = await Promise.all([
+    const [player1y, player3y, other1y, other3y] = await Promise.all([
       fetchPlayerStats(PLAYER_COURSE_STATS_1Y_URL),
-      fetchPlayerStats(PLAYER_COURSE_STATS_3Y_URL)
+      fetchPlayerStats(PLAYER_COURSE_STATS_3Y_URL),
+      fetchPlayerStats(PLAYER_COURSE_OTHER_BOATS_1Y_URL),
+      fetchPlayerStats(PLAYER_COURSE_OTHER_BOATS_3Y_URL)
     ]);
 
     applyPlayerStatsToDataset("1y", player1y);
     applyPlayerStatsToDataset("3y", player3y);
+    applyOtherBoatStatsToDataset("other1y", other1y);
+    applyOtherBoatStatsToDataset("other3y", other3y);
   } catch (err) {
     console.error("player stats load failed:", err);
     resetDatasets();
@@ -711,6 +842,7 @@ async function loadPlayerStats() {
 
 async function boot() {
   applyHeroGradeTheme();
+  upgradeDataTabs();
   buildRadarGrid();
   ensureRadarExtraLayers();
   ensureRadarLabels();
