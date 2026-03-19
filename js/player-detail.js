@@ -467,6 +467,7 @@ function buildRadarScores() {
 
   const score234 = (courseNo) => {
     const win = num(c[courseNo]?.win);
+    const ren2 = num(c[courseNo]?.ren2);
     const ren3 = num(c[courseNo]?.ren3);
     const avgSt = num(c[courseNo]?.avgSt);
 
@@ -482,6 +483,7 @@ function buildRadarScores() {
       { min: 10, max: 14.999, score: 4 }
     ]);
 
+    if (Number.isFinite(ren2) && ren2 >= 50) score += 1;
     score = addStBonus(score, avgSt, 0.12);
     return clampScore(score);
   };
@@ -511,9 +513,10 @@ function buildRadarScores() {
   })();
 
   const score6 = (() => {
+    const ren2 = num(c[6]?.ren2);
     const ren3 = num(c[6]?.ren3);
 
-    return scoreFromRanges(ren3, [
+    let score = scoreFromRanges(ren3, [
       { min: 55, max: 100, score: 10 },
       { min: 50, max: 54.999, score: 9 },
       { min: 45, max: 49.999, score: 8 },
@@ -525,6 +528,9 @@ function buildRadarScores() {
       { min: 15, max: 19.999, score: 2 },
       { min: 10, max: 14.999, score: 1 }
     ]);
+
+    if (Number.isFinite(ren2) && ren2 >= 50) score += 3;
+    return clampScore(score);
   })();
 
   return [
