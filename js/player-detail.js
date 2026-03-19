@@ -34,15 +34,16 @@ const RADAR_GRID_MAX_R = 112;
 const RADAR_VALUE_MAX_R = 90;
 const RADAR_INNER_SCALE = 0.82;
 const RADAR_LABEL_R = 126;
+const RADAR_SCORE_MAX = 10;
 const RADAR_ANGLES = [-90, -30, 30, 90, 150, 210].map((deg) => deg * Math.PI / 180);
 
 const EMPTY_COURSE_DATA = {
-  1: { win: null, ren2: null, ren3: null },
-  2: { win: null, ren2: null, ren3: null },
-  3: { win: null, ren2: null, ren3: null },
-  4: { win: null, ren2: null, ren3: null },
-  5: { win: null, ren2: null, ren3: null },
-  6: { win: null, ren2: null, ren3: null }
+  1: { starts: null, win: null, ren2: null, ren3: null, avgSt: null, kimarite: {} },
+  2: { starts: null, win: null, ren2: null, ren3: null, avgSt: null, kimarite: {} },
+  3: { starts: null, win: null, ren2: null, ren3: null, avgSt: null, kimarite: {} },
+  4: { starts: null, win: null, ren2: null, ren3: null, avgSt: null, kimarite: {} },
+  5: { starts: null, win: null, ren2: null, ren3: null, avgSt: null, kimarite: {} },
+  6: { starts: null, win: null, ren2: null, ren3: null, avgSt: null, kimarite: {} }
 };
 
 const EMPTY_TABLE_DATA = {
@@ -246,20 +247,111 @@ function ensureRadarLabels() {
   ).join("");
 }
 
-function getRadarValues() {
+function clampScore(score) {
+  const n = Number(score);
+  if (!Number.isFinite(n)) return 0;
+  return Math.max(0, Math.min(RADAR_SCORE_MAX, n));
+}
+
+function getKimariteCount(kimarite, key) {
+  const n = Number(kimarite?.[key]);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function toRate10(rate, maxRate) {
+  const n = Number(rate);
+  const max = Number(maxRate);
+  if (!Number.isFinite(n) || !Number.isFinite(max) || max <= 0) return 0;
+  return clampScore(Math.round((Math.max(0, Math.min(n, max)) / max) * 10));
+}
+
+function scoreNigeRate1Course(course) {
+  const starts = Number(course?.starts);
+  const nige = getKimariteCount(course?.kimarite, "逃げ");
+  if (!Number.isFinite(starts) || starts <= 0) return 0;
+
+  const rate = (nige / starts) * 100;
+
+  if (rate >= 85) return 10;
+  if (rate >= 80) return 9;
+  if (rate >= 75) return 8;
+  if (rate >= 70) return 7;
+  if (rate >= 65) return 6;
+  if (rate >= 60) return 5;
+  if (rate >= 50) return 4;
+  if (rate >= 45) return 3;
+  if (rate >= 40) return 2;
+  if (rate >= 30) return 1;
+  return 0;
+}
+
+function scoreRen2Rate2Course(course) {
+  return toRate10(course?.ren2, 70);
+}
+
+function scoreRen2Rate3Course(course) {
+  return toRate10(course?.ren2, 70);
+}
+
+function scoreAvgSt4Course(avgSt) {
+  const st = Number(avgSt);
+  if (!Number.isFinite(st)) return 0;
+  if (st <= 0.10) return 10;
+  if (st <= 0.11) return 9;
+  if (st <= 0.12) return 8;
+  if (st <= 0.13) return 7;
+  if (st <= 0.14) return 6;
+  if (st <= 0.15) return 5;
+  if (st <= 0.16) return 4;
+  if (st <= 0.17) return 3;
+  if (st <= 0.18) return 2;
+  if (st <= 0.19) return 1;
+  return 0;
+}
+
+function sampleFactor4Course(starts) {
+  const n = Number(starts);
+  if (!Number.isFinite(n) || n <= 0) return 0;
+  return Math.min(n / 20, 1);
+}
+
+function score4Course(course) {
+  const ren3Score = toRate10(course?.ren3, 60);
+  const stScore = scoreAvgSt4Course(course?.avgSt);
+  const base = (ren3Score * 0.8) + (stScore * 0.2);
+  const adjusted = base * sampleFactor4Course(course?.starts);
+  return clampScore(Math.round(adjusted));
+}
+
+function scoreRen3Rate5Course(course) {
+  return toRate10(course?.ren3, 70);
+}
+
+function scoreRen3Rate6Course(course) {
+  return toRate10(course?.ren3, 60);
+}
+
+function buildRadarScores() {
   const dataset = getCurrentDataset();
-  return COURSE_ORDER.map((course) => {
-    const data = dataset.courseData[course] || {};
-    const win = Number(data.win);
-    return Number.isFinite(win) ? win : 0;
-  });
+
+  return [
+    scoreNigeRate1Course(dataset.courseData[1]),
+    scoreRen2Rate2Course(dataset.courseData[2]),
+    scoreRen2Rate3Course(dataset.courseData[3]),
+    score4Course(dataset.courseData[4]),
+    scoreRen3Rate5Course(dataset.courseData[5]),
+    scoreRen3Rate6Course(dataset.courseData[6])
+  ];
+}
+
+function getRadarValues() {
+  return buildRadarScores();
 }
 
 function getRadarPointObjects(values, progress = 1, scale = 1) {
-  const maxValue = Math.max(...values, 1);
-
   return values.map((v, i) => {
-    const rate = (v / maxValue) * progress;
+    const score = clampScore(v);
+    const rate = (score / RADAR_SCORE_MAX) * progress;
     const r = RADAR_VALUE_MAX_R * scale * rate;
     return {
       x: RADAR_CX + Math.cos(RADAR_ANGLES[i]) * r,
@@ -486,9 +578,19 @@ function applyPlayerStatsToDataset(datasetKey, player) {
     const c = player.courses?.[String(courseNo)] || null;
 
     dataset.courseData[courseNo] = {
+      starts: Number.isFinite(Number(c?.starts)) ? Number(c.starts) : null,
       win: Number.isFinite(Number(c?.win_rate)) ? Number(c.win_rate) : null,
       ren2: Number.isFinite(Number(c?.ren2_rate)) ? Number(c.ren2_rate) : null,
-      ren3: Number.isFinite(Number(c?.ren3_rate)) ? Number(c.ren3_rate) : null
+      ren3: Number.isFinite(Number(c?.ren3_rate)) ? Number(c.ren3_rate) : null,
+      avgSt: Number.isFinite(Number(c?.avg_st)) ? Number(c.avg_st) : null,
+      kimarite: {
+        "逃げ": Number.isFinite(Number(c?.kimarite?.["逃げ"])) ? Number(c.kimarite["逃げ"]) : 0,
+        "差": Number.isFinite(Number(c?.kimarite?.["差"])) ? Number(c.kimarite["差"]) : 0,
+        "まくり": Number.isFinite(Number(c?.kimarite?.["まくり"])) ? Number(c.kimarite["まくり"]) : 0,
+        "まくり差し": Number.isFinite(Number(c?.kimarite?.["まくり差し"])) ? Number(c.kimarite["まくり差し"]) : 0,
+        "抜き": Number.isFinite(Number(c?.kimarite?.["抜き"])) ? Number(c.kimarite["抜き"]) : 0,
+        "恵まれ": Number.isFinite(Number(c?.kimarite?.["恵まれ"])) ? Number(c.kimarite["恵まれ"]) : 0
+      }
     };
 
     dataset.table.starts[courseNo - 1] = formatCount(c?.starts);
