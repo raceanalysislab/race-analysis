@@ -10,8 +10,10 @@ const race = String(qs.get("race") || "").trim();
 const date = String(qs.get("date") || "").trim();
 const waku = Number(qs.get("waku") || 1);
 
-const PLAYER_COURSE_STATS_URL =
-  "https://raceanalysislab.github.io/race-analysis/data/player_course_stats.json";
+const PLAYER_COURSE_STATS_1Y_URL =
+  "https://raceanalysislab.github.io/race-analysis/data/player_course_stats_1y.json";
+const PLAYER_COURSE_STATS_3Y_URL =
+  "https://raceanalysislab.github.io/race-analysis/data/player_course_stats_3y.json";
 
 const $ = (id) => document.getElementById(id);
 
@@ -472,54 +474,61 @@ function resetDatasets() {
   DATASETS["3y"].table = structuredClone(EMPTY_TABLE_DATA);
 }
 
-function applyPlayerStats(player) {
-  resetDatasets();
+function applyPlayerStatsToDataset(datasetKey, player) {
+  const dataset = DATASETS[datasetKey];
+  dataset.courseData = structuredClone(EMPTY_COURSE_DATA);
+  dataset.table = structuredClone(EMPTY_TABLE_DATA);
 
   if (!player || !player.courses) return;
-
-  const dataset1y = DATASETS["1y"];
 
   COURSE_ORDER.forEach((courseNo) => {
     const c = player.courses?.[String(courseNo)] || null;
 
-    dataset1y.courseData[courseNo] = {
+    dataset.courseData[courseNo] = {
       win: Number.isFinite(Number(c?.win_rate)) ? Number(c.win_rate) : null,
       ren2: Number.isFinite(Number(c?.ren2_rate)) ? Number(c.ren2_rate) : null,
       ren3: Number.isFinite(Number(c?.ren3_rate)) ? Number(c.ren3_rate) : null
     };
 
-    dataset1y.table.starts[courseNo - 1] = formatCount(c?.starts);
-    dataset1y.table.first[courseNo - 1] = "—";
-    dataset1y.table.second[courseNo - 1] = "—";
-    dataset1y.table.third[courseNo - 1] = "—";
-    dataset1y.table.winRate[courseNo - 1] = formatRate(c?.win_rate);
-    dataset1y.table.ren2Rate[courseNo - 1] = formatRate(c?.ren2_rate);
-    dataset1y.table.ren3Rate[courseNo - 1] = formatRate(c?.ren3_rate);
-    dataset1y.table.avgSt[courseNo - 1] = formatST(c?.avg_st);
-    dataset1y.table.nige[courseNo - 1] = "—";
-    dataset1y.table.sashi[courseNo - 1] = formatNumber(c?.kimarite?.["差"]);
-    dataset1y.table.makuri[courseNo - 1] = formatNumber(c?.kimarite?.["まくり"]);
-    dataset1y.table.makurisashi[courseNo - 1] = formatNumber(c?.kimarite?.["まくり差し"]);
-    dataset1y.table.nuki[courseNo - 1] = "—";
-    dataset1y.table.megumare[courseNo - 1] = "—";
+    dataset.table.starts[courseNo - 1] = formatCount(c?.starts);
+    dataset.table.first[courseNo - 1] = "—";
+    dataset.table.second[courseNo - 1] = "—";
+    dataset.table.third[courseNo - 1] = "—";
+    dataset.table.winRate[courseNo - 1] = formatRate(c?.win_rate);
+    dataset.table.ren2Rate[courseNo - 1] = formatRate(c?.ren2_rate);
+    dataset.table.ren3Rate[courseNo - 1] = formatRate(c?.ren3_rate);
+    dataset.table.avgSt[courseNo - 1] = formatST(c?.avg_st);
+    dataset.table.nige[courseNo - 1] = "—";
+    dataset.table.sashi[courseNo - 1] = formatNumber(c?.kimarite?.["差"]);
+    dataset.table.makuri[courseNo - 1] = formatNumber(c?.kimarite?.["まくり"]);
+    dataset.table.makurisashi[courseNo - 1] = formatNumber(c?.kimarite?.["まくり差し"]);
+    dataset.table.nuki[courseNo - 1] = "—";
+    dataset.table.megumare[courseNo - 1] = "—";
   });
 }
 
+async function fetchPlayerStats(url) {
+  const res = await fetch(`${url}?t=${Math.floor(Date.now() / 300000)}`, {
+    cache: "no-store"
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const json = await res.json();
+  return json?.players?.[regno] || null;
+}
+
 async function loadPlayerStats() {
-  if (!regno) {
-    resetDatasets();
-    return;
-  }
+  resetDatasets();
+
+  if (!regno) return;
 
   try {
-    const res = await fetch(`${PLAYER_COURSE_STATS_URL}?t=${Math.floor(Date.now() / 300000)}`, {
-      cache: "no-store"
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const [player1y, player3y] = await Promise.all([
+      fetchPlayerStats(PLAYER_COURSE_STATS_1Y_URL),
+      fetchPlayerStats(PLAYER_COURSE_STATS_3Y_URL)
+    ]);
 
-    const json = await res.json();
-    const player = json?.players?.[regno] || null;
-    applyPlayerStats(player);
+    applyPlayerStatsToDataset("1y", player1y);
+    applyPlayerStatsToDataset("3y", player3y);
   } catch (err) {
     console.error("player stats load failed:", err);
     resetDatasets();
