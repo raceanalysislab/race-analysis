@@ -3,8 +3,8 @@
   "venue": "尼崎",
   "jcd": "13",
   "day": 6,
-  "total_days": null,
-  "day_label": "6日目",
+  "total_days": 6,
+  "day_label": "最終日",
   "event_title": "尼崎市制110周年記念 尼崎センプルカップ",
   "grade_label": "G1",
   "race": {
