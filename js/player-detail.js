@@ -292,14 +292,30 @@ function buildRadarGrid() {
   });
 }
 
+function removeLegacyRadarDom() {
+  document.querySelectorAll(".courseRadarLabels").forEach((el) => el.remove());
+  document.querySelectorAll(".courseRadarNodes").forEach((el) => el.remove());
+  document.querySelectorAll(".courseRadarNode").forEach((el) => el.remove());
+}
+
+function ensureSingleSvgGroup(id) {
+  const all = Array.from(document.querySelectorAll(`#${id}`));
+  if (all.length > 1) {
+    all.slice(1).forEach((el) => el.remove());
+  }
+  return document.getElementById(id);
+}
+
 function ensureRadarExtraLayers() {
   ensureRadarSvgFrame();
+  removeLegacyRadarDom();
 
   const svg = document.querySelector(".courseRadarSvg");
   const stage = document.querySelector(".courseRadarStage");
   if (!svg || !stage) return;
 
-  $("courseRadarPolygonCore")?.remove();
+  const oldCore = $("courseRadarPolygonCore");
+  if (oldCore) oldCore.remove();
 
   if (!stage.querySelector(".courseRadarGlow")) {
     const glow = document.createElement("div");
@@ -307,14 +323,14 @@ function ensureRadarExtraLayers() {
     stage.insertBefore(glow, svg);
   }
 
-  let labels = $("courseRadarLabelsSvg");
+  let labels = ensureSingleSvgGroup("courseRadarLabelsSvg");
   if (!labels) {
     labels = document.createElementNS(SVG_NS, "g");
     labels.setAttribute("id", "courseRadarLabelsSvg");
     svg.appendChild(labels);
   }
 
-  let nodes = $("courseRadarNodesSvg");
+  let nodes = ensureSingleSvgGroup("courseRadarNodesSvg");
   if (!nodes) {
     nodes = document.createElementNS(SVG_NS, "g");
     nodes.setAttribute("id", "courseRadarNodesSvg");
@@ -345,8 +361,8 @@ function labelOffsets() {
 function drawStaticRadarLabels() {
   const g = $("courseRadarLabelsSvg");
   if (!g) return;
-  g.innerHTML = "";
 
+  g.innerHTML = "";
   const offsets = labelOffsets();
 
   COURSE_ORDER.forEach((course, idx) => {
@@ -355,6 +371,9 @@ function drawStaticRadarLabels() {
     const x = base.x + off.dx;
     const y = base.y + off.dy;
     const style = courseStyle(course);
+
+    const wrap = document.createElementNS(SVG_NS, "g");
+    wrap.setAttribute("data-course", String(course));
 
     const circle = document.createElementNS(SVG_NS, "circle");
     circle.setAttribute("cx", x);
@@ -374,8 +393,9 @@ function drawStaticRadarLabels() {
     text.setAttribute("fill", style.text);
     text.textContent = String(course);
 
-    g.appendChild(circle);
-    g.appendChild(text);
+    wrap.appendChild(circle);
+    wrap.appendChild(text);
+    g.appendChild(wrap);
   });
 }
 
@@ -468,9 +488,12 @@ const pointObjectsToString = (points) => points.map((p) => `${p.x},${p.y}`).join
 function drawRadarNodes(points) {
   const g = $("courseRadarNodesSvg");
   if (!g) return;
+
   g.innerHTML = "";
 
   points.forEach((p) => {
+    const wrap = document.createElementNS(SVG_NS, "g");
+
     const ring = document.createElementNS(SVG_NS, "circle");
     ring.setAttribute("cx", p.x);
     ring.setAttribute("cy", p.y);
@@ -483,8 +506,9 @@ function drawRadarNodes(points) {
     dot.setAttribute("r", 4.4);
     dot.setAttribute("fill", "#f9feff");
 
-    g.appendChild(ring);
-    g.appendChild(dot);
+    wrap.appendChild(ring);
+    wrap.appendChild(dot);
+    g.appendChild(wrap);
   });
 }
 
@@ -506,8 +530,11 @@ function animateRadar() {
   const tick = (now) => {
     const t = Math.min(1, (now - start) / duration);
     drawRadar(1 - Math.pow(1 - t, 3));
-    if (t < 1) radarAnimationFrame = requestAnimationFrame(tick);
-    else radarAnimationFrame = null;
+    if (t < 1) {
+      radarAnimationFrame = requestAnimationFrame(tick);
+    } else {
+      radarAnimationFrame = null;
+    }
   };
 
   radarAnimationFrame = requestAnimationFrame(tick);
@@ -871,11 +898,13 @@ async function boot() {
   drawRadar(0);
 
   requestAnimationFrame(() => {
+    ensureRadarExtraLayers();
     drawStaticRadarLabels();
     animateRadar();
   });
 
   window.addEventListener("resize", () => {
+    ensureRadarExtraLayers();
     drawStaticRadarLabels();
     drawRadar(1);
   }, { passive: true });
