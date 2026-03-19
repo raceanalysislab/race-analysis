@@ -32,7 +32,6 @@ const RADAR_CX = 160;
 const RADAR_CY = 154;
 const RADAR_GRID_MAX_R = 112;
 const RADAR_VALUE_MAX_R = 90;
-const RADAR_INNER_SCALE = 0.82;
 const RADAR_LABEL_R = 126;
 const RADAR_SCORE_MAX = 10;
 const RADAR_ANGLES = [-90, -30, 30, 90, 150, 210].map((deg) => deg * Math.PI / 180);
@@ -203,10 +202,9 @@ function ensureRadarExtraLayers() {
   const svg = document.querySelector(".courseRadarSvg");
   if (!svg) return;
 
-  if (!$("courseRadarPolygonCore")) {
-    const core = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
-    core.setAttribute("id", "courseRadarPolygonCore");
-    svg.appendChild(core);
+  const core = $("courseRadarPolygonCore");
+  if (core) {
+    core.remove();
   }
 
   const stage = document.querySelector(".courseRadarStage");
@@ -375,10 +373,10 @@ function layoutRadarNodes(points) {
 
 function getLabelOffsets() {
   return {
-    1: { dx: 0,  dy: -2 },
-    2: { dx: 8,  dy: -1 },
-    3: { dx: 8,  dy: 2 },
-    4: { dx: 0,  dy: 1 },
+    1: { dx: 0, dy: -2 },
+    2: { dx: 8, dy: -1 },
+    3: { dx: 8, dy: 2 },
+    4: { dx: 0, dy: 1 },
     5: { dx: -8, dy: 2 },
     6: { dx: -8, dy: -1 }
   };
@@ -406,15 +404,12 @@ function layoutRadarLabels() {
 
 function drawRadar(progress = 1) {
   const polygon = $("courseRadarPolygon");
-  const core = $("courseRadarPolygonCore");
-  if (!polygon || !core) return;
+  if (!polygon) return;
 
   const values = getRadarValues();
   const outerPoints = getRadarPointObjects(values, progress, 1);
-  const innerPoints = getRadarPointObjects(values, progress, RADAR_INNER_SCALE);
 
   polygon.setAttribute("points", pointObjectsToString(outerPoints));
-  core.setAttribute("points", pointObjectsToString(innerPoints));
   layoutRadarNodes(outerPoints);
 }
 
