@@ -130,15 +130,19 @@
 
 <div id="proModal" class="proModal" aria-hidden="true">
 
-  <div class="proModalBox" role="dialog" aria-modal="true" aria-label="PROキー入力">
+  <div class="proModalBox" role="dialog" aria-modal="true" aria-label="PRO認証">
+
+    <div class="proBadge" aria-hidden="true">
+      <span class="proBadge__main">BOAT CORE</span>
+      <span class="proBadge__sub">PRO</span>
+    </div>
 
     <div class="proTitle">
-      PROキー入力
+      PRO認証
     </div>
 
     <div class="proDesc">
-      note購読者専用機能です<br>
-      配布された6桁キーを入力してください
+      note購読者専用の6桁キーを入力してください
     </div>
 
     <div class="proInputs" id="proInputs">
@@ -153,12 +157,15 @@
     </div>
 
     <button id="proUnlock" class="proUnlock" type="button">
-      PROを解放する
+      認証して続ける
     </button>
 
+    <div class="proDivider" aria-hidden="true"></div>
+
     <div class="proBottom">
-      <button id="proCancel" type="button">キャンセル</button>
       <button id="proClear" type="button">クリア</button>
+      <span class="proBottom__sep" aria-hidden="true">|</span>
+      <button id="proCancel" type="button">閉じる</button>
     </div>
 
   </div>
