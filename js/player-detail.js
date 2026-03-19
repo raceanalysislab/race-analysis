@@ -19,6 +19,7 @@ const PLAYER_OTHER_BOAT_TRENDS_1Y_URL =
 const PLAYER_OTHER_BOAT_TRENDS_3Y_URL =
   "https://raceanalysislab.github.io/race-analysis/data/player_other_boat_trends_3y.json";
 
+const SVG_NS = "http://www.w3.org/2000/svg";
 const $ = (id) => document.getElementById(id);
 
 $("playerName").textContent = playerName;
@@ -31,12 +32,14 @@ $("playerDate").textContent = date || "—";
 $("btnBack").addEventListener("click", () => history.back());
 
 const COURSE_ORDER = [1, 2, 3, 4, 5, 6];
-const RADAR_SIZE = 320;
+
+const RADAR_W = 320;
+const RADAR_H = 320;
 const RADAR_CX = 160;
-const RADAR_CY = 154;
-const RADAR_GRID_MAX_R = 112;
+const RADAR_CY = 160;
+const RADAR_GRID_MAX_R = 104;
 const RADAR_VALUE_MAX_R = RADAR_GRID_MAX_R;
-const RADAR_LABEL_R = 126;
+const RADAR_LABEL_R = 128;
 const RADAR_SCORE_MAX = 10;
 const RADAR_ANGLES = [-90, -30, 30, 90, 150, 210].map((deg) => deg * Math.PI / 180);
 
@@ -106,8 +109,7 @@ function getPlayerDatasetForCurrentOtherMode() {
 }
 
 function getSelfCourseDataForCurrentOtherMode() {
-  const playerDataset = getPlayerDatasetForCurrentOtherMode();
-  return playerDataset?.courseData?.[selectedCourse] || null;
+  return getPlayerDatasetForCurrentOtherMode()?.courseData?.[selectedCourse] || null;
 }
 
 function getCurrentOtherBase() {
@@ -218,7 +220,7 @@ function makeCourseTabs() {
       makeCourseTabs();
       renderTables();
       renderHeroText();
-      layoutRadarLabels();
+      drawStaticRadarLabels();
       animateRadar();
     });
   });
@@ -245,36 +247,54 @@ function bindRangeTabs() {
   });
 }
 
+function pointFromAngleRadius(angle, r) {
+  return {
+    x: RADAR_CX + Math.cos(angle) * r,
+    y: RADAR_CY + Math.sin(angle) * r
+  };
+}
+
 function polygonPointsFromRadius(r) {
   return RADAR_ANGLES.map((a) => {
-    const x = RADAR_CX + Math.cos(a) * r;
-    const y = RADAR_CY + Math.sin(a) * r;
-    return `${x},${y}`;
+    const p = pointFromAngleRadius(a, r);
+    return `${p.x},${p.y}`;
   }).join(" ");
 }
 
+function ensureRadarSvgFrame() {
+  const svg = document.querySelector(".courseRadarSvg");
+  if (!svg) return;
+  svg.setAttribute("viewBox", `0 0 ${RADAR_W} ${RADAR_H}`);
+  svg.setAttribute("preserveAspectRatio", "none");
+}
+
 function buildRadarGrid() {
+  ensureRadarSvgFrame();
+
   const g = $("courseRadarGrid");
   if (!g) return;
 
   g.innerHTML = "";
   [0.2, 0.4, 0.6, 0.8, 1].forEach((rate) => {
-    const poly = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+    const poly = document.createElementNS(SVG_NS, "polygon");
     poly.setAttribute("points", polygonPointsFromRadius(RADAR_GRID_MAX_R * rate));
     g.appendChild(poly);
   });
 
   RADAR_ANGLES.forEach((a) => {
-    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    const p = pointFromAngleRadius(a, RADAR_GRID_MAX_R);
+    const line = document.createElementNS(SVG_NS, "line");
     line.setAttribute("x1", RADAR_CX);
     line.setAttribute("y1", RADAR_CY);
-    line.setAttribute("x2", RADAR_CX + Math.cos(a) * RADAR_GRID_MAX_R);
-    line.setAttribute("y2", RADAR_CY + Math.sin(a) * RADAR_GRID_MAX_R);
+    line.setAttribute("x2", p.x);
+    line.setAttribute("y2", p.y);
     g.appendChild(line);
   });
 }
 
 function ensureRadarExtraLayers() {
+  ensureRadarSvgFrame();
+
   const svg = document.querySelector(".courseRadarSvg");
   const stage = document.querySelector(".courseRadarStage");
   if (!svg || !stage) return;
@@ -287,31 +307,80 @@ function ensureRadarExtraLayers() {
     stage.insertBefore(glow, svg);
   }
 
-  if (!stage.querySelector(".courseRadarNodes")) {
-    const nodes = document.createElement("div");
-    nodes.className = "courseRadarNodes";
-    nodes.innerHTML = COURSE_ORDER.map((n) => `<div class="courseRadarNode" id="courseRadarNode${n}"></div>`).join("");
-    stage.appendChild(nodes);
+  let labels = $("courseRadarLabelsSvg");
+  if (!labels) {
+    labels = document.createElementNS(SVG_NS, "g");
+    labels.setAttribute("id", "courseRadarLabelsSvg");
+    svg.appendChild(labels);
+  }
+
+  let nodes = $("courseRadarNodesSvg");
+  if (!nodes) {
+    nodes = document.createElementNS(SVG_NS, "g");
+    nodes.setAttribute("id", "courseRadarNodesSvg");
+    svg.appendChild(nodes);
   }
 }
 
-function ensureRadarLabels() {
-  const stage = document.querySelector(".courseRadarStage");
-  if (!stage) return;
+function courseStyle(course) {
+  if (course === 1) return { fill: "#ffffff", stroke: "#d8dde8", text: "#111827" };
+  if (course === 2) return { fill: "#2d3138", stroke: "transparent", text: "#ffffff" };
+  if (course === 3) return { fill: "#e84f4f", stroke: "transparent", text: "#ffffff" };
+  if (course === 4) return { fill: "#3d78d8", stroke: "transparent", text: "#ffffff" };
+  if (course === 5) return { fill: "#e4d447", stroke: "transparent", text: "#162033" };
+  return { fill: "#37b56a", stroke: "transparent", text: "#ffffff" };
+}
 
-  let labels = stage.querySelector(".courseRadarLabels");
-  if (!labels) {
-    labels = document.createElement("div");
-    labels.className = "courseRadarLabels";
-    stage.appendChild(labels);
-  }
+function labelOffsets() {
+  return {
+    1: { dx: 0, dy: -2 },
+    2: { dx: 8, dy: -1 },
+    3: { dx: 8, dy: 2 },
+    4: { dx: 0, dy: 1 },
+    5: { dx: -8, dy: 2 },
+    6: { dx: -8, dy: -1 }
+  };
+}
 
-  labels.innerHTML = COURSE_ORDER.map((course) =>
-    `<div class="radarLabel radarLabel--${course}" data-course="${course}" aria-hidden="true">${course}</div>`
-  ).join("");
+function drawStaticRadarLabels() {
+  const g = $("courseRadarLabelsSvg");
+  if (!g) return;
+  g.innerHTML = "";
+
+  const offsets = labelOffsets();
+
+  COURSE_ORDER.forEach((course, idx) => {
+    const base = pointFromAngleRadius(RADAR_ANGLES[idx], RADAR_LABEL_R);
+    const off = offsets[course] || { dx: 0, dy: 0 };
+    const x = base.x + off.dx;
+    const y = base.y + off.dy;
+    const style = courseStyle(course);
+
+    const circle = document.createElementNS(SVG_NS, "circle");
+    circle.setAttribute("cx", x);
+    circle.setAttribute("cy", y);
+    circle.setAttribute("r", 11);
+    circle.setAttribute("fill", style.fill);
+    circle.setAttribute("stroke", style.stroke);
+    circle.setAttribute("stroke-width", style.stroke === "transparent" ? 0 : 1.4);
+
+    const text = document.createElementNS(SVG_NS, "text");
+    text.setAttribute("x", x);
+    text.setAttribute("y", y + 0.5);
+    text.setAttribute("text-anchor", "middle");
+    text.setAttribute("dominant-baseline", "central");
+    text.setAttribute("font-size", "11");
+    text.setAttribute("font-weight", "800");
+    text.setAttribute("fill", style.text);
+    text.textContent = String(course);
+
+    g.appendChild(circle);
+    g.appendChild(text);
+  });
 }
 
 const clampScore = (v) => Math.max(0, Math.min(RADAR_SCORE_MAX, Number.isFinite(Number(v)) ? Number(v) : 0));
+
 const toRate10 = (rate, maxRate) => {
   const n = Number(rate);
   const max = Number(maxRate);
@@ -334,6 +403,7 @@ function buildRadarScores() {
   }
 
   const c = dataset.courseData;
+
   const scoreNige1 = (() => {
     const starts = num(c[1]?.starts);
     const nige = num(c[1]?.kimarite?.["逃げ"]) ?? 0;
@@ -389,55 +459,42 @@ function buildRadarScores() {
 function getRadarPointObjects(values, progress = 1) {
   return values.map((v, i) => {
     const r = RADAR_VALUE_MAX_R * (clampScore(v) / RADAR_SCORE_MAX) * progress;
-    return {
-      x: RADAR_CX + Math.cos(RADAR_ANGLES[i]) * r,
-      y: RADAR_CY + Math.sin(RADAR_ANGLES[i]) * r
-    };
+    return pointFromAngleRadius(RADAR_ANGLES[i], r);
   });
 }
 
 const pointObjectsToString = (points) => points.map((p) => `${p.x},${p.y}`).join(" ");
 
-function layoutRadarNodes(points) {
-  points.forEach((p, i) => {
-    const node = $(`courseRadarNode${i + 1}`);
-    if (!node) return;
-    node.style.left = `${(p.x / RADAR_SIZE) * 100}%`;
-    node.style.top = `${(p.y / RADAR_SIZE) * 100}%`;
-  });
-}
+function drawRadarNodes(points) {
+  const g = $("courseRadarNodesSvg");
+  if (!g) return;
+  g.innerHTML = "";
 
-function layoutRadarLabels() {
-  const stage = document.querySelector(".courseRadarStage");
-  if (!stage) return;
+  points.forEach((p) => {
+    const ring = document.createElementNS(SVG_NS, "circle");
+    ring.setAttribute("cx", p.x);
+    ring.setAttribute("cy", p.y);
+    ring.setAttribute("r", 7.6);
+    ring.setAttribute("fill", "rgba(174,237,255,.24)");
 
-  const offsets = {
-    1: { dx: 0, dy: -2 },
-    2: { dx: 8, dy: -1 },
-    3: { dx: 8, dy: 2 },
-    4: { dx: 0, dy: 1 },
-    5: { dx: -8, dy: 2 },
-    6: { dx: -8, dy: -1 }
-  };
+    const dot = document.createElementNS(SVG_NS, "circle");
+    dot.setAttribute("cx", p.x);
+    dot.setAttribute("cy", p.y);
+    dot.setAttribute("r", 4.4);
+    dot.setAttribute("fill", "#f9feff");
 
-  COURSE_ORDER.forEach((course, idx) => {
-    const el = stage.querySelector(`.radarLabel--${course}`);
-    if (!el) return;
-    const angle = RADAR_ANGLES[idx];
-    const baseX = RADAR_CX + Math.cos(angle) * RADAR_LABEL_R;
-    const baseY = RADAR_CY + Math.sin(angle) * RADAR_LABEL_R;
-    const offset = offsets[course];
-    el.style.left = `${((baseX + offset.dx) / RADAR_SIZE) * 100}%`;
-    el.style.top = `${((baseY + offset.dy) / RADAR_SIZE) * 100}%`;
+    g.appendChild(ring);
+    g.appendChild(dot);
   });
 }
 
 function drawRadar(progress = 1) {
   const polygon = $("courseRadarPolygon");
   if (!polygon) return;
+
   const points = getRadarPointObjects(buildRadarScores(), progress);
   polygon.setAttribute("points", pointObjectsToString(points));
-  layoutRadarNodes(points);
+  drawRadarNodes(points);
 }
 
 function animateRadar() {
@@ -803,7 +860,7 @@ async function boot() {
   upgradeDataTabs();
   buildRadarGrid();
   ensureRadarExtraLayers();
-  ensureRadarLabels();
+  drawStaticRadarLabels();
   makeCourseTabs();
   bindRangeTabs();
 
@@ -811,15 +868,17 @@ async function boot() {
 
   renderTables();
   renderHeroText();
-  layoutRadarLabels();
   drawRadar(0);
 
   requestAnimationFrame(() => {
-    layoutRadarLabels();
+    drawStaticRadarLabels();
     animateRadar();
   });
 
-  window.addEventListener("resize", layoutRadarLabels, { passive: true });
+  window.addEventListener("resize", () => {
+    drawStaticRadarLabels();
+    drawRadar(1);
+  }, { passive: true });
 }
 
 boot();
