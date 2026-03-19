@@ -176,27 +176,6 @@ function getOtherModeDisplayRow(course) {
   };
 }
 
-function sumOtherBase(base) {
-  const out = {
-    first: 0,
-    second: 0,
-    third: 0,
-    kimarite: { ...EMPTY_KIMARITE }
-  };
-
-  COURSE_ORDER.forEach((course) => {
-    const row = getOtherModeDisplayRow(course);
-    out.first += row.first;
-    out.second += row.second;
-    out.third += row.third;
-    Object.keys(out.kimarite).forEach((k) => {
-      out.kimarite[k] += row.kimarite[k] || 0;
-    });
-  });
-
-  return out;
-}
-
 function applyHeroGradeTheme() {
   document.body.classList.remove("hero-grade-a1", "hero-grade-a2", "hero-grade-b1", "hero-grade-b2");
   if (grade === "A1") return document.body.classList.add("hero-grade-a1");
@@ -582,19 +561,11 @@ function rateRow(label, values) {
   return `
     <div class="playerTableRow">
       <div class="playerTableCell playerTableCell--label">${esc(label)}</div>
-      ${values.map((v, i) => {
-        const n = Number(String(v).replace("%", "").replace(/\s/g, "").trim());
-        return `
-          <div class="playerTableCell playerTableCell--value${i === selectedCourse - 1 ? " is-highlight" : ""}">
-            <div class="playerRateStack">
-              <div class="playerRateText">${esc(v)}</div>
-              <div class="playerRateBar">
-                <div class="playerRateBarFill" style="width:${Number.isFinite(n) ? Math.max(0, Math.min(n, 100)) : 0}%"></div>
-              </div>
-            </div>
-          </div>
-        `;
-      }).join("")}
+      ${values.map((v, i) => `
+        <div class="playerTableCell playerTableCell--value${i === selectedCourse - 1 ? " is-highlight" : ""}">
+          ${esc(v)}
+        </div>
+      `).join("")}
     </div>
   `;
 }
