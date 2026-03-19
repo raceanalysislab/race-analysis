@@ -44,19 +44,26 @@
 
 *{ box-sizing:border-box; }
 
-html, body{
+html,
+body{
   margin:0;
   min-height:100%;
+  height:auto;
   background:var(--bg);
   color:var(--text);
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Hiragino Sans","Noto Sans JP","Yu Gothic",sans-serif;
   -webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale;
   overflow-x:hidden;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior-y:auto;
 }
 
 body{
+  position:relative;
   padding-top:var(--safe-top);
+  touch-action:pan-y;
 }
 
 .playerTop{
@@ -142,8 +149,11 @@ body{
 }
 
 .playerBody{
+  display:block;
+  min-height:auto;
+  height:auto;
   padding:10px 0 calc(22px + var(--safe-bottom));
-  overflow-x:hidden;
+  overflow:visible;
 }
 
 .playerSection{
@@ -151,6 +161,7 @@ body{
   background:#fff;
   border-top:1px solid #d9e1eb;
   border-bottom:1px solid #d9e1eb;
+  overflow:visible;
 }
 
 .playerSection--hero{
@@ -502,15 +513,17 @@ body{
 .meter--green .meterFill{ background:var(--hero-meter-green); }
 
 .playerTableWrap{
-  overflow-x:hidden;
+  overflow:visible;
   background:#fff;
   width:100%;
+  -webkit-overflow-scrolling:auto;
 }
 
 .playerCourseTable{
   width:100%;
   min-width:0;
   background:#fff;
+  overflow:visible;
 }
 
 .playerTableHead,
