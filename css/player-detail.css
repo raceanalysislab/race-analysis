@@ -186,10 +186,10 @@ body{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:0;
-  border-top:1px solid #d7dfeb;
-  border-bottom:1px solid #d7dfeb;
-  border-left:0;
-  border-right:0;
+  border-top:1px solid #cfd7e6;
+  border-bottom:1px solid #cfd7e6;
+  border-left:1px solid #d7dfeb;
+  border-right:1px solid #d7dfeb;
   border-radius:0;
   overflow:hidden;
   background:#fff;
@@ -613,8 +613,9 @@ body{
   justify-content:center;
   align-items:center;
   white-space:normal;
-  word-break:keep-all;
-  overflow-wrap:normal;
+  word-break:normal;
+  overflow-wrap:anywhere;
+  writing-mode:horizontal-tb;
 }
 
 .playerTableCell--value{
