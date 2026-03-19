@@ -267,7 +267,10 @@ function toRate10(rate, maxRate) {
   const n = Number(rate);
   const max = Number(maxRate);
   if (!Number.isFinite(n) || !Number.isFinite(max) || max <= 0) return 0;
-  return clampScore(Math.round((Math.max(0, Math.min(n, max)) / max) * 10));
+
+  const clamped = Math.max(0, Math.min(n, max));
+  if (clamped >= max) return 10;
+  return clampScore(Math.floor((clamped / max) * 10));
 }
 
 function scoreNigeRate1Course(course) {
@@ -321,9 +324,9 @@ function sampleFactor4Course(starts) {
 }
 
 function score4Course(course) {
-  const ren3Score = toRate10(course?.ren3, 60);
+  const ren3Score = toRate10(course?.ren3, 70);
   const stScore = scoreAvgSt4Course(course?.avgSt);
-  const base = (ren3Score * 0.8) + (stScore * 0.2);
+  const base = (ren3Score * 0.9) + (stScore * 0.1);
   const adjusted = base * sampleFactor4Course(course?.starts);
   return clampScore(Math.round(adjusted));
 }
