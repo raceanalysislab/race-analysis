@@ -42,13 +42,22 @@ const RADAR_LABEL_R = 126;
 const RADAR_SCORE_MAX = 10;
 const RADAR_ANGLES = [-90, -30, 30, 90, 150, 210].map((deg) => deg * Math.PI / 180);
 
+const EMPTY_KIMARITE = {
+  "逃げ": 0,
+  "差": 0,
+  "まくり": 0,
+  "まくり差し": 0,
+  "抜き": 0,
+  "恵まれ": 0
+};
+
 const EMPTY_COURSE_DATA = {
-  1: { starts: null, first: null, second: null, third: null, win: null, ren2: null, ren3: null, avgSt: null, kimarite: {} },
-  2: { starts: null, first: null, second: null, third: null, win: null, ren2: null, ren3: null, avgSt: null, kimarite: {} },
-  3: { starts: null, first: null, second: null, third: null, win: null, ren2: null, ren3: null, avgSt: null, kimarite: {} },
-  4: { starts: null, first: null, second: null, third: null, win: null, ren2: null, ren3: null, avgSt: null, kimarite: {} },
-  5: { starts: null, first: null, second: null, third: null, win: null, ren2: null, ren3: null, avgSt: null, kimarite: {} },
-  6: { starts: null, first: null, second: null, third: null, win: null, ren2: null, ren3: null, avgSt: null, kimarite: {} }
+  1: { starts: null, first: null, second: null, third: null, win: null, ren2: null, ren3: null, avgSt: null, kimarite: { ...EMPTY_KIMARITE } },
+  2: { starts: null, first: null, second: null, third: null, win: null, ren2: null, ren3: null, avgSt: null, kimarite: { ...EMPTY_KIMARITE } },
+  3: { starts: null, first: null, second: null, third: null, win: null, ren2: null, ren3: null, avgSt: null, kimarite: { ...EMPTY_KIMARITE } },
+  4: { starts: null, first: null, second: null, third: null, win: null, ren2: null, ren3: null, avgSt: null, kimarite: { ...EMPTY_KIMARITE } },
+  5: { starts: null, first: null, second: null, third: null, win: null, ren2: null, ren3: null, avgSt: null, kimarite: { ...EMPTY_KIMARITE } },
+  6: { starts: null, first: null, second: null, third: null, win: null, ren2: null, ren3: null, avgSt: null, kimarite: { ...EMPTY_KIMARITE } }
 };
 
 const EMPTY_TABLE_DATA = {
@@ -68,42 +77,31 @@ const EMPTY_TABLE_DATA = {
   megumare: ["—", "—", "—", "—", "—", "—"]
 };
 
-const EMPTY_OTHER_BOAT_TABLE_DATA = {
-  starts: ["—", "—", "—", "—", "—", "—"],
-  first: ["—", "—", "—", "—", "—", "—"],
-  second: ["—", "—", "—", "—", "—", "—"],
-  third: ["—", "—", "—", "—", "—", "—"],
-  winRate: ["—", "—", "—", "—", "—", "—"],
-  ren2Rate: ["—", "—", "—", "—", "—", "—"],
-  ren3Rate: ["—", "—", "—", "—", "—", "—"],
-  nige: ["—", "—", "—", "—", "—", "—"],
-  sashi: ["—", "—", "—", "—", "—", "—"],
-  makuri: ["—", "—", "—", "—", "—", "—"],
-  makurisashi: ["—", "—", "—", "—", "—", "—"],
-  nuki: ["—", "—", "—", "—", "—", "—"],
-  megumare: ["—", "—", "—", "—", "—", "—"]
+const EMPTY_OTHER_BASE_RAW = {
+  1: { starts: null, others: {} },
+  2: { starts: null, others: {} },
+  3: { starts: null, others: {} },
+  4: { starts: null, others: {} },
+  5: { starts: null, others: {} },
+  6: { starts: null, others: {} }
 };
 
 const DATASETS = {
   "1y": {
     type: "player",
-    courseData: structuredClone(EMPTY_COURSE_DATA),
-    table: structuredClone(EMPTY_TABLE_DATA)
+    courseData: structuredClone(EMPTY_COURSE_DATA)
   },
   "3y": {
     type: "player",
-    courseData: structuredClone(EMPTY_COURSE_DATA),
-    table: structuredClone(EMPTY_TABLE_DATA)
+    courseData: structuredClone(EMPTY_COURSE_DATA)
   },
   "other1y": {
     type: "other",
-    courseData: structuredClone(EMPTY_COURSE_DATA),
-    table: structuredClone(EMPTY_OTHER_BOAT_TABLE_DATA)
+    raw: structuredClone(EMPTY_OTHER_BASE_RAW)
   },
   "other3y": {
     type: "other",
-    courseData: structuredClone(EMPTY_COURSE_DATA),
-    table: structuredClone(EMPTY_OTHER_BOAT_TABLE_DATA)
+    raw: structuredClone(EMPTY_OTHER_BASE_RAW)
   }
 };
 
@@ -121,12 +119,110 @@ function esc(s) {
   }[c]));
 }
 
+function num(v) {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+}
+
+function cloneEmptyKimarite() {
+  return {
+    "逃げ": 0,
+    "差": 0,
+    "まくり": 0,
+    "まくり差し": 0,
+    "抜き": 0,
+    "恵まれ": 0
+  };
+}
+
 function getCurrentDataset() {
   return DATASETS[selectedRange] || DATASETS["1y"];
 }
 
 function isOtherMode() {
   return getCurrentDataset().type === "other";
+}
+
+function getCurrentOtherBase() {
+  const dataset = getCurrentDataset();
+  if (dataset.type !== "other") return null;
+  return dataset.raw?.[selectedCourse] || null;
+}
+
+function getOtherBucket(base, otherCourse) {
+  if (!base) return null;
+  const raw = base.others?.[String(otherCourse)] || base.others?.[otherCourse] || null;
+  if (!raw) return null;
+
+  const kim = raw.kimarite || raw.win_kimarite || raw.winning_kimarite || {};
+  return {
+    starts: num(raw.starts) ?? 0,
+    first: num(raw.first) ?? 0,
+    second: num(raw.second) ?? 0,
+    third: num(raw.third) ?? 0,
+    firstRate: num(raw.first_rate),
+    ren2Rate: num(raw.ren2_rate),
+    ren3Rate: num(raw.ren3_rate),
+    kimarite: {
+      "逃げ": num(kim["逃げ"]) ?? 0,
+      "差": num(kim["差"]) ?? 0,
+      "まくり": num(kim["まくり"]) ?? 0,
+      "まくり差し": num(kim["まくり差し"]) ?? 0,
+      "抜き": num(kim["抜き"]) ?? 0,
+      "恵まれ": num(kim["恵まれ"]) ?? 0
+    }
+  };
+}
+
+function sumOtherKimarite(base) {
+  const out = cloneEmptyKimarite();
+  if (!base) return out;
+
+  COURSE_ORDER.forEach((otherCourse) => {
+    const b = getOtherBucket(base, otherCourse);
+    if (!b) return;
+
+    out["逃げ"] += b.kimarite["逃げ"];
+    out["差"] += b.kimarite["差"];
+    out["まくり"] += b.kimarite["まくり"];
+    out["まくり差し"] += b.kimarite["まくり差し"];
+    out["抜き"] += b.kimarite["抜き"];
+    out["恵まれ"] += b.kimarite["恵まれ"];
+  });
+
+  return out;
+}
+
+function aggregateOtherBase(base) {
+  if (!base) {
+    return {
+      starts: null,
+      first: 0,
+      second: 0,
+      third: 0,
+      kimarite: cloneEmptyKimarite()
+    };
+  }
+
+  let first = 0;
+  let second = 0;
+  let third = 0;
+
+  COURSE_ORDER.forEach((otherCourse) => {
+    const b = getOtherBucket(base, otherCourse);
+    if (!b) return;
+    first += b.first;
+    second += b.second;
+    third += b.third;
+  });
+
+  return {
+    starts: num(base.starts),
+    first,
+    second,
+    third,
+    kimarite: sumOtherKimarite(base)
+  };
 }
 
 function applyHeroGradeTheme() {
@@ -210,7 +306,6 @@ function bindRangeTabs() {
 
       renderTables();
       renderHeroText();
-      layoutRadarLabels();
       animateRadar();
     });
   });
@@ -391,9 +486,14 @@ function buildRadarScores() {
   const dataset = getCurrentDataset();
 
   if (dataset.type === "other") {
-    return COURSE_ORDER.map((courseNo) => {
-      const c = dataset.courseData[courseNo];
-      return toRate10(c?.firstRate, 70);
+    const base = getCurrentOtherBase();
+    const baseStarts = num(base?.starts);
+
+    return COURSE_ORDER.map((otherCourse) => {
+      const b = getOtherBucket(base, otherCourse);
+      const first = num(b?.first);
+      if (!Number.isFinite(baseStarts) || baseStarts <= 0 || !Number.isFinite(first)) return 0;
+      return toRate10((first / baseStarts) * 100, 70);
     });
   }
 
@@ -558,7 +658,6 @@ function pickTopKimarite(kimarite = {}) {
 
 function renderHeroText() {
   const dataset = getCurrentDataset();
-  const data = dataset.courseData[selectedCourse] || {};
   const typePill = $("courseTypePill");
   const selectedCourseTitle = $("selectedCourseTitle");
   const selectedCourseType = $("selectedCourseType");
@@ -566,23 +665,39 @@ function renderHeroText() {
   const kimariteSub = $("kimariteSub");
 
   if (dataset.type === "other") {
-    $("winRateText").textContent = formatRate(data.firstRate);
-    $("ren2RateText").textContent = formatRate(data.ren2Rate);
-    $("ren3RateText").textContent = formatRate(data.ren3Rate);
+    const base = getCurrentOtherBase();
+    const agg = aggregateOtherBase(base);
+    const starts = num(agg.starts);
 
-    setMeter("winRateFill", data.firstRate);
-    setMeter("ren2RateFill", data.ren2Rate);
-    setMeter("ren3RateFill", data.ren3Rate);
+    const winRate = Number.isFinite(starts) && starts > 0
+      ? (agg.first / starts) * 100
+      : null;
+    const ren2Rate = Number.isFinite(starts) && starts > 0
+      ? ((agg.first + agg.second) / starts) * 100
+      : null;
+    const ren3Rate = Number.isFinite(starts) && starts > 0
+      ? ((agg.first + agg.second + agg.third) / starts) * 100
+      : null;
+
+    $("winRateText").textContent = formatRate(winRate);
+    $("ren2RateText").textContent = formatRate(ren2Rate);
+    $("ren3RateText").textContent = formatRate(ren3Rate);
+
+    setMeter("winRateFill", winRate);
+    setMeter("ren2RateFill", ren2Rate);
+    setMeter("ren3RateFill", ren3Rate);
 
     if (selectedCourseTitle) selectedCourseTitle.textContent = `${selectedCourse}コース時の他艇傾向`;
     if (selectedCourseType) selectedCourseType.textContent = selectedRange === "other1y" ? "直近1年" : "直近3年";
     if (typePill) typePill.textContent = "他艇傾向";
 
-    const top = pickTopKimarite(data.kimarite || {});
+    const top = pickTopKimarite(agg.kimarite);
     if (kimariteMain) kimariteMain.textContent = top.main;
     if (kimariteSub) kimariteSub.textContent = top.sub;
     return;
   }
+
+  const data = dataset.courseData[selectedCourse] || {};
 
   $("winRateText").textContent = formatRate(data.win);
   $("ren2RateText").textContent = formatRate(data.ren2);
@@ -651,30 +766,96 @@ function rateRow(label, values) {
   `;
 }
 
-function renderTables() {
-  const t = getCurrentDataset().table;
+function buildOtherModeTable() {
+  const base = getCurrentOtherBase();
+  const baseStarts = num(base?.starts);
 
-  if (isOtherMode()) {
-    $("playerCourseStats").innerHTML = [
-      makeCourseHeader(),
-      valueRow("出走数", t.starts),
-      valueRow("他艇1着", t.first),
-      valueRow("他艇2着", t.second),
-      valueRow("他艇3着", t.third),
-      rateRow("他艇1着率", t.winRate),
-      rateRow("他艇2連対率", t.ren2Rate),
-      rateRow("他艇3連対率", t.ren3Rate),
-      valueRow("逃げ", t.nige),
-      valueRow("差し", t.sashi),
-      valueRow("まくり", t.makuri),
-      valueRow("まくり差し", t.makurisashi),
-      valueRow("抜き", t.nuki),
-      valueRow("恵まれ", t.megumare)
-    ].join("");
-    return;
-  }
+  const startsRow = COURSE_ORDER.map(() => formatCount(baseStarts));
 
-  $("playerCourseStats").innerHTML = [
+  const firstRow = [];
+  const secondRow = [];
+  const thirdRow = [];
+  const firstRateRow = [];
+  const ren2RateRow = [];
+  const ren3RateRow = [];
+  const nigeRow = [];
+  const sashiRow = [];
+  const makuriRow = [];
+  const makurisashiRow = [];
+  const nukiRow = [];
+  const megumareRow = [];
+
+  COURSE_ORDER.forEach((otherCourse) => {
+    const b = getOtherBucket(base, otherCourse);
+
+    const first = num(b?.first) ?? 0;
+    const second = num(b?.second) ?? 0;
+    const third = num(b?.third) ?? 0;
+
+    firstRow.push(formatCount(first));
+    secondRow.push(formatCount(second));
+    thirdRow.push(formatCount(third));
+
+    if (Number.isFinite(baseStarts) && baseStarts > 0) {
+      firstRateRow.push(formatRate((first / baseStarts) * 100));
+      ren2RateRow.push(formatRate(((first + second) / baseStarts) * 100));
+      ren3RateRow.push(formatRate(((first + second + third) / baseStarts) * 100));
+    } else {
+      firstRateRow.push("—");
+      ren2RateRow.push("—");
+      ren3RateRow.push("—");
+    }
+
+    nigeRow.push(formatNumber(b?.kimarite?.["逃げ"] ?? 0));
+    sashiRow.push(formatNumber(b?.kimarite?.["差"] ?? 0));
+    makuriRow.push(formatNumber(b?.kimarite?.["まくり"] ?? 0));
+    makurisashiRow.push(formatNumber(b?.kimarite?.["まくり差し"] ?? 0));
+    nukiRow.push(formatNumber(b?.kimarite?.["抜き"] ?? 0));
+    megumareRow.push(formatNumber(b?.kimarite?.["恵まれ"] ?? 0));
+  });
+
+  return [
+    makeCourseHeader(),
+    valueRow("母集団", startsRow),
+    valueRow("他艇1着", firstRow),
+    valueRow("他艇2着", secondRow),
+    valueRow("他艇3着", thirdRow),
+    rateRow("他艇1着率", firstRateRow),
+    rateRow("他艇2連対率", ren2RateRow),
+    rateRow("他艇3連対率", ren3RateRow),
+    valueRow("逃げ", nigeRow),
+    valueRow("差し", sashiRow),
+    valueRow("まくり", makuriRow),
+    valueRow("まくり差し", makurisashiRow),
+    valueRow("抜き", nukiRow),
+    valueRow("恵まれ", megumareRow)
+  ].join("");
+}
+
+function buildPlayerModeTable() {
+  const t = structuredClone(EMPTY_TABLE_DATA);
+  const dataset = getCurrentDataset();
+
+  COURSE_ORDER.forEach((courseNo) => {
+    const c = dataset.courseData[courseNo] || null;
+
+    t.starts[courseNo - 1] = formatCount(c?.starts);
+    t.first[courseNo - 1] = formatCount(c?.first);
+    t.second[courseNo - 1] = formatCount(c?.second);
+    t.third[courseNo - 1] = formatCount(c?.third);
+    t.winRate[courseNo - 1] = formatRate(c?.win);
+    t.ren2Rate[courseNo - 1] = formatRate(c?.ren2);
+    t.ren3Rate[courseNo - 1] = formatRate(c?.ren3);
+    t.avgSt[courseNo - 1] = formatST(c?.avgSt);
+    t.nige[courseNo - 1] = formatNumber(c?.kimarite?.["逃げ"]);
+    t.sashi[courseNo - 1] = formatNumber(c?.kimarite?.["差"]);
+    t.makuri[courseNo - 1] = formatNumber(c?.kimarite?.["まくり"]);
+    t.makurisashi[courseNo - 1] = formatNumber(c?.kimarite?.["まくり差し"]);
+    t.nuki[courseNo - 1] = formatNumber(c?.kimarite?.["抜き"]);
+    t.megumare[courseNo - 1] = formatNumber(c?.kimarite?.["恵まれ"]);
+  });
+
+  return [
     makeCourseHeader(),
     valueRow("出走数", t.starts),
     valueRow("1着", t.first),
@@ -693,111 +874,99 @@ function renderTables() {
   ].join("");
 }
 
+function renderTables() {
+  $("playerCourseStats").innerHTML = isOtherMode()
+    ? buildOtherModeTable()
+    : buildPlayerModeTable();
+}
+
 function resetDatasets() {
   DATASETS["1y"].courseData = structuredClone(EMPTY_COURSE_DATA);
-  DATASETS["1y"].table = structuredClone(EMPTY_TABLE_DATA);
-
   DATASETS["3y"].courseData = structuredClone(EMPTY_COURSE_DATA);
-  DATASETS["3y"].table = structuredClone(EMPTY_TABLE_DATA);
-
-  DATASETS["other1y"].courseData = structuredClone(EMPTY_COURSE_DATA);
-  DATASETS["other1y"].table = structuredClone(EMPTY_OTHER_BOAT_TABLE_DATA);
-
-  DATASETS["other3y"].courseData = structuredClone(EMPTY_COURSE_DATA);
-  DATASETS["other3y"].table = structuredClone(EMPTY_OTHER_BOAT_TABLE_DATA);
+  DATASETS["other1y"].raw = structuredClone(EMPTY_OTHER_BASE_RAW);
+  DATASETS["other3y"].raw = structuredClone(EMPTY_OTHER_BASE_RAW);
 }
 
 function applyPlayerStatsToDataset(datasetKey, player) {
   const dataset = DATASETS[datasetKey];
   dataset.courseData = structuredClone(EMPTY_COURSE_DATA);
-  dataset.table = structuredClone(EMPTY_TABLE_DATA);
 
   if (!player || !player.courses) return;
 
   COURSE_ORDER.forEach((courseNo) => {
-    const c = player.courses?.[String(courseNo)] || null;
+    const c = player.courses?.[String(courseNo)] || player.courses?.[courseNo] || null;
 
     dataset.courseData[courseNo] = {
-      starts: Number.isFinite(Number(c?.starts)) ? Number(c.starts) : null,
-      first: Number.isFinite(Number(c?.first)) ? Number(c.first) : null,
-      second: Number.isFinite(Number(c?.second)) ? Number(c.second) : null,
-      third: Number.isFinite(Number(c?.third)) ? Number(c.third) : null,
-      win: Number.isFinite(Number(c?.win_rate)) ? Number(c.win_rate) : null,
-      ren2: Number.isFinite(Number(c?.ren2_rate)) ? Number(c.ren2_rate) : null,
-      ren3: Number.isFinite(Number(c?.ren3_rate)) ? Number(c.ren3_rate) : null,
-      avgSt: Number.isFinite(Number(c?.avg_st)) ? Number(c.avg_st) : null,
+      starts: num(c?.starts),
+      first: num(c?.first),
+      second: num(c?.second),
+      third: num(c?.third),
+      win: num(c?.win_rate),
+      ren2: num(c?.ren2_rate),
+      ren3: num(c?.ren3_rate),
+      avgSt: num(c?.avg_st),
       kimarite: {
-        "逃げ": Number.isFinite(Number(c?.kimarite?.["逃げ"])) ? Number(c.kimarite["逃げ"]) : 0,
-        "差": Number.isFinite(Number(c?.kimarite?.["差"])) ? Number(c.kimarite["差"]) : 0,
-        "まくり": Number.isFinite(Number(c?.kimarite?.["まくり"])) ? Number(c.kimarite["まくり"]) : 0,
-        "まくり差し": Number.isFinite(Number(c?.kimarite?.["まくり差し"])) ? Number(c.kimarite["まくり差し"]) : 0,
-        "抜き": Number.isFinite(Number(c?.kimarite?.["抜き"])) ? Number(c.kimarite["抜き"]) : 0,
-        "恵まれ": Number.isFinite(Number(c?.kimarite?.["恵まれ"])) ? Number(c.kimarite["恵まれ"]) : 0
+        "逃げ": num(c?.kimarite?.["逃げ"]) ?? 0,
+        "差": num(c?.kimarite?.["差"]) ?? 0,
+        "まくり": num(c?.kimarite?.["まくり"]) ?? 0,
+        "まくり差し": num(c?.kimarite?.["まくり差し"]) ?? 0,
+        "抜き": num(c?.kimarite?.["抜き"]) ?? 0,
+        "恵まれ": num(c?.kimarite?.["恵まれ"]) ?? 0
       }
     };
-
-    dataset.table.starts[courseNo - 1] = formatCount(c?.starts);
-    dataset.table.first[courseNo - 1] = formatCount(c?.first);
-    dataset.table.second[courseNo - 1] = formatCount(c?.second);
-    dataset.table.third[courseNo - 1] = formatCount(c?.third);
-    dataset.table.winRate[courseNo - 1] = formatRate(c?.win_rate);
-    dataset.table.ren2Rate[courseNo - 1] = formatRate(c?.ren2_rate);
-    dataset.table.ren3Rate[courseNo - 1] = formatRate(c?.ren3_rate);
-    dataset.table.avgSt[courseNo - 1] = formatST(c?.avg_st);
-    dataset.table.nige[courseNo - 1] = formatNumber(c?.kimarite?.["逃げ"]);
-    dataset.table.sashi[courseNo - 1] = formatNumber(c?.kimarite?.["差"]);
-    dataset.table.makuri[courseNo - 1] = formatNumber(c?.kimarite?.["まくり"]);
-    dataset.table.makurisashi[courseNo - 1] = formatNumber(c?.kimarite?.["まくり差し"]);
-    dataset.table.nuki[courseNo - 1] = formatNumber(c?.kimarite?.["抜き"]);
-    dataset.table.megumare[courseNo - 1] = formatNumber(c?.kimarite?.["恵まれ"]);
   });
 }
 
-function applyOtherBoatStatsToDataset(datasetKey, player) {
+function pickOtherPlayerRoot(raw) {
+  if (!raw) return null;
+  if (raw.base_courses) return raw;
+  if (raw.data?.base_courses) return raw.data;
+  if (raw.stats?.base_courses) return raw.stats;
+  if (raw.trends?.base_courses) return raw.trends;
+  return raw;
+}
+
+function applyOtherBoatStatsToDataset(datasetKey, playerRaw) {
   const dataset = DATASETS[datasetKey];
-  dataset.courseData = structuredClone(EMPTY_COURSE_DATA);
-  dataset.table = structuredClone(EMPTY_OTHER_BOAT_TABLE_DATA);
+  dataset.raw = structuredClone(EMPTY_OTHER_BASE_RAW);
 
-  if (!player || !player.base_courses) return;
+  const player = pickOtherPlayerRoot(playerRaw);
+  const baseCourses = player?.base_courses || player?.baseCourses || null;
+  if (!baseCourses) return;
 
-  const base = player.base_courses?.[String(selectedCourse)] || player.base_courses?.[selectedCourse];
-  const others = base?.others || {};
+  COURSE_ORDER.forEach((baseCourse) => {
+    const base = baseCourses[String(baseCourse)] || baseCourses[baseCourse] || null;
+    if (!base) return;
 
-  COURSE_ORDER.forEach((courseNo) => {
-    const c = others?.[String(courseNo)] || others?.[courseNo] || null;
-    const kimarite = c?.kimarite || {};
+    const normalizedOthers = {};
 
-    dataset.courseData[courseNo] = {
-      starts: Number.isFinite(Number(c?.starts)) ? Number(c.starts) : null,
-      first: Number.isFinite(Number(c?.first)) ? Number(c.first) : null,
-      second: Number.isFinite(Number(c?.second)) ? Number(c.second) : null,
-      third: Number.isFinite(Number(c?.third)) ? Number(c.third) : null,
-      firstRate: Number.isFinite(Number(c?.first_rate)) ? Number(c.first_rate) : null,
-      ren2Rate: Number.isFinite(Number(c?.ren2_rate)) ? Number(c.ren2_rate) : null,
-      ren3Rate: Number.isFinite(Number(c?.ren3_rate)) ? Number(c.ren3_rate) : null,
-      kimarite: {
-        "逃げ": Number.isFinite(Number(kimarite?.["逃げ"])) ? Number(kimarite["逃げ"]) : 0,
-        "差": Number.isFinite(Number(kimarite?.["差"])) ? Number(kimarite["差"]) : 0,
-        "まくり": Number.isFinite(Number(kimarite?.["まくり"])) ? Number(kimarite["まくり"]) : 0,
-        "まくり差し": Number.isFinite(Number(kimarite?.["まくり差し"])) ? Number(kimarite["まくり差し"]) : 0,
-        "抜き": Number.isFinite(Number(kimarite?.["抜き"])) ? Number(kimarite["抜き"]) : 0,
-        "恵まれ": Number.isFinite(Number(kimarite?.["恵まれ"])) ? Number(kimarite["恵まれ"]) : 0
-      }
+    COURSE_ORDER.forEach((otherCourse) => {
+      const o = base.others?.[String(otherCourse)] || base.others?.[otherCourse] || null;
+      const kim = o?.kimarite || o?.win_kimarite || o?.winning_kimarite || {};
+
+      normalizedOthers[String(otherCourse)] = {
+        starts: num(o?.starts) ?? 0,
+        first: num(o?.first) ?? 0,
+        second: num(o?.second) ?? 0,
+        third: num(o?.third) ?? 0,
+        first_rate: num(o?.first_rate),
+        ren2_rate: num(o?.ren2_rate),
+        ren3_rate: num(o?.ren3_rate),
+        kimarite: {
+          "逃げ": num(kim?.["逃げ"]) ?? 0,
+          "差": num(kim?.["差"]) ?? 0,
+          "まくり": num(kim?.["まくり"]) ?? 0,
+          "まくり差し": num(kim?.["まくり差し"]) ?? 0,
+          "抜き": num(kim?.["抜き"]) ?? 0,
+          "恵まれ": num(kim?.["恵まれ"]) ?? 0
+        }
+      };
+    });
+
+    dataset.raw[baseCourse] = {
+      starts: num(base?.starts),
+      others: normalizedOthers
     };
-
-    dataset.table.starts[courseNo - 1] = formatCount(c?.starts);
-    dataset.table.first[courseNo - 1] = formatCount(c?.first);
-    dataset.table.second[courseNo - 1] = formatCount(c?.second);
-    dataset.table.third[courseNo - 1] = formatCount(c?.third);
-    dataset.table.winRate[courseNo - 1] = formatRate(c?.first_rate);
-    dataset.table.ren2Rate[courseNo - 1] = formatRate(c?.ren2_rate);
-    dataset.table.ren3Rate[courseNo - 1] = formatRate(c?.ren3_rate);
-    dataset.table.nige[courseNo - 1] = formatNumber(kimarite?.["逃げ"]);
-    dataset.table.sashi[courseNo - 1] = formatNumber(kimarite?.["差"]);
-    dataset.table.makuri[courseNo - 1] = formatNumber(kimarite?.["まくり"]);
-    dataset.table.makurisashi[courseNo - 1] = formatNumber(kimarite?.["まくり差し"]);
-    dataset.table.nuki[courseNo - 1] = formatNumber(kimarite?.["抜き"]);
-    dataset.table.megumare[courseNo - 1] = formatNumber(kimarite?.["恵まれ"]);
   });
 }
 
@@ -824,12 +993,22 @@ function pickPlayerFromStandardJson(json, targetRegno) {
 
 function pickPlayerFromOtherBoatJson(json, targetRegno) {
   if (!json) return null;
-  return json?.players?.[targetRegno] || json?.[targetRegno] || null;
+
+  return (
+    json?.players?.[targetRegno] ||
+    json?.data?.players?.[targetRegno] ||
+    json?.stats?.players?.[targetRegno] ||
+    json?.trends?.players?.[targetRegno] ||
+    json?.[targetRegno] ||
+    json?.data?.[targetRegno] ||
+    json?.stats?.[targetRegno] ||
+    json?.trends?.[targetRegno] ||
+    null
+  );
 }
 
 async function loadPlayerStats() {
   resetDatasets();
-
   if (!regno) return;
 
   const [player1yJson, player3yJson, other1yJson, other3yJson] = await Promise.all([
@@ -871,10 +1050,7 @@ async function boot() {
     animateRadar();
   });
 
-  window.addEventListener("resize", () => {
-    layoutRadarLabels();
-    drawRadar(1);
-  }, { passive: true });
+  window.addEventListener("resize", layoutRadarLabels, { passive: true });
 }
 
 boot();
