@@ -31,7 +31,7 @@ const RADAR_SIZE = 320;
 const RADAR_CX = 160;
 const RADAR_CY = 154;
 const RADAR_GRID_MAX_R = 112;
-const RADAR_VALUE_MAX_R = 90;
+const RADAR_VALUE_MAX_R = RADAR_GRID_MAX_R;
 const RADAR_LABEL_R = 126;
 const RADAR_SCORE_MAX = 10;
 const RADAR_ANGLES = [-90, -30, 30, 90, 150, 210].map((deg) => deg * Math.PI / 180);
@@ -177,7 +177,14 @@ function buildRadarGrid() {
   const g = $("courseRadarGrid");
   if (!g) return;
 
-  const levels = [28, 50, 72, 92, RADAR_GRID_MAX_R];
+  const levels = [
+    RADAR_GRID_MAX_R * 0.2,
+    RADAR_GRID_MAX_R * 0.4,
+    RADAR_GRID_MAX_R * 0.6,
+    RADAR_GRID_MAX_R * 0.8,
+    RADAR_GRID_MAX_R
+  ];
+
   g.innerHTML = "";
 
   levels.forEach((r) => {
