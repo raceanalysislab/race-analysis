@@ -660,13 +660,13 @@ function buildOtherModeTable() {
 
   return [
     makeCourseHeader(),
-    valueRow("母集団", COURSE_ORDER.map(() => formatCount(refStarts))),
+    valueRow("コース別出走数", COURSE_ORDER.map(() => formatCount(refStarts))),
     valueRow("1着", firstRow),
     valueRow("2着", secondRow),
     valueRow("3着", thirdRow),
-    rateRow("1着率", firstRateRow),
-    rateRow("2連対率", ren2RateRow),
-    rateRow("3連対率", ren3RateRow),
+    rateRow("コース別1着率", firstRateRow),
+    rateRow("コース別2連対率", ren2RateRow),
+    rateRow("コース別3連対率", ren3RateRow),
     valueRow("逃げ", nigeRow),
     valueRow("差し", sashiRow),
     valueRow("まくり", makuriRow),
