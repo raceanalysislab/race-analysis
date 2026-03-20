@@ -1,18 +1,104 @@
 {
-  "jcd": "06",
-  "venue": "浜名湖",
-  "date": "2026-03-21",
+  "jcd": "15",
+  "venue": "丸亀",
+  "date": "2026-03-20",
   "day_no": 2,
   "day_label": "2日目",
   "total_days": null,
-  "event_title": "中日カップ",
-  "event_title_norm": "中日カップ",
+  "event_title": "丸亀市観光協会杯",
+  "event_title_norm": "丸亀市観光協会杯",
   "racers": {
-    "3454": {
-      "name": "井川大作",
+    "3564": {
+      "name": "桑原啓",
       "days": [
         [
+          {
+            "course": 3,
+            "st": ".13",
+            "rank": 5
+          },
+          {
+            "course": 1,
+            "st": ".18",
+            "rank": 2
+          }
+        ],
+        [
           null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ]
+      ]
+    },
+    "3567": {
+      "name": "吉岡誠",
+      "days": [
+        [
+          {
+            "course": 2,
+            "st": ".21",
+            "rank": 6
+          },
+          {
+            "course": 6,
+            "st": ".28",
+            "rank": 6
+          }
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ]
+      ]
+    },
+    "3572": {
+      "name": "安田政彦",
+      "days": [
+        [
+          {
+            "course": 5,
+            "st": ".23",
+            "rank": 3
+          },
           null
         ],
         [
@@ -41,11 +127,15 @@
         ]
       ]
     },
-    "3475": {
-      "name": "橋本久和",
+    "3583": {
+      "name": "齋藤智裕",
       "days": [
         [
-          null,
+          {
+            "course": 4,
+            "st": ".11",
+            "rank": 4
+          },
           null
         ],
         [
@@ -74,11 +164,56 @@
         ]
       ]
     },
-    "3656": {
-      "name": "伯母芳恒",
+    "3606": {
+      "name": "川北浩貴",
       "days": [
         [
+          {
+            "course": 5,
+            "st": ".18",
+            "rank": 4
+          },
+          {
+            "course": 1,
+            "st": ".19",
+            "rank": 6
+          }
+        ],
+        [
           null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ]
+      ]
+    },
+    "3748": {
+      "name": "小黒竜吾",
+      "days": [
+        [
+          {
+            "course": 1,
+            "st": ".15",
+            "rank": 3
+          },
           null
         ],
         [
@@ -107,11 +242,220 @@
         ]
       ]
     },
-    "3828": {
-      "name": "明石正之",
+    "3787": {
+      "name": "天野誠",
       "days": [
         [
+          {
+            "course": 2,
+            "st": ".14",
+            "rank": 3
+          },
+          {
+            "course": 5,
+            "st": ".25",
+            "rank": 4
+          }
+        ],
+        [
           null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ]
+      ]
+    },
+    "3998": {
+      "name": "冨成謙児",
+      "days": [
+        [
+          {
+            "course": 5,
+            "st": ".28",
+            "rank": 4
+          },
+          {
+            "course": 6,
+            "st": ".14",
+            "rank": 6
+          }
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ]
+      ]
+    },
+    "4064": {
+      "name": "原田篤志",
+      "days": [
+        [
+          {
+            "course": 2,
+            "st": ".23",
+            "rank": 1
+          },
+          {
+            "course": 4,
+            "st": ".18",
+            "rank": 4
+          }
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ]
+      ]
+    },
+    "4116": {
+      "name": "川田正人",
+      "days": [
+        [
+          {
+            "course": 6,
+            "st": ".29",
+            "rank": 4
+          },
+          {
+            "course": 4,
+            "st": ".31",
+            "rank": 4
+          }
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ]
+      ]
+    },
+    "4137": {
+      "name": "君島秀三",
+      "days": [
+        [
+          {
+            "course": 3,
+            "st": ".11",
+            "rank": 2
+          },
+          {
+            "course": 5,
+            "st": ".15",
+            "rank": 6
+          }
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ]
+      ]
+    },
+    "4138": {
+      "name": "中井俊祐",
+      "days": [
+        [
+          {
+            "course": 5,
+            "st": ".07",
+            "rank": 1
+          },
           null
         ],
         [
@@ -140,11 +484,138 @@
         ]
       ]
     },
-    "3898": {
-      "name": "平田忠則",
+    "4254": {
+      "name": "川島圭司",
       "days": [
         [
+          {
+            "course": 6,
+            "st": ".21",
+            "rank": 6
+          },
+          {
+            "course": 4,
+            "st": ".18",
+            "rank": 3
+          }
+        ],
+        [
           null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ]
+      ]
+    },
+    "4268": {
+      "name": "和合俊介",
+      "days": [
+        [
+          {
+            "course": 6,
+            "st": ".21",
+            "rank": 5
+          },
+          {
+            "course": 3,
+            "st": ".32",
+            "rank": 5
+          }
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ]
+      ]
+    },
+    "4336": {
+      "name": "松田竜馬",
+      "days": [
+        [
+          {
+            "course": 3,
+            "st": ".09",
+            "rank": 5
+          },
+          {
+            "course": 5,
+            "st": ".19",
+            "rank": 4
+          }
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ]
+      ]
+    },
+    "4346": {
+      "name": "前田健太",
+      "days": [
+        [
+          {
+            "course": 4,
+            "st": ".22",
+            "rank": 1
+          },
           null
         ],
         [
@@ -173,11 +644,15 @@
         ]
       ]
     },
-    "3997": {
-      "name": "北村征嗣",
+    "4360": {
+      "name": "庄司孝輔",
       "days": [
         [
-          null,
+          {
+            "course": 2,
+            "st": ".16",
+            "rank": 2
+          },
           null
         ],
         [
@@ -206,11 +681,15 @@
         ]
       ]
     },
-    "4039": {
-      "name": "村上功祐",
+    "4374": {
+      "name": "永田義紘",
       "days": [
         [
-          null,
+          {
+            "course": 1,
+            "st": ".13",
+            "rank": 2
+          },
           null
         ],
         [
@@ -239,11 +718,15 @@
         ]
       ]
     },
-    "4066": {
-      "name": "東本勝利",
+    "4376": {
+      "name": "藤田靖弘",
       "days": [
         [
-          null,
+          {
+            "course": 4,
+            "st": ".21",
+            "rank": 3
+          },
           null
         ],
         [
@@ -272,11 +755,56 @@
         ]
       ]
     },
-    "4084": {
-      "name": "杉山正樹",
+    "4398": {
+      "name": "船岡洋一",
       "days": [
         [
+          {
+            "course": 4,
+            "st": ".09",
+            "rank": 5
+          },
+          {
+            "course": 1,
+            "st": ".16",
+            "rank": 1
+          }
+        ],
+        [
           null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ]
+      ]
+    },
+    "4421": {
+      "name": "森作広大",
+      "days": [
+        [
+          {
+            "course": 4,
+            "st": ".11",
+            "rank": 3
+          },
           null
         ],
         [
@@ -305,11 +833,179 @@
         ]
       ]
     },
-    "4109": {
-      "name": "谷津幸宏",
+    "4428": {
+      "name": "有賀達也",
       "days": [
         [
+          {
+            "course": 5,
+            "st": ".23",
+            "rank": 3
+          },
+          {
+            "course": 3,
+            "st": ".21",
+            "rank": 2
+          }
+        ],
+        [
           null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ]
+      ]
+    },
+    "4497": {
+      "name": "桑原悠",
+      "days": [
+        [
+          {
+            "course": 5,
+            "st": ".11",
+            "rank": 4
+          },
+          {
+            "course": 2,
+            "st": ".15",
+            "rank": 3
+          }
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ]
+      ]
+    },
+    "4511": {
+      "name": "中岡健人",
+      "days": [
+        [
+          {
+            "course": 1,
+            "st": ".05",
+            "rank": 1
+          },
+          {
+            "course": 3,
+            "st": ".12",
+            "rank": 4
+          }
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ]
+      ]
+    },
+    "4514": {
+      "name": "上條嘉嗣",
+      "days": [
+        [
+          {
+            "course": 4,
+            "st": ".21",
+            "rank": 2
+          },
+          {
+            "course": 1,
+            "st": ".14",
+            "rank": 1
+          }
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ]
+      ]
+    },
+    "4533": {
+      "name": "峰重侑治",
+      "days": [
+        [
+          {
+            "course": 6,
+            "st": ".23",
+            "rank": 5
+          },
           null
         ],
         [
@@ -338,11 +1034,97 @@
         ]
       ]
     },
-    "4199": {
-      "name": "北川潤二",
+    "4540": {
+      "name": "相原利章",
       "days": [
         [
+          {
+            "course": 6,
+            "st": ".11",
+            "rank": 3
+          },
+          {
+            "course": 2,
+            "st": ".13",
+            "rank": 2
+          }
+        ],
+        [
           null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ]
+      ]
+    },
+    "4608": {
+      "name": "荒井翔伍",
+      "days": [
+        [
+          {
+            "course": 6,
+            "st": ".12",
+            "rank": "S0"
+          },
+          {
+            "course": 2,
+            "st": ".14",
+            "rank": 3
+          }
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ]
+      ]
+    },
+    "4640": {
+      "name": "山ノ内雅",
+      "days": [
+        [
+          {
+            "course": 1,
+            "st": ".21",
+            "rank": 2
+          },
           null
         ],
         [
@@ -371,11 +1153,15 @@
         ]
       ]
     },
-    "4216": {
-      "name": "星栄爾",
+    "4715": {
+      "name": "村上遼",
       "days": [
         [
-          null,
+          {
+            "course": 3,
+            "st": ".19",
+            "rank": 2
+          },
           null
         ],
         [
@@ -404,11 +1190,15 @@
         ]
       ]
     },
-    "4273": {
-      "name": "佐藤旭",
+    "4724": {
+      "name": "吉田祐貴",
       "days": [
         [
-          null,
+          {
+            "course": 2,
+            "st": ".27",
+            "rank": 6
+          },
           null
         ],
         [
@@ -437,11 +1227,138 @@
         ]
       ]
     },
-    "4299": {
-      "name": "中島浩哉",
+    "4725": {
+      "name": "佐竹太一",
       "days": [
         [
+          {
+            "course": 1,
+            "st": ".18",
+            "rank": 1
+          },
+          {
+            "course": 4,
+            "st": ".15",
+            "rank": 5
+          }
+        ],
+        [
           null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ]
+      ]
+    },
+    "4834": {
+      "name": "浜本裕己",
+      "days": [
+        [
+          {
+            "course": 3,
+            "st": ".26",
+            "rank": 6
+          },
+          {
+            "course": 1,
+            "st": ".16",
+            "rank": 1
+          }
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ]
+      ]
+    },
+    "4836": {
+      "name": "大谷健太",
+      "days": [
+        [
+          {
+            "course": 6,
+            "st": ".10",
+            "rank": 6
+          },
+          {
+            "course": 3,
+            "st": ".19",
+            "rank": 4
+          }
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ]
+      ]
+    },
+    "4925": {
+      "name": "森悠稀",
+      "days": [
+        [
+          {
+            "course": 2,
+            "st": ".16",
+            "rank": 3
+          },
           null
         ],
         [
@@ -470,11 +1387,15 @@
         ]
       ]
     },
-    "4362": {
-      "name": "土屋智則",
+    "4942": {
+      "name": "柴田朋哉",
       "days": [
         [
-          null,
+          {
+            "course": 6,
+            "st": ".17",
+            "rank": 5
+          },
           null
         ],
         [
@@ -503,11 +1424,15 @@
         ]
       ]
     },
-    "4363": {
-      "name": "大野芳顕",
+    "4948": {
+      "name": "木場悠介",
       "days": [
         [
-          null,
+          {
+            "course": 2,
+            "st": ".17",
+            "rank": 4
+          },
           null
         ],
         [
@@ -536,11 +1461,97 @@
         ]
       ]
     },
-    "4411": {
-      "name": "沢田昭宏",
+    "4988": {
+      "name": "牟田奨太",
       "days": [
         [
+          {
+            "course": 2,
+            "st": ".19",
+            "rank": 2
+          },
+          {
+            "course": 4,
+            "st": ".18",
+            "rank": 2
+          }
+        ],
+        [
           null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ]
+      ]
+    },
+    "5012": {
+      "name": "加倉侑征",
+      "days": [
+        [
+          {
+            "course": 1,
+            "st": ".13",
+            "rank": 1
+          },
+          {
+            "course": 5,
+            "st": ".06",
+            "rank": 2
+          }
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          null
+        ]
+      ]
+    },
+    "5031": {
+      "name": "渡辺空依",
+      "days": [
+        [
+          {
+            "course": 5,
+            "st": ".13",
+            "rank": 5
+          },
           null
         ],
         [
@@ -569,11 +1580,15 @@
         ]
       ]
     },
-    "4432": {
-      "name": "黄金井力",
+    "5032": {
+      "name": "谷口知優",
       "days": [
         [
-          null,
+          {
+            "course": 4,
+            "st": ".14",
+            "rank": 1
+          },
           null
         ],
         [
@@ -602,11 +1617,15 @@
         ]
       ]
     },
-    "4436": {
-      "name": "渋谷明憲",
+    "5102": {
+      "name": "原田雄次",
       "days": [
         [
-          null,
+          {
+            "course": 3,
+            "st": ".22",
+            "rank": 1
+          },
           null
         ],
         [
@@ -635,11 +1654,15 @@
         ]
       ]
     },
-    "4442": {
-      "name": "松竹大輔",
+    "5249": {
+      "name": "三木晴斗",
       "days": [
         [
-          null,
+          {
+            "course": 1,
+            "st": ".21",
+            "rank": 5
+          },
           null
         ],
         [
@@ -668,12 +1691,20 @@
         ]
       ]
     },
-    "4498": {
-      "name": "宮本夏樹",
+    "5257": {
+      "name": "西丸侑太",
       "days": [
         [
-          null,
-          null
+          {
+            "course": 3,
+            "st": ".12",
+            "rank": 3
+          },
+          {
+            "course": 6,
+            "st": ".10",
+            "rank": 5
+          }
         ],
         [
           null,
@@ -701,12 +1732,20 @@
         ]
       ]
     },
-    "4581": {
-      "name": "吉村誠",
+    "5359": {
+      "name": "佐藤世那",
       "days": [
         [
-          null,
-          null
+          {
+            "course": 3,
+            "st": ".18",
+            "rank": 1
+          },
+          {
+            "course": 2,
+            "st": ".31",
+            "rank": 5
+          }
         ],
         [
           null,
@@ -734,738 +1773,20 @@
         ]
       ]
     },
-    "4588": {
-      "name": "田中京介",
+    "5395": {
+      "name": "日高龍之",
       "days": [
         [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ]
-      ]
-    },
-    "4638": {
-      "name": "小林遼太",
-      "days": [
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ]
-      ]
-    },
-    "4672": {
-      "name": "守屋大地",
-      "days": [
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ]
-      ]
-    },
-    "4685": {
-      "name": "島村隆幸",
-      "days": [
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ]
-      ]
-    },
-    "4710": {
-      "name": "福田宗平",
-      "days": [
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ]
-      ]
-    },
-    "4727": {
-      "name": "安部慎一",
-      "days": [
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ]
-      ]
-    },
-    "4769": {
-      "name": "馬場剛",
-      "days": [
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ]
-      ]
-    },
-    "4796": {
-      "name": "春園功太",
-      "days": [
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ]
-      ]
-    },
-    "4824": {
-      "name": "松井洪弥",
-      "days": [
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ]
-      ]
-    },
-    "4910": {
-      "name": "中村泰平",
-      "days": [
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ]
-      ]
-    },
-    "4933": {
-      "name": "板橋侑我",
-      "days": [
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ]
-      ]
-    },
-    "4982": {
-      "name": "中村将隆",
-      "days": [
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ]
-      ]
-    },
-    "5002": {
-      "name": "上田健太",
-      "days": [
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ]
-      ]
-    },
-    "5010": {
-      "name": "宇留田翔",
-      "days": [
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ]
-      ]
-    },
-    "5029": {
-      "name": "中亮太",
-      "days": [
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ]
-      ]
-    },
-    "5044": {
-      "name": "渡邉健",
-      "days": [
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ]
-      ]
-    },
-    "5047": {
-      "name": "國分将太",
-      "days": [
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ]
-      ]
-    },
-    "5070": {
-      "name": "中島航",
-      "days": [
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ]
-      ]
-    },
-    "5098": {
-      "name": "大江純",
-      "days": [
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ]
-      ]
-    },
-    "5105": {
-      "name": "富田恕生",
-      "days": [
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ]
-      ]
-    },
-    "5110": {
-      "name": "杉山喜一",
-      "days": [
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ]
-      ]
-    },
-    "5199": {
-      "name": "垂水悠",
-      "days": [
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ],
-        [
-          null,
-          null
-        ]
-      ]
-    },
-    "5303": {
-      "name": "土井歩夢",
-      "days": [
-        [
-          null,
-          null
+          {
+            "course": 5,
+            "st": ".13",
+            "rank": 6
+          },
+          {
+            "course": 6,
+            "st": ".24",
+            "rank": 6
+          }
         ],
         [
           null,
