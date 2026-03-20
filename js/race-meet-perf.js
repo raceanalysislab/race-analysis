@@ -14,6 +14,7 @@ window.BOAT_CORE_MEET_PERF = (() => {
   let currentJcd = "";
   let currentDate = "";
   let playerNameResolver = null;
+
   const cache = {};
 
   const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
@@ -33,9 +34,10 @@ window.BOAT_CORE_MEET_PERF = (() => {
   function setConfig(config = {}) {
     meetPerfBaseUrl = String(config.baseUrl || "");
     currentJcd = String(config.jcd || "").padStart(2, "0");
-    playerNameResolver = typeof config.getPlayerDisplayName === "function"
-      ? config.getPlayerDisplayName
-      : null;
+    playerNameResolver =
+      typeof config.getPlayerDisplayName === "function"
+        ? config.getPlayerDisplayName
+        : null;
   }
 
   function setRaceContext({ date }) {
@@ -98,7 +100,10 @@ window.BOAT_CORE_MEET_PERF = (() => {
     }
 
     $entryInnerTabs?.querySelectorAll(".entryInnerTab").forEach((btn) => {
-      btn.classList.toggle("is-active", Number(btn.dataset.entryView) === currentEntryView);
+      btn.classList.toggle(
+        "is-active",
+        Number(btn.dataset.entryView) === currentEntryView
+      );
     });
   }
 
@@ -121,6 +126,7 @@ window.BOAT_CORE_MEET_PERF = (() => {
       const ch = chars[i];
       slots[i] = ch === " " ? "" : ch;
     }
+
     return slots;
   }
 
@@ -130,18 +136,21 @@ window.BOAT_CORE_MEET_PERF = (() => {
 
     for (let day = 0; day < DAY_COUNT; day += 1) {
       const start = day * SLOTS_PER_DAY;
-      days.push([slots[start] || "", slots[start + 1] || ""]);
+      days.push([
+        slots[start] || "",
+        slots[start + 1] || ""
+      ]);
     }
 
     return days;
   }
 
-  function renderHead(totalDays, activeDayNo) {
+  function renderHead(activeDayNo) {
     if (!$meetPerfDays) return;
 
     $meetPerfDays.innerHTML = `
       <div class="meetPerfDaysRow">
-        ${Array.from({ length: totalDays }, (_, i) => {
+        ${Array.from({ length: DAY_COUNT }, (_, i) => {
           const dayNo = i + 1;
           const classes = [
             "meetPerfDayHead",
@@ -159,7 +168,9 @@ window.BOAT_CORE_MEET_PERF = (() => {
     const reg = String(boat?.regno ?? boat?.reg ?? "").trim();
     if (reg && racers?.[reg]) return racers[reg];
 
-    const targetName = normalizeName(playerNameResolver ? playerNameResolver(boat) : boat?.name);
+    const targetName = normalizeName(
+      playerNameResolver ? playerNameResolver(boat) : boat?.name
+    );
     if (!targetName) return null;
 
     for (const value of Object.values(racers || {})) {
@@ -167,10 +178,11 @@ window.BOAT_CORE_MEET_PERF = (() => {
         return value;
       }
     }
+
     return null;
   }
 
-  function renderCell(content, inactive) {
+  function renderCell(content) {
     if (!content) {
       return `
         <div class="meetPerfCell is-empty">
@@ -196,7 +208,7 @@ window.BOAT_CORE_MEET_PERF = (() => {
     const racers = meetPerfJson?.racers || {};
     const activeDayNo = clamp(Number(meetPerfJson?.day_no || 0) || 0, 1, DAY_COUNT);
 
-    renderHead(DAY_COUNT, activeDayNo);
+    renderHead(activeDayNo);
 
     $meetPerfTable.innerHTML = `
       <div class="meetPerfRows">
@@ -212,10 +224,11 @@ window.BOAT_CORE_MEET_PERF = (() => {
                 <div class="meetPerfDayCells">
                   ${days.map((pair, index) => {
                     const inactive = index + 1 > activeDayNo;
+
                     return `
                       <div class="meetPerfDay${inactive ? " is-inactive" : ""}">
-                        ${renderCell(pair[0], inactive)}
-                        ${renderCell(pair[1], inactive)}
+                        ${renderCell(pair[0])}
+                        ${renderCell(pair[1])}
                       </div>
                     `;
                   }).join("")}
@@ -229,16 +242,18 @@ window.BOAT_CORE_MEET_PERF = (() => {
   }
 
   function renderLoading() {
-    renderHead(DAY_COUNT, 0);
+    renderHead(0);
     if ($meetPerfTable) {
-      $meetPerfTable.innerHTML = `<div class="meetPerfEmpty">今節成績を読み込み中…</div>`;
+      $meetPerfTable.innerHTML =
+        `<div class="meetPerfEmpty">今節成績を読み込み中…</div>`;
     }
   }
 
   function renderError() {
-    renderHead(DAY_COUNT, 0);
+    renderHead(0);
     if ($meetPerfTable) {
-      $meetPerfTable.innerHTML = `<div class="meetPerfEmpty">今節成績データなし</div>`;
+      $meetPerfTable.innerHTML =
+        `<div class="meetPerfEmpty">今節成績データなし</div>`;
     }
   }
 
