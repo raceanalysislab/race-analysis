@@ -155,7 +155,7 @@ window.BOAT_CORE_MEET_PERF = (() => {
           const classes = [
             "meetPerfDayHead",
             dayNo === activeDayNo ? "is-today" : "",
-            dayNo > activeDayNo ? "is-inactive" : ""
+            activeDayNo > 0 && dayNo > activeDayNo ? "is-inactive" : ""
           ].filter(Boolean).join(" ");
 
           return `<div class="${classes}">${dayNo}日目</div>`;
@@ -202,11 +202,36 @@ window.BOAT_CORE_MEET_PERF = (() => {
     `;
   }
 
+  function renderRow(boat, days, activeDayNo) {
+    return `
+      <div class="meetPerfRow">
+        <div class="meetPerfRow__waku w${esc(boat.waku)}">${esc(boat.waku)}</div>
+        <div class="meetPerfRow__days">
+          <div class="meetPerfDayCells">
+            ${days.map((pair, index) => {
+              const inactive = activeDayNo > 0 && index + 1 > activeDayNo;
+
+              return `
+                <div class="meetPerfDay${inactive ? " is-inactive" : ""}">
+                  ${renderCell(pair[0])}
+                  ${renderCell(pair[1])}
+                </div>
+              `;
+            }).join("")}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
   function renderTable(boats, meetPerfJson) {
     if (!$meetPerfTable) return;
 
     const racers = meetPerfJson?.racers || {};
-    const activeDayNo = clamp(Number(meetPerfJson?.day_no || 0) || 0, 1, DAY_COUNT);
+    const rawDayNo = Number(meetPerfJson?.day_no || 0);
+    const activeDayNo = Number.isFinite(rawDayNo) && rawDayNo > 0
+      ? clamp(rawDayNo, 1, DAY_COUNT)
+      : 0;
 
     renderHead(activeDayNo);
 
@@ -216,26 +241,7 @@ window.BOAT_CORE_MEET_PERF = (() => {
           const perfObj = findPerfObject(boat, racers);
           const raw = String(perfObj?.meet_perf_raw || "");
           const days = buildDays(raw);
-
-          return `
-            <div class="meetPerfRow">
-              <div class="meetPerfRow__waku w${esc(boat.waku)}">${esc(boat.waku)}</div>
-              <div class="meetPerfRow__days">
-                <div class="meetPerfDayCells">
-                  ${days.map((pair, index) => {
-                    const inactive = index + 1 > activeDayNo;
-
-                    return `
-                      <div class="meetPerfDay${inactive ? " is-inactive" : ""}">
-                        ${renderCell(pair[0])}
-                        ${renderCell(pair[1])}
-                      </div>
-                    `;
-                  }).join("")}
-                </div>
-              </div>
-            </div>
-          `;
+          return renderRow(boat, days, activeDayNo);
         }).join("")}
       </div>
     `;
@@ -243,18 +249,36 @@ window.BOAT_CORE_MEET_PERF = (() => {
 
   function renderLoading() {
     renderHead(0);
-    if ($meetPerfTable) {
-      $meetPerfTable.innerHTML =
-        `<div class="meetPerfEmpty">今節成績を読み込み中…</div>`;
-    }
+
+    if (!$meetPerfTable) return;
+
+    const placeholderBoats = [1, 2, 3, 4, 5, 6].map((waku) => ({ waku }));
+    const emptyDays = buildDays("");
+
+    $meetPerfTable.innerHTML = `
+      <div class="meetPerfRows">
+        ${placeholderBoats.map((boat) => renderRow(boat, emptyDays, 0)).join("")}
+      </div>
+    `;
   }
 
-  function renderError() {
+  function renderError(boats = null) {
     renderHead(0);
-    if ($meetPerfTable) {
-      $meetPerfTable.innerHTML =
-        `<div class="meetPerfEmpty">今節成績データなし</div>`;
-    }
+
+    if (!$meetPerfTable) return;
+
+    const baseBoats = Array.isArray(boats) && boats.length
+      ? boats
+      : [1, 2, 3, 4, 5, 6].map((waku) => ({ waku }));
+
+    const emptyDays = buildDays("");
+
+    $meetPerfTable.innerHTML = `
+      <div class="meetPerfRows">
+        ${baseBoats.map((boat) => renderRow(boat, emptyDays, 0)).join("")}
+      </div>
+      <div class="meetPerfEmpty">今節成績データなし</div>
+    `;
   }
 
   async function render(boats, raceJson) {
@@ -265,7 +289,7 @@ window.BOAT_CORE_MEET_PERF = (() => {
       const meetPerfJson = await loadMeetPerfForDate(dateStr);
       renderTable(boats, meetPerfJson);
     } catch (e) {
-      renderError();
+      renderError(boats);
     }
   }
 
