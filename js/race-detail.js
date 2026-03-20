@@ -17,6 +17,11 @@ const $viewTrack = $("viewTrack");
 const $entryTable = $("entryTable");
 const $viewTabs = $("viewTabs");
 
+const $entryInnerTabs = $("entryInnerTabs");
+const $entrySwipeTrack = $("entrySwipeTrack");
+const $meetPerfDays = $("meetPerfDays");
+const $meetPerfTable = $("meetPerfTable");
+
 const RACES_BASE_URL =
   "https://raceanalysislab.github.io/race-analysis/data/site/races/";
 const PLAYER_MASTER_URL =
@@ -25,6 +30,8 @@ const PLAYER_COURSE_STATS_URL =
   "https://raceanalysislab.github.io/race-analysis/data/player_course_stats_1y.json";
 const RACER_GENDER_URL =
   "https://raceanalysislab.github.io/race-analysis/data/master/racer_gender.json";
+const MEET_PERF_BASE_URL =
+  "https://raceanalysislab.github.io/race-analysis/data/meet_perf/";
 
 /* 公開されているメイン側 */
 const MEET_AVG_ST_BASE_URL =
@@ -35,6 +42,7 @@ $("venueName").textContent = venueName;
 let currentRace = 1;
 let currentDate = dateParam || getLocalYMD();
 let currentView = 0;
+let currentEntryView = 0;
 
 let dragStartX = 0;
 let dragStartY = 0;
@@ -46,9 +54,12 @@ let playerMaster = {};
 let playerCourseStats = null;
 let racerGenderMap = {};
 const meetAvgStCache = {};
+const meetPerfCache = {};
 
 const SWIPE_THRESHOLD_X = 56;
 const SWIPE_THRESHOLD_Y = 28;
+const MEET_PERF_MAX_DAYS = 7;
+const MEET_PERF_SLOTS_PER_DAY = 2;
 
 const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
 
@@ -301,6 +312,36 @@ async function loadMeetAvgStForRace(json) {
   }
 }
 
+function buildMeetPerfUrls(dateStr) {
+  const fileName = `${String(dateStr).trim()}_${jcd}.json`;
+  return [
+    `${MEET_PERF_BASE_URL}${fileName}`,
+    `${MEET_PERF_BASE_URL}${addDaysYMD(dateStr, 1)}_${jcd}.json`,
+    `${MEET_PERF_BASE_URL}${addDaysYMD(dateStr, -1)}_${jcd}.json`
+  ];
+}
+
+async function loadMeetPerfForDate(dateStr) {
+  const key = `${dateStr}|${jcd}`;
+  if (meetPerfCache[key]) return meetPerfCache[key];
+
+  let lastErr = null;
+
+  for (const url of buildMeetPerfUrls(dateStr)) {
+    try {
+      const json = await fetchJSON(url);
+      const actualDate = String(json?.date || dateStr).trim();
+      meetPerfCache[key] = json;
+      meetPerfCache[`${actualDate}|${jcd}`] = json;
+      return json;
+    } catch (e) {
+      lastErr = e;
+    }
+  }
+
+  throw lastErr || new Error("meet perf not found");
+}
+
 function buildUrls(r, dateStr) {
   const fileName = `${jcd}_${r}R.json`;
   const candidates = [
@@ -501,6 +542,202 @@ function renderEntryTable(boats) {
   }).join("");
 }
 
+function setEntryView(viewIndex) {
+  currentEntryView = clamp(Number(viewIndex) || 0, 0, 1);
+
+  const x = currentEntryView * -100;
+  if ($entrySwipeTrack) {
+    $entrySwipeTrack.style.transform = `translate3d(${x}%, 0, 0)`;
+  }
+
+  $entryInnerTabs?.querySelectorAll(".entryInnerTab").forEach((btn) => {
+    btn.classList.toggle("is-active", Number(btn.dataset.entryView) === currentEntryView);
+  });
+}
+
+function bindEntryInnerTabs() {
+  if (!$entryInnerTabs) return;
+
+  $entryInnerTabs.querySelectorAll(".entryInnerTab").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const viewIndex = Number(btn.dataset.entryView || 0);
+      setEntryView(viewIndex);
+    });
+  });
+}
+
+function buildMeetPerfSlotChars(raw, dayCount) {
+  const capacity = Math.max(dayCount, 1) * MEET_PERF_SLOTS_PER_DAY;
+  const chars = Array.from(String(raw ?? "").replace(/\u3000/g, " "));
+  const slots = Array.from({ length: capacity }, () => "");
+
+  for (let i = 0; i < capacity && i < chars.length; i += 1) {
+    const ch = chars[i];
+    slots[i] = ch === " " ? "" : ch;
+  }
+
+  return slots;
+}
+
+function buildMeetPerfDays(raw, dayCount) {
+  const slots = buildMeetPerfSlotChars(raw, dayCount);
+  const days = [];
+
+  for (let day = 0; day < dayCount; day += 1) {
+    const start = day * MEET_PERF_SLOTS_PER_DAY;
+    days.push([
+      slots[start] || "",
+      slots[start + 1] || ""
+    ]);
+  }
+
+  return days;
+}
+
+function renderMeetPerfHead(dayCount, activeDayNo) {
+  if (!$meetPerfDays) return;
+
+  $meetPerfDays.innerHTML = `
+    <div class="meetPerfDaysRow">
+      ${Array.from({ length: dayCount }, (_, i) => {
+        const dayNo = i + 1;
+        const label = `${dayNo}日目`;
+        return `<div class="meetPerfDayHead${dayNo === activeDayNo ? " is-today" : ""}">${esc(label)}</div>`;
+      }).join("")}
+    </div>
+  `;
+}
+
+function findMeetPerfObject(boat, racers) {
+  const reg = String(boat?.regno ?? boat?.reg ?? "").trim();
+  if (reg && racers?.[reg]) return racers[reg];
+
+  const targetName = normalizeName(getPlayerDisplayName(boat));
+  if (!targetName) return null;
+
+  for (const value of Object.values(racers || {})) {
+    if (normalizeName(value?.name || "") === targetName) {
+      return value;
+    }
+  }
+
+  return null;
+}
+
+function renderMeetPerfCell(char) {
+  if (!char) {
+    return `
+      <div class="meetPerfCell is-empty">
+        <div class="meetPerfCellTop"></div>
+        <div class="meetPerfCellMid"></div>
+        <div class="meetPerfCellBot"></div>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="meetPerfCell">
+      <div class="meetPerfCellTop"></div>
+      <div class="meetPerfCellMid"></div>
+      <div class="meetPerfCellBot">${esc(char)}</div>
+    </div>
+  `;
+}
+
+function syncMeetPerfScroll() {
+  if (!$meetPerfDays || !$meetPerfTable) return;
+
+  const headScroller = $meetPerfDays;
+  const rowScrollers = Array.from($meetPerfTable.querySelectorAll(".meetPerfRow__days"));
+
+  let syncing = false;
+
+  const applyLeft = (left, source) => {
+    if (syncing) return;
+    syncing = true;
+
+    if (headScroller !== source) {
+      headScroller.scrollLeft = left;
+    }
+
+    rowScrollers.forEach((el) => {
+      if (el !== source) el.scrollLeft = left;
+    });
+
+    requestAnimationFrame(() => {
+      syncing = false;
+    });
+  };
+
+  headScroller.onscroll = () => applyLeft(headScroller.scrollLeft, headScroller);
+  rowScrollers.forEach((el) => {
+    el.onscroll = () => applyLeft(el.scrollLeft, el);
+  });
+}
+
+function renderMeetPerfTable(boats, meetPerfJson) {
+  if (!$meetPerfTable) return;
+
+  const racers = meetPerfJson?.racers || {};
+  const activeDayNo = clamp(Number(meetPerfJson?.day_no || 0) || 0, 1, MEET_PERF_MAX_DAYS);
+  const dayCount = Math.max(MEET_PERF_MAX_DAYS, activeDayNo || 0);
+
+  renderMeetPerfHead(dayCount, activeDayNo);
+
+  const rowsHtml = boats.map((boat) => {
+    const perfObj = findMeetPerfObject(boat, racers);
+    const raw = String(perfObj?.meet_perf_raw || "");
+    const days = buildMeetPerfDays(raw, dayCount);
+
+    return `
+      <div class="meetPerfRow">
+        <div class="meetPerfRow__waku w${esc(boat.waku)}">${esc(boat.waku)}</div>
+        <div class="meetPerfRow__days">
+          <div class="meetPerfDayCells">
+            ${days.map((pair) => {
+              const top = pair[0] || "";
+              const bottom = pair[1] || "";
+              return `
+                <div class="meetPerfDay">
+                  ${renderMeetPerfCell(top)}
+                  ${renderMeetPerfCell(bottom)}
+                </div>
+              `;
+            }).join("")}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  $meetPerfTable.innerHTML = `<div class="meetPerfRows">${rowsHtml}</div>`;
+  syncMeetPerfScroll();
+}
+
+function renderMeetPerfLoading() {
+  if (!$meetPerfDays || !$meetPerfTable) return;
+  renderMeetPerfHead(MEET_PERF_MAX_DAYS, 0);
+  $meetPerfTable.innerHTML = `<div class="meetPerfEmpty">今節成績を読み込み中…</div>`;
+}
+
+function renderMeetPerfError() {
+  if (!$meetPerfDays || !$meetPerfTable) return;
+  renderMeetPerfHead(MEET_PERF_MAX_DAYS, 0);
+  $meetPerfTable.innerHTML = `<div class="meetPerfEmpty">今節成績データなし</div>`;
+}
+
+async function renderMeetPerf(boats, raceJson) {
+  renderMeetPerfLoading();
+
+  try {
+    const dateStr = String(raceJson?.date || currentDate || "").trim();
+    const meetPerfJson = await loadMeetPerfForDate(dateStr);
+    renderMeetPerfTable(boats, meetPerfJson);
+  } catch (e) {
+    renderMeetPerfError();
+  }
+}
+
 async function renderRaceJSON(r, rawJson) {
   const json = await enrichRaceJSON(rawJson);
   const raceObj = json?.race || {};
@@ -529,6 +766,7 @@ async function renderRaceJSON(r, rawJson) {
 
   const boats = Array.isArray(raceObj.boats) ? raceObj.boats : [];
   renderEntryTable(boats);
+  await renderMeetPerf(boats, json);
 
   if (window.BOAT_CORE_COURSE?.render) {
     window.BOAT_CORE_COURSE.render(json);
@@ -552,6 +790,7 @@ function renderRaceError(r) {
   }
 
   $entryTable.innerHTML = `<div class="err">JSON取得失敗</div>`;
+  renderMeetPerfError();
 
   if (window.BOAT_CORE_COURSE?.renderError) {
     window.BOAT_CORE_COURSE.renderError();
@@ -568,6 +807,7 @@ async function setRace(r) {
 
   renderRaceTabs();
   $entryTable.innerHTML = `<div class="err">読み込み中…</div>`;
+  renderMeetPerfLoading();
 
   if (window.BOAT_CORE_COURSE?.renderLoading) {
     window.BOAT_CORE_COURSE.renderLoading();
@@ -629,6 +869,8 @@ function isSwipeIgnoreTarget(target) {
     target.closest(".raceTab") ||
     target.closest(".viewTabs") ||
     target.closest(".viewTab") ||
+    target.closest(".entryInnerTabs") ||
+    target.closest(".entryInnerTab") ||
     target.closest(".courseInnerTabs") ||
     target.closest(".courseInnerTab")
   );
@@ -714,7 +956,9 @@ async function boot() {
   renderRaceTabs();
   bindRaceSwipe();
   bindViewTabs();
+  bindEntryInnerTabs();
   setView(0);
+  setEntryView(0);
 
   if (window.BOAT_CORE_COURSE?.boot) {
     window.BOAT_CORE_COURSE.boot();
