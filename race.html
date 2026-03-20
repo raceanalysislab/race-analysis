@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#f6f7fb">
   <title>BOAT CORE</title>
 
-  <link rel="stylesheet" href="./css/race-detail.css?v=61">
+  <link rel="stylesheet" href="./css/race-detail.css?v=62">
   <link rel="stylesheet" href="./css/race-course.css?v=22">
 </head>
 
@@ -77,53 +77,85 @@
           <div class="viewPage">
             <div class="entryBoard">
 
-              <div class="entryHead">
-                <div class="entryHead__waku">
-                  <span class="entryHeadMain">枠</span>
-                </div>
-
-                <div class="entryHead__name">
-                  <span class="entryHeadMeta">登録番号 / 支部 / 年齢</span>
-                  <span class="entryHeadMain">選手名</span>
-                </div>
-
-                <div class="entryHead__grade">
-                  <span class="entryHeadMain">級</span>
-                </div>
-
-                <div class="entryHead__st">
-                  <span class="entryHeadMain">平均</span>
-                  <span class="entryHeadSub">ST</span>
-                </div>
-
-                <div class="entryHead__fl">
-                  <span class="entryHeadMain">F</span>
-                  <span class="entryHeadSub">L</span>
-                </div>
-
-                <div class="entryHead__nat">
-                  <span class="entryHeadMain">全国</span>
-                  <span class="entryHeadSub">勝率</span>
-                  <span class="entryHeadSub">2連率</span>
-                  <span class="entryHeadSub">3連率</span>
-                </div>
-
-                <div class="entryHead__loc">
-                  <span class="entryHeadMain">当地</span>
-                  <span class="entryHeadSub">勝率</span>
-                  <span class="entryHeadSub">2連率</span>
-                  <span class="entryHeadSub">3連率</span>
-                </div>
-
-                <div class="entryHead__motor">
-                  <span class="entryHeadMain">モーター</span>
-                  <span class="entryHeadSub">No.</span>
-                  <span class="entryHeadSub">2連率</span>
-                  <span class="entryHeadSub">3連率</span>
-                </div>
+              <div class="entryInnerTabs" id="entryInnerTabs" aria-label="出走表詳細切替">
+                <button type="button" class="entryInnerTab is-active" data-entry-view="0">
+                  出走表
+                </button>
+                <button type="button" class="entryInnerTab" data-entry-view="1">
+                  今節成績
+                </button>
               </div>
 
-              <div class="entryTable" id="entryTable"></div>
+              <div class="entrySwipe" id="entrySwipe">
+                <div class="entrySwipeTrack" id="entrySwipeTrack">
+
+                  <div class="entrySwipePage">
+                    <div class="entryHead">
+                      <div class="entryHead__waku">
+                        <span class="entryHeadMain">枠</span>
+                      </div>
+
+                      <div class="entryHead__name">
+                        <span class="entryHeadMeta">登録番号 / 支部 / 年齢</span>
+                        <span class="entryHeadMain">選手名</span>
+                      </div>
+
+                      <div class="entryHead__grade">
+                        <span class="entryHeadMain">級</span>
+                      </div>
+
+                      <div class="entryHead__st">
+                        <span class="entryHeadMain">平均</span>
+                        <span class="entryHeadSub">ST</span>
+                      </div>
+
+                      <div class="entryHead__fl">
+                        <span class="entryHeadMain">F</span>
+                        <span class="entryHeadSub">L</span>
+                      </div>
+
+                      <div class="entryHead__nat">
+                        <span class="entryHeadMain">全国</span>
+                        <span class="entryHeadSub">勝率</span>
+                        <span class="entryHeadSub">2連率</span>
+                        <span class="entryHeadSub">3連率</span>
+                      </div>
+
+                      <div class="entryHead__loc">
+                        <span class="entryHeadMain">当地</span>
+                        <span class="entryHeadSub">勝率</span>
+                        <span class="entryHeadSub">2連率</span>
+                        <span class="entryHeadSub">3連率</span>
+                      </div>
+
+                      <div class="entryHead__motor">
+                        <span class="entryHeadMain">モーター</span>
+                        <span class="entryHeadSub">No.</span>
+                        <span class="entryHeadSub">2連率</span>
+                        <span class="entryHeadSub">3連率</span>
+                      </div>
+                    </div>
+
+                    <div class="entryTable" id="entryTable"></div>
+                  </div>
+
+                  <div class="entrySwipePage">
+                    <div class="meetPerfBoard" id="meetPerfBoard">
+
+                      <div class="meetPerfHead" id="meetPerfHead">
+                        <div class="meetPerfHead__waku">枠</div>
+                        <div class="meetPerfHead__days" id="meetPerfDays"></div>
+                      </div>
+
+                      <div class="meetPerfTable" id="meetPerfTable">
+                        <div class="meetPerfEmpty">今節成績を読み込み中…</div>
+                      </div>
+
+                    </div>
+                  </div>
+
+                </div>
+              </div>
 
             </div>
           </div>
@@ -154,7 +186,7 @@
   </div>
 
   <script src="./js/race-course.js?v=11"></script>
-  <script src="./js/race-detail.js?v=26"></script>
+  <script src="./js/race-detail.js?v=27"></script>
 
 </body>
 </html>
