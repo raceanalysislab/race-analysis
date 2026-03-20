@@ -117,21 +117,16 @@ window.BOAT_CORE_MEET_PERF = (() => {
     });
   }
 
-  function renderHead(activeDayNo, totalDays) {
+  function renderHead(activeDayNo) {
     if (!$meetPerfDays) return;
-
-    const hasTotalDays = Number.isFinite(Number(totalDays)) && Number(totalDays) > 0;
-    const total = hasTotalDays ? clamp(Number(totalDays), 1, DAY_COUNT) : null;
 
     $meetPerfDays.innerHTML = `
       <div class="meetPerfDaysRow">
         ${Array.from({ length: DAY_COUNT }, (_, i) => {
           const dayNo = i + 1;
-
           const classes = [
             "meetPerfDayHead",
-            dayNo === activeDayNo ? "is-today" : "",
-            total && dayNo > total ? "is-inactive" : ""
+            dayNo === activeDayNo ? "is-today" : ""
           ].filter(Boolean).join(" ");
 
           return `<div class="${classes}">${dayNo}日目</div>`;
@@ -158,49 +153,73 @@ window.BOAT_CORE_MEET_PERF = (() => {
     return null;
   }
 
-  function normalizeRank(rank) {
-    if (rank === undefined || rank === null || rank === "") return "";
-    return String(rank);
+  function normalizeFinishText(v) {
+    if (v === undefined || v === null || v === "") return "";
+    return String(v).trim();
   }
 
-  function renderCell(slot, inactive) {
-    const course = slot?.course ?? "";
-    const st = String(slot?.st ?? "").trim();
-    const rank = normalizeRank(slot?.rank);
+  function normalizeStText(v) {
+    if (v === undefined || v === null || v === "") return "";
+    const s = String(v).trim();
+    if (!s) return "";
+    if (s.startsWith(".")) return s;
+    const n = Number(s);
+    if (Number.isFinite(n)) {
+      return `.${n.toFixed(2).split(".")[1]}`;
+    }
+    return s;
+  }
 
-    const topClass = course ? `meetPerfCellTop w${esc(course)}` : "meetPerfCellTop";
-    const isEmpty = !course && !st && !rank;
+  function renderSlot(slot) {
+    const course = safeCourse(slot?.course);
+    const st = normalizeStText(slot?.st);
+    const rank = normalizeFinishText(slot?.rank);
+
+    const empty = !course && !st && !rank;
+    if (empty) {
+      return `
+        <div class="meetPerfSlot is-empty">
+          <div class="meetPerfSlotTop"></div>
+          <div class="meetPerfSlotMid"></div>
+          <div class="meetPerfSlotBot"></div>
+        </div>
+      `;
+    }
 
     return `
-      <div class="meetPerfCell${isEmpty ? " is-empty" : ""}">
-        <div class="${topClass}">${course ? esc(course) : ""}</div>
-        <div class="meetPerfCellMid">${st ? esc(st) : ""}</div>
-        <div class="meetPerfCellBot">${rank ? esc(rank) : ""}</div>
+      <div class="meetPerfSlot">
+        <div class="meetPerfSlotTop w${esc(course || "")}">${esc(course || "")}</div>
+        <div class="meetPerfSlotMid">${esc(st)}</div>
+        <div class="meetPerfSlotBot">${esc(rank)}</div>
       </div>
     `;
   }
 
-  function renderRow(boat, days, totalDays) {
-    const total = Number.isFinite(Number(totalDays)) && Number(totalDays) > 0
-      ? clamp(Number(totalDays), 1, DAY_COUNT)
-      : null;
+  function safeCourse(v) {
+    const n = Number(v);
+    if (!Number.isFinite(n) || n < 1 || n > 6) return "";
+    return String(Math.trunc(n));
+  }
 
+  function renderDay(daySlots) {
+    const left = Array.isArray(daySlots) ? daySlots[0] : null;
+    const right = Array.isArray(daySlots) ? daySlots[1] : null;
+
+    return `
+      <div class="meetPerfDay">
+        ${renderSlot(left)}
+        ${renderSlot(right)}
+      </div>
+    `;
+  }
+
+  function renderRow(boat, days) {
     return `
       <div class="meetPerfRow">
         <div class="meetPerfRow__waku w${esc(boat.waku)}">${esc(boat.waku)}</div>
         <div class="meetPerfRow__days">
           <div class="meetPerfDayCells">
-            ${Array.from({ length: DAY_COUNT }, (_, index) => {
-              const pair = Array.isArray(days?.[index]) ? days[index] : [null, null];
-              const inactive = total && index + 1 > total;
-
-              return `
-                <div class="meetPerfDay${inactive ? " is-inactive" : ""}">
-                  ${renderCell(pair[0], inactive)}
-                  ${renderCell(pair[1], inactive)}
-                </div>
-              `;
-            }).join("")}
+            ${days.map((daySlots) => renderDay(daySlots)).join("")}
           </div>
         </div>
       </div>
@@ -211,35 +230,55 @@ window.BOAT_CORE_MEET_PERF = (() => {
     return Array.from({ length: DAY_COUNT }, () => [null, null]);
   }
 
+  function normalizeDays(rawDays) {
+    const days = buildEmptyDays();
+
+    if (!Array.isArray(rawDays)) return days;
+
+    for (let dayIndex = 0; dayIndex < DAY_COUNT; dayIndex += 1) {
+      const srcDay = rawDays[dayIndex];
+      if (!Array.isArray(srcDay)) continue;
+
+      for (let slotIndex = 0; slotIndex < SLOTS_PER_DAY; slotIndex += 1) {
+        const srcSlot = srcDay[slotIndex];
+        days[dayIndex][slotIndex] = srcSlot && typeof srcSlot === "object"
+          ? {
+              course: srcSlot.course ?? "",
+              st: srcSlot.st ?? "",
+              rank: srcSlot.rank ?? ""
+            }
+          : null;
+      }
+    }
+
+    return days;
+  }
+
   function renderTable(boats, meetPerfJson) {
     if (!$meetPerfTable) return;
 
     const racers = meetPerfJson?.racers || {};
     const rawDayNo = Number(meetPerfJson?.day_no || 0);
-    const activeDayNo = Number.isFinite(rawDayNo) && rawDayNo > 0
-      ? clamp(rawDayNo, 1, DAY_COUNT)
-      : 0;
+    const activeDayNo =
+      Number.isFinite(rawDayNo) && rawDayNo > 0
+        ? clamp(rawDayNo, 1, DAY_COUNT)
+        : 0;
 
-    const rawTotalDays = Number(meetPerfJson?.total_days || 0);
-    const totalDays = Number.isFinite(rawTotalDays) && rawTotalDays > 0
-      ? clamp(rawTotalDays, 1, DAY_COUNT)
-      : null;
-
-    renderHead(activeDayNo, totalDays);
+    renderHead(activeDayNo);
 
     $meetPerfTable.innerHTML = `
       <div class="meetPerfRows">
         ${boats.map((boat) => {
           const perfObj = findPerfObject(boat, racers);
-          const days = Array.isArray(perfObj?.days) ? perfObj.days : buildEmptyDays();
-          return renderRow(boat, days, totalDays);
+          const days = normalizeDays(perfObj?.days);
+          return renderRow(boat, days);
         }).join("")}
       </div>
     `;
   }
 
   function renderLoading() {
-    renderHead(0, null);
+    renderHead(0);
 
     if (!$meetPerfTable) return;
 
@@ -248,13 +287,13 @@ window.BOAT_CORE_MEET_PERF = (() => {
 
     $meetPerfTable.innerHTML = `
       <div class="meetPerfRows">
-        ${placeholderBoats.map((boat) => renderRow(boat, emptyDays, null)).join("")}
+        ${placeholderBoats.map((boat) => renderRow(boat, emptyDays)).join("")}
       </div>
     `;
   }
 
   function renderError(boats = null) {
-    renderHead(0, null);
+    renderHead(0);
 
     if (!$meetPerfTable) return;
 
@@ -266,7 +305,7 @@ window.BOAT_CORE_MEET_PERF = (() => {
 
     $meetPerfTable.innerHTML = `
       <div class="meetPerfRows">
-        ${baseBoats.map((boat) => renderRow(boat, emptyDays, null)).join("")}
+        ${baseBoats.map((boat) => renderRow(boat, emptyDays)).join("")}
       </div>
       <div class="meetPerfEmpty">今節成績データなし</div>
     `;
