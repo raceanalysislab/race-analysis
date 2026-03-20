@@ -77,7 +77,7 @@
 .meetPerfRow{
   display:grid;
   grid-template-columns:38px minmax(0, 1fr);
-  min-height:75px;
+  min-height:71px;
   border-bottom:1px solid var(--line);
   background:#fff;
 }
@@ -115,7 +115,7 @@
 }
 
 .meetPerfDay{
-  min-height:75px;
+  min-height:71px;
   display:grid;
   grid-template-columns:1fr 1fr;
   border-right:1px solid var(--line);
@@ -129,7 +129,7 @@
 .meetPerfSlot{
   min-width:0;
   display:grid;
-  grid-template-rows:25px 25px 25px;
+  grid-template-rows:24px 23px 24px;
   align-items:stretch;
   justify-items:stretch;
   background:#fff;
@@ -154,7 +154,7 @@
 }
 
 .meetPerfSlotTop{
-  height:25px;
+  height:24px;
   border-bottom:1px solid var(--line-soft);
   font-size:10px;
   line-height:1;
@@ -172,7 +172,7 @@
 .meetPerfSlotTop.w6{ background:#39b36b; color:#ffffff; border:0; }
 
 .meetPerfSlotMid{
-  height:25px;
+  height:23px;
   border-bottom:1px solid var(--line-soft);
   font-size:8px;
   line-height:1;
@@ -183,7 +183,7 @@
 }
 
 .meetPerfSlotBot{
-  height:25px;
+  height:24px;
   font-size:10px;
   line-height:1;
   font-weight:700;
@@ -222,7 +222,7 @@
 
   .meetPerfRow{
     grid-template-columns:34px minmax(0, 1fr);
-    min-height:66px;
+    min-height:62px;
   }
 
   .meetPerfRow__waku{
@@ -230,27 +230,27 @@
   }
 
   .meetPerfDay{
-    min-height:66px;
+    min-height:62px;
   }
 
   .meetPerfSlot{
-    grid-template-rows:22px 22px 22px;
+    grid-template-rows:21px 20px 21px;
   }
 
   .meetPerfSlotTop{
-    height:22px;
+    height:21px;
     font-size:9px;
     margin:0 1px;
     margin-top:1px;
   }
 
   .meetPerfSlotMid{
-    height:22px;
+    height:20px;
     font-size:7px;
   }
 
   .meetPerfSlotBot{
-    height:22px;
+    height:21px;
     font-size:9px;
     padding-bottom:2px;
   }
