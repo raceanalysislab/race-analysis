@@ -61,11 +61,6 @@
   background:#eaf1ff;
 }
 
-.meetPerfDayHead.is-inactive{
-  background:#e2e5ea;
-  color:#9aa3af;
-}
-
 .meetPerfTable{
   flex:1 1 auto;
   min-height:0;
@@ -131,10 +126,6 @@
   border-right:none;
 }
 
-.meetPerfDay.is-inactive{
-  background:#e6e8ec;
-}
-
 .meetPerfRaceSlot{
   display:grid;
   grid-template-rows:14px 1fr 14px;
@@ -152,14 +143,6 @@
 
 .meetPerfRaceSlot.is-empty{
   background:#fbfcfe;
-}
-
-.meetPerfDay.is-inactive .meetPerfRaceSlot{
-  background:#e6e8ec;
-}
-
-.meetPerfDay.is-inactive .meetPerfRaceSlot.is-empty{
-  background:#e6e8ec;
 }
 
 .meetPerfCellTop{
@@ -201,12 +184,6 @@
   text-decoration:underline;
   text-underline-offset:1px;
   letter-spacing:-.01em;
-}
-
-.meetPerfDay.is-inactive .meetPerfCellMid,
-.meetPerfDay.is-inactive .meetPerfCellBot{
-  color:#9aa3af;
-  text-decoration:none;
 }
 
 .meetPerfEmpty{
