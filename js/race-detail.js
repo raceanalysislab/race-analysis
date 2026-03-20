@@ -27,8 +27,6 @@ const RACER_GENDER_URL =
   "https://raceanalysislab.github.io/race-analysis/data/master/racer_gender.json";
 const MEET_PERF_BASE_URL =
   "https://raceanalysislab.github.io/race-analysis/data/meet_perf/";
-
-/* 公開されているメイン側 */
 const MEET_AVG_ST_BASE_URL =
   "https://raceanalysislab.github.io/race-analysis/data/meet_avg_st/";
 
@@ -304,13 +302,12 @@ async function loadMeetAvgStForRace(json) {
 }
 
 function buildUrls(r, dateStr) {
-  const fileName = `${jcd}_${r}R.json}`;
-  const candidates = [
-    `${RACES_BASE_URL}${dateStr}/${jcd}_${r}R.json`,
-    `${RACES_BASE_URL}${addDaysYMD(dateStr, 1)}/${jcd}_${r}R.json`,
-    `${RACES_BASE_URL}${addDaysYMD(dateStr, -1)}/${jcd}_${r}R.json`
+  const fileName = `${jcd}_${r}R.json`;
+  return [
+    `${RACES_BASE_URL}${dateStr}/${fileName}`,
+    `${RACES_BASE_URL}${addDaysYMD(dateStr, 1)}/${fileName}`,
+    `${RACES_BASE_URL}${addDaysYMD(dateStr, -1)}/${fileName}`
   ];
-  return candidates;
 }
 
 async function fetchRaceJSON(r) {
