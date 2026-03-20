@@ -117,36 +117,11 @@ window.BOAT_CORE_MEET_PERF = (() => {
     });
   }
 
-  function buildSlotChars(raw) {
-    const capacity = DAY_COUNT * SLOTS_PER_DAY;
-    const chars = Array.from(String(raw ?? "").replace(/\u3000/g, " "));
-    const slots = Array.from({ length: capacity }, () => "");
-
-    for (let i = 0; i < capacity && i < chars.length; i += 1) {
-      const ch = chars[i];
-      slots[i] = ch === " " ? "" : ch;
-    }
-
-    return slots;
-  }
-
-  function buildDays(raw) {
-    const slots = buildSlotChars(raw);
-    const days = [];
-
-    for (let day = 0; day < DAY_COUNT; day += 1) {
-      const start = day * SLOTS_PER_DAY;
-      days.push([
-        slots[start] || "",
-        slots[start + 1] || ""
-      ]);
-    }
-
-    return days;
-  }
-
-  function renderHead(activeDayNo) {
+  function renderHead(currentDayNo, totalDays) {
     if (!$meetPerfDays) return;
+
+    const safeCurrentDay = Number.isFinite(Number(currentDayNo)) ? Number(currentDayNo) : 0;
+    const safeTotalDays = Number.isFinite(Number(totalDays)) ? Number(totalDays) : DAY_COUNT;
 
     $meetPerfDays.innerHTML = `
       <div class="meetPerfDaysRow">
@@ -154,8 +129,8 @@ window.BOAT_CORE_MEET_PERF = (() => {
           const dayNo = i + 1;
           const classes = [
             "meetPerfDayHead",
-            dayNo === activeDayNo ? "is-today" : "",
-            activeDayNo > 0 && dayNo > activeDayNo ? "is-inactive" : ""
+            dayNo === safeCurrentDay ? "is-today" : "",
+            dayNo > safeTotalDays ? "is-inactive" : ""
           ].filter(Boolean).join(" ");
 
           return `<div class="${classes}">${dayNo}日目</div>`;
@@ -182,10 +157,48 @@ window.BOAT_CORE_MEET_PERF = (() => {
     return null;
   }
 
-  function renderCell(content) {
-    if (!content) {
+  function buildEmptyDays() {
+    return Array.from({ length: DAY_COUNT }, () =>
+      Array.from({ length: SLOTS_PER_DAY }, () => null)
+    );
+  }
+
+  function normalizeDays(days) {
+    const out = buildEmptyDays();
+
+    if (!Array.isArray(days)) return out;
+
+    for (let dayIdx = 0; dayIdx < DAY_COUNT; dayIdx += 1) {
+      const day = Array.isArray(days[dayIdx]) ? days[dayIdx] : [];
+
+      for (let slotIdx = 0; slotIdx < SLOTS_PER_DAY; slotIdx += 1) {
+        const item = day[slotIdx];
+        if (!item || typeof item !== "object") {
+          out[dayIdx][slotIdx] = null;
+          continue;
+        }
+
+        out[dayIdx][slotIdx] = {
+          course:
+            item.course !== undefined && item.course !== null && item.course !== ""
+              ? String(item.course)
+              : "",
+          st: item.st ? String(item.st) : "",
+          rank:
+            item.rank !== undefined && item.rank !== null && item.rank !== ""
+              ? String(item.rank)
+              : ""
+        };
+      }
+    }
+
+    return out;
+  }
+
+  function renderRaceSlot(item) {
+    if (!item) {
       return `
-        <div class="meetPerfCell is-empty">
+        <div class="meetPerfRaceSlot is-empty">
           <div class="meetPerfCellTop"></div>
           <div class="meetPerfCellMid"></div>
           <div class="meetPerfCellBot"></div>
@@ -193,28 +206,33 @@ window.BOAT_CORE_MEET_PERF = (() => {
       `;
     }
 
+    const course = item.course || "";
+    const st = item.st || "";
+    const rank = item.rank || "";
+
     return `
-      <div class="meetPerfCell">
-        <div class="meetPerfCellTop"></div>
-        <div class="meetPerfCellMid"></div>
-        <div class="meetPerfCellBot">${esc(content)}</div>
+      <div class="meetPerfRaceSlot">
+        <div class="meetPerfCellTop${course ? ` w${esc(course)}` : ""}">${esc(course)}</div>
+        <div class="meetPerfCellMid">${esc(st)}</div>
+        <div class="meetPerfCellBot">${esc(rank)}</div>
       </div>
     `;
   }
 
-  function renderRow(boat, days, activeDayNo) {
+  function renderRow(boat, days, totalDays) {
     return `
       <div class="meetPerfRow">
         <div class="meetPerfRow__waku w${esc(boat.waku)}">${esc(boat.waku)}</div>
         <div class="meetPerfRow__days">
           <div class="meetPerfDayCells">
             ${days.map((pair, index) => {
-              const inactive = activeDayNo > 0 && index + 1 > activeDayNo;
+              const dayNo = index + 1;
+              const inactive = dayNo > totalDays;
 
               return `
                 <div class="meetPerfDay${inactive ? " is-inactive" : ""}">
-                  ${renderCell(pair[0])}
-                  ${renderCell(pair[1])}
+                  ${renderRaceSlot(pair[0])}
+                  ${renderRaceSlot(pair[1])}
                 </div>
               `;
             }).join("")}
@@ -229,41 +247,48 @@ window.BOAT_CORE_MEET_PERF = (() => {
 
     const racers = meetPerfJson?.racers || {};
     const rawDayNo = Number(meetPerfJson?.day_no || 0);
-    const activeDayNo = Number.isFinite(rawDayNo) && rawDayNo > 0
-      ? clamp(rawDayNo, 1, DAY_COUNT)
-      : 0;
+    const rawTotalDays = Number(meetPerfJson?.total_days || 0);
 
-    renderHead(activeDayNo);
+    const currentDayNo =
+      Number.isFinite(rawDayNo) && rawDayNo > 0
+        ? clamp(rawDayNo, 1, DAY_COUNT)
+        : 0;
+
+    const totalDays =
+      Number.isFinite(rawTotalDays) && rawTotalDays > 0
+        ? clamp(rawTotalDays, 1, DAY_COUNT)
+        : DAY_COUNT;
+
+    renderHead(currentDayNo, totalDays);
 
     $meetPerfTable.innerHTML = `
       <div class="meetPerfRows">
         ${boats.map((boat) => {
           const perfObj = findPerfObject(boat, racers);
-          const raw = String(perfObj?.meet_perf_raw || "");
-          const days = buildDays(raw);
-          return renderRow(boat, days, activeDayNo);
+          const days = normalizeDays(perfObj?.days);
+          return renderRow(boat, days, totalDays);
         }).join("")}
       </div>
     `;
   }
 
   function renderLoading() {
-    renderHead(0);
+    renderHead(0, DAY_COUNT);
 
     if (!$meetPerfTable) return;
 
     const placeholderBoats = [1, 2, 3, 4, 5, 6].map((waku) => ({ waku }));
-    const emptyDays = buildDays("");
+    const emptyDays = buildEmptyDays();
 
     $meetPerfTable.innerHTML = `
       <div class="meetPerfRows">
-        ${placeholderBoats.map((boat) => renderRow(boat, emptyDays, 0)).join("")}
+        ${placeholderBoats.map((boat) => renderRow(boat, emptyDays, DAY_COUNT)).join("")}
       </div>
     `;
   }
 
   function renderError(boats = null) {
-    renderHead(0);
+    renderHead(0, DAY_COUNT);
 
     if (!$meetPerfTable) return;
 
@@ -271,11 +296,11 @@ window.BOAT_CORE_MEET_PERF = (() => {
       ? boats
       : [1, 2, 3, 4, 5, 6].map((waku) => ({ waku }));
 
-    const emptyDays = buildDays("");
+    const emptyDays = buildEmptyDays();
 
     $meetPerfTable.innerHTML = `
       <div class="meetPerfRows">
-        ${baseBoats.map((boat) => renderRow(boat, emptyDays, 0)).join("")}
+        ${baseBoats.map((boat) => renderRow(boat, emptyDays, DAY_COUNT)).join("")}
       </div>
       <div class="meetPerfEmpty">今節成績データなし</div>
     `;
