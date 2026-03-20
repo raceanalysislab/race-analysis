@@ -1,0 +1,249 @@
+/* 今節成績 */
+.meetPerfBoard{
+  min-height:100%;
+  background:#fff;
+  display:flex;
+  flex-direction:column;
+}
+
+.meetPerfHead{
+  display:grid;
+  grid-template-columns:42px minmax(0, 1fr);
+  border-bottom:1px solid var(--line);
+  background:#eef1f4;
+  flex:0 0 auto;
+}
+
+.meetPerfHead__waku{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:52px;
+  border-right:1px solid var(--line);
+  color:#5f6978;
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:-.02em;
+}
+
+.meetPerfHead__days{
+  min-width:0;
+  overflow:hidden;
+}
+
+.meetPerfDaysRow{
+  width:100%;
+  display:grid;
+  grid-template-columns:repeat(7, minmax(0, 1fr));
+}
+
+.meetPerfDayHead{
+  min-height:52px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-right:1px solid var(--line);
+  color:#5f6978;
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:-.02em;
+  background:#eef1f4;
+}
+
+.meetPerfDayHead:last-child{
+  border-right:none;
+}
+
+.meetPerfDayHead.is-today{
+  color:#234ea8;
+  background:#eaf1ff;
+}
+
+.meetPerfDayHead.is-inactive{
+  background:#e2e5ea;
+  color:#9aa3af;
+}
+
+.meetPerfTable{
+  flex:1 1 auto;
+  min-height:0;
+  overflow:auto;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+  background:#fff;
+}
+
+.meetPerfRows{
+  width:100%;
+}
+
+.meetPerfRow{
+  display:grid;
+  grid-template-columns:42px minmax(0, 1fr);
+  min-height:84px;
+  border-bottom:1px solid var(--line);
+  background:#fff;
+}
+
+.meetPerfRow:last-child{
+  border-bottom:none;
+}
+
+.meetPerfRow__waku{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:19px;
+  font-weight:800;
+  border-right:1px solid var(--line);
+  letter-spacing:-.015em;
+}
+
+.meetPerfRow__waku.w1{ background:#ffffff; color:#111827; }
+.meetPerfRow__waku.w2{ background:#444b55; color:#ffffff; }
+.meetPerfRow__waku.w3{ background:#ea5a50; color:#ffffff; }
+.meetPerfRow__waku.w4{ background:#4d82d8; color:#ffffff; }
+.meetPerfRow__waku.w5{ background:#e6d74a; color:#1e2430; }
+.meetPerfRow__waku.w6{ background:#39b36b; color:#ffffff; }
+
+.meetPerfRow__days{
+  min-width:0;
+  overflow:hidden;
+}
+
+.meetPerfDayCells{
+  width:100%;
+  display:grid;
+  grid-template-columns:repeat(7, minmax(0, 1fr));
+}
+
+.meetPerfDay{
+  display:grid;
+  grid-template-rows:1fr 1fr;
+  border-right:1px solid var(--line);
+  background:#fff;
+  min-height:84px;
+}
+
+.meetPerfDay:last-child{
+  border-right:none;
+}
+
+.meetPerfDay.is-inactive{
+  background:#e6e8ec;
+}
+
+.meetPerfCell{
+  position:relative;
+  min-height:42px;
+  border-bottom:1px solid var(--line-soft);
+  background:#fff;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:2px;
+  padding:3px 2px;
+}
+
+.meetPerfDay .meetPerfCell:last-child{
+  border-bottom:none;
+}
+
+.meetPerfDay.is-inactive .meetPerfCell{
+  background:#e6e8ec;
+}
+
+.meetPerfCell.is-empty{
+  background:#fbfcfe;
+}
+
+.meetPerfDay.is-inactive .meetPerfCell.is-empty{
+  background:#e6e8ec;
+}
+
+.meetPerfCellTop{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:22px;
+  height:18px;
+  padding:0 4px;
+  border-radius:0;
+  font-size:15px;
+  line-height:1;
+  font-weight:800;
+  letter-spacing:-.01em;
+}
+
+.meetPerfCellTop.w1{ background:#ffffff; color:#111827; border:1px solid #d7dde5; }
+.meetPerfCellTop.w2{ background:#444b55; color:#ffffff; }
+.meetPerfCellTop.w3{ background:#ea5a50; color:#ffffff; }
+.meetPerfCellTop.w4{ background:#4d82d8; color:#ffffff; }
+.meetPerfCellTop.w5{ background:#e6d74a; color:#1e2430; }
+.meetPerfCellTop.w6{ background:#39b36b; color:#ffffff; }
+
+.meetPerfCellMid{
+  font-size:13px;
+  line-height:1;
+  font-weight:600;
+  color:#2f3745;
+  font-variant-numeric:tabular-nums;
+  letter-spacing:-.01em;
+}
+
+.meetPerfCellBot{
+  font-size:15px;
+  line-height:1;
+  font-weight:700;
+  color:#2a67d8;
+  font-variant-numeric:tabular-nums;
+  text-decoration:underline;
+  text-underline-offset:2px;
+  letter-spacing:-.01em;
+}
+
+.meetPerfDay.is-inactive .meetPerfCellBot,
+.meetPerfDay.is-inactive .meetPerfCellMid{
+  color:#9aa3af;
+  text-decoration:none;
+}
+
+.meetPerfEmpty{
+  padding:16px 12px;
+  color:#64748b;
+  font-size:12px;
+  line-height:1.7;
+  font-weight:600;
+  border-top:1px solid var(--line);
+  background:#f8fafc;
+}
+
+@media (max-width: 390px){
+  .meetPerfRow{
+    min-height:68px;
+  }
+
+  .meetPerfDay{
+    min-height:68px;
+  }
+
+  .meetPerfCell{
+    min-height:34px;
+  }
+
+  .meetPerfCellTop{
+    min-width:20px;
+    height:17px;
+    font-size:14px;
+    padding:0 3px;
+  }
+
+  .meetPerfCellMid{
+    font-size:12px;
+  }
+
+  .meetPerfCellBot{
+    font-size:14px;
+  }
+}
