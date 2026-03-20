@@ -156,7 +156,7 @@
 .meetPerfSlotTop{
   height:24px;
   border-bottom:1px solid var(--line-soft);
-  font-size:10px;
+  font-size:12px;
   line-height:1;
   font-weight:800;
   letter-spacing:-.01em;
@@ -174,9 +174,9 @@
 .meetPerfSlotMid{
   height:23px;
   border-bottom:1px solid var(--line-soft);
-  font-size:8px;
+  font-size:10px;
   line-height:1;
-  font-weight:600;
+  font-weight:700;
   color:#2f3745;
   font-variant-numeric:tabular-nums;
   letter-spacing:-.01em;
@@ -184,7 +184,7 @@
 
 .meetPerfSlotBot{
   height:24px;
-  font-size:10px;
+  font-size:12px;
   line-height:1;
   font-weight:700;
   color:#2a67d8;
@@ -239,19 +239,19 @@
 
   .meetPerfSlotTop{
     height:21px;
-    font-size:9px;
+    font-size:10px;
     margin:0 1px;
     margin-top:1px;
   }
 
   .meetPerfSlotMid{
     height:20px;
-    font-size:7px;
+    font-size:8px;
   }
 
   .meetPerfSlotBot{
     height:21px;
-    font-size:9px;
+    font-size:10px;
     padding-bottom:2px;
   }
 
