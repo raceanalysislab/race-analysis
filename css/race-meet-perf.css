@@ -82,7 +82,7 @@
 .meetPerfRow{
   display:grid;
   grid-template-columns:42px minmax(0, 1fr);
-  min-height:62px;
+  min-height:78px;
   border-bottom:1px solid var(--line);
   background:#fff;
 }
@@ -124,7 +124,7 @@
   grid-template-rows:1fr 1fr;
   border-right:1px solid var(--line);
   background:#fff;
-  min-height:62px;
+  min-height:78px;
 }
 
 .meetPerfDay:last-child{
@@ -135,32 +135,30 @@
   background:#e6e8ec;
 }
 
-.meetPerfCell{
-  position:relative;
-  min-height:31px;
+.meetPerfRaceSlot{
+  display:grid;
+  grid-template-rows:14px 1fr 14px;
+  align-items:center;
+  justify-items:center;
   border-bottom:1px solid var(--line-soft);
   background:#fff;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:1px;
   padding:2px 1px;
+  min-height:39px;
 }
 
-.meetPerfDay .meetPerfCell:last-child{
+.meetPerfDay .meetPerfRaceSlot:last-child{
   border-bottom:none;
 }
 
-.meetPerfDay.is-inactive .meetPerfCell{
-  background:#e6e8ec;
-}
-
-.meetPerfCell.is-empty{
+.meetPerfRaceSlot.is-empty{
   background:#fbfcfe;
 }
 
-.meetPerfDay.is-inactive .meetPerfCell.is-empty{
+.meetPerfDay.is-inactive .meetPerfRaceSlot{
+  background:#e6e8ec;
+}
+
+.meetPerfDay.is-inactive .meetPerfRaceSlot.is-empty{
   background:#e6e8ec;
 }
 
@@ -205,8 +203,8 @@
   letter-spacing:-.01em;
 }
 
-.meetPerfDay.is-inactive .meetPerfCellBot,
-.meetPerfDay.is-inactive .meetPerfCellMid{
+.meetPerfDay.is-inactive .meetPerfCellMid,
+.meetPerfDay.is-inactive .meetPerfCellBot{
   color:#9aa3af;
   text-decoration:none;
 }
@@ -233,7 +231,7 @@
   }
 
   .meetPerfRow{
-    min-height:56px;
+    min-height:70px;
   }
 
   .meetPerfRow__waku{
@@ -241,12 +239,12 @@
   }
 
   .meetPerfDay{
-    min-height:56px;
+    min-height:70px;
   }
 
-  .meetPerfCell{
-    min-height:28px;
-    gap:1px;
+  .meetPerfRaceSlot{
+    grid-template-rows:13px 1fr 13px;
+    min-height:35px;
     padding:1px;
   }
 
