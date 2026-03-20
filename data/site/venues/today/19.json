@@ -1,22 +1,22 @@
 {
   "slot": "today",
-  "date": "2026-03-20",
+  "date": "2026-03-21",
   "name": "下関",
   "jcd": "19",
   "next_race": 1,
-  "next_display": "1R 15:25",
-  "day": 2,
+  "next_display": "1R 15:23",
+  "day": 3,
   "total_days": null,
-  "day_label": "2日目",
+  "day_label": "3日目",
   "grade_label": "一般",
   "event_title": "巌流本舗杯",
-  "first_race_time": "15:25",
+  "first_race_time": "15:23",
   "card_band": "evening",
   "card_tone": "evening",
   "race_times": [
     {
       "rno": 1,
-      "cutoff": "15:25"
+      "cutoff": "15:23"
     },
     {
       "rno": 2,
@@ -24,7 +24,7 @@
     },
     {
       "rno": 3,
-      "cutoff": "16:18"
+      "cutoff": "16:13"
     },
     {
       "rno": 4,

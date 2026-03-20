@@ -1,13 +1,13 @@
 {
   "slot": "today",
-  "date": "2026-03-20",
+  "date": "2026-03-21",
   "name": "若松",
   "jcd": "20",
   "next_race": 1,
   "next_display": "1R 15:19",
-  "day": 3,
+  "day": 4,
   "total_days": null,
-  "day_label": "3日目",
+  "day_label": "4日目",
   "grade_label": "一般",
   "event_title": "サンケイスポーツ杯",
   "first_race_time": "15:19",
@@ -28,7 +28,7 @@
     },
     {
       "rno": 4,
-      "cutoff": "16:34"
+      "cutoff": "16:35"
     },
     {
       "rno": 5,

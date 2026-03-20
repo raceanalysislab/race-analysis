@@ -1,34 +1,34 @@
 {
   "slot": "today",
-  "date": "2026-03-20",
+  "date": "2026-03-21",
   "name": "浜名湖",
   "jcd": "06",
   "next_race": 1,
-  "next_display": "1R 11:32",
-  "day": 1,
+  "next_display": "1R 11:22",
+  "day": 2,
   "total_days": null,
-  "day_label": "初日",
+  "day_label": "2日目",
   "grade_label": "G3",
   "event_title": "中日カップ",
-  "first_race_time": "11:32",
+  "first_race_time": "11:22",
   "card_band": "day",
   "card_tone": "day",
   "race_times": [
     {
       "rno": 1,
-      "cutoff": "11:32"
+      "cutoff": "11:22"
     },
     {
       "rno": 2,
-      "cutoff": "12:01"
+      "cutoff": "11:47"
     },
     {
       "rno": 3,
-      "cutoff": "12:30"
+      "cutoff": "12:12"
     },
     {
       "rno": 4,
-      "cutoff": "13:04"
+      "cutoff": "12:48"
     },
     {
       "rno": 5,
@@ -44,19 +44,19 @@
     },
     {
       "rno": 8,
-      "cutoff": "15:07"
+      "cutoff": "15:02"
     },
     {
       "rno": 9,
-      "cutoff": "15:36"
+      "cutoff": "15:29"
     },
     {
       "rno": 10,
-      "cutoff": "16:03"
+      "cutoff": "15:58"
     },
     {
       "rno": 11,
-      "cutoff": "16:32"
+      "cutoff": "16:27"
     },
     {
       "rno": 12,
