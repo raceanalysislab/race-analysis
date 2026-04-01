@@ -100,7 +100,13 @@ window.BOAT_CORE_MEET_PERF = (() => {
 
   function normalizeFinishText(v) {
     if (v === undefined || v === null || v === "") return "";
-    return String(v).trim();
+
+    const s = String(v).trim();
+    if (!s) return "";
+
+    if (s.startsWith("S")) return "失";
+
+    return s;
   }
 
   function normalizeStText(v) {
@@ -175,22 +181,22 @@ window.BOAT_CORE_MEET_PERF = (() => {
     return Array.from({ length: DAY_COUNT }, () => [null, null]);
   }
 
-function normalizeDays(rawDays) {
-  const days = Array.from({ length: DAY_COUNT }, () => [null, null]);
+  function normalizeDays(rawDays) {
+    const days = Array.from({ length: DAY_COUNT }, () => [null, null]);
 
-  if (!Array.isArray(rawDays)) return days;
+    if (!Array.isArray(rawDays)) return days;
 
-  for (let i = 0; i < Math.min(rawDays.length, DAY_COUNT); i++) {
-    const d = rawDays[i];
+    for (let i = 0; i < Math.min(rawDays.length, DAY_COUNT); i++) {
+      const d = rawDays[i];
 
-    if (!Array.isArray(d)) continue;
+      if (!Array.isArray(d)) continue;
 
-    days[i][0] = d[0] || null;
-    days[i][1] = d[1] || null;
+      days[i][0] = d[0] || null;
+      days[i][1] = d[1] || null;
+    }
+
+    return days;
   }
-
-  return days;
-}
 
   function renderTable(boats, meetPerfJson) {
     if (!$meetPerfTable) return;
@@ -247,18 +253,19 @@ function normalizeDays(rawDays) {
     `;
   }
 
-async function render(boats, raceJson) {
-  renderLoading();
+  async function render(boats, raceJson) {
+    renderLoading();
 
-  try {
-    const meetPerfJson = {
-      day_no: Number(raceJson?.meet_day_no || 0)
-    };
-    renderTable(boats, meetPerfJson);
-  } catch (e) {
-    renderError(boats);
+    try {
+      const meetPerfJson = {
+        day_no: Number(raceJson?.meet_day_no || 0)
+      };
+      renderTable(boats, meetPerfJson);
+    } catch (e) {
+      renderError(boats);
+    }
   }
-}
+
   function boot() {
     bindTabs();
     setEntryView(0);
