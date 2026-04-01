@@ -18,17 +18,17 @@ const $entryTable = $("entryTable");
 const $viewTabs = $("viewTabs");
 
 const RACES_BASE_URL =
-  "https://raceanalysislab.github.io/race-analysis/data/site/races/";
+  "/data/site/races/";
 const PLAYER_MASTER_URL =
-  "https://raceanalysislab.github.io/race-analysis/data/master/players_master.json";
+  "/data/master/players_master.json";
 const PLAYER_COURSE_STATS_URL =
-  "https://raceanalysislab.github.io/race-analysis/data/player_course_stats_1y.json";
+  "/data/player_course_stats_1y.json";
 const RACER_GENDER_URL =
-  "https://raceanalysislab.github.io/race-analysis/data/master/racer_gender.json";
+  "/data/master/racer_gender.json";
 const MEET_PERF_BASE_URL =
-  "https://raceanalysislab.github.io/race-analysis/data/meet_perf/";
+  "/data/meet_perf/";
 const MEET_AVG_ST_BASE_URL =
-  "https://raceanalysislab.github.io/race-analysis/data/meet_avg_st/";
+  "/data/meet_avg_st/";
 
 $("venueName").textContent = venueName;
 
@@ -248,14 +248,6 @@ async function loadPlayerMaster() {
   }
 }
 
-async function loadPlayerCourseStats() {
-  try {
-    const json = await fetchJSON(PLAYER_COURSE_STATS_URL);
-    playerCourseStats = json?.players || {};
-  } catch (e) {
-    playerCourseStats = {};
-  }
-}
 
 async function loadRacerGender() {
   try {
@@ -425,8 +417,7 @@ async function enrichRaceJSON(rawJson) {
   const meetPayload = await loadMeetAvgStForRace(rawJson);
   const meetPlayers = meetPayload?.players || {};
 
-  const boatsWithCourse = boats.map(enrichBoatWithCourseStats);
-  const boatsWithMeet = boatsWithCourse.map((boat) =>
+  const boatsWithMeet = boats.map((boat) =>
     enrichBoatWithMeetAvgSt(boat, meetPlayers)
   );
 
@@ -462,9 +453,7 @@ function renderEntryTable(boats) {
         </div>
 
         <div class="entryGrade ${esc(gradeClass)}">${esc(gradeText)}</div>
-
-        <div class="entryVal">${formatST(pickAvgST(p))}</div>
-
+        <div class="entryVal">${safeNum(pickAvgST(p))}</div>
         <div class="entryVal entryVal--stack entryVal--fl">
           <div class="entryStatBlock entryStatBlock--fl">
             <div class="entryStatMain entryStatMain--f">${esc(renderFLValue("F", fCount))}</div>
@@ -526,7 +515,7 @@ async function renderRaceJSON(r, rawJson) {
     $eventTitle.title = title || "";
   }
 
-  const boats = Array.isArray(raceObj.boats) ? raceObj.boats : [];
+  const boats = Array.isArray(json?.race?.boats) ? json.race.boats : [];
   renderEntryTable(boats);
 
   window.BOAT_CORE_MEET_PERF?.setRaceContext({
@@ -737,7 +726,6 @@ async function boot() {
 
   await Promise.all([
     loadPlayerMaster(),
-    loadPlayerCourseStats(),
     loadRacerGender()
   ]);
 

@@ -54,43 +54,6 @@ window.BOAT_CORE_MEET_PERF = (() => {
     return `${yy}-${mm}-${dd}`;
   }
 
-  async function fetchJSON(url) {
-    const joiner = url.includes("?") ? "&" : "?";
-    const cacheBust = Math.floor(Date.now() / 60000);
-    const res = await fetch(`${url}${joiner}t=${cacheBust}`, { cache: "no-store" });
-    if (!res.ok) throw new Error(url);
-    return res.json();
-  }
-
-  function buildMeetPerfUrls(dateStr) {
-    return [
-      `${meetPerfBaseUrl}${dateStr}_${currentJcd}.json`,
-      `${meetPerfBaseUrl}${addDaysYMD(dateStr, 1)}_${currentJcd}.json`,
-      `${meetPerfBaseUrl}${addDaysYMD(dateStr, -1)}_${currentJcd}.json`
-    ];
-  }
-
-  async function loadMeetPerfForDate(dateStr) {
-    const key = `${dateStr}|${currentJcd}`;
-    if (cache[key]) return cache[key];
-
-    let lastErr = null;
-
-    for (const url of buildMeetPerfUrls(dateStr)) {
-      try {
-        const json = await fetchJSON(url);
-        const actualDate = String(json?.date || dateStr).trim();
-        cache[key] = json;
-        cache[`${actualDate}|${currentJcd}`] = json;
-        return json;
-      } catch (e) {
-        lastErr = e;
-      }
-    }
-
-    throw lastErr || new Error("meet perf not found");
-  }
-
   function setEntryView(viewIndex) {
     currentEntryView = clamp(Number(viewIndex) || 0, 0, 1);
 
@@ -135,24 +98,6 @@ window.BOAT_CORE_MEET_PERF = (() => {
     `;
   }
 
-  function findPerfObject(boat, racers) {
-    const reg = String(boat?.regno ?? boat?.reg ?? "").trim();
-    if (reg && racers?.[reg]) return racers[reg];
-
-    const targetName = normalizeName(
-      playerNameResolver ? playerNameResolver(boat) : boat?.name
-    );
-    if (!targetName) return null;
-
-    for (const value of Object.values(racers || {})) {
-      if (normalizeName(value?.name || "") === targetName) {
-        return value;
-      }
-    }
-
-    return null;
-  }
-
   function normalizeFinishText(v) {
     if (v === undefined || v === null || v === "") return "";
     return String(v).trim();
@@ -175,7 +120,7 @@ window.BOAT_CORE_MEET_PERF = (() => {
     const st = normalizeStText(slot?.st);
     const rank = normalizeFinishText(slot?.rank);
 
-    const empty = !course && !st && !rank;
+    const empty = !slot || (!course && !st && !rank);
     if (empty) {
       return `
         <div class="meetPerfSlot is-empty">
@@ -230,34 +175,26 @@ window.BOAT_CORE_MEET_PERF = (() => {
     return Array.from({ length: DAY_COUNT }, () => [null, null]);
   }
 
-  function normalizeDays(rawDays) {
-    const days = buildEmptyDays();
+function normalizeDays(rawDays) {
+  const days = Array.from({ length: DAY_COUNT }, () => [null, null]);
 
-    if (!Array.isArray(rawDays)) return days;
+  if (!Array.isArray(rawDays)) return days;
 
-    for (let dayIndex = 0; dayIndex < DAY_COUNT; dayIndex += 1) {
-      const srcDay = rawDays[dayIndex];
-      if (!Array.isArray(srcDay)) continue;
+  for (let i = 0; i < Math.min(rawDays.length, DAY_COUNT); i++) {
+    const d = rawDays[i];
 
-      for (let slotIndex = 0; slotIndex < SLOTS_PER_DAY; slotIndex += 1) {
-        const srcSlot = srcDay[slotIndex];
-        days[dayIndex][slotIndex] = srcSlot && typeof srcSlot === "object"
-          ? {
-              course: srcSlot.course ?? "",
-              st: srcSlot.st ?? "",
-              rank: srcSlot.rank ?? ""
-            }
-          : null;
-      }
-    }
+    if (!Array.isArray(d)) continue;
 
-    return days;
+    days[i][0] = d[0] || null;
+    days[i][1] = d[1] || null;
   }
+
+  return days;
+}
 
   function renderTable(boats, meetPerfJson) {
     if (!$meetPerfTable) return;
 
-    const racers = meetPerfJson?.racers || {};
     const rawDayNo = Number(meetPerfJson?.day_no || 0);
     const activeDayNo =
       Number.isFinite(rawDayNo) && rawDayNo > 0
@@ -269,8 +206,7 @@ window.BOAT_CORE_MEET_PERF = (() => {
     $meetPerfTable.innerHTML = `
       <div class="meetPerfRows">
         ${boats.map((boat) => {
-          const perfObj = findPerfObject(boat, racers);
-          const days = normalizeDays(perfObj?.days);
+          const days = normalizeDays(boat?.meet_perf);
           return renderRow(boat, days);
         }).join("")}
       </div>
@@ -311,18 +247,18 @@ window.BOAT_CORE_MEET_PERF = (() => {
     `;
   }
 
-  async function render(boats, raceJson) {
-    renderLoading();
+async function render(boats, raceJson) {
+  renderLoading();
 
-    try {
-      const dateStr = String(raceJson?.date || currentDate || "").trim();
-      const meetPerfJson = await loadMeetPerfForDate(dateStr);
-      renderTable(boats, meetPerfJson);
-    } catch (e) {
-      renderError(boats);
-    }
+  try {
+    const meetPerfJson = {
+      day_no: Number(raceJson?.meet_day_no || 0)
+    };
+    renderTable(boats, meetPerfJson);
+  } catch (e) {
+    renderError(boats);
   }
-
+}
   function boot() {
     bindTabs();
     setEntryView(0);

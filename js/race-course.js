@@ -1,7 +1,7 @@
 (() => {
   const ORDER = [1, 2, 3, 4, 5, 6];
   const RACER_GENDER_URL =
-    "https://raceanalysislab.github.io/race-analysis/data/master/racer_gender.json";
+    "https://boatcore.jp/data/master/racer_gender.json";
 
   const state = {
     raceJson: null,
@@ -40,10 +40,10 @@
   };
 
   const formatST = (v) => {
-    if (v === undefined || v === null || v === "") return "—";
+    if (v === undefined || v === null || v === "") return "0.00";
     const n = Number(v);
-    if (!Number.isFinite(n)) return "—";
-    return `.${n.toFixed(2).split(".")[1]}`;
+    if (!Number.isFinite(n)) return "0.00";
+    return n.toFixed(2);
   };
 
   const formatRate = (v) => {

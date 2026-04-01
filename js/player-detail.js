@@ -1,4 +1,4 @@
-const qs = new URLSearchParams(location.search);
+	const qs = new URLSearchParams(location.search);
 
 const playerName = decodeURIComponent(qs.get("name") || "選手情報");
 const regno = String(qs.get("regno") || "").trim();
@@ -11,14 +11,13 @@ const date = String(qs.get("date") || "").trim();
 const waku = Number(qs.get("waku") || 1);
 
 const PLAYER_COURSE_STATS_1Y_URL =
-  "https://raceanalysislab.github.io/race-analysis/data/player_course_stats_1y.json";
+  "https://boatcore.jp/data/player_course_stats_1y.json";
 const PLAYER_COURSE_STATS_3Y_URL =
-  "https://raceanalysislab.github.io/race-analysis/data/player_course_stats_3y.json";
+  "https://boatcore.jp/data/player_course_stats_3y.json";
 const PLAYER_OTHER_BOAT_TRENDS_1Y_URL =
-  "https://raceanalysislab.github.io/race-analysis/data/player_other_boat_trends_1y.json";
+  "https://boatcore.jp/data/player_other_boat_trends_1y.json";
 const PLAYER_OTHER_BOAT_TRENDS_3Y_URL =
-  "https://raceanalysislab.github.io/race-analysis/data/player_other_boat_trends_3y.json";
-
+  "https://boatcore.jp/data/player_other_boat_trends_3y.json";
 const SVG_NS = "http://www.w3.org/2000/svg";
 const $ = (id) => document.getElementById(id);
 
@@ -45,7 +44,7 @@ const RADAR_ANGLES = [-90, -30, 30, 90, 150, 210].map((deg) => deg * Math.PI / 1
 
 const EMPTY_KIMARITE = {
   "逃げ": 0,
-  "差": 0,
+  "差し": 0,
   "まくり": 0,
   "まくり差し": 0,
   "抜き": 0,
@@ -122,7 +121,10 @@ function getReferenceStartsForOtherMode() {
 }
 
 function getOtherBucket(base, otherCourse) {
-  const raw = base?.others?.[String(otherCourse)] || base?.others?.[otherCourse] || null;
+  const raw =
+    base?.others?.[String(otherCourse)] ||
+    base?.others?.[otherCourse];
+
   if (!raw) return null;
 
   const kim = raw.kimarite || raw.win_kimarite || raw.winning_kimarite || {};
@@ -132,7 +134,7 @@ function getOtherBucket(base, otherCourse) {
     third: num(raw.third) ?? 0,
     kimarite: {
       "逃げ": num(kim["逃げ"]) ?? 0,
-      "差": num(kim["差"]) ?? 0,
+      "差し": num(kim["差し"]) ?? 0,
       "まくり": num(kim["まくり"]) ?? 0,
       "まくり差し": num(kim["まくり差し"]) ?? 0,
       "抜き": num(kim["抜き"]) ?? 0,
@@ -140,7 +142,6 @@ function getOtherBucket(base, otherCourse) {
     }
   };
 }
-
 function getOtherModeDisplayRow(course) {
   const selfData = getSelfCourseDataForCurrentOtherMode();
 
@@ -152,7 +153,7 @@ function getOtherModeDisplayRow(course) {
       third: num(selfData?.third) ?? 0,
       kimarite: {
         "逃げ": num(selfData?.kimarite?.["逃げ"]) ?? 0,
-        "差": num(selfData?.kimarite?.["差"]) ?? 0,
+        "差し": num(selfData?.kimarite?.["差し"]) ?? 0,
         "まくり": num(selfData?.kimarite?.["まくり"]) ?? 0,
         "まくり差し": num(selfData?.kimarite?.["まくり差し"]) ?? 0,
         "抜き": num(selfData?.kimarite?.["抜き"]) ?? 0,
@@ -171,7 +172,7 @@ function getOtherModeDisplayRow(course) {
     third: num(bucket?.third) ?? 0,
     kimarite: {
       "逃げ": num(bucket?.kimarite?.["逃げ"]) ?? 0,
-      "差": num(bucket?.kimarite?.["差"]) ?? 0,
+      "差し": num(bucket?.kimarite?.["差し"]) ?? 0,
       "まくり": num(bucket?.kimarite?.["まくり"]) ?? 0,
       "まくり差し": num(bucket?.kimarite?.["まくり差し"]) ?? 0,
       "抜き": num(bucket?.kimarite?.["抜き"]) ?? 0,
@@ -762,7 +763,7 @@ function buildPlayerModeTable() {
     rows.ren3Rate.push(formatRate(c.ren3));
     rows.avgSt.push(formatST(c.avgSt));
     rows.nige.push(formatCount(c.kimarite?.["逃げ"]));
-    rows.sashi.push(formatCount(c.kimarite?.["差"]));
+    rows.sashi.push(formatCount(c.kimarite?.["差し"]));
     rows.makuri.push(formatCount(c.kimarite?.["まくり"]));
     rows.makurisashi.push(formatCount(c.kimarite?.["まくり差し"]));
     rows.nuki.push(formatCount(c.kimarite?.["抜き"]));
@@ -824,7 +825,7 @@ function buildOtherModeTable() {
     }
 
     nigeRow.push(formatCount(row.kimarite?.["逃げ"]));
-    sashiRow.push(formatCount(row.kimarite?.["差"]));
+    sashiRow.push(formatCount(row.kimarite?.["差し"]));
     makuriRow.push(formatCount(row.kimarite?.["まくり"]));
     makurisashiRow.push(formatCount(row.kimarite?.["まくり差し"]));
     nukiRow.push(formatCount(row.kimarite?.["抜き"]));
@@ -863,10 +864,11 @@ function resetDatasets() {
 function applyPlayerStatsToDataset(datasetKey, player) {
   const dataset = DATASETS[datasetKey];
   dataset.courseData = makeEmptyCourseData();
-  if (!player?.courses) return;
+  if (!player) return;
 
   COURSE_ORDER.forEach((courseNo) => {
-    const c = player.courses?.[String(courseNo)] || player.courses?.[courseNo] || {};
+    const c = player[String(courseNo)] || player?.[courseNo] || {};
+
     dataset.courseData[courseNo] = {
       starts: num(c.starts),
       first: num(c.first),
@@ -878,7 +880,7 @@ function applyPlayerStatsToDataset(datasetKey, player) {
       avgSt: num(c.avg_st),
       kimarite: {
         "逃げ": num(c.kimarite?.["逃げ"]) ?? 0,
-        "差": num(c.kimarite?.["差"]) ?? 0,
+        "差し": num(c.kimarite?.["差し"]) ?? 0,
         "まくり": num(c.kimarite?.["まくり"]) ?? 0,
         "まくり差し": num(c.kimarite?.["まくり差し"]) ?? 0,
         "抜き": num(c.kimarite?.["抜き"]) ?? 0,
@@ -906,16 +908,22 @@ function applyOtherBoatStatsToDataset(datasetKey, playerRaw) {
     if (!base) return;
 
     const others = {};
+
     COURSE_ORDER.forEach((otherCourse) => {
-      const o = base.others?.[String(otherCourse)] || base.others?.[otherCourse] || {};
-      const kim = o.kimarite || o.win_kimarite || o.winning_kimarite || {};
+      const o =
+        base.others?.[String(otherCourse)] ||
+        base.others?.[otherCourse];
+
+      if (!o) return;
+
+      const kim = o.kimarite || {};
       others[String(otherCourse)] = {
         first: num(o.first) ?? 0,
         second: num(o.second) ?? 0,
         third: num(o.third) ?? 0,
         kimarite: {
           "逃げ": num(kim["逃げ"]) ?? 0,
-          "差": num(kim["差"]) ?? 0,
+          "差し": num(kim["差し"]) ?? 0,
           "まくり": num(kim["まくり"]) ?? 0,
           "まくり差し": num(kim["まくり差し"]) ?? 0,
           "抜き": num(kim["抜き"]) ?? 0,
@@ -956,17 +964,22 @@ async function loadPlayerStats() {
   resetDatasets();
   if (!regno) return;
 
-  const [p1, p3, o1, o3] = await Promise.all([
-    fetchJsonSafe(PLAYER_COURSE_STATS_1Y_URL),
-    fetchJsonSafe(PLAYER_COURSE_STATS_3Y_URL),
-    fetchJsonSafe(PLAYER_OTHER_BOAT_TRENDS_1Y_URL),
-    fetchJsonSafe(PLAYER_OTHER_BOAT_TRENDS_3Y_URL)
-  ]);
+  const res = await fetch(`/data/site/player/${regno}.json`);
+  const data = await res.json();
 
-  applyPlayerStatsToDataset("1y", pickStandardPlayer(p1, regno));
-  applyPlayerStatsToDataset("3y", pickStandardPlayer(p3, regno));
-  applyOtherBoatStatsToDataset("other1y", pickOtherPlayer(o1, regno));
-  applyOtherBoatStatsToDataset("other3y", pickOtherPlayer(o3, regno));
+  if (!data) return;
+
+  applyPlayerStatsToDataset("1y", data.courses_1y || {});
+  applyPlayerStatsToDataset("3y", data.courses_3y || {});
+
+  applyOtherBoatStatsToDataset("other1y", data.other_1y || {});
+  applyOtherBoatStatsToDataset("other3y", data.other_3y || {});
+
+  DATASETS["1y"].summary = data.summary_1y || {};
+  DATASETS["3y"].summary = data.summary_3y || {};
+
+  DATASETS["1y"].polygon = data.polygon_1y || [];
+  DATASETS["3y"].polygon = data.polygon_3y || [];
 }
 
 async function boot() {

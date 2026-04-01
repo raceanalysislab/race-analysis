@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f6f7fb">
+  <title>選手情報 | BOAT CORE</title>
+
+  <link rel="stylesheet" href="./css/player-detail.css?v=6">
+</head>
+
+<body>
+  <div class="playerTop" id="playerTop">
+    <div class="playerHead">
+      <div class="playerHead__left">
+        <div class="playerBrand">BOAT CORE</div>
+
+        <div class="playerTitleRow">
+          <div class="playerName" id="playerName">—</div>
+          <div class="playerMetaInline" id="playerMetaInline">—</div>
+        </div>
+
+        <div class="playerSubMeta">
+          <span class="playerSubChip" id="playerVenue">—</span>
+          <span class="playerSubChip" id="playerRace">—R</span>
+          <span class="playerSubChip" id="playerDate">—</span>
+        </div>
+      </div>
+
+      <button class="playerBackBtn" type="button" id="btnBack">戻る</button>
+    </div>
+  </div>
+
+  <main class="playerBody">
+
+    <section class="playerSection playerSection--hero">
+      <div class="courseHeroCard" id="courseHeroCard">
+        <div class="courseHeroTabs" id="courseHeroTabs"></div>
+
+        <div class="courseHeroBody">
+          <div class="courseRadarCard" id="courseRadarCard">
+            <div class="courseRadarStage">
+              <div class="courseRadarBg"></div>
+
+              <svg class="courseRadarSvg" viewBox="0 0 320 320" aria-hidden="true">
+                <g id="courseRadarGrid"></g>
+                <polygon id="courseRadarPolygon" points=""></polygon>
+              </svg>
+
+              <div class="courseRadarLabels">
+                <div class="radarLabel radarLabel--1">1コース</div>
+                <div class="radarLabel radarLabel--2">2コース</div>
+                <div class="radarLabel radarLabel--3">3コース</div>
+                <div class="radarLabel radarLabel--4">4コース</div>
+                <div class="radarLabel radarLabel--5">5コース</div>
+                <div class="radarLabel radarLabel--6">6コース</div>
+              </div>
+
+              <div class="courseTypePill" id="courseTypePill">—</div>
+            </div>
+          </div>
+
+          <div class="courseStatCard" id="courseStatCard">
+            <div class="courseStatHead">
+              <div class="courseStatHead__course" id="selectedCourseTitle">—</div>
+              <div class="courseStatHead__type" id="selectedCourseType">—</div>
+            </div>
+
+            <div class="courseStatRows">
+              <div class="courseStatRow">
+                <div class="courseStatLabel">1着率</div>
+                <div class="courseStatValue" id="winRateText">—</div>
+              </div>
+              <div class="meter meter--blue">
+                <div class="meterFill" id="winRateFill"></div>
+              </div>
+
+              <div class="courseStatRow">
+                <div class="courseStatLabel">2連対率</div>
+                <div class="courseStatValue" id="ren2RateText">—</div>
+              </div>
+              <div class="meter meter--cyan">
+                <div class="meterFill" id="ren2RateFill"></div>
+              </div>
+
+              <div class="courseStatRow">
+                <div class="courseStatLabel">3連対率</div>
+                <div class="courseStatValue" id="ren3RateText">—</div>
+              </div>
+              <div class="meter meter--green">
+                <div class="meterFill" id="ren3RateFill"></div>
+              </div>
+            </div>
+
+            <div class="kimariteCard">
+              <div class="kimariteHead">決まり手</div>
+              <div class="kimariteMain" id="kimariteMain">—</div>
+              <div class="kimariteSub" id="kimariteSub">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="playerSection">
+      <div class="playerSectionHead">
+        <div class="playerDataTabs" id="playerDataTabs">
+          <button type="button" class="playerDataTab is-active" data-range="1y">直近1年データ</button>
+          <button type="button" class="playerDataTab" data-range="3y">直近3年データ</button>
+        </div>
+      </div>
+
+      <div class="playerTableWrap">
+        <div class="playerCourseTable" id="playerCourseStats"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="./js/player-detail.js?v=7"></script>
+</body>
+</html>

@@ -1,0 +1,445 @@
+{
+  "date": "2026-03-30",
+  "venue": "大村",
+  "jcd": "24",
+  "day": 3,
+  "total_days": null,
+  "day_label": "3日目",
+  "event_title": "おおむら桜祭り競走 イオン大謝恩祭",
+  "grade_label": "一般",
+  "race": {
+    "rno": 7,
+    "name": "予選",
+    "shinin": "進入固定",
+    "distance_m": 1800,
+    "cutoff": "18:04",
+    "boats": [
+      {
+        "waku": 1,
+        "regno": 4958,
+        "name": "溝口海義也",
+        "age": 30,
+        "branch": "福岡",
+        "weight": 56,
+        "grade": "A2",
+        "nat_win": 6.37,
+        "nat_2": 40.94,
+        "loc_win": 6.78,
+        "loc_2": 47.22,
+        "motor_no": 34,
+        "motor_2": 39.89,
+        "boat_no": 59,
+        "boat_2": 41.21,
+        "note": "223 11",
+        "avg_st": 0.141,
+        "st_count": 793,
+        "course_starts": 52,
+        "course_win": 67.3,
+        "course_2ren": 75.0,
+        "course_3ren": 82.7,
+        "course_avg_st": 0.14,
+        "course_sashi": 0,
+        "course_makuri": 0,
+        "course_makurisashi": 0,
+        "meet_perf": [
+          [
+            {
+              "course": 5,
+              "st": ".18",
+              "rank": 2
+            },
+            {
+              "course": 2,
+              "st": ".14",
+              "rank": 2
+            }
+          ],
+          [
+            {
+              "course": 4,
+              "st": ".10",
+              "rank": 3
+            },
+            null
+          ],
+          [
+            null,
+            null
+          ],
+          [
+            null,
+            null
+          ],
+          [
+            null,
+            null
+          ],
+          [
+            null,
+            null
+          ],
+          [
+            null,
+            null
+          ]
+        ]
+      },
+      {
+        "waku": 2,
+        "regno": 4103,
+        "name": "山崎善庸",
+        "age": 46,
+        "branch": "埼玉",
+        "weight": 55,
+        "grade": "B1",
+        "nat_win": 3.62,
+        "nat_2": 16.46,
+        "loc_win": 2.86,
+        "loc_2": 7.14,
+        "motor_no": 36,
+        "motor_2": 36.46,
+        "boat_no": 72,
+        "boat_2": 40.59,
+        "note": "656 2",
+        "avg_st": 0.224,
+        "st_count": 583,
+        "course_starts": 31,
+        "course_win": 3.2,
+        "course_2ren": 22.6,
+        "course_3ren": 32.3,
+        "course_avg_st": 0.23,
+        "course_sashi": 0,
+        "course_makuri": 1,
+        "course_makurisashi": 0,
+        "meet_perf": [
+          [
+            {
+              "course": 5,
+              "st": ".16",
+              "rank": 6
+            },
+            {
+              "course": 2,
+              "st": ".23",
+              "rank": 5
+            }
+          ],
+          [
+            {
+              "course": 6,
+              "st": ".17",
+              "rank": 6
+            },
+            null
+          ],
+          [
+            null,
+            null
+          ],
+          [
+            null,
+            null
+          ],
+          [
+            null,
+            null
+          ],
+          [
+            null,
+            null
+          ],
+          [
+            null,
+            null
+          ]
+        ]
+      },
+      {
+        "waku": 3,
+        "regno": 2538,
+        "name": "高橋二朗",
+        "age": 76,
+        "branch": "東京",
+        "weight": 52,
+        "grade": "B1",
+        "nat_win": 3.61,
+        "nat_2": 10.0,
+        "loc_win": 3.2,
+        "loc_2": 13.33,
+        "motor_no": 18,
+        "motor_2": 31.64,
+        "boat_no": 23,
+        "boat_2": 36.26,
+        "note": "464 1",
+        "avg_st": 0.202,
+        "st_count": 523,
+        "course_starts": 32,
+        "course_win": 0.0,
+        "course_2ren": 6.2,
+        "course_3ren": 12.5,
+        "course_avg_st": 0.22,
+        "course_sashi": 0,
+        "course_makuri": 0,
+        "course_makurisashi": 0,
+        "meet_perf": [
+          [
+            {
+              "course": 5,
+              "st": ".14",
+              "rank": 4
+            },
+            {
+              "course": 4,
+              "st": ".33",
+              "rank": 6
+            }
+          ],
+          [
+            {
+              "course": 2,
+              "st": ".37",
+              "rank": 4
+            },
+            null
+          ],
+          [
+            null,
+            null
+          ],
+          [
+            null,
+            null
+          ],
+          [
+            null,
+            null
+          ],
+          [
+            null,
+            null
+          ],
+          [
+            null,
+            null
+          ]
+        ]
+      },
+      {
+        "waku": 4,
+        "regno": 5026,
+        "name": "安河内健",
+        "age": 30,
+        "branch": "佐賀",
+        "weight": 56,
+        "grade": "A1",
+        "nat_win": 6.47,
+        "nat_2": 50.88,
+        "loc_win": 7.14,
+        "loc_2": 55.1,
+        "motor_no": 52,
+        "motor_2": 32.34,
+        "boat_no": 32,
+        "boat_2": 38.18,
+        "note": "5622",
+        "avg_st": 0.149,
+        "st_count": 682,
+        "course_starts": 36,
+        "course_win": 13.9,
+        "course_2ren": 47.2,
+        "course_3ren": 61.1,
+        "course_avg_st": 0.17,
+        "course_sashi": 0,
+        "course_makuri": 2,
+        "course_makurisashi": 2,
+        "meet_perf": [
+          [
+            {
+              "course": 2,
+              "st": ".20",
+              "rank": 5
+            },
+            {
+              "course": 6,
+              "st": ".31",
+              "rank": 6
+            }
+          ],
+          [
+            {
+              "course": 5,
+              "st": ".13",
+              "rank": 2
+            },
+            {
+              "course": 1,
+              "st": ".17",
+              "rank": 2
+            }
+          ],
+          [
+            null,
+            null
+          ],
+          [
+            null,
+            null
+          ],
+          [
+            null,
+            null
+          ],
+          [
+            null,
+            null
+          ],
+          [
+            null,
+            null
+          ]
+        ]
+      },
+      {
+        "waku": 5,
+        "regno": 4555,
+        "name": "富永大一",
+        "age": 36,
+        "branch": "福岡",
+        "weight": 55,
+        "grade": "A2",
+        "nat_win": 5.24,
+        "nat_2": 31.82,
+        "loc_win": 5.83,
+        "loc_2": 27.59,
+        "motor_no": 39,
+        "motor_2": 31.55,
+        "boat_no": 36,
+        "boat_2": 30.06,
+        "note": "4 43",
+        "avg_st": 0.185,
+        "st_count": 606,
+        "course_starts": 27,
+        "course_win": 0.0,
+        "course_2ren": 14.8,
+        "course_3ren": 40.7,
+        "course_avg_st": 0.2,
+        "course_sashi": 0,
+        "course_makuri": 0,
+        "course_makurisashi": 0,
+        "meet_perf": [
+          [
+            {
+              "course": 3,
+              "st": ".19",
+              "rank": 4
+            },
+            null
+          ],
+          [
+            {
+              "course": 2,
+              "st": ".18",
+              "rank": 4
+            },
+            {
+              "course": 6,
+              "st": ".12",
+              "rank": 3
+            }
+          ],
+          [
+            null,
+            null
+          ],
+          [
+            null,
+            null
+          ],
+          [
+            null,
+            null
+          ],
+          [
+            null,
+            null
+          ],
+          [
+            null,
+            null
+          ]
+        ]
+      },
+      {
+        "waku": 6,
+        "regno": 5123,
+        "name": "福山恵里奈",
+        "age": 29,
+        "branch": "山口",
+        "weight": 48,
+        "grade": "B1",
+        "nat_win": 4.15,
+        "nat_2": 20.21,
+        "loc_win": 3.06,
+        "loc_2": 6.25,
+        "motor_no": 66,
+        "motor_2": 36.69,
+        "boat_no": 35,
+        "boat_2": 35.47,
+        "note": "4 26 3",
+        "avg_st": 0.179,
+        "st_count": 452,
+        "course_starts": 22,
+        "course_win": 0.0,
+        "course_2ren": 4.5,
+        "course_3ren": 18.2,
+        "course_avg_st": 0.18,
+        "course_sashi": 0,
+        "course_makuri": 0,
+        "course_makurisashi": 0,
+        "meet_perf": [
+          [
+            {
+              "course": 4,
+              "st": ".00",
+              "rank": 4
+            },
+            null
+          ],
+          [
+            {
+              "course": 2,
+              "st": ".15",
+              "rank": 2
+            },
+            {
+              "course": 5,
+              "st": ".09",
+              "rank": 6
+            }
+          ],
+          [
+            null,
+            null
+          ],
+          [
+            null,
+            null
+          ],
+          [
+            null,
+            null
+          ],
+          [
+            null,
+            null
+          ],
+          [
+            null,
+            null
+          ]
+        ]
+      }
+    ],
+    "tags": []
+  },
+  "meet_day_no": 3
+}

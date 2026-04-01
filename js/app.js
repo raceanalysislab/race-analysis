@@ -17,7 +17,7 @@ function addDaysYMD(ymd, days) {
 }
 
 function buildVenuesUrl() {
-  return "https://raceanalysislab.github.io/race-analysis/data/site/venues_today.json";
+  return "/data/site/venues_today.json";
 }
 
 const NOTE_URLS = {
@@ -332,7 +332,7 @@ function updateNextRaceBox(list) {
   $nextRaceText.textContent = `${nextRace.venueName} ${nextRace.raceNo}R ${nextRace.cutoff}`;
   $nextRaceBox.setAttribute(
     "href",
-    `./race.html?date=${encodeURIComponent(nextRace.date)}&name=${encodeURIComponent(nextRace.venueName)}&race=${encodeURIComponent(nextRace.raceNo)}&jcd=${encodeURIComponent(nextRace.jcd)}`
+    `./race.html?date=${encodeURIComponent(getLocalYMD())}&name=${encodeURIComponent(nextRace.venueName)}&race=${encodeURIComponent(nextRace.raceNo)}&jcd=${encodeURIComponent(nextRace.jcd)}`
   );
   $nextRaceBox.removeAttribute("aria-disabled");
 }
@@ -677,7 +677,7 @@ function renderOnCard(base, v) {
 
   return `
     <a class="card card--on ${isGeneral ? "card--general" : ""} ${next.soldout ? "card--soldout" : ""} ${next.danger ? "card--danger" : ""} card--tone-${esc(tone)}"
-       href="./race.html?date=${encodeURIComponent(date)}&jcd=${encodeURIComponent(base.jcd)}&name=${encodeURIComponent(base.name)}&race=${encodeURIComponent(targetRaceNo)}">
+      href="./race.html?date=${encodeURIComponent(v.date)}&jcd=${encodeURIComponent(base.jcd)}&name=${encodeURIComponent(base.name)}&race=${encodeURIComponent(targetRaceNo)}"
       <div class="card__nameRow">
         <span class="card__nameIcon card__nameIcon--empty"></span>
         <div class="card__name">${esc(base.name)}</div>
@@ -700,7 +700,7 @@ function renderGrid(list) {
   const map = buildVenueMap(list);
 
   $grid.innerHTML = VENUES.map((base) => {
-    const item = map.get(base.jcd);
+    const item = map.get(base.jcd)
     return item ? renderOnCard(base, item) : renderOffCard(base);
   }).join("");
 
