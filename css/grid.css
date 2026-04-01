@@ -47,9 +47,9 @@
   left:0;
   right:0;
   top:0;
-  height:56%;
+  height:48%;
   pointer-events:none;
-  opacity:.78;
+  opacity:.52;
   background:var(--toneTop, rgba(15,23,42,.12));
   border-top-left-radius:7px;
   border-top-right-radius:7px;
@@ -159,13 +159,15 @@
 }
 
 .card__name{
-  font-weight:600;
+  font-weight:700;
   font-size:17px;
   line-height:1.04;
   letter-spacing:.01em;
   color:#0f172a;
   text-align:center;
-  text-shadow:0 0 0 rgba(15,23,42,0.01);
+  text-shadow:
+    0 1px 0 rgba(255,255,255,.38),
+    0 0 1px rgba(15,23,42,.08);
 }
 
 /* ===== メタ情報 ===== */
