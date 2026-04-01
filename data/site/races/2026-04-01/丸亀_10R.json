@@ -32,61 +32,7 @@
         "boat_2": 30.82,
         "note": "5661 6",
         "avg_st": 0.144,
-        "st_count": 817,
-        "course_starts": 59,
-        "course_win": 79.7,
-        "course_2ren": 91.5,
-        "course_3ren": 91.5,
-        "course_avg_st": 0.14,
-        "course_sashi": 0,
-        "course_makuri": 0,
-        "course_makurisashi": 0,
-        "meet_perf": [
-          [
-            {
-              "course": 5,
-              "st": ".28",
-              "rank": 5
-            },
-            {
-              "course": 6,
-              "st": ".03",
-              "rank": 6
-            }
-          ],
-          [
-            {
-              "course": 4,
-              "st": ".11",
-              "rank": 6
-            },
-            {
-              "course": 1,
-              "st": ".15",
-              "rank": 1
-            }
-          ],
-          [
-            null,
-            null
-          ],
-          [
-            null,
-            null
-          ],
-          [
-            null,
-            null
-          ],
-          [
-            null,
-            null
-          ],
-          [
-            null,
-            null
-          ]
-        ]
+        "st_count": 817
       },
       {
         "waku": 2,
@@ -106,57 +52,7 @@
         "boat_2": 20.92,
         "note": "3 43 5",
         "avg_st": 0.154,
-        "st_count": 670,
-        "course_starts": 25,
-        "course_win": 24.0,
-        "course_2ren": 48.0,
-        "course_3ren": 72.0,
-        "course_avg_st": 0.17,
-        "course_sashi": 2,
-        "course_makuri": 1,
-        "course_makurisashi": 0,
-        "meet_perf": [
-          [
-            {
-              "course": 6,
-              "st": ".29",
-              "rank": 3
-            },
-            null
-          ],
-          [
-            {
-              "course": 4,
-              "st": ".13",
-              "rank": 4
-            },
-            {
-              "course": 5,
-              "st": ".26",
-              "rank": 3
-            }
-          ],
-          [
-            null,
-            null
-          ],
-          [
-            null,
-            null
-          ],
-          [
-            null,
-            null
-          ],
-          [
-            null,
-            null
-          ],
-          [
-            null,
-            null
-          ]
-        ]
+        "st_count": 670
       },
       {
         "waku": 3,
@@ -176,61 +72,7 @@
         "boat_2": 27.39,
         "note": "5212",
         "avg_st": 0.136,
-        "st_count": 753,
-        "course_starts": 34,
-        "course_win": 26.5,
-        "course_2ren": 52.9,
-        "course_3ren": 64.7,
-        "course_avg_st": 0.13,
-        "course_sashi": 2,
-        "course_makuri": 2,
-        "course_makurisashi": 3,
-        "meet_perf": [
-          [
-            {
-              "course": 5,
-              "st": ".09",
-              "rank": 5
-            },
-            {
-              "course": 2,
-              "st": ".09",
-              "rank": 2
-            }
-          ],
-          [
-            {
-              "course": 4,
-              "st": ".09",
-              "rank": 1
-            },
-            {
-              "course": 1,
-              "st": ".17",
-              "rank": 2
-            }
-          ],
-          [
-            null,
-            null
-          ],
-          [
-            null,
-            null
-          ],
-          [
-            null,
-            null
-          ],
-          [
-            null,
-            null
-          ],
-          [
-            null,
-            null
-          ]
-        ]
+        "st_count": 753
       },
       {
         "waku": 4,
@@ -250,57 +92,7 @@
         "boat_2": 31.65,
         "note": "655 2",
         "avg_st": 0.212,
-        "st_count": 553,
-        "course_starts": 26,
-        "course_win": 0.0,
-        "course_2ren": 11.5,
-        "course_3ren": 15.4,
-        "course_avg_st": 0.22,
-        "course_sashi": 0,
-        "course_makuri": 0,
-        "course_makurisashi": 0,
-        "meet_perf": [
-          [
-            {
-              "course": 2,
-              "st": ".33",
-              "rank": 6
-            },
-            {
-              "course": 3,
-              "st": ".18",
-              "rank": 5
-            }
-          ],
-          [
-            {
-              "course": 5,
-              "st": ".25",
-              "rank": 5
-            },
-            null
-          ],
-          [
-            null,
-            null
-          ],
-          [
-            null,
-            null
-          ],
-          [
-            null,
-            null
-          ],
-          [
-            null,
-            null
-          ],
-          [
-            null,
-            null
-          ]
-        ]
+        "st_count": 553
       },
       {
         "waku": 5,
@@ -320,57 +112,7 @@
         "boat_2": 33.33,
         "note": "253 4",
         "avg_st": 0.178,
-        "st_count": 311,
-        "course_starts": 44,
-        "course_win": 2.3,
-        "course_2ren": 22.7,
-        "course_3ren": 36.4,
-        "course_avg_st": 0.15,
-        "course_sashi": 0,
-        "course_makuri": 0,
-        "course_makurisashi": 1,
-        "meet_perf": [
-          [
-            {
-              "course": 3,
-              "st": ".19",
-              "rank": 2
-            },
-            {
-              "course": 6,
-              "st": ".12",
-              "rank": 5
-            }
-          ],
-          [
-            {
-              "course": 2,
-              "st": ".31",
-              "rank": 3
-            },
-            null
-          ],
-          [
-            null,
-            null
-          ],
-          [
-            null,
-            null
-          ],
-          [
-            null,
-            null
-          ],
-          [
-            null,
-            null
-          ],
-          [
-            null,
-            null
-          ]
-        ]
+        "st_count": 311
       },
       {
         "waku": 6,
@@ -390,64 +132,9 @@
         "boat_2": 29.3,
         "note": "3522 3",
         "avg_st": 0.155,
-        "st_count": 826,
-        "course_starts": 35,
-        "course_win": 0.0,
-        "course_2ren": 11.4,
-        "course_3ren": 20.0,
-        "course_avg_st": 0.18,
-        "course_sashi": 0,
-        "course_makuri": 0,
-        "course_makurisashi": 0,
-        "meet_perf": [
-          [
-            {
-              "course": 1,
-              "st": ".11",
-              "rank": 3
-            },
-            {
-              "course": 5,
-              "st": ".12",
-              "rank": 5
-            }
-          ],
-          [
-            {
-              "course": 5,
-              "st": ".16",
-              "rank": 2
-            },
-            {
-              "course": 3,
-              "st": ".07",
-              "rank": 2
-            }
-          ],
-          [
-            null,
-            null
-          ],
-          [
-            null,
-            null
-          ],
-          [
-            null,
-            null
-          ],
-          [
-            null,
-            null
-          ],
-          [
-            null,
-            null
-          ]
-        ]
+        "st_count": 826
       }
     ],
     "tags": []
-  },
-  "meet_day_no": 3
+  }
 }
