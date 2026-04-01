@@ -1,6 +1,6 @@
 /* =========================
    style.css
-   （旧UI無効化 + 最小共通）
+   （旧UI無効化 + 最小共通 + Picks強化）
 ========================= */
 
 /* reset */
@@ -16,7 +16,7 @@ html,body{
 /* =========================
    ⚠️ 旧レイアウト完全停止
    venueCard / venueGrid 系
-   ========================= */
+========================= */
 
 .venueCard,
 .venueName,
@@ -24,8 +24,8 @@ html,body{
 .venueMeta,
 .venueGrid,
 .topButtons{
-  all: unset;
-  display: none !important;
+  all:unset;
+  display:none !important;
 }
 
 /* =========================
@@ -45,4 +45,128 @@ button{
 html{
   -webkit-font-smoothing:antialiased;
   text-rendering:optimizeLegibility;
+}
+
+/* =========================
+   Picks UI
+========================= */
+
+.pickHero{
+  display:block;
+  border-radius:18px;
+  overflow:hidden;
+  box-shadow:0 10px 24px rgba(15,23,42,.12);
+  margin-bottom:16px;
+}
+
+.pickHero__img{
+  display:block;
+  width:100%;
+  height:auto;
+}
+
+.pickCards{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+.pickCard{
+  display:block;
+  text-decoration:none;
+  background:#fff;
+  border-radius:18px;
+  padding:18px 16px;
+  box-shadow:0 8px 20px rgba(15,23,42,.08);
+  border:1px solid #e5e7eb;
+}
+
+.pickCard--main{
+  border:2px solid #d4af37;
+  box-shadow:0 10px 26px rgba(212,175,55,.25);
+}
+
+.pickCard--sub{
+  opacity:.95;
+}
+
+.pickCard__badgeWrap{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:8px;
+}
+
+.pickCard__badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:24px;
+  padding:4px 10px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:700;
+  color:#fff;
+  line-height:1;
+}
+
+.pickCard__badge--popular{
+  background:#16a34a;
+}
+
+.pickCard__badge--pro{
+  background:#2563eb;
+}
+
+.pickCard__mini{
+  font-size:12px;
+  color:#6b7280;
+  line-height:1.3;
+}
+
+.pickCard__titleRow{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:12px;
+}
+
+.pickCard__title{
+  margin:0;
+  font-size:22px;
+  line-height:1.15;
+  font-weight:900;
+  color:#111827;
+}
+
+.pickCard__price{
+  flex:0 0 auto;
+  font-size:16px;
+  line-height:1;
+  font-weight:800;
+  color:#111827;
+}
+
+.pickCard__sub{
+  margin-top:6px;
+  font-size:13px;
+  line-height:1.5;
+  color:#6b7280;
+}
+
+.pickCard__cta{
+  margin-top:12px;
+  font-size:14px;
+  line-height:1.2;
+  font-weight:800;
+  color:#111827;
+}
+
+/* =========================
+   旧購入カードを非表示
+========================= */
+
+#picksCta,
+#picks{
+  display:none !important;
 }
