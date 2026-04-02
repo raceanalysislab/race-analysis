@@ -277,7 +277,7 @@
   grid-row:4;
   display:grid;
   grid-template-columns:1fr 1fr;
-  align-items:center;
+  align-items:end;
   justify-items:stretch;
   gap:0;
   font-size:12px;
@@ -292,7 +292,7 @@
 .raceNo,
 .raceTime{
   display:flex;
-  align-items:center;
+  align-items:flex-end;
   justify-content:center;
   width:100%;
   min-height:18px;
@@ -300,6 +300,7 @@
   font-weight:600;
   font-size:11px;
   text-align:center;
+  padding-bottom:1px;
 }
 
 .raceTime--danger{
