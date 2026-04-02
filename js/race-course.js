@@ -201,25 +201,6 @@
     return formatRate(v);
   };
 
-  const getCourseWinClass = (boat) => {
-    const v = Number(
-      pickValue(boat, [
-        "course_win_1y",
-        "course_win_rate_1y",
-        "course_1着率_1y",
-        "course_win",
-        "course_win_rate",
-        "course_1着率",
-        "course_win_3y"
-      ])
-    );
-    const waku = Number(boat?.waku);
-
-    if (!Number.isFinite(v)) return "";
-    if (waku === 1 && v >= 80) return "courseWinGold";
-    return "courseWinBlue";
-  };
-
   const getCourseKimariteParts = (boat) => {
     const sashi = pickValue(boat, [
       "course_sashi_1y",
@@ -376,7 +357,7 @@
     <div class="courseGridRow courseGridRow--course">
       <div class="courseGridLabel">コース別勝率</div>
       ${boats.map((boat) => `
-        <div class="courseGridCell ${esc(getCourseWinClass(boat))}">
+        <div class="courseGridCell">
           <div class="courseGridMetric">${esc(getCourseWinText(boat))}</div>
         </div>
       `).join("")}
