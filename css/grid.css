@@ -309,6 +309,41 @@
   font-weight:700;
 }
 
+/* ===== 発売終了文字 ===== */
+
+.card__line--soldout{
+  display:flex !important;
+  align-items:center;
+  justify-content:center;
+  width:100% !important;
+  margin:0 !important;
+  min-height:24px;
+  padding:2px 0 4px;
+}
+
+.card--soldout .card__line--btm{
+  display:flex !important;
+  align-items:center;
+  justify-content:center !important;
+  width:100% !important;
+  margin:0 !important;
+  min-height:24px;
+  padding:2px 0 4px !important;
+  gap:0 !important;
+  grid-template-columns:none !important;
+}
+
+.status--soldout{
+  display:block;
+  width:100%;
+  text-align:center;
+  font-weight:700;
+  font-size:13px;
+  line-height:1;
+  color:#374151;
+  transform:none;
+}
+
 /* ===== 非開催 ===== */
 
 .card--off .card__meta,
