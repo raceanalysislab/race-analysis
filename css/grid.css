@@ -50,8 +50,8 @@
   top:0;
   height:48%;
   pointer-events:none;
-  opacity:.68; /* ← 0.52 → 少し濃く */
-  background:var(--toneTop, rgba(15,23,42,.16)); /* ← 少しだけ強化 */
+  opacity:.68;
+  background:var(--toneTop, rgba(15,23,42,.16));
   border-top-left-radius:7px;
   border-top-right-radius:7px;
   z-index:1;
@@ -180,7 +180,7 @@
   gap:0;
   min-height:18px;
   width:calc(100% + 14px);
-  margin:-2px -7px 5px;
+  margin:4px -7px 5px;
   padding:0;
   position:relative;
   z-index:2;
