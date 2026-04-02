@@ -112,23 +112,38 @@
 /* ===== 発売終了 ===== */
 
 .card--soldout{
-  background:linear-gradient(
-    180deg,
-    #c9ced6 0%,
-    #c9ced6 48%,
-    #eef1f4 48%,
-    #eef1f4 100%
-  ) !important;
+  --toneTop:none !important;
+  background:#d3d8e0 !important;
   border-color:#8f96a3 !important;
+  box-shadow:none !important;
 }
 
 .card--soldout::before{
   display:none !important;
+  opacity:0 !important;
+  background:none !important;
+}
+
+.card--soldout.card--on,
+.card--soldout.card--danger,
+.card--soldout.card--tone-morning,
+.card--soldout.card--tone-early,
+.card--soldout.card--tone-day,
+.card--soldout.card--tone-evening,
+.card--soldout.card--tone-night,
+.card--soldout.card--tone-normal{
+  --toneTop:none !important;
+  background:#d3d8e0 !important;
+  border-color:#8f96a3 !important;
+  box-shadow:none !important;
 }
 
 .card--soldout .card__name,
 .card--soldout .gradeText,
-.card--soldout .day{
+.card--soldout .day,
+.card--soldout .raceNo,
+.card--soldout .raceTime,
+.card--soldout .status--soldout{
   color:#1f2937 !important;
 }
 
