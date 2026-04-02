@@ -134,8 +134,6 @@
 .card--soldout .card__name,
 .card--soldout .gradeText,
 .card--soldout .day,
-.card--soldout .raceNo,
-.card--soldout .raceTime,
 .card--soldout .status--soldout{
   color:#1f2937 !important;
 }
@@ -310,19 +308,7 @@
 
 .card__line--soldout{
   display:flex !important;
-  align-items:center;
-  justify-content:center;
-  width:100% !important;
-  margin:0 !important;
-  min-height:18px;
-  height:18px;
-  padding:0;
-}
-
-.card--soldout .card__line--btm{
-  grid-row:4;
-  display:flex !important;
-  align-items:center;
+  align-items:center !important;
   justify-content:center !important;
   width:100% !important;
   margin:0 !important;
@@ -331,11 +317,11 @@
   padding:0 !important;
   gap:0 !important;
   grid-template-columns:none !important;
-  align-self:end;
+  align-self:end !important;
 }
 
 .status--soldout{
-  display:flex;
+  display:inline-flex;
   align-items:center;
   justify-content:center;
   width:auto !important;
