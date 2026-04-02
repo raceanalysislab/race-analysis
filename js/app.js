@@ -298,7 +298,6 @@ function getSoonestRace(list) {
     const raceTimes = Array.isArray(venue?.race_times) ? venue?.race_times : [];
     const venueName = String(venue?.name || venue?.venue_name || "").trim();
     const jcd = String(venue?.jcd || "").padStart(2, "0");
-    const date = String(venue?.date || lastLoadedDataDate || lastSeenLocalDate).trim();
 
     for (const r of raceTimes) {
       const cutoff = String(r?.cutoff || "").trim();
@@ -309,7 +308,7 @@ function getSoonestRace(list) {
       if (now >= cutoffAt + NEXT_RACE_DELAY_MS) continue;
 
       if (!best || cutoffAt < best.cutoffAt) {
-        best = { jcd, venueName, raceNo, cutoff, cutoffAt, date };
+        best = { jcd, venueName, raceNo, cutoff, cutoffAt };
       }
     }
   }
