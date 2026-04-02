@@ -350,3 +350,6 @@
 .card--off .card__line{
   visibility:hidden;
 }
+.raceNo:empty{
+  visibility:hidden;
+}
