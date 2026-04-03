@@ -1,13 +1,13 @@
 {
   "slot": "today",
-  "date": "2026-04-03",
+  "date": "2026-04-04",
   "name": "徳山",
   "jcd": "18",
-  "next_race": null,
-  "next_display": null,
-  "day": 5,
+  "next_race": 1,
+  "next_display": "1R 08:32",
+  "day": 6,
   "total_days": null,
-  "day_label": "5日目",
+  "day_label": "最終日",
   "grade_label": "一般",
   "event_title": "日本トーター杯争奪戦",
   "first_race_time": "08:32",
@@ -48,15 +48,15 @@
     },
     {
       "rno": 9,
-      "cutoff": "12:25"
+      "cutoff": "12:24"
     },
     {
       "rno": 10,
-      "cutoff": "12:59"
+      "cutoff": "12:56"
     },
     {
       "rno": 11,
-      "cutoff": "13:35"
+      "cutoff": "13:33"
     },
     {
       "rno": 12,
