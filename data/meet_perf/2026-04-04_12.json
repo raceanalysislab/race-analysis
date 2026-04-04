@@ -13,7 +13,6 @@
       "days": [
         [
           {
-            "waku": 3,
             "course": 3,
             "st": ".09",
             "rank": 1
@@ -51,13 +50,11 @@
       "days": [
         [
           {
-            "waku": 1,
             "course": 1,
             "st": ".11",
             "rank": 2
           },
           {
-            "waku": 5,
             "course": 5,
             "st": ".02",
             "rank": 6
@@ -94,7 +91,6 @@
       "days": [
         [
           {
-            "waku": 5,
             "course": 5,
             "st": ".09",
             "rank": 3
@@ -132,13 +128,11 @@
       "days": [
         [
           {
-            "waku": 2,
             "course": 2,
             "st": ".23",
             "rank": 4
           },
           {
-            "waku": 3,
             "course": 3,
             "st": ".12",
             "rank": 1
@@ -175,13 +169,11 @@
       "days": [
         [
           {
-            "waku": 4,
             "course": 4,
             "st": ".11",
             "rank": 5
           },
           {
-            "waku": 3,
             "course": 3,
             "st": ".18",
             "rank": 6
@@ -218,13 +210,11 @@
       "days": [
         [
           {
-            "waku": 6,
             "course": 6,
             "st": ".14",
             "rank": 6
           },
           {
-            "waku": 2,
             "course": 2,
             "st": ".09",
             "rank": 4
@@ -261,7 +251,6 @@
       "days": [
         [
           {
-            "waku": 1,
             "course": 1,
             "st": ".11",
             "rank": 1
@@ -299,13 +288,11 @@
       "days": [
         [
           {
-            "waku": 2,
             "course": 2,
             "st": ".10",
             "rank": 2
           },
           {
-            "waku": 3,
             "course": 3,
             "st": ".04",
             "rank": 2
@@ -342,13 +329,11 @@
       "days": [
         [
           {
-            "waku": 3,
             "course": 3,
             "st": ".13",
             "rank": 3
           },
           {
-            "waku": 2,
             "course": 2,
             "st": ".23",
             "rank": 3
@@ -385,7 +370,6 @@
       "days": [
         [
           {
-            "waku": 4,
             "course": 4,
             "st": ".08",
             "rank": 4
@@ -423,13 +407,11 @@
       "days": [
         [
           {
-            "waku": 5,
             "course": 5,
             "st": ".06",
             "rank": 5
           },
           {
-            "waku": 4,
             "course": 4,
             "st": ".09",
             "rank": 1
@@ -466,7 +448,6 @@
       "days": [
         [
           {
-            "waku": 6,
             "course": 6,
             "st": ".14",
             "rank": 6
@@ -504,13 +485,11 @@
       "days": [
         [
           {
-            "waku": 1,
             "course": 1,
             "st": ".03",
             "rank": 1
           },
           {
-            "waku": 5,
             "course": 5,
             "st": ".10",
             "rank": 3
@@ -547,13 +526,11 @@
       "days": [
         [
           {
-            "waku": 3,
             "course": 3,
             "st": ".08",
             "rank": 2
           },
           {
-            "waku": 6,
             "course": 6,
             "st": ".07",
             "rank": 3
@@ -590,13 +567,11 @@
       "days": [
         [
           {
-            "waku": 4,
             "course": 4,
             "st": ".12",
             "rank": 3
           },
           {
-            "waku": 5,
             "course": 5,
             "st": ".18",
             "rank": 2
@@ -633,7 +608,6 @@
       "days": [
         [
           {
-            "waku": 5,
             "course": 5,
             "st": ".10",
             "rank": 4
@@ -671,13 +645,11 @@
       "days": [
         [
           {
-            "waku": 6,
             "course": 6,
             "st": ".13",
             "rank": 5
           },
           {
-            "waku": 2,
             "course": 2,
             "st": ".15",
             "rank": 3
@@ -714,7 +686,6 @@
       "days": [
         [
           {
-            "waku": 2,
             "course": 2,
             "st": ".07",
             "rank": 6
@@ -752,13 +723,11 @@
       "days": [
         [
           {
-            "waku": 5,
             "course": 5,
             "st": ".10",
             "rank": 1
           },
           {
-            "waku": 1,
             "course": 1,
             "st": ".19",
             "rank": 1
@@ -795,7 +764,6 @@
       "days": [
         [
           {
-            "waku": 1,
             "course": 1,
             "st": ".05",
             "rank": 2
@@ -833,13 +801,11 @@
       "days": [
         [
           {
-            "waku": 3,
             "course": 3,
             "st": ".16",
             "rank": 3
           },
           {
-            "waku": 4,
             "course": 4,
             "st": ".03",
             "rank": 5
@@ -876,13 +842,11 @@
       "days": [
         [
           {
-            "waku": 4,
             "course": 4,
             "st": ".09",
             "rank": 4
           },
           {
-            "waku": 2,
             "course": 2,
             "st": ".15",
             "rank": 4
@@ -919,13 +883,11 @@
       "days": [
         [
           {
-            "waku": 6,
             "course": 6,
             "st": ".07",
             "rank": 5
           },
           {
-            "waku": 4,
             "course": 4,
             "st": ".09",
             "rank": 1
@@ -962,7 +924,6 @@
       "days": [
         [
           {
-            "waku": 2,
             "course": 2,
             "st": ".23",
             "rank": 6
@@ -1000,7 +961,6 @@
       "days": [
         [
           {
-            "waku": 1,
             "course": 1,
             "st": ".14",
             "rank": 1
@@ -1038,7 +998,6 @@
       "days": [
         [
           {
-            "waku": 5,
             "course": 5,
             "st": ".10",
             "rank": 2
@@ -1076,13 +1035,11 @@
       "days": [
         [
           {
-            "waku": 4,
             "course": 4,
             "st": ".08",
             "rank": 3
           },
           {
-            "waku": 6,
             "course": 6,
             "st": ".28",
             "rank": 4
@@ -1119,7 +1076,6 @@
       "days": [
         [
           {
-            "waku": 2,
             "course": 2,
             "st": ".12",
             "rank": 4
@@ -1157,13 +1113,11 @@
       "days": [
         [
           {
-            "waku": 3,
             "course": 3,
             "st": ".10",
             "rank": 5
           },
           {
-            "waku": 1,
             "course": 1,
             "st": ".05",
             "rank": 1
@@ -1200,7 +1154,6 @@
       "days": [
         [
           {
-            "waku": 6,
             "course": 6,
             "st": ".16",
             "rank": 6
@@ -1238,7 +1191,6 @@
       "days": [
         [
           {
-            "waku": 1,
             "course": 1,
             "st": ".06",
             "rank": 1
@@ -1276,7 +1228,6 @@
       "days": [
         [
           {
-            "waku": 3,
             "course": 3,
             "st": ".11",
             "rank": 2
@@ -1314,13 +1265,11 @@
       "days": [
         [
           {
-            "waku": 6,
             "course": 6,
             "st": ".09",
             "rank": 3
           },
           {
-            "waku": 3,
             "course": 3,
             "st": ".17",
             "rank": 6
@@ -1357,13 +1306,11 @@
       "days": [
         [
           {
-            "waku": 4,
             "course": 4,
             "st": ".08",
             "rank": 5
           },
           {
-            "waku": 2,
             "course": 2,
             "st": ".04",
             "rank": 4
@@ -1400,7 +1347,6 @@
       "days": [
         [
           {
-            "waku": 5,
             "course": 5,
             "st": ".10",
             "rank": "S0"
@@ -1438,7 +1384,6 @@
       "days": [
         [
           {
-            "waku": 2,
             "course": 2,
             "st": ".16",
             "rank": 2
@@ -1476,7 +1421,6 @@
       "days": [
         [
           {
-            "waku": 4,
             "course": 4,
             "st": ".07",
             "rank": 3
@@ -1514,7 +1458,6 @@
       "days": [
         [
           {
-            "waku": 1,
             "course": 1,
             "st": ".14",
             "rank": 4
@@ -1552,7 +1495,6 @@
       "days": [
         [
           {
-            "waku": 5,
             "course": 5,
             "st": ".05",
             "rank": 5
@@ -1590,13 +1532,11 @@
       "days": [
         [
           {
-            "waku": 6,
             "course": 6,
             "st": ".14",
             "rank": 6
           },
           {
-            "waku": 4,
             "course": 4,
             "st": ".22",
             "rank": 5
@@ -1633,7 +1573,6 @@
       "days": [
         [
           {
-            "waku": 6,
             "course": 6,
             "st": ".10",
             "rank": 2
@@ -1671,7 +1610,6 @@
       "days": [
         [
           {
-            "waku": 5,
             "course": 5,
             "st": ".11",
             "rank": 4
@@ -1709,7 +1647,6 @@
       "days": [
         [
           {
-            "waku": 1,
             "course": 1,
             "st": ".16",
             "rank": 5
@@ -1747,7 +1684,6 @@
       "days": [
         [
           {
-            "waku": 1,
             "course": 1,
             "st": ".11",
             "rank": 2
@@ -1785,7 +1721,6 @@
       "days": [
         [
           {
-            "waku": 6,
             "course": 6,
             "st": ".08",
             "rank": 5
@@ -1823,7 +1758,6 @@
       "days": [
         [
           {
-            "waku": 3,
             "course": 3,
             "st": ".12",
             "rank": 6
@@ -1861,7 +1795,6 @@
       "days": [
         [
           {
-            "waku": 1,
             "course": 1,
             "st": ".13",
             "rank": 1
@@ -1899,7 +1832,6 @@
       "days": [
         [
           {
-            "waku": 2,
             "course": 2,
             "st": ".11",
             "rank": 2
@@ -1937,7 +1869,6 @@
       "days": [
         [
           {
-            "waku": 4,
             "course": 4,
             "st": ".15",
             "rank": 3
@@ -1975,7 +1906,6 @@
       "days": [
         [
           {
-            "waku": 6,
             "course": 6,
             "st": ".14",
             "rank": 4
@@ -2013,7 +1943,6 @@
       "days": [
         [
           {
-            "waku": 3,
             "course": 3,
             "st": ".10",
             "rank": 5
@@ -2051,7 +1980,6 @@
       "days": [
         [
           {
-            "waku": 5,
             "course": 5,
             "st": ".13",
             "rank": 6

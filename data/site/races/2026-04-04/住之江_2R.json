@@ -33,140 +33,16 @@
         "note": "5 7",
         "avg_st": 0.155,
         "st_count": 854,
-        "course_starts": 76,
-        "course_win": 64.5,
-        "course_2ren": 86.8,
-        "course_3ren": 90.8,
+        "course_starts": 77,
+        "course_win": 64.9,
+        "course_2ren": 87.0,
+        "course_3ren": 90.9,
         "course_avg_st": 0.15,
         "course_sashi": 0,
         "course_makuri": 0,
         "course_makurisashi": 0,
-        "waku_recent": [
-          {
-            "waku": 1,
-            "course": 1,
-            "st": 0.22,
-            "rank": 1
-          },
-          {
-            "waku": 1,
-            "course": 1,
-            "st": 0.15,
-            "rank": 1
-          },
-          {
-            "waku": 1,
-            "course": 1,
-            "st": 0.22,
-            "rank": 2
-          },
-          {
-            "waku": 1,
-            "course": 1,
-            "st": 0.19,
-            "rank": 1
-          },
-          {
-            "waku": 1,
-            "course": 1,
-            "st": 0.29,
-            "rank": 1
-          },
-          {
-            "waku": 1,
-            "course": 1,
-            "st": 0.19,
-            "rank": 1
-          },
-          {
-            "waku": 1,
-            "course": 1,
-            "st": 0.19,
-            "rank": 1
-          },
-          {
-            "waku": 1,
-            "course": 1,
-            "st": 0.16,
-            "rank": 2
-          },
-          {
-            "waku": 1,
-            "course": 1,
-            "st": 0.18,
-            "rank": 2
-          },
-          {
-            "waku": 1,
-            "course": 1,
-            "st": 0.23,
-            "rank": 1
-          }
-        ],
-        "waku_recent_avg_st": 0.202,
-        "waku_recent_local": [
-          {
-            "waku": 1,
-            "course": 1,
-            "st": 0.05,
-            "rank": 1
-          },
-          {
-            "waku": 1,
-            "course": 1,
-            "st": 0.05,
-            "rank": 1
-          },
-          {
-            "waku": 1,
-            "course": 1,
-            "st": 0.19,
-            "rank": 4
-          },
-          {
-            "waku": 1,
-            "course": 1,
-            "st": 0.14,
-            "rank": 1
-          },
-          {
-            "waku": 1,
-            "course": 1,
-            "st": 0.11,
-            "rank": 1
-          },
-          {
-            "waku": 1,
-            "course": 1,
-            "st": 0.11,
-            "rank": 1
-          },
-          {
-            "waku": 1,
-            "course": 1,
-            "st": 0.2,
-            "rank": 1
-          },
-          {
-            "waku": 1,
-            "course": 1,
-            "st": 0.17,
-            "rank": 1
-          },
-          {
-            "waku": 1,
-            "course": 1,
-            "st": 0.18,
-            "rank": 1
-          },
-          {
-            "waku": 1,
-            "course": 1,
-            "st": 0.16,
-            "rank": 1
-          }
-        ],
-        "waku_recent_local_avg_st": 0.136,
+        "f_count": 0,
+        "l_count": 0,
         "meet_perf": [
           [
             {
@@ -200,9 +76,7 @@
             null,
             null
           ]
-        ],
-        "F": 0,
-        "L": 0
+        ]
       },
       {
         "waku": 2,
@@ -223,98 +97,16 @@
         "note": "34",
         "avg_st": 0.139,
         "st_count": 638,
-        "course_starts": 38,
-        "course_win": 23.7,
-        "course_2ren": 52.6,
-        "course_3ren": 84.2,
+        "course_starts": 43,
+        "course_win": 25.6,
+        "course_2ren": 53.5,
+        "course_3ren": 81.4,
         "course_avg_st": 0.13,
-        "course_sashi": 6,
+        "course_sashi": 0,
         "course_makuri": 2,
         "course_makurisashi": 0,
-        "waku_recent": [
-          {
-            "waku": 2,
-            "course": 2,
-            "st": 0.12,
-            "rank": 6
-          },
-          {
-            "waku": 2,
-            "course": 2,
-            "st": 0.19,
-            "rank": 5
-          },
-          {
-            "waku": 2,
-            "course": 2,
-            "st": 0.11,
-            "rank": 1
-          },
-          {
-            "waku": 2,
-            "course": 2,
-            "st": 0.17,
-            "rank": 2
-          },
-          {
-            "waku": 2,
-            "course": 2,
-            "st": 0.16,
-            "rank": 4
-          },
-          {
-            "waku": 2,
-            "course": 2,
-            "st": 0.06,
-            "rank": "S0"
-          },
-          {
-            "waku": 2,
-            "course": 2,
-            "st": 0.1,
-            "rank": 2
-          },
-          {
-            "waku": 2,
-            "course": 2,
-            "st": 0.16,
-            "rank": 3
-          },
-          {
-            "waku": 2,
-            "course": 2,
-            "st": 0.08,
-            "rank": 2
-          },
-          {
-            "waku": 2,
-            "course": 2,
-            "st": 0.08,
-            "rank": 3
-          }
-        ],
-        "waku_recent_avg_st": 0.123,
-        "waku_recent_local": [
-          {
-            "waku": 2,
-            "course": 2,
-            "st": 0.08,
-            "rank": 1
-          },
-          {
-            "waku": 2,
-            "course": 2,
-            "st": 0.11,
-            "rank": 3
-          },
-          {
-            "waku": 2,
-            "course": 2,
-            "st": 0.16,
-            "rank": 2
-          }
-        ],
-        "waku_recent_local_avg_st": 0.117,
+        "f_count": 0,
+        "l_count": 0,
         "meet_perf": [
           [
             {
@@ -352,9 +144,7 @@
             null,
             null
           ]
-        ],
-        "F": 1,
-        "L": 0
+        ]
       },
       {
         "waku": 3,
@@ -377,75 +167,14 @@
         "st_count": 696,
         "course_starts": 38,
         "course_win": 23.7,
-        "course_2ren": 47.4,
-        "course_3ren": 63.2,
+        "course_2ren": 50.0,
+        "course_3ren": 65.8,
         "course_avg_st": 0.11,
-        "course_sashi": 1,
+        "course_sashi": 0,
         "course_makuri": 3,
         "course_makurisashi": 4,
-        "waku_recent": [
-          {
-            "waku": 3,
-            "course": 3,
-            "st": 0.11,
-            "rank": 4
-          },
-          {
-            "waku": 3,
-            "course": 3,
-            "st": 0.11,
-            "rank": 3
-          },
-          {
-            "waku": 3,
-            "course": 3,
-            "st": 0.11,
-            "rank": 4
-          },
-          {
-            "waku": 3,
-            "course": 3,
-            "st": 0.13,
-            "rank": 2
-          },
-          {
-            "waku": 3,
-            "course": 3,
-            "st": 0.09,
-            "rank": 2
-          },
-          {
-            "waku": 3,
-            "course": 3,
-            "st": 0.14,
-            "rank": 6
-          },
-          {
-            "waku": 3,
-            "course": 3,
-            "st": 0.18,
-            "rank": 5
-          },
-          {
-            "waku": 3,
-            "course": 3,
-            "st": 0.12,
-            "rank": 5
-          },
-          {
-            "waku": 3,
-            "course": 3,
-            "st": 0.12,
-            "rank": 2
-          },
-          {
-            "waku": 3,
-            "course": 3,
-            "st": 0.15,
-            "rank": 2
-          }
-        ],
-        "waku_recent_avg_st": 0.126,
+        "f_count": 0,
+        "l_count": 0,
         "meet_perf": [
           [
             {
@@ -479,9 +208,7 @@
             null,
             null
           ]
-        ],
-        "F": 0,
-        "L": 0
+        ]
       },
       {
         "waku": 4,
@@ -507,111 +234,11 @@
         "course_2ren": 56.2,
         "course_3ren": 78.1,
         "course_avg_st": 0.15,
-        "course_sashi": 1,
+        "course_sashi": 0,
         "course_makuri": 2,
         "course_makurisashi": 4,
-        "waku_recent": [
-          {
-            "waku": 4,
-            "course": 4,
-            "st": 0.21,
-            "rank": 2
-          },
-          {
-            "waku": 4,
-            "course": 4,
-            "st": 0.11,
-            "rank": 3
-          },
-          {
-            "waku": 3,
-            "course": 4,
-            "st": 0.06,
-            "rank": 2
-          },
-          {
-            "waku": 4,
-            "course": 4,
-            "st": 0.19,
-            "rank": 2
-          },
-          {
-            "waku": 4,
-            "course": 4,
-            "st": 0.08,
-            "rank": 1
-          },
-          {
-            "waku": 4,
-            "course": 4,
-            "st": 0.13,
-            "rank": 2
-          },
-          {
-            "waku": 4,
-            "course": 4,
-            "st": 0.04,
-            "rank": 6
-          },
-          {
-            "waku": 4,
-            "course": 4,
-            "st": 0.32,
-            "rank": 3
-          },
-          {
-            "waku": 5,
-            "course": 4,
-            "st": 0.12,
-            "rank": 3
-          },
-          {
-            "waku": 4,
-            "course": 4,
-            "st": 0.09,
-            "rank": 1
-          }
-        ],
-        "waku_recent_avg_st": 0.135,
-        "waku_recent_local": [
-          {
-            "waku": 3,
-            "course": 4,
-            "st": 0.06,
-            "rank": 2
-          },
-          {
-            "waku": 4,
-            "course": 4,
-            "st": 0.19,
-            "rank": 2
-          },
-          {
-            "waku": 3,
-            "course": 4,
-            "st": 0.14,
-            "rank": 5
-          },
-          {
-            "waku": 4,
-            "course": 4,
-            "st": 0.21,
-            "rank": 5
-          },
-          {
-            "waku": 4,
-            "course": 4,
-            "st": 0.17,
-            "rank": 2
-          },
-          {
-            "waku": 4,
-            "course": 4,
-            "st": 0.1,
-            "rank": 1
-          }
-        ],
-        "waku_recent_local_avg_st": 0.145,
+        "f_count": 0,
+        "l_count": 0,
         "meet_perf": [
           [
             {
@@ -645,9 +272,7 @@
             null,
             null
           ]
-        ],
-        "F": 0,
-        "L": 0
+        ]
       },
       {
         "waku": 5,
@@ -673,135 +298,11 @@
         "course_2ren": 47.1,
         "course_3ren": 67.6,
         "course_avg_st": 0.13,
-        "course_sashi": 1,
+        "course_sashi": 0,
         "course_makuri": 1,
         "course_makurisashi": 5,
-        "waku_recent": [
-          {
-            "waku": 6,
-            "course": 5,
-            "st": 0.14,
-            "rank": 3
-          },
-          {
-            "waku": 5,
-            "course": 5,
-            "st": 0.0,
-            "rank": 4
-          },
-          {
-            "waku": 5,
-            "course": 5,
-            "st": 0.15,
-            "rank": 1
-          },
-          {
-            "waku": 5,
-            "course": 5,
-            "st": 0.07,
-            "rank": 6
-          },
-          {
-            "waku": 5,
-            "course": 5,
-            "st": 0.16,
-            "rank": 1
-          },
-          {
-            "waku": 5,
-            "course": 5,
-            "st": 0.07,
-            "rank": 2
-          },
-          {
-            "waku": 5,
-            "course": 5,
-            "st": 0.12,
-            "rank": 1
-          },
-          {
-            "waku": 5,
-            "course": 5,
-            "st": 0.07,
-            "rank": 3
-          },
-          {
-            "waku": 5,
-            "course": 5,
-            "st": 0.08,
-            "rank": 3
-          },
-          {
-            "waku": 5,
-            "course": 5,
-            "st": 0.15,
-            "rank": 3
-          }
-        ],
-        "waku_recent_avg_st": 0.101,
-        "waku_recent_local": [
-          {
-            "waku": 5,
-            "course": 5,
-            "st": 0.12,
-            "rank": 1
-          },
-          {
-            "waku": 5,
-            "course": 5,
-            "st": 0.07,
-            "rank": 3
-          },
-          {
-            "waku": 5,
-            "course": 5,
-            "st": 0.09,
-            "rank": 5
-          },
-          {
-            "waku": 5,
-            "course": 5,
-            "st": 0.12,
-            "rank": 6
-          },
-          {
-            "waku": 5,
-            "course": 5,
-            "st": 0.11,
-            "rank": 5
-          },
-          {
-            "waku": 5,
-            "course": 5,
-            "st": 0.04,
-            "rank": 4
-          },
-          {
-            "waku": 5,
-            "course": 5,
-            "st": 0.11,
-            "rank": 2
-          },
-          {
-            "waku": 5,
-            "course": 5,
-            "st": 0.1,
-            "rank": 6
-          },
-          {
-            "waku": 5,
-            "course": 5,
-            "st": 0.16,
-            "rank": 6
-          },
-          {
-            "waku": 4,
-            "course": 5,
-            "st": 0.21,
-            "rank": 4
-          }
-        ],
-        "waku_recent_local_avg_st": 0.113,
+        "f_count": 0,
+        "l_count": 0,
         "meet_perf": [
           [
             {
@@ -835,9 +336,7 @@
             null,
             null
           ]
-        ],
-        "F": 0,
-        "L": 0
+        ]
       },
       {
         "waku": 6,
@@ -858,122 +357,16 @@
         "note": "44",
         "avg_st": 0.136,
         "st_count": 721,
-        "course_starts": 34,
-        "course_win": 14.7,
-        "course_2ren": 23.5,
-        "course_3ren": 41.2,
+        "course_starts": 35,
+        "course_win": 17.1,
+        "course_2ren": 25.7,
+        "course_3ren": 42.9,
         "course_avg_st": 0.15,
         "course_sashi": 0,
         "course_makuri": 3,
         "course_makurisashi": 1,
-        "waku_recent": [
-          {
-            "waku": 6,
-            "course": 6,
-            "st": 0.13,
-            "rank": 4
-          },
-          {
-            "waku": 6,
-            "course": 6,
-            "st": 0.07,
-            "rank": 4
-          },
-          {
-            "waku": 6,
-            "course": 6,
-            "st": 0.19,
-            "rank": 5
-          },
-          {
-            "waku": 6,
-            "course": 6,
-            "st": 0.09,
-            "rank": 3
-          },
-          {
-            "waku": 4,
-            "course": 6,
-            "st": 0.15,
-            "rank": 4
-          },
-          {
-            "waku": 6,
-            "course": 6,
-            "st": 0.14,
-            "rank": 5
-          },
-          {
-            "waku": 6,
-            "course": 6,
-            "st": 0.23,
-            "rank": 4
-          },
-          {
-            "waku": 6,
-            "course": 6,
-            "st": 0.25,
-            "rank": 6
-          },
-          {
-            "waku": 6,
-            "course": 6,
-            "st": 0.14,
-            "rank": 6
-          },
-          {
-            "waku": 6,
-            "course": 6,
-            "st": 0.13,
-            "rank": 4
-          }
-        ],
-        "waku_recent_avg_st": 0.152,
-        "waku_recent_local": [
-          {
-            "waku": 6,
-            "course": 6,
-            "st": 0.07,
-            "rank": 4
-          },
-          {
-            "waku": 4,
-            "course": 6,
-            "st": 0.15,
-            "rank": 4
-          },
-          {
-            "waku": 6,
-            "course": 6,
-            "st": 0.1,
-            "rank": 5
-          },
-          {
-            "waku": 6,
-            "course": 6,
-            "st": 0.24,
-            "rank": 4
-          },
-          {
-            "waku": 6,
-            "course": 6,
-            "st": 0.08,
-            "rank": 4
-          },
-          {
-            "waku": 6,
-            "course": 6,
-            "st": 0.08,
-            "rank": 2
-          },
-          {
-            "waku": 6,
-            "course": 6,
-            "st": 0.11,
-            "rank": 5
-          }
-        ],
-        "waku_recent_local_avg_st": 0.119,
+        "f_count": 0,
+        "l_count": 0,
         "meet_perf": [
           [
             {
@@ -1011,9 +404,7 @@
             null,
             null
           ]
-        ],
-        "F": 1,
-        "L": 0
+        ]
       }
     ],
     "tags": []
