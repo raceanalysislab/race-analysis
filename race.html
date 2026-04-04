@@ -7,7 +7,7 @@
   <title>BOAT CORE</title>
 
   <link rel="stylesheet" href="./css/race-detail.css?v=64">
-  <link rel="stylesheet" href="./css/race-meet-perf.css?v=2">
+  <link rel="stylesheet" href="./css/race-meet-perf.css?v=3">
   <link rel="stylesheet" href="./css/race-course.css?v=22">
 </head>
 
@@ -119,21 +119,18 @@
                         <span class="entryHeadMain">全国</span>
                         <span class="entryHeadSub">勝率</span>
                         <span class="entryHeadSub">2連率</span>
-                        <span class="entryHeadSub">3連率</span>
                       </div>
 
                       <div class="entryHead__loc">
                         <span class="entryHeadMain">当地</span>
                         <span class="entryHeadSub">勝率</span>
                         <span class="entryHeadSub">2連率</span>
-                        <span class="entryHeadSub">3連率</span>
                       </div>
 
                       <div class="entryHead__motor">
                         <span class="entryHeadMain">モーター</span>
                         <span class="entryHeadSub">No.</span>
                         <span class="entryHeadSub">2連率</span>
-                        <span class="entryHeadSub">3連率</span>
                       </div>
                     </div>
 
@@ -166,29 +163,30 @@
           </div>
 
           <div class="viewPage">
-            <div class="panelPlaceholder">
-              <div class="panelPlaceholder__title">
-                枠傾向
-              </div>
+            <div class="entryInnerTabs" id="wakuTabs">
+              <button type="button" class="entryInnerTab is-active" data-waku="0">枠番過去10走</button>
+              <button type="button" class="entryInnerTab" data-waku="1">当地枠番過去10走</button>
+            </div>
 
-              <div class="panelPlaceholder__text">
-                ここには会場別の<br>
-                1枠逃げ率・2枠差し率などを表示予定
-              </div>
+            <div data-waku-page="0" style="display:block;">
+              <div class="wakuTrendRoot" id="wakuTrendRoot"></div>
+            </div>
+
+            <div data-waku-page="1" style="display:none;">
+              <div class="wakuTrendRoot" id="wakuTrendLocalRoot"></div>
             </div>
           </div>
 
         </div>
-
       </div>
 
     </section>
 
   </div>
 
-  <script src="./js/race-course.js?v=131"></script>
-  <script src="./js/race-meet-perf.js?v=231"></script>
-  <script src="./js/race-detail.js?v=231"></script>
+  <script src="./js/race-course.js?v=160"></script>
+  <script src="./js/race-meet-perf.js?v=238"></script>
+  <script src="./js/race-detail.js?v=249"></script>
 
 </body>
 </html>

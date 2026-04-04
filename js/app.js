@@ -644,8 +644,8 @@ function renderBottomHtml(next) {
   if (!m) {
     if (next.soldout) {
       return {
-        soldoutClass: "",
-        html: `<span class="raceNo"></span><span class="raceTime status--soldout">発売終了</span>`
+        soldoutClass: " card__line--soldout",
+        html: `<span class="status--soldout">発売終了</span>`
       };
     }
     return {

@@ -17,18 +17,12 @@ const $viewTrack = $("viewTrack");
 const $entryTable = $("entryTable");
 const $viewTabs = $("viewTabs");
 
-const RACES_BASE_URL =
-  "/data/site/races/";
-const PLAYER_MASTER_URL =
-  "/data/master/players_master.json";
-const PLAYER_COURSE_STATS_URL =
-  "/data/player_course_stats_1y.json";
-const RACER_GENDER_URL =
-  "/data/master/racer_gender.json";
-const MEET_PERF_BASE_URL =
-  "/data/meet_perf/";
-const MEET_AVG_ST_BASE_URL =
-  "/data/meet_avg_st/";
+const RACES_BASE_URL = "/data/site/races/";
+const PLAYER_MASTER_URL = "/data/master/players_master.json";
+const PLAYER_COURSE_STATS_URL = "/data/player_course_stats_1y.json";
+const RACER_GENDER_URL = "/data/master/racer_gender.json";
+const MEET_PERF_BASE_URL = "/data/meet_perf/";
+const MEET_AVG_ST_BASE_URL = "/data/meet_avg_st/";
 
 $("venueName").textContent = venueName;
 
@@ -43,8 +37,12 @@ let dragCurrentY = 0;
 let dragging = false;
 
 let playerMaster = {};
-let playerCourseStats = null;
+let playerCourseStats = {};
 let racerGenderMap = {};
+let courseStatsLoaded = false;
+let courseStatsLoadingPromise = null;
+let latestRenderedRaceJson = null;
+
 const meetAvgStCache = {};
 
 const SWIPE_THRESHOLD_X = 56;
@@ -71,13 +69,6 @@ const safeInt = (v) => {
   if (v === undefined || v === null || v === "") return "—";
   const n = Number(v);
   return Number.isFinite(n) ? String(Math.trunc(n)) : "—";
-};
-
-const formatST = (v) => {
-  if (v === undefined || v === null || v === "") return "—";
-  const n = Number(v);
-  if (!Number.isFinite(n)) return "—";
-  return `.${n.toFixed(2).split(".")[1]}`;
 };
 
 const normalizeName = (name) =>
@@ -107,10 +98,6 @@ const pickValue = (obj, keys) => {
   }
   return "";
 };
-
-const pickNat3 = (p) => pickValue(p, ["nat_3", "nat3", "nat_three"]);
-const pickLoc3 = (p) => pickValue(p, ["loc_3", "loc3", "loc_three"]);
-const pickMotor3 = (p) => pickValue(p, ["motor_3", "motor3", "motor_three"]);
 
 const pickF = (p) => {
   const v = pickValue(p, ["f", "F", "f_count", "fCount", "f_num", "fNum"]);
@@ -180,7 +167,8 @@ const toHM = (x) => {
 };
 
 const VENUE_FILE_ALIAS = {
-  "琵琶湖": "びわこ"
+  "琵琶湖": "びわこ",
+  "びわこ": "びわこ"
 };
 
 const safeFilenamePart = (s) =>
@@ -248,6 +236,38 @@ async function loadPlayerMaster() {
   }
 }
 
+async function loadPlayerCourseStats() {
+  try {
+    const payload = await fetchJSON(PLAYER_COURSE_STATS_URL);
+    playerCourseStats = payload?.players || payload || {};
+    courseStatsLoaded = true;
+  } catch (e) {
+    playerCourseStats = {};
+    courseStatsLoaded = false;
+    throw e;
+  }
+}
+
+function ensurePlayerCourseStatsLoaded() {
+  if (courseStatsLoaded) {
+    return Promise.resolve(playerCourseStats);
+  }
+
+  if (courseStatsLoadingPromise) {
+    return courseStatsLoadingPromise;
+  }
+
+  courseStatsLoadingPromise = loadPlayerCourseStats()
+    .catch(() => {
+      playerCourseStats = {};
+      return playerCourseStats;
+    })
+    .finally(() => {
+      courseStatsLoadingPromise = null;
+    });
+
+  return courseStatsLoadingPromise;
+}
 
 async function loadRacerGender() {
   try {
@@ -264,8 +284,7 @@ function isFemaleRacer(p) {
 
 function buildMeetAvgStUrl(venue, date) {
   const venuePart = safeFilenamePart(normalizeVenueForMeetFile(venue));
-  const baseDate = String(date || "").trim();
-  const targetDate = addDaysYMD(baseDate, -1);
+  const targetDate = String(date || "").trim();
   return `${MEET_AVG_ST_BASE_URL}${venuePart}_${targetDate}.json`;
 }
 
@@ -275,22 +294,30 @@ async function loadMeetAvgStForRace(json) {
 
   if (!venue || !date) return { players: {} };
 
-  const targetDate = addDaysYMD(date, -1);
-  const cacheKey = `${venue}|${targetDate}`;
-
+  const cacheKey = `${venue}|${date}`;
   if (meetAvgStCache[cacheKey]) {
     return meetAvgStCache[cacheKey];
   }
 
-  try {
-    const url = buildMeetAvgStUrl(venue, date);
-    const payload = await fetchJSON(url);
-    meetAvgStCache[cacheKey] = payload || { players: {} };
-    return meetAvgStCache[cacheKey];
-  } catch (e) {
-    meetAvgStCache[cacheKey] = { players: {} };
-    return meetAvgStCache[cacheKey];
+  const candidateVenues = Array.from(new Set([
+    venue,
+    normalizeVenueForMeetFile(venue),
+    venueName,
+    normalizeVenueForMeetFile(venueName)
+  ].filter(Boolean)));
+
+  for (const candidateVenue of candidateVenues) {
+    try {
+      const payload = await fetchJSON(buildMeetAvgStUrl(candidateVenue, date));
+      meetAvgStCache[cacheKey] = payload || { players: {} };
+      return meetAvgStCache[cacheKey];
+    } catch (e) {
+      // try next
+    }
   }
+
+  meetAvgStCache[cacheKey] = { players: {} };
+  return meetAvgStCache[cacheKey];
 }
 
 function buildUrls(r, dateStr) {
@@ -370,7 +397,7 @@ function enrichBoatWithCourseStats(boat) {
     course_2ren: course.ren2_rate,
     course_3ren: course.ren3_rate,
     course_avg_st: course.avg_st,
-    course_sashi: kimarite["差"],
+    course_sashi: kimarite["差し"],
     course_makuri: kimarite["まくり"],
     course_makurisashi: kimarite["まくり差し"]
   };
@@ -417,7 +444,7 @@ async function enrichRaceJSON(rawJson) {
   const meetPayload = await loadMeetAvgStForRace(rawJson);
   const meetPlayers = meetPayload?.players || {};
 
-  const boatsWithMeet = boats.map((boat) =>
+  const boatsEnriched = boats.map((boat) =>
     enrichBoatWithMeetAvgSt(boat, meetPlayers)
   );
 
@@ -425,7 +452,19 @@ async function enrichRaceJSON(rawJson) {
     ...rawJson,
     race: {
       ...race,
-      boats: boatsWithMeet
+      boats: boatsEnriched
+    }
+  };
+}
+
+function buildRaceJsonWithCourseStats(json) {
+  if (!json?.race?.boats || !Array.isArray(json.race.boats)) return json;
+
+  return {
+    ...json,
+    race: {
+      ...json.race,
+      boats: json.race.boats.map((boat) => enrichBoatWithCourseStats(boat))
     }
   };
 }
@@ -441,7 +480,7 @@ function renderEntryTable(boats) {
     const gradeClass = getGradeClassName(p?.grade);
 
     return `
-      <div class="entryRow">
+      <div class="entryRow" style="border-bottom:1px solid #d7dde5;">
         <div class="entryWaku w${esc(p.waku)}">${esc(p.waku)}</div>
 
         <div class="entryNameCell${isFemale ? " female" : ""}">
@@ -465,7 +504,6 @@ function renderEntryTable(boats) {
           <div class="entryStatBlock">
             <div class="entryStatMain">${safeNum(p.nat_win)}</div>
             <div class="entryStatSub">${safeNum(p.nat_2)}</div>
-            <div class="entryStatSub">${safeNum(pickNat3(p))}</div>
           </div>
         </div>
 
@@ -473,7 +511,6 @@ function renderEntryTable(boats) {
           <div class="entryStatBlock">
             <div class="entryStatMain">${safeNum(p.loc_win)}</div>
             <div class="entryStatSub">${safeNum(p.loc_2)}</div>
-            <div class="entryStatSub">${safeNum(pickLoc3(p))}</div>
           </div>
         </div>
 
@@ -481,7 +518,6 @@ function renderEntryTable(boats) {
           <div class="entryMotorBlock">
             <div class="entryMotorNo">${safeInt(p.motor_no)}</div>
             <div class="entryMotorRate">${safeNum(p.motor_2)}</div>
-            <div class="entryMotorRate">${safeNum(pickMotor3(p))}</div>
           </div>
         </div>
       </div>
@@ -491,6 +527,8 @@ function renderEntryTable(boats) {
 
 async function renderRaceJSON(r, rawJson) {
   const json = await enrichRaceJSON(rawJson);
+  latestRenderedRaceJson = json;
+
   const raceObj = json?.race || {};
 
   if (json?.date) {
@@ -526,6 +564,14 @@ async function renderRaceJSON(r, rawJson) {
   if (window.BOAT_CORE_COURSE?.render) {
     window.BOAT_CORE_COURSE.render(json);
   }
+
+  ensurePlayerCourseStatsLoaded().then(() => {
+    if (!latestRenderedRaceJson) return;
+    const courseJson = buildRaceJsonWithCourseStats(latestRenderedRaceJson);
+    if (window.BOAT_CORE_COURSE?.render) {
+      window.BOAT_CORE_COURSE.render(courseJson);
+    }
+  });
 
   renderRaceTabs();
   updateUrlRace(r);
@@ -627,7 +673,14 @@ function isSwipeIgnoreTarget(target) {
     target.closest(".entryInnerTabs") ||
     target.closest(".entryInnerTab") ||
     target.closest(".courseInnerTabs") ||
-    target.closest(".courseInnerTab")
+    target.closest(".courseInnerTab") ||
+    target.closest(".coursePanelBody") ||
+    target.closest(".courseSimpleTable") ||
+    target.closest(".wakuTrendRoot") ||
+    target.closest(".wakuTrendPanel") ||
+    target.closest(".wakuTrendPanelBody") ||
+    target.closest(".wakuTrendRecent") ||
+    target.closest(".wakuTrendRecentCell")
   );
 }
 

@@ -6,6 +6,8 @@
   display:flex;
   flex-direction:column;
   overflow:hidden;
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
 }
 
 .meetPerfHead{
@@ -80,10 +82,6 @@
   min-height:71px;
   border-bottom:1px solid var(--line);
   background:#fff;
-}
-
-.meetPerfRow:last-child{
-  border-bottom:none;
 }
 
 .meetPerfRow__waku{

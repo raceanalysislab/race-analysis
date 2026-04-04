@@ -1,0 +1,256 @@
+{
+  "regno": "3391",
+  "name": "鈴木茂正",
+  "grade": "",
+  "branch": "",
+  "age": 0,
+  "weight": 0.0,
+  "courses_1y": {
+    "1": {
+      "starts": 0,
+      "first": 0,
+      "second": 0,
+      "third": 0,
+      "win_rate": 0.0,
+      "ren2_rate": 0.0,
+      "ren3_rate": 0.0,
+      "avg_st": 0.0,
+      "kimarite": {
+        "逃げ": 0,
+        "差し": 0,
+        "まくり": 0,
+        "まくり差し": 0,
+        "抜き": 0,
+        "恵まれ": 0
+      }
+    },
+    "2": {
+      "starts": 0,
+      "first": 0,
+      "second": 0,
+      "third": 0,
+      "win_rate": 0.0,
+      "ren2_rate": 0.0,
+      "ren3_rate": 0.0,
+      "avg_st": 0.0,
+      "kimarite": {
+        "逃げ": 0,
+        "差し": 0,
+        "まくり": 0,
+        "まくり差し": 0,
+        "抜き": 0,
+        "恵まれ": 0
+      }
+    },
+    "3": {
+      "starts": 0,
+      "first": 0,
+      "second": 0,
+      "third": 0,
+      "win_rate": 0.0,
+      "ren2_rate": 0.0,
+      "ren3_rate": 0.0,
+      "avg_st": 0.0,
+      "kimarite": {
+        "逃げ": 0,
+        "差し": 0,
+        "まくり": 0,
+        "まくり差し": 0,
+        "抜き": 0,
+        "恵まれ": 0
+      }
+    },
+    "4": {
+      "starts": 0,
+      "first": 0,
+      "second": 0,
+      "third": 0,
+      "win_rate": 0.0,
+      "ren2_rate": 0.0,
+      "ren3_rate": 0.0,
+      "avg_st": 0.0,
+      "kimarite": {
+        "逃げ": 0,
+        "差し": 0,
+        "まくり": 0,
+        "まくり差し": 0,
+        "抜き": 0,
+        "恵まれ": 0
+      }
+    },
+    "5": {
+      "starts": 0,
+      "first": 0,
+      "second": 0,
+      "third": 0,
+      "win_rate": 0.0,
+      "ren2_rate": 0.0,
+      "ren3_rate": 0.0,
+      "avg_st": 0.0,
+      "kimarite": {
+        "逃げ": 0,
+        "差し": 0,
+        "まくり": 0,
+        "まくり差し": 0,
+        "抜き": 0,
+        "恵まれ": 0
+      }
+    },
+    "6": {
+      "starts": 0,
+      "first": 0,
+      "second": 0,
+      "third": 0,
+      "win_rate": 0.0,
+      "ren2_rate": 0.0,
+      "ren3_rate": 0.0,
+      "avg_st": 0.0,
+      "kimarite": {
+        "逃げ": 0,
+        "差し": 0,
+        "まくり": 0,
+        "まくり差し": 0,
+        "抜き": 0,
+        "恵まれ": 0
+      }
+    }
+  },
+  "courses_3y": {
+    "1": {
+      "starts": 0,
+      "first": 0,
+      "second": 0,
+      "third": 0,
+      "win_rate": 0.0,
+      "ren2_rate": 0.0,
+      "ren3_rate": 0.0,
+      "avg_st": 0.0,
+      "kimarite": {
+        "逃げ": 0,
+        "差し": 0,
+        "まくり": 0,
+        "まくり差し": 0,
+        "抜き": 0,
+        "恵まれ": 0
+      }
+    },
+    "2": {
+      "starts": 0,
+      "first": 0,
+      "second": 0,
+      "third": 0,
+      "win_rate": 0.0,
+      "ren2_rate": 0.0,
+      "ren3_rate": 0.0,
+      "avg_st": 0.0,
+      "kimarite": {
+        "逃げ": 0,
+        "差し": 0,
+        "まくり": 0,
+        "まくり差し": 0,
+        "抜き": 0,
+        "恵まれ": 0
+      }
+    },
+    "3": {
+      "starts": 0,
+      "first": 0,
+      "second": 0,
+      "third": 0,
+      "win_rate": 0.0,
+      "ren2_rate": 0.0,
+      "ren3_rate": 0.0,
+      "avg_st": 0.0,
+      "kimarite": {
+        "逃げ": 0,
+        "差し": 0,
+        "まくり": 0,
+        "まくり差し": 0,
+        "抜き": 0,
+        "恵まれ": 0
+      }
+    },
+    "4": {
+      "starts": 0,
+      "first": 0,
+      "second": 0,
+      "third": 0,
+      "win_rate": 0.0,
+      "ren2_rate": 0.0,
+      "ren3_rate": 0.0,
+      "avg_st": 0.0,
+      "kimarite": {
+        "逃げ": 0,
+        "差し": 0,
+        "まくり": 0,
+        "まくり差し": 0,
+        "抜き": 0,
+        "恵まれ": 0
+      }
+    },
+    "5": {
+      "starts": 0,
+      "first": 0,
+      "second": 0,
+      "third": 0,
+      "win_rate": 0.0,
+      "ren2_rate": 0.0,
+      "ren3_rate": 0.0,
+      "avg_st": 0.0,
+      "kimarite": {
+        "逃げ": 0,
+        "差し": 0,
+        "まくり": 0,
+        "まくり差し": 0,
+        "抜き": 0,
+        "恵まれ": 0
+      }
+    },
+    "6": {
+      "starts": 0,
+      "first": 0,
+      "second": 0,
+      "third": 0,
+      "win_rate": 0.0,
+      "ren2_rate": 0.0,
+      "ren3_rate": 0.0,
+      "avg_st": 0.0,
+      "kimarite": {
+        "逃げ": 0,
+        "差し": 0,
+        "まくり": 0,
+        "まくり差し": 0,
+        "抜き": 0,
+        "恵まれ": 0
+      }
+    }
+  },
+  "other_1y": {},
+  "other_3y": {},
+  "polygon_1y": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "polygon_3y": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "summary_1y": {
+    "win": 0.0,
+    "ren2": 0.0,
+    "ren3": 0.0
+  },
+  "summary_3y": {
+    "win": 0.0,
+    "ren2": 0.0,
+    "ren3": 0.0
+  }
+}

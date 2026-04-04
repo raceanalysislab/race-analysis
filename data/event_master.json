@@ -1,10 +1,11 @@
 {
   "_meta": {
-    "generated_at": "2026-04-01T12:01:46.932219+09:00",
-    "source_candidates": "data/event_master_candidates.json",
-    "source_manual": "data/event_master_manual.json",
-    "title_count": 161,
-    "grade_policy": "manual_only_default_ippan"
+    "generated_at": "2026-03-17T11:04:49.448725+09:00",
+    "source": "data/event_grade_candidates.json",
+    "policy": "SG_G2_G3_direct_adopt_G1_filtered",
+    "event_count": 158,
+    "adopted_count": 158,
+    "skipped_count": 2
   },
   "events": {
     "グランプリ／グランプリシリーズ": {
@@ -1472,50 +1473,62 @@
         "スカパー！・JLC杯戸田ルーキーシリーズ第5戦"
       ],
       "venues": []
-    },
-    "尼崎市制110周年記念 尼崎センプルカップ": {
-      "grade": "G1",
-      "total_days": 6,
-      "notes": "manual_override",
-      "sample_titles": [
-        "尼崎市制110周年記念 尼崎センプルカップ"
-      ],
-      "venues": [
-        "尼崎"
-      ]
-    },
-    "坂井市制20周年記念": {
-      "grade": "一般",
-      "total_days": 6,
-      "notes": "manual_override",
-      "sample_titles": [
-        "坂井市制20周年記念"
-      ],
-      "venues": [
-        "三国"
-      ]
-    },
-    "唐津ＭＢ大賞～スター候補チャレンジマッチ～": {
-      "grade": "G2",
-      "total_days": 6,
-      "notes": "manual_override",
-      "sample_titles": [
-        "唐津ＭＢ大賞～スター候補チャレンジマッチ～"
-      ],
-      "venues": [
-        "唐津"
-      ]
-    },
-    "中日カップ": {
-      "grade": "G3",
-      "total_days": null,
-      "notes": "manual_add",
-      "sample_titles": [
-        "第39回 中日カップ"
-      ],
-      "venues": [
-        "浜名湖"
-      ]
-    }
+},
+"尼崎市制110周年記念 尼崎センプルカップ": {
+  "grade": "G1",
+  "total_days": 6,
+  "notes": "manual_override",
+  "sample_titles": [
+    "尼崎市制110周年記念 尼崎センプルカップ"
+  ],
+  "venues": ["尼崎"]
+},
+"坂井市制20周年記念": {
+  "grade": "一般",
+  "total_days": 6,
+  "notes": "manual_override",
+  "sample_titles": [
+    "坂井市制20周年記念"
+  ],
+  "venues": ["三国"]
+},
+"唐津ＭＢ大賞～スター候補チャレンジマッチ～": {
+  "grade": "G2",
+  "total_days": 6,
+  "notes": "manual_override",
+  "sample_titles": [
+    "唐津ＭＢ大賞～スター候補チャレンジマッチ～"
+  ],
+  "venues": ["唐津"]
+},
+"中日カップ": {
+  "grade": "G3",
+  "total_days": null,
+  "notes": "manual_add",
+  "sample_titles": [
+    "第39回 中日カップ"
+  ],
+  "venues": ["浜名湖"]
+},
+"ヴィーナスシリーズ第1戦・マクール杯": {
+"grade": "一般",
+"total_days": null,
+"notes": "manual_add",
+"sample_titles": [
+"ヴィーナスシリーズ第1戦・マクール杯"
+],
+"venues": ["福岡"]
+},
+"津ダイヤモンドカップ": {
+"grade": "G1",
+"total_days": null,
+"notes": "manual_add",
+"sample_titles": [
+"津ダイヤモンドカップ"
+],
+"venues": ["津"]
+
+}
   }
 }
+

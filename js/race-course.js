@@ -412,6 +412,222 @@
     `;
   };
 
+  const normalizeRecentRank = (v) => {
+    if (v === undefined || v === null || v === "") return "—";
+    const s = String(v).trim().toUpperCase();
+    if (s.includes("S")) return "失";
+    return String(v);
+  };
+
+  const formatRecentRank = (v) => {
+    return normalizeRecentRank(v);
+  };
+
+  const formatRecentSt = (v) => {
+    if (v === undefined || v === null || v === "") return "—";
+    const n = Number(v);
+    if (!Number.isFinite(n)) return "—";
+    return `.${n.toFixed(2).split(".")[1]}`;
+  };
+
+  const parseTrendRank = (raw) => {
+    if (raw === undefined || raw === null || raw === "") return null;
+
+    const s = String(raw).trim().toUpperCase();
+
+    if (s.startsWith("S")) return null;
+    if (/^[1-6]$/.test(s)) return Number(s);
+
+    return null;
+  };
+
+  const getWakuRecentAvgStText = (boat, fieldName = "waku_recent_avg_st") => {
+    const v = pickValue(boat, [fieldName]);
+    if (v === "" || v === null || v === undefined) return "—";
+    const n = Number(v);
+    return Number.isFinite(n) ? n.toFixed(2) : "—";
+  };
+
+  const getWakuScoreText = (boat, fieldName = "waku_recent") => {
+    const rows = Array.isArray(boat?.[fieldName]) ? boat[fieldName] : [];
+
+    const scoreMap = {
+      1: 10,
+      2: 8,
+      3: 6,
+      4: 4,
+      5: 2,
+      6: 0
+    };
+
+    let sum = 0;
+    let count = 0;
+
+    for (const r of rows) {
+      const rank = parseTrendRank(r?.rank);
+      if (rank && scoreMap[rank] !== undefined) {
+        sum += scoreMap[rank];
+        count++;
+      }
+    }
+
+    if (!count) return "—";
+
+    return (sum / count).toFixed(2);
+  };
+
+  const getWakuRecentRecords = (boat, fieldName = "waku_recent") => {
+    const rows = Array.isArray(boat?.[fieldName]) ? boat[fieldName] : [];
+    return rows.slice(0, 10);
+  };
+
+  const getRecentWakuBadgeStyle = (waku) => {
+    const c = Number(waku);
+
+    if (c === 1) {
+      return "background:#ffffff;color:#111827;border:1px solid #d7dde5;";
+    }
+    if (c === 2) {
+      return "background:#444b55;color:#ffffff;";
+    }
+    if (c === 3) {
+      return "background:#ea5a50;color:#ffffff;";
+    }
+    if (c === 4) {
+      return "background:#4d82d8;color:#ffffff;";
+    }
+    if (c === 5) {
+      return "background:#e6d74a;color:#1e2430;";
+    }
+    if (c === 6) {
+      return "background:#39b36b;color:#ffffff;";
+    }
+
+    return "background:#f8fafc;color:#64748b;border:1px solid #d7dde5;";
+  };
+
+  const getWakuChipStyle = (waku) => {
+    const c = Number(waku);
+
+    if (c === 1) {
+      return "background:#ffffff;color:#111827;border-right:1px solid #d7dde5;";
+    }
+    if (c === 2) {
+      return "background:#444b55;color:#ffffff;";
+    }
+    if (c === 3) {
+      return "background:#ea5a50;color:#ffffff;";
+    }
+    if (c === 4) {
+      return "background:#4d82d8;color:#ffffff;";
+    }
+    if (c === 5) {
+      return "background:#e6d74a;color:#1e2430;";
+    }
+    if (c === 6) {
+      return "background:#39b36b;color:#ffffff;";
+    }
+
+    return "background:#f8fafc;color:#64748b;";
+  };
+
+  const renderWakuTrendRows = (
+    boats,
+    recordsField = "waku_recent",
+    avgStField = "waku_recent_avg_st"
+  ) => {
+    return boats.map((boat) => {
+      const records = getWakuRecentRecords(boat, recordsField);
+      const isFemale = isFemaleRacer(boat);
+      const waku = Number(boat?.waku) || "—";
+
+      const recentCells = Array.from({ length: 10 }, (_, idx) => {
+        const rec = records[idx] || {};
+        const badgeWaku = rec?.waku ?? waku;
+        const course = rec?.course ?? "—";
+        const st = formatRecentSt(rec?.st);
+        const rank = formatRecentRank(rec?.rank);
+        const orderNo = idx + 1;
+
+        return `
+          <div style="flex:0 0 37px;min-width:37px;border-right:1px solid #d7dde5;background:#fff;">
+            <div style="height:18px;display:flex;align-items:center;justify-content:center;border-bottom:1px solid #e8edf3;font-size:10px;font-weight:800;color:#64748b;background:#f8fafc;">
+              ${orderNo}
+            </div>
+            <div style="height:22px;display:flex;align-items:center;justify-content:center;border-bottom:1px solid #e8edf3;">
+              <div style="width:24px;height:18px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;${getRecentWakuBadgeStyle(badgeWaku)}">
+                ${esc(course)}
+              </div>
+            </div>
+            <div style="height:20px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#334155;border-bottom:1px solid #e8edf3;">
+              ${esc(st)}
+            </div>
+            <div style="height:22px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#0f172a;">
+              ${esc(rank)}
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      return `
+        <div style="display:grid;grid-template-columns:42px 112px minmax(0,1fr) 72px;border-bottom:1px solid #d7dde5;background:#fff;min-height:84px;">
+          <div style="display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;line-height:1;border-right:1px solid #d7dde5;${getWakuChipStyle(waku)}">
+            ${esc(waku)}
+          </div>
+
+          <div style="padding:8px 6px;border-right:1px solid #d7dde5;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;min-width:0;${isFemale ? "background:#ffe4ec;" : ""}">
+            <div style="font-size:10px;line-height:1.15;color:#6b7280;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;">
+              ${esc(formatDash(boat?.regno))} / ${esc(formatDash(boat?.branch))} / ${esc(formatDash(boat?.age))}歳
+            </div>
+            <div style="display:flex;align-items:center;justify-content:center;gap:3px;width:100%;min-width:0;margin-top:4px;">
+              ${isFemale ? '<span style="font-size:13px;line-height:1;color:#e2558f;font-weight:700;">♡</span>' : ""}
+              <div style="font-size:15px;line-height:1.1;font-weight:800;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;">
+                ${esc(normalizeName(boat?.name || "—"))}
+              </div>
+            </div>
+          </div>
+
+          <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;border-right:1px solid #d7dde5;">
+            <div style="display:flex;min-width:max-content;">
+              ${recentCells}
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-rows:16px 25px 16px 25px;background:#fff;">
+            <div style="display:flex;align-items:center;justify-content:center;border-bottom:1px solid #e8edf3;font-size:10px;font-weight:700;color:#64748b;line-height:1;background:#f8fafc;">
+              平均ST
+            </div>
+            <div style="display:flex;align-items:center;justify-content:center;border-bottom:1px solid #d7dde5;font-size:16px;font-weight:800;color:#1d4ed8;line-height:1;">
+              ${esc(getWakuRecentAvgStText(boat, avgStField))}
+            </div>
+            <div style="display:flex;align-items:center;justify-content:center;border-bottom:1px solid #e8edf3;font-size:10px;font-weight:700;color:#64748b;line-height:1;background:#f8fafc;">
+              勝率
+            </div>
+            <div style="display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#475569;line-height:1;">
+              ${esc(getWakuScoreText(boat, recordsField))}
+            </div>
+          </div>
+        </div>
+      `;
+    }).join("");
+  };
+
+  const renderWakuTrendGrid = (
+    recordsField = "waku_recent",
+    avgStField = "waku_recent_avg_st",
+    title = "枠番過去10走"
+  ) => {
+    const boats = getBoatsOrdered();
+
+    return `
+      <div style="height:100%;display:flex;flex-direction:column;background:#fff;border-top:1px solid #d7dde5;border-bottom:1px solid #d7dde5;">
+        <div style="flex:1 1 auto;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;">
+          ${renderWakuTrendRows(boats, recordsField, avgStField)}
+        </div>
+      </div>
+    `;
+  };
+
   const bindNameLinks = (root) => {
     root.querySelectorAll('[data-player-link="1"]').forEach((link) => {
       link.addEventListener("click", () => {
@@ -420,40 +636,75 @@
     });
   };
 
-  const renderRoot = () => {
-    const root = $("courseDataRoot");
-    if (!root) return;
+  const renderRoot = async () => {
+    const courseRoot = $("courseDataRoot");
+    const wakuRoot = $("wakuTrendRoot");
+    const wakuLocalRoot = $("wakuTrendLocalRoot");
 
-    root.innerHTML = `
-      <div class="coursePanel">
-        <div class="coursePanelMain">
-          <div class="coursePanelBody">
-            ${renderMainGrid()}
+    if (courseRoot) {
+      courseRoot.innerHTML = `
+        <div class="coursePanel">
+          <div class="coursePanelMain">
+            <div class="coursePanelBody">
+              ${renderMainGrid()}
+            </div>
           </div>
         </div>
-      </div>
-    `;
+      `;
+      bindNameLinks(courseRoot);
+    }
 
-    bindNameLinks(root);
+    if (wakuRoot) {
+      wakuRoot.innerHTML = `
+        ${renderWakuTrendGrid("waku_recent", "waku_recent_avg_st", "枠番過去10走")}
+      `;
+    }
+
+    if (wakuLocalRoot) {
+      wakuLocalRoot.innerHTML = `
+        ${renderWakuTrendGrid("waku_recent_local", "waku_recent_local_avg_st", "当地枠番過去10走")}
+      `;
+    }
   };
 
   const renderLoading = () => {
-    const root = $("courseDataRoot");
-    if (!root) return;
-    root.innerHTML = `<div class="err">読み込み中…</div>`;
+    const courseRoot = $("courseDataRoot");
+    const wakuRoot = $("wakuTrendRoot");
+    const wakuLocalRoot = $("wakuTrendLocalRoot");
+
+    if (courseRoot) {
+      courseRoot.innerHTML = `<div class="err">読み込み中…</div>`;
+    }
+    if (wakuRoot) {
+      wakuRoot.innerHTML = `<div class="err">読み込み中…</div>`;
+    }
+    if (wakuLocalRoot) {
+      wakuLocalRoot.innerHTML = `<div class="err">読み込み中…</div>`;
+    }
   };
 
   const renderError = () => {
-    const root = $("courseDataRoot");
-    if (!root) return;
-    root.innerHTML = `<div class="err">コースデータ取得失敗</div>`;
+    const courseRoot = $("courseDataRoot");
+    const wakuRoot = $("wakuTrendRoot");
+    const wakuLocalRoot = $("wakuTrendLocalRoot");
+
+    if (courseRoot) {
+      courseRoot.innerHTML = `<div class="err">コースデータ取得失敗</div>`;
+    }
+    if (wakuRoot) {
+      wakuRoot.innerHTML = `<div class="err">枠傾向データ取得失敗</div>`;
+    }
+    if (wakuLocalRoot) {
+      wakuLocalRoot.innerHTML = `<div class="err">当地枠傾向データ取得失敗</div>`;
+    }
   };
 
   const fetchGenderMap = async () => {
     try {
-      const res = await fetch(`${RACER_GENDER_URL}?t=${Math.floor(Date.now() / 60000)}`, {
-        cache: "no-store"
-      });
+      const res = await fetch(
+        `${RACER_GENDER_URL}?t=${Math.floor(Date.now() / 60000)}`,
+        { cache: "no-store" }
+      );
       if (!res.ok) throw new Error("gender fetch failed");
       const json = await res.json();
       state.genderMap = json || {};
@@ -465,12 +716,30 @@
   const render = async (json) => {
     state.raceJson = json || null;
     await fetchGenderMap();
-    renderRoot();
+    await renderRoot();
   };
 
-  const boot = () => {
-    renderRoot();
+  const boot = async () => {
+    await renderRoot();
   };
+
+  document.addEventListener("click", (e) => {
+    const tab = e.target.closest(".entryInnerTab[data-waku]");
+    if (!tab) return;
+
+    const idx = tab.dataset.waku;
+
+    document.querySelectorAll('#wakuTabs .entryInnerTab').forEach((t) => {
+      t.classList.remove("is-active");
+    });
+
+    document.querySelectorAll('[data-waku-page]').forEach((p) => {
+      const active = p.dataset.wakuPage === idx;
+      p.style.display = active ? "block" : "none";
+    });
+
+    tab.classList.add("is-active");
+  });
 
   window.BOAT_CORE_COURSE = {
     boot,
