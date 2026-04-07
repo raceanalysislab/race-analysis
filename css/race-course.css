@@ -1,0 +1,462 @@
+.courseDataRoot{
+  flex:1 1 auto;
+  min-height:0;
+  height:100%;
+  background:#fff;
+}
+
+.coursePanel{
+  min-height:100%;
+  display:block;
+  background:#fff;
+}
+
+.coursePanelMain{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  background:#fff;
+  min-height:100%;
+}
+
+.coursePanelBody{
+  flex:1 1 auto;
+  min-height:0;
+  overflow-y:auto;
+  overflow-x:hidden;
+  background:#fff;
+  -webkit-overflow-scrolling:touch;
+}
+
+.courseGrid{
+  width:100%;
+  min-width:0;
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  background:#fff;
+}
+
+.courseGridRow{
+  display:grid;
+  grid-template-columns:8.8% 15.2% 15.2% 15.2% 15.2% 15.2% 15.2%;
+  min-width:0;
+  background:#fff;
+  border-bottom:1px solid var(--line);
+}
+
+.courseGridRow:last-child{
+  border-bottom:none;
+}
+
+.courseGridRow--head{
+  min-height:50px;
+}
+
+.courseGridRow--name{
+  min-height:118px;
+}
+
+.courseGridRow--grade{
+  min-height:34px;
+}
+
+.courseGridRow--fl{
+  min-height:34px;
+}
+
+.courseGridRow--avgst,
+.courseGridRow--meetavgst,
+.courseGridRow--starts{
+  min-height:34px;
+}
+
+.courseGridRow--course{
+  min-height:34px;
+}
+
+.courseGridRow--kimarite{
+  min-height:40px;
+}
+
+.courseGridCell{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  background:#fff;
+  color:#101722;
+  min-width:0;
+  overflow:hidden;
+  padding:0;
+  box-shadow:inset -1px 0 0 var(--line);
+}
+
+.courseGridCell:last-child{
+  box-shadow:none;
+}
+
+.courseGridRow > .courseGridCell:nth-child(2){
+  box-shadow:
+    inset 1px 0 0 var(--line),
+    inset -1px 0 0 var(--line);
+}
+
+.courseGridCell--head{
+  font-size:16px;
+  line-height:1;
+  font-weight:800;
+  letter-spacing:-.02em;
+}
+
+.courseGridCell--head.w1{ background:#ffffff; color:#111827; }
+.courseGridCell--head.w2{ background:#444b55; color:#ffffff; }
+.courseGridCell--head.w3{ background:#ea5a50; color:#ffffff; }
+.courseGridCell--head.w4{ background:#4d82d8; color:#ffffff; }
+.courseGridCell--head.w5{ background:#e6d74a; color:#1e2430; }
+.courseGridCell--head.w6{ background:#39b36b; color:#ffffff; }
+
+.courseGridCell--name{
+  padding:6px 0;
+  background:#fff;
+}
+
+.courseGridCell--name.w1{ background:#f7f7f8; }
+.courseGridCell--name.w2{ background:#eef1f5; }
+.courseGridCell--name.w3{ background:#fbeaea; }
+.courseGridCell--name.w4{ background:#eaf2ff; }
+.courseGridCell--name.w5{ background:#faf7df; }
+.courseGridCell--name.w6{ background:#edf8f0; }
+
+.courseGridCell--nameLink{
+  text-decoration:none;
+  color:inherit;
+  -webkit-tap-highlight-color:transparent;
+  transition:opacity .15s ease;
+}
+
+.courseGridCell--nameLink:link,
+.courseGridCell--nameLink:visited,
+.courseGridCell--nameLink:hover,
+.courseGridCell--nameLink:active{
+  text-decoration:none;
+  color:inherit;
+}
+
+.courseGridCell--nameLink:active{
+  opacity:.6;
+}
+
+.courseGridNameVerticalWrap{
+  height:104px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+}
+
+.courseGridFemaleMark{
+  flex:0 0 auto;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:14px;
+  line-height:1;
+  font-weight:700;
+  color:#e2558f;
+  text-decoration:none;
+}
+
+.courseGridNameVertical{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  writing-mode:vertical-rl;
+  text-orientation:upright;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:clip;
+  font-size:17px;
+  line-height:1.04;
+  font-weight:700;
+  letter-spacing:.04em;
+  color:#0f172a;
+  font-kerning:normal;
+  font-feature-settings:"kern" 1;
+  text-shadow:none;
+  text-decoration:none;
+}
+
+.courseGridCell--grade{
+  background:#fff;
+}
+
+.courseGridCell--grade.w1{ background:#f7f7f8; }
+.courseGridCell--grade.w2{ background:#eef1f5; }
+.courseGridCell--grade.w3{ background:#fbeaea; }
+.courseGridCell--grade.w4{ background:#eaf2ff; }
+.courseGridCell--grade.w5{ background:#faf7df; }
+.courseGridCell--grade.w6{ background:#edf8f0; }
+
+.courseGrade{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-variant-numeric:tabular-nums;
+  font-size:11px;
+  line-height:1;
+  font-weight:700;
+  letter-spacing:-.01em;
+  white-space:nowrap;
+}
+
+.grade-A1,
+.courseGrade.grade-A1,
+.courseGridCell--grade.grade-A1{
+  color:#d92c2c;
+}
+
+.grade-A2,
+.courseGrade.grade-A2,
+.courseGridCell--grade.grade-A2{
+  color:#111111;
+}
+
+.grade-B1,
+.courseGrade.grade-B1,
+.courseGridCell--grade.grade-B1{
+  color:#111111;
+}
+
+.grade-B2,
+.courseGrade.grade-B2,
+.courseGridCell--grade.grade-B2{
+  color:#16a34a;
+}
+
+.courseGridMetric{
+  font-variant-numeric:tabular-nums;
+  font-size:11px;
+  line-height:1;
+  font-weight:700;
+  letter-spacing:-.01em;
+  white-space:nowrap;
+}
+
+.courseWinBlue{
+  background:#3f6fd8;
+  color:#fff;
+  font-weight:700;
+}
+
+.courseWinGold{
+  background:#f2c94c;
+  color:#1e2430;
+  font-weight:700;
+}
+
+.courseGridCell--fl{
+  padding:0;
+}
+
+.courseFLBox{
+  width:100%;
+  height:100%;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+}
+
+.courseFLCol{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  min-width:0;
+}
+
+.courseFLCol:first-child{
+  border-right:1px solid var(--line);
+}
+
+.courseFLHead{
+  font-size:8px;
+  line-height:1;
+  font-weight:700;
+  color:#5b677a;
+  margin-bottom:4px;
+  white-space:nowrap;
+}
+
+.courseFLVal{
+  font-size:10px;
+  line-height:1;
+  font-weight:700;
+  white-space:nowrap;
+  font-variant-numeric:tabular-nums;
+}
+
+.courseFLVal--f{
+  color:#d92d20;
+}
+
+.courseFLVal--l{
+  color:#2563eb;
+}
+
+.courseGridCell--kimarite{
+  padding:0;
+}
+
+.courseKimariteBox{
+  width:100%;
+  height:100%;
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+}
+
+.courseKimariteCol{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  min-width:0;
+  border-right:1px solid var(--line);
+}
+
+.courseKimariteCol:last-child{
+  border-right:none;
+}
+
+.courseKimariteHead{
+  font-size:8px;
+  line-height:1;
+  font-weight:700;
+  color:#5b677a;
+  margin-bottom:4px;
+  white-space:nowrap;
+}
+
+.courseKimariteVal{
+  font-size:9px;
+  line-height:1;
+  font-weight:700;
+  color:#101722;
+  white-space:nowrap;
+  font-variant-numeric:tabular-nums;
+}
+
+.courseGridLabel{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  background:#f3f6fb;
+  color:#425066;
+  font-size:8px;
+  line-height:1.08;
+  font-weight:700;
+  letter-spacing:-.01em;
+  padding:0 1px;
+  word-break:break-all;
+  overflow-wrap:anywhere;
+  box-shadow:inset -1px 0 0 var(--line);
+}
+
+@media (max-width: 390px){
+  .courseGridRow{
+    grid-template-columns:8.5% 15.25% 15.25% 15.25% 15.25% 15.25% 15.25%;
+  }
+
+  .courseGridRow--head{
+    min-height:46px;
+  }
+
+  .courseGridRow--name{
+    min-height:108px;
+  }
+
+  .courseGridRow--grade{
+    min-height:32px;
+  }
+
+  .courseGridRow--fl{
+    min-height:32px;
+  }
+
+  .courseGridRow--avgst,
+  .courseGridRow--meetavgst,
+  .courseGridRow--starts{
+    min-height:32px;
+  }
+
+  .courseGridRow--course{
+    min-height:32px;
+  }
+
+  .courseGridRow--kimarite{
+    min-height:46px;
+  }
+
+  .courseGridCell--head{
+    font-size:15px;
+  }
+
+  .courseGridNameVerticalWrap{
+    height:96px;
+    gap:3px;
+  }
+
+  .courseGridFemaleMark{
+    font-size:13px;
+  }
+
+  .courseGridNameVertical{
+    font-size:16px;
+    line-height:1.03;
+    font-weight:700;
+    letter-spacing:.03em;
+  }
+
+  .courseGrade{
+    font-size:10px;
+    font-weight:700;
+    letter-spacing:-.01em;
+  }
+
+  .courseGridMetric{
+    font-size:10px;
+    font-weight:700;
+    letter-spacing:-.01em;
+  }
+
+  .courseFLHead{
+    font-size:7px;
+    margin-bottom:3px;
+    font-weight:700;
+  }
+
+  .courseFLVal{
+    font-size:9px;
+    font-weight:700;
+  }
+
+  .courseKimariteHead{
+    font-size:7px;
+    margin-bottom:3px;
+    font-weight:700;
+  }
+
+  .courseKimariteVal{
+    font-size:8px;
+    font-weight:700;
+  }
+
+  .courseGridLabel{
+    font-size:7px;
+    line-height:1.05;
+    font-weight:700;
+    letter-spacing:-.01em;
+    padding:0;
+    text-align:center;
+  }
+}

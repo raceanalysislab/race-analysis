@@ -1,0 +1,424 @@
+:root{
+  --sat: env(safe-area-inset-top, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --bar: 140px;
+
+  --bg: #f3f4f6;
+  --text: #0f172a;
+  --muted: #64748b;
+
+  --cardOff: #e5e7eb;
+  --cardOn: #ffffff;
+
+  --border: #cbd5e1;
+  --borderOn: #3b82f6;
+
+  --accent: #3b82f6;
+  --gridH: 520px;
+}
+
+/* ===== PRO THEME : 白金（背景はFREEと同じ白基調） ===== */
+html[data-theme="pro"]{
+  --bg: #f8f7f3;
+
+  --text: #111827;
+  --muted: #6b7280;
+
+  --cardOff: #ece8df;
+  --cardOn: #ffffff;
+
+  --gold: rgba(205,165,45,.95);
+  --goldSoft: rgba(205,165,45,.18);
+
+  --border: rgba(205,165,45,.24);
+  --borderOn: rgba(200,160,40,.78);
+  --accent: rgba(200,160,40,.90);
+
+  --proPlateBg:
+    linear-gradient(180deg, rgba(255,255,255,.97), rgba(248,245,236,.96));
+  --proPlateShadow:
+    inset 0 1px 0 rgba(255,255,255,.96),
+    0 6px 16px rgba(15,23,42,.05);
+
+  --proGemBg:
+    radial-gradient(circle at 30% 30%, rgba(255,255,255,.92), rgba(255,255,255,0) 48%),
+    radial-gradient(circle at 55% 70%, rgba(255,248,228,.98), rgba(205,165,45,.96) 58%, rgba(120,90,20,.94) 100%);
+  --proGemShadow:
+    0 1px 0 rgba(255,255,255,.76),
+    0 0 0 1px rgba(205,165,45,.26),
+    0 0 10px rgba(205,165,45,.08);
+
+  --proCardFace:
+    linear-gradient(180deg, rgba(255,255,255,.28), rgba(255,255,255,0) 56%);
+
+  --proCardFaceOn:
+    linear-gradient(180deg, rgba(255,255,255,.34), rgba(255,255,255,0) 60%);
+
+  --proCardShadowStd:
+    inset 0 1px 0 rgba(255,255,255,.95),
+    0 6px 14px rgba(15,23,42,.07),
+    0 0 0 1px rgba(205,165,45,.06);
+
+  --proCardShadowOn:
+    inset 0 1px 0 rgba(255,255,255,.98),
+    0 8px 18px rgba(15,23,42,.08),
+    0 0 0 1px rgba(205,165,45,.10),
+    0 0 10px rgba(205,165,45,.06);
+
+  --proCardShadowOff:
+    inset 0 1px 0 rgba(255,255,255,.72),
+    0 4px 10px rgba(15,23,42,.04);
+
+  --proCardActiveShadow:
+    inset 0 1px 0 rgba(255,255,255,.98),
+    0 10px 22px rgba(15,23,42,.10),
+    0 0 0 1px rgba(205,165,45,.12);
+
+  --proBoxBg:
+    linear-gradient(180deg, rgba(255,255,255,.97), rgba(248,245,236,.96));
+
+  --proBoxShadow:
+    inset 0 1px 0 rgba(255,255,255,.96),
+    0 8px 18px rgba(15,23,42,.06);
+
+  --proBoxShadow2:
+    inset 0 1px 0 rgba(255,255,255,.98),
+    0 10px 22px rgba(15,23,42,.08);
+}
+
+*{
+  box-sizing: border-box;
+}
+
+/* iOSのゴム伸び由来の崩れを抑える */
+html,
+body{
+  height: 100%;
+  overscroll-behavior-y: none;
+}
+
+html{
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body{
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  padding-top: var(--sat);
+  padding-bottom: calc(var(--sab) + var(--bar));
+  overflow-x: hidden;
+}
+
+html[data-theme="pro"] body{
+  background:
+    linear-gradient(180deg, #fbfaf6 0%, #f8f7f3 48%, #f4f2eb 100%);
+}
+
+html[data-theme="pro"] body::after{
+  content:"";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  box-shadow:
+    inset 0 20px 56px rgba(255,255,255,.22),
+    inset 0 -28px 60px rgba(15,23,42,.03);
+}
+
+html[data-theme="pro"] body::before{
+  content:"";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: .02;
+  mix-blend-mode: multiply;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      rgba(17,24,39,.08) 0px,
+      rgba(17,24,39,.08) 1px,
+      rgba(0,0,0,0) 2px,
+      rgba(0,0,0,0) 3px
+    );
+}
+
+/* focus */
+.card:focus-visible,
+.top__btn:focus-visible,
+.top__pro:focus-visible{
+  outline: 3px solid rgba(59,130,246,.35);
+  outline-offset: 3px;
+}
+
+html[data-theme="pro"] .card:focus-visible,
+html[data-theme="pro"] .top__btn:focus-visible,
+html[data-theme="pro"] .top__pro:focus-visible{
+  outline-color: rgba(205,165,45,.32);
+}
+
+@media (max-width: 390px){
+  :root{
+    --bar: 150px;
+  }
+
+  .top__title{
+    font-size: 28px;
+  }
+
+  .card__name{
+    font-size: 17px;
+  }
+
+  .card__line--btm{
+    font-size: 15px;
+  }
+
+  .picksTitle{
+    font-size: 17px;
+  }
+}
+
+/* =========================
+   PRO認証モーダル専用
+   ※ 開催場カード・ヘッダー既存UIは触らない
+========================= */
+
+#proModal{
+  position: fixed;
+  inset: 0;
+  z-index: 12000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 18px calc(24px + env(safe-area-inset-bottom, 0px));
+  background: rgba(15, 23, 42, .34);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .22s ease;
+}
+
+#proModal.is-open,
+#proModal[aria-hidden="false"]{
+  opacity: 1;
+  pointer-events: auto;
+}
+
+#proModal .proModalBox{
+  width: min(100%, 520px);
+  border-radius: 28px;
+  background: rgba(255,255,255,.97);
+  border: 1px solid rgba(203,213,225,.92);
+  box-shadow:
+    0 20px 60px rgba(15,23,42,.22),
+    0 2px 10px rgba(15,23,42,.08),
+    inset 0 1px 0 rgba(255,255,255,.92);
+  padding: 22px 18px 18px;
+  transform: translateY(8px) scale(.985);
+  transition: transform .22s ease, opacity .22s ease;
+}
+
+#proModal.is-open .proModalBox,
+#proModal[aria-hidden="false"] .proModalBox{
+  transform: translateY(0) scale(1);
+}
+
+#proModal .proBadge{
+  display: inline-flex;
+  align-items: stretch;
+  overflow: hidden;
+  border-radius: 12px;
+  margin: 0 auto 16px;
+  box-shadow:
+    0 2px 8px rgba(15,23,42,.08),
+    inset 0 1px 0 rgba(255,255,255,.18);
+}
+
+#proModal .proBadgeWrap{
+  text-align: center;
+}
+
+#proModal .proBadge__main,
+#proModal .proBadge__sub{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  color: #fff;
+  font-weight: 800;
+  letter-spacing: .04em;
+  white-space: nowrap;
+}
+
+#proModal .proBadge__main{
+  padding: 0 16px;
+  font-size: 15px;
+  background: linear-gradient(180deg, #284a95 0%, #1e3a79 100%);
+}
+
+#proModal .proBadge__sub{
+  padding: 0 14px;
+  font-size: 15px;
+  background: linear-gradient(180deg, #18346d 0%, #112a57 100%);
+}
+
+#proModal .proTitle{
+  margin: 6px 0 10px;
+  text-align: center;
+  font-size: clamp(28px, 7vw, 40px);
+  line-height: 1.08;
+  font-weight: 900;
+  letter-spacing: -.03em;
+  color: #0f172a;
+}
+
+#proModal .proDesc{
+  margin: 0 0 20px;
+  text-align: center;
+  font-size: clamp(14px, 3.8vw, 17px);
+  line-height: 1.5;
+  font-weight: 600;
+  color: #64748b;
+}
+
+#proModal .proInputs{
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+#proModal .proInputs input{
+  width: 100%;
+  height: 68px;
+  border: 2px solid #d5dbe5;
+  border-radius: 18px;
+  background: #ffffff;
+  text-align: center;
+  font-size: 28px;
+  font-weight: 800;
+  color: #0f172a;
+  outline: none;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.9),
+    0 1px 2px rgba(15,23,42,.03);
+  transition:
+    border-color .18s ease,
+    box-shadow .18s ease,
+    transform .18s ease,
+    background .18s ease;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+#proModal .proInputs input:focus{
+  border-color: #3b82f6;
+  box-shadow:
+    0 0 0 4px rgba(59,130,246,.14),
+    inset 0 1px 0 rgba(255,255,255,.95);
+  transform: translateY(-1px);
+}
+
+#proModal .proUnlock{
+  width: 100%;
+  height: 62px;
+  border: 0;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #3556a7 0%, #24458f 100%);
+  color: #fff;
+  font-size: clamp(18px, 4.8vw, 22px);
+  font-weight: 900;
+  letter-spacing: -.01em;
+  box-shadow:
+    0 10px 22px rgba(37,69,143,.26),
+    inset 0 1px 0 rgba(255,255,255,.2);
+  cursor: pointer;
+  transition:
+    transform .18s ease,
+    box-shadow .18s ease,
+    filter .18s ease;
+}
+
+#proModal .proUnlock:active{
+  transform: translateY(1px) scale(.995);
+  box-shadow:
+    0 6px 14px rgba(37,69,143,.22),
+    inset 0 1px 0 rgba(255,255,255,.16);
+}
+
+#proModal .proUnlock:disabled{
+  opacity: .55;
+  cursor: default;
+  box-shadow: none;
+}
+
+#proModal .proDivider{
+  height: 1px;
+  margin: 16px 0 10px;
+  background: #d8dee8;
+}
+
+#proModal .proBottom{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 34px;
+}
+
+#proModal .proBottom button{
+  border: 0;
+  background: transparent;
+  padding: 0;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+
+#proModal #proClear{
+  color: #64748b;
+}
+
+#proModal #proCancel{
+  color: #2563eb;
+}
+
+#proModal .proBottom__sep{
+  color: #c0c8d4;
+  font-weight: 700;
+  user-select: none;
+}
+
+@media (max-width: 560px){
+  #proModal{
+    padding: 20px 14px calc(20px + env(safe-area-inset-bottom, 0px));
+  }
+
+  #proModal .proModalBox{
+    width: 100%;
+    border-radius: 26px;
+    padding: 18px 16px 18px;
+  }
+
+  #proModal .proInputs{
+    gap: 8px;
+  }
+
+  #proModal .proInputs input{
+    height: 62px;
+    border-radius: 16px;
+    font-size: 24px;
+  }
+
+  #proModal .proUnlock{
+    height: 58px;
+    border-radius: 16px;
+    font-size: 17px;
+  }
+}
