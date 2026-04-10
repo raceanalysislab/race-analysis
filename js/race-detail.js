@@ -37,6 +37,7 @@ const MOTOR_TABLE_MIN_W =
 
 const SWIPE_THRESHOLD_X = 56;
 const SWIPE_THRESHOLD_Y = 28;
+const NEW_MOTOR_TEXT = "新モーター（使用実績なし）";
 
 const layoutState = {
   contentMinH: 480,
@@ -95,9 +96,37 @@ const normalizeName = (name) =>
     .replace(/[\s\u3000]+/g, "")
     .trim();
 
+function isKetsujoLike(v) {
+  const s = String(v ?? "").trim().toUpperCase();
+  return s === "欠" || /^K\d*$/.test(s);
+}
+
+function isLateLike(v) {
+  const s = String(v ?? "").trim().toUpperCase();
+  return s === "L" || /^L\d*$/.test(s);
+}
+
+function isShikkakuLike(v) {
+  const s = String(v ?? "").trim().toUpperCase();
+  return s === "失" || s === "失格" || /^S\d*$/.test(s);
+}
+
+function isMotorKetsujo(row) {
+  if (!row || typeof row !== "object") return false;
+
+  return (
+    row?.is_ketsujo === true ||
+    String(row?.status ?? "").trim() === "欠" ||
+    isKetsujoLike(row?.finish) ||
+    isKetsujoLike(row?.rank) ||
+    isKetsujoLike(row?.finish_raw)
+  );
+}
+
 const getRecentScoreFromRank = (rankLike) => {
   const s = String(rankLike ?? "").trim().toUpperCase();
   if (!s) return null;
+  if (isKetsujoLike(s)) return null;
   if (s === "1") return 10;
   if (s === "2") return 8;
   if (s === "3") return 6;
@@ -149,14 +178,30 @@ const renderFLValue = (label, count) => {
   return `${label}${count}`;
 };
 
+function hasDisplayValue(v) {
+  return !(v === undefined || v === null || v === "");
+}
+
+function pickFirstDefined(...values) {
+  for (const v of values) {
+    if (hasDisplayValue(v)) return v;
+  }
+  return "";
+}
+
+function isNewMotorBoat(p) {
+  return Boolean(p?.is_new_motor || p?.motor_prev?.is_new_motor);
+}
+
 const buildEntryMeta = (p) => {
   const regno = safeInt(p?.regno);
   const branch = String(p?.branch ?? "").trim() || "—";
 
   let age = "—";
-  if (p?.age !== undefined && p?.age !== null && p?.age !== "") {
-    const n = Number(p.age);
-    age = Number.isFinite(n) ? `${Math.trunc(n)}歳` : `${String(p.age).trim()}歳`;
+  const rawAge = p?.age;
+  if (rawAge !== undefined && rawAge !== null && rawAge !== "") {
+    const n = Number(rawAge);
+    age = Number.isFinite(n) ? `${Math.trunc(n)}歳` : `${String(rawAge).trim()}歳`;
   }
 
   return `${regno} / ${branch} / ${age}`;
@@ -371,23 +416,67 @@ function getWakuStyles(waku) {
   return { bg: "#eef2f6", fg: "#6b7280", border: "#d7dde5" };
 }
 
-function formatMotorFinish(v) {
-  const s = String(v ?? "").trim().toUpperCase();
-  if (!s) return "";
-  if (s.startsWith("S")) return "失";
-  return s;
+function formatMotorFinish(v, row = null) {
+  const raw = String(v ?? "").trim().toUpperCase();
+  const finishRaw = String(row?.finish_raw ?? "").trim().toUpperCase();
+  const status = String(row?.status ?? "").trim().toUpperCase();
+
+  if (
+    row?.is_ketsujo === true ||
+    status === "欠" ||
+    isKetsujoLike(raw) ||
+    isKetsujoLike(finishRaw)
+  ) {
+    return "欠";
+  }
+
+  if (isLateLike(raw) || isLateLike(finishRaw) || status === "L") {
+    return "L";
+  }
+
+  if (
+    isShikkakuLike(raw) ||
+    isShikkakuLike(finishRaw) ||
+    status === "失" ||
+    status === "失格"
+  ) {
+    return "失";
+  }
+
+  if (!raw) return "";
+  if (raw === "F" || finishRaw === "F" || status === "F") return "F";
+
+  return raw;
 }
 
-function formatMotorST(v) {
-  const s = String(v ?? "").trim().toUpperCase();
-  if (!s) return "";
-  return s.replace(/^F/, "").replace(/^0(?=\.\d+)/, "");
+function formatMotorST(v, row = null) {
+  const raw = String(v ?? "").trim().toUpperCase();
+  const finishRaw = String(row?.finish_raw ?? "").trim().toUpperCase();
+  const status = String(row?.status ?? "").trim().toUpperCase();
+
+  if (
+    row?.is_ketsujo === true ||
+    status === "欠" ||
+    isKetsujoLike(finishRaw) ||
+    isKetsujoLike(raw)
+  ) {
+    return "";
+  }
+
+  if (!raw) return "";
+  if (isLateLike(raw) || isLateLike(finishRaw) || status === "L") return "";
+  if (isShikkakuLike(raw) || isShikkakuLike(finishRaw) || status === "失" || status === "失格") return "";
+  if (raw === "F" || finishRaw === "F" || status === "F") {
+    return raw.replace(/^F/, "").replace(/^0(?=\.\d+)/, "");
+  }
+
+  return raw.replace(/^F/, "").replace(/^0(?=\.\d+)/, "");
 }
 
 function calcMotorScore(days) {
   const flat = Array.isArray(days) ? days.flat() : [];
   const scores = flat
-    .filter((row) => row && typeof row === "object")
+    .filter((row) => row && typeof row === "object" && !isMotorKetsujo(row))
     .map((row) => getRecentScoreFromRank(row?.finish ?? row?.rank))
     .filter((v) => v !== null);
 
@@ -783,13 +872,14 @@ function renderMotorOneRun(row) {
     `;
   }
 
-  const displayCourse = row?.course ?? row?.waku ?? "";
-  const colorWaku = row?.waku ?? row?.course ?? "";
-  const st = formatMotorST(row?.st);
-  const finish = formatMotorFinish(row?.finish ?? row?.rank);
+  const isKetsujo = isMotorKetsujo(row);
+  const displayCourse = isKetsujo ? "" : (row?.course ?? row?.waku ?? "");
+  const colorWaku = isKetsujo ? "" : (row?.waku ?? row?.course ?? "");
+  const st = formatMotorST(row?.st, row);
+  const finish = formatMotorFinish(row?.finish ?? row?.rank, row);
   const isF = finish === "F";
   const colors = getWakuStyles(colorWaku);
-  const bottomColor = isF ? "#d83939" : "#2d5ec7";
+  const bottomColor = isKetsujo ? "#2d5ec7" : (isF ? "#d83939" : "#2d5ec7");
 
   return `
     <div style="
@@ -812,9 +902,9 @@ function renderMotorOneRun(row) {
           display:flex;
           align-items:center;
           justify-content:center;
-          border:1px solid ${colors.border};
-          background:${colors.bg};
-          color:${colors.fg};
+          border:${displayCourse !== "" ? `1px solid ${colors.border}` : "1px solid transparent"};
+          background:${displayCourse !== "" ? colors.bg : "transparent"};
+          color:${displayCourse !== "" ? colors.fg : "transparent"};
           font-weight:800;
           font-size:13px;
           line-height:1;
@@ -934,33 +1024,67 @@ function renderMotorInfoTable(boats) {
 
       ${boats.map((p) => {
         const prev = (p?.motor_prev && typeof p.motor_prev === "object") ? p.motor_prev : {};
-        const prevRegno = String(prev?.prev_rider_regno ?? "").trim();
-        const prevIsFemale = isFemaleRegno(prevRegno);
-        const prevNameBase = normalizeName(
-          prev?.prev_rider_name ||
-          prev?.prev_rider ||
-          ""
-        ) || "—";
-        const prevMeta = buildEntryMeta({
-          regno: prev?.prev_rider_regno,
-          branch: prev?.prev_rider_branch,
-          age: prev?.prev_rider_age
-        });
+        const isNewMotor = isNewMotorBoat(p);
+        const prevRegno = isNewMotor ? "" : String(prev?.prev_rider_regno ?? "").trim();
+        const prevIsFemale = !isNewMotor && isFemaleRegno(prevRegno);
 
-        const days = normalizeMotorPrevDays(prev?.days);
+        const prevNameBase = isNewMotor
+          ? NEW_MOTOR_TEXT
+          : (normalizeName(
+              pickFirstDefined(
+                prev?.prev_rider_name,
+                prev?.prev_rider,
+                ""
+              )
+            ) || "—");
 
-        const avgSt =
-          prev?.avg_st ??
-          prev?.average_st ??
-          prev?.mean_st ??
-          "";
+        const prevMaster = !isNewMotor ? (playerMaster?.[prevRegno] || {}) : {};
 
-        const rateScore = calcMotorScore(days);
+        const prevBranch = isNewMotor
+          ? ""
+          : pickFirstDefined(
+              prev?.prev_rider_branch,
+              prevMaster?.branch,
+              ""
+            );
+
+        const prevAge = isNewMotor
+          ? ""
+          : pickFirstDefined(
+              prev?.prev_rider_age,
+              prevMaster?.age,
+              ""
+            );
+
+        const prevMeta = isNewMotor
+          ? "— / — / —"
+          : buildEntryMeta({
+              regno: prev?.prev_rider_regno,
+              branch: prevBranch,
+              age: prevAge
+            });
+
+        const days = isNewMotor
+          ? Array.from({ length: 7 }, () => [null, null])
+          : normalizeMotorPrevDays(prev?.days);
+
+        const avgSt = isNewMotor
+          ? ""
+          : pickFirstDefined(
+              prev?.avg_st,
+              prev?.average_st,
+              prev?.mean_st,
+              ""
+            );
+
+        const rateScore = isNewMotor ? "" : calcMotorScore(days);
 
         const motorNo =
-          prev?.motor_no ??
-          p?.motor_no ??
-          "";
+          pickFirstDefined(
+            prev?.motor_no,
+            p?.motor_no,
+            ""
+          );
 
         const wakuStyles = getWakuStyles(p.waku);
 
@@ -995,8 +1119,8 @@ function renderMotorInfoTable(boats) {
               min-height:${cellH}px;
               background:${prevIsFemale ? "#fff2f7" : "#fff"};
             ">
-              <div style="font-size:10px;line-height:1.1;color:#7a8597;font-weight:700;margin-bottom:3px;">${esc(prevMeta)}</div>
-              <div style="font-size:12px;line-height:1.15;font-weight:800;color:#111827;word-break:break-word;">
+              <div style="font-size:9px;line-height:1.1;color:#7a8597;font-weight:700;margin-bottom:3px;">${esc(prevMeta)}</div>
+              <div style="font-size:${isNewMotor ? "11px" : "14px"};line-height:1.2;font-weight:800;color:${isNewMotor ? "#2d5ec7" : "#111827"};word-break:break-word;">
                 ${prevIsFemale ? '<span style="color:#d85b96;font-weight:800;">♡</span> ' : ""}${esc(prevNameBase)}
               </div>
             </div>
@@ -1454,3 +1578,4 @@ if (window.visualViewport) {
 $("btnBack").addEventListener("click", () => history.back());
 
 boot();
+

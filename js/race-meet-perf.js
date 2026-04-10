@@ -31,6 +31,11 @@ window.BOAT_CORE_MEET_PERF = (() => {
   const normalizeName = (name) =>
     String(name ?? "").replace(/[\s\u3000]+/g, "").trim();
 
+  function isKetsujoLike(v) {
+    const s = String(v ?? "").trim().toUpperCase();
+    return s === "欠" || /^K\d*$/.test(s);
+  }
+
   function setConfig(config = {}) {
     meetPerfBaseUrl = String(config.baseUrl || "");
     currentJcd = String(config.jcd || "").padStart(2, "0");
@@ -158,6 +163,7 @@ window.BOAT_CORE_MEET_PERF = (() => {
 
     const s = String(v).trim().toUpperCase();
 
+    if (isKetsujoLike(s)) return "欠";
     if (s === "F") return "F";
     if (s.startsWith("S")) return "失";
 
@@ -169,6 +175,7 @@ window.BOAT_CORE_MEET_PERF = (() => {
     const s = String(v).trim().toUpperCase();
     if (!s) return "";
 
+    if (isKetsujoLike(s)) return "欠";
     if (s.startsWith(".")) return s;
 
     const cleaned = s.replace(/^F/, "");
