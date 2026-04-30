@@ -1,11 +1,14 @@
 (() => {
   const ORDER = [1, 2, 3, 4, 5, 6];
   const RACER_GENDER_URL = "https://boatcore.jp/data/master/racer_gender.json";
+  const COURSE_RANK_THRESHOLDS_URL = "/data/course_rank_thresholds_1y.json";
 
   const state = {
     raceJson: null,
     genderMap: {},
+    courseRankThresholds: null,
     trendOrder: [...ORDER],
+    lastProGateOpenedAt: 0,
     drag: {
       timer: null,
       longPressMs: 260,
@@ -32,6 +35,107 @@
       "'": "&#39;"
     }[c]));
 
+  const labelHtml = (s) => String(s ?? "");
+
+  const isProMode = () => {
+    return (
+      document.body.classList.contains("is-pro") ||
+      localStorage.getItem("boatcore_pro_unlocked") === "1"
+    );
+  };
+
+  const openProGate = () => {
+    const now = Date.now();
+    if (now - state.lastProGateOpenedAt < 1200) return;
+    state.lastProGateOpenedAt = now;
+
+    if (typeof window.openProModal === "function") {
+      window.openProModal();
+      return;
+    }
+
+    const btn =
+      document.querySelector("[data-pro-open]") ||
+      document.querySelector("[data-open-pro]") ||
+      document.querySelector("#proModeBtn") ||
+      document.querySelector("#proUnlockBtn");
+
+    if (btn) {
+      btn.click();
+      return;
+    }
+
+    alert("PRO限定機能です");
+  };
+
+  const renderProLock = (innerHtml) => {
+    if (isProMode()) return innerHtml;
+
+    return `
+      <div
+        class="boatcoreProLock"
+        data-pro-lock="1"
+        style="
+          position:relative;
+          width:100%;
+          height:100%;
+          min-height:100%;
+          overflow:hidden;
+        "
+      >
+        <div
+          style="
+            width:100%;
+            height:100%;
+            min-height:100%;
+            filter:blur(5px);
+            opacity:.38;
+            pointer-events:none;
+            user-select:none;
+          "
+        >
+          ${innerHtml}
+        </div>
+        <button
+          type="button"
+          data-pro-lock-button="1"
+          style="
+            position:absolute;
+            inset:0;
+            z-index:5;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            border:0;
+            background:rgba(255,255,255,.70);
+            backdrop-filter:blur(2px);
+            -webkit-backdrop-filter:blur(2px);
+            color:#111827;
+            cursor:pointer;
+          "
+        >
+          <span
+            style="
+              display:inline-flex;
+              align-items:center;
+              justify-content:center;
+              width:54px;
+              height:54px;
+              border-radius:999px;
+              background:rgba(17,24,39,.94);
+              color:#fff;
+              font-size:22px;
+              line-height:1;
+              font-weight:900;
+              box-shadow:0 7px 20px rgba(15,23,42,.22);
+              white-space:nowrap;
+            "
+          >🔒</span>
+        </button>
+      </div>
+    `;
+  };
+
   const pickValue = (obj, keys) => {
     for (const key of keys) {
       const v = obj?.[key];
@@ -51,7 +155,12 @@
 
   const formatST = (v) => {
     const n = Number(v);
-    return Number.isFinite(n) ? n.toFixed(2) : "0.00";
+    return Number.isFinite(n) ? n.toFixed(2) : "—";
+  };
+
+  const formatStartRank = (v) => {
+    const n = Number(v);
+    return Number.isFinite(n) ? n.toFixed(1) : "—";
   };
 
   const formatRate = (v) => {
@@ -164,14 +273,33 @@
   const getAvgStValue = (boat) =>
     formatST(pickNumber(boat, ["avg_st", "st_avg", "ave_st", "average_st", "start_average"]));
 
+  const getAvgStartRankText = (boat) =>
+    formatStartRank(pickNumber(boat, [
+      "course_avg_start_rank",
+      "avg_start_rank",
+      "start_rank_avg",
+      "avg_st_rank",
+      "course_avg_st_rank"
+    ]));
+
   const getMeetAvgStValue = (boat) =>
     formatST(pickNumber(boat, [
       "meet_avg_st",
       "this_meet_avg_st",
-      "this_series_avg_st",
-      "series_avg_st",
-      "season_avg_st",
-      "recent_meet_st"
+      "this_series_avg_st"
+    ]));
+
+  const getMeetStartRankText = (boat) =>
+    formatStartRank(pickNumber(boat, [
+      "meet_start_rank",
+      "meet_avg_start_rank",
+      "this_meet_start_rank",
+      "this_series_start_rank",
+      "series_start_rank",
+      "this_meet_avg_start_rank",
+      "avg_start_rank_in_meet",
+      "meet_st_rank",
+      "meet_avg_st_rank"
     ]));
 
   const getCourseStartsText = (boat) =>
@@ -199,8 +327,8 @@
   const getFText = (boat) => formatDash(pickValue(boat, ["f_count", "f", "F", "f_num"]) || "—");
   const getLText = (boat) => formatDash(pickValue(boat, ["l_count", "l", "L", "l_num"]) || "—");
 
-  const getCourseWinText = (boat) =>
-    formatRate(pickValue(boat, [
+  const getCourseWinRaw = (boat) =>
+    pickValue(boat, [
       "course_win_1y",
       "course_win_rate_1y",
       "course_1着率_1y",
@@ -208,7 +336,84 @@
       "course_win_rate",
       "course_1着率",
       "course_win_3y"
-    ]));
+    ]);
+
+  const getCourse2renRaw = (boat) =>
+    pickValue(boat, [
+      "course_2ren_1y",
+      "course_2_1y",
+      "course_2ren",
+      "course_2",
+      "course_2ren_3y"
+    ]);
+
+  const getCourse3renRaw = (boat) =>
+    pickValue(boat, [
+      "course_3ren_1y",
+      "course_3_1y",
+      "course_3ren",
+      "course_3",
+      "course_3ren_3y"
+    ]);
+
+  const getCourseWinText = (boat) => formatRate(getCourseWinRaw(boat));
+  const getCourse2renText = (boat) => formatRate(getCourse2renRaw(boat));
+  const getCourse3renText = (boat) => formatRate(getCourse3renRaw(boat));
+
+  const getCourseRankTone = (metricKey, value, boat) => {
+    if (!isProMode()) return "";
+
+    const n = Number(value);
+    if (!Number.isFinite(n)) return "";
+
+    const course = String(boat?.waku || "");
+    const t = state.courseRankThresholds?.by_course?.[course]?.[metricKey];
+    if (!t || typeof t !== "object") return "";
+
+    const top5 = Number(t.top5);
+    const top15 = Number(t.top15);
+
+    if (Number.isFinite(top5) && n >= top5) return "gold";
+    if (Number.isFinite(top15) && n >= top15) return "red";
+
+    return "";
+  };
+
+  const getCourseRankStyle = (tone) => {
+    if (tone === "gold") {
+      return `
+        background:linear-gradient(180deg,#fff3b0 0%,#f2c94c 100%);
+        box-shadow:inset 0 0 0 2px #d6a900;
+      `;
+    }
+
+    if (tone === "red") {
+      return `
+        background:linear-gradient(180deg,#ffe4e6 0%,#fca5a5 100%);
+        box-shadow:inset 0 0 0 2px #ef4444;
+      `;
+    }
+
+    return "";
+  };
+
+  const renderRankMetricCell = (boat, metricKey, rawFn, textFn) => {
+    const raw = rawFn(boat);
+    const tone = getCourseRankTone(metricKey, raw, boat);
+    const style = getCourseRankStyle(tone);
+
+    return `
+      <div
+        class="courseGridCell"
+        data-course-rank-tone="${esc(tone)}"
+        style="${style}"
+      >
+        <div class="courseGridMetric">
+          ${esc(textFn(boat))}
+        </div>
+      </div>
+    `;
+  };
 
   const getCourseKimariteParts = (boat) => ({
     sashi: formatKimarite(pickValue(boat, [
@@ -236,12 +441,6 @@
     const n = Number(v);
     return Number.isFinite(n) ? formatST(n) : formatDash(v);
   };
-
-  const getCourse2renText = (boat) =>
-    formatRate(pickValue(boat, ["course_2ren_1y", "course_2_1y", "course_2ren", "course_2", "course_2ren_3y"]));
-
-  const getCourse3renText = (boat) =>
-    formatRate(pickValue(boat, ["course_3ren_1y", "course_3_1y", "course_3ren", "course_3", "course_3ren_3y"]));
 
   const renderHeadRow = (boats) => `
     <div class="courseGridRow courseGridRow--head">
@@ -283,14 +482,29 @@
     </div>
   `;
 
-  const renderSimpleRow = (boats, label, valueFn, rowClass = "") => `
-    <div class="courseGridRow ${rowClass}">
-      <div class="courseGridLabel">${esc(label)}</div>
-      ${boats.map((boat) => `
-        <div class="courseGridCell">
-          <div class="courseGridMetric">${esc(valueFn(boat))}</div>
-        </div>
-      `).join("")}
+  const renderSimpleRow = (boats, label, valueFn, rowClass = "") => {
+    const isStRow =
+      /st/i.test(String(label || "")) ||
+      /順位/.test(String(label || "")) ||
+      /avgst|meetavgst|startrank|avgstartrank/i.test(String(rowClass || ""));
+    const valueClass = isStRow ? "courseGridMetric num-st" : "courseGridMetric";
+
+    return `
+      <div class="courseGridRow ${rowClass}">
+        <div class="courseGridLabel">${labelHtml(label)}</div>
+        ${boats.map((boat) => `
+          <div class="courseGridCell">
+            <div class="${valueClass}">${esc(valueFn(boat))}</div>
+          </div>
+        `).join("")}
+      </div>
+    `;
+  };
+
+  const renderCourseRankRow = (boats, label, metricKey, rawFn, textFn) => `
+    <div class="courseGridRow courseGridRow--course">
+      <div class="courseGridLabel">${labelHtml(label)}</div>
+      ${boats.map((boat) => renderRankMetricCell(boat, metricKey, rawFn, textFn)).join("")}
     </div>
   `;
 
@@ -314,18 +528,12 @@
     </div>
   `;
 
-  const renderCourseWinRow = (boats) => `
-    <div class="courseGridRow courseGridRow--course">
-      <div class="courseGridLabel">コース別勝率</div>
-      ${boats.map((boat) => `
-        <div class="courseGridCell"><div class="courseGridMetric">${esc(getCourseWinText(boat))}</div></div>
-      `).join("")}
-    </div>
-  `;
+  const renderCourseWinRow = (boats) =>
+    renderCourseRankRow(boats, "コース別<br>勝率", "win_rate", getCourseWinRaw, getCourseWinText);
 
   const renderKimariteRow = (boats) => `
     <div class="courseGridRow courseGridRow--kimarite">
-      <div class="courseGridLabel">コース別決まり手</div>
+      <div class="courseGridLabel">コース別<br>決まり手</div>
       ${boats.map((boat) => {
         const parts = getCourseKimariteParts(boat);
         return `
@@ -350,13 +558,15 @@
         ${renderGradeRow(boats)}
         ${renderFLRow(boats)}
         ${renderSimpleRow(boats, "平均ST", getAvgStValue, "courseGridRow--avgst")}
-        ${renderSimpleRow(boats, "今節平均ST", getMeetAvgStValue, "courseGridRow--meetavgst")}
-        ${renderSimpleRow(boats, "コース別出走数", getCourseStartsText, "courseGridRow--starts")}
+        ${renderSimpleRow(boats, "平均ST<br>順位", getAvgStartRankText, "courseGridRow--avgstartrank")}
+        ${renderSimpleRow(boats, "今節平均<br>ST", getMeetAvgStValue, "courseGridRow--meetavgst")}
+        ${renderSimpleRow(boats, "今節平均<br>ST順位", getMeetStartRankText, "courseGridRow--startrank")}
+        ${renderSimpleRow(boats, "コース別<br>出走数", getCourseStartsText, "courseGridRow--starts")}
         ${renderCourseWinRow(boats)}
         ${renderKimariteRow(boats)}
-        ${renderSimpleRow(boats, "コース別平均ST", getCourseAvgStText, "courseGridRow--course")}
-        ${renderSimpleRow(boats, "コース別2連対", getCourse2renText, "courseGridRow--course")}
-        ${renderSimpleRow(boats, "コース別3連対", getCourse3renText, "courseGridRow--course")}
+        ${renderSimpleRow(boats, "コース別<br>平均ST", getCourseAvgStText, "courseGridRow--course")}
+        ${renderCourseRankRow(boats, "コース別<br>2連対", "ren2_rate", getCourse2renRaw, getCourse2renText)}
+        ${renderCourseRankRow(boats, "コース別<br>3連対", "ren3_rate", getCourse3renRaw, getCourse3renText)}
       </div>
     `;
   };
@@ -386,12 +596,7 @@
   const formatRecentSt = (rec) => {
     const rawResult = getRecentRawResult(rec);
 
-    if (
-      !rawResult ||
-      isLateLike(rawResult) ||
-      isShikkakuLike(rawResult) ||
-      isKetsujoLike(rawResult)
-    ) {
+    if (!rawResult || isLateLike(rawResult) || isKetsujoLike(rawResult)) {
       return "—";
     }
 
@@ -401,15 +606,15 @@
     const s = String(rawSt).trim().toUpperCase();
     if (!s) return "—";
 
-    const cleaned = s.replace(/^F/, "");
+    const cleaned = s.replace(/^F/, "").replace(/^L/, "");
 
     if (cleaned.startsWith(".")) return cleaned;
 
     const n = Number(cleaned);
     if (Number.isFinite(n)) return `.${n.toFixed(2).split(".")[1]}`;
 
-    if (isFlyingLike(rawResult) && /^F\d+\.\d{2}$/.test(s)) {
-      return s.replace(/^F/, "");
+    if ((isFlyingLike(rawResult) || isLateLike(rawResult)) && /^[FL]\d+\.\d{2}$/.test(s)) {
+      return s.replace(/^[FL]/, "");
     }
 
     return "—";
@@ -426,42 +631,42 @@
     return null;
   };
 
-  const getTrendBundle = (boat, mode = "all") => {
-    const selectedCourse = String(Number(boat?.displayCourse || boat?.waku || 1));
+  const getByCourseBundle = (boat, mode, selectedCourse) => {
+    const courseKey = String(selectedCourse);
 
     if (mode === "local") {
       const byCourse = boat?.waku_recent_local_by_course;
       const avgByCourse = boat?.waku_recent_local_avg_st_by_course;
+
       if (byCourse && typeof byCourse === "object") {
-        return {
-          rows: Array.isArray(byCourse[selectedCourse]) ? byCourse[selectedCourse] : [],
-          avgSt: avgByCourse?.[selectedCourse]
-        };
+        const rows = Array.isArray(byCourse[courseKey]) ? byCourse[courseKey] : [];
+        const avgSt = avgByCourse?.[courseKey];
+        return { rows, avgSt };
       }
-      return {
-        rows: Array.isArray(boat?.waku_recent_local) ? boat.waku_recent_local : [],
-        avgSt: boat?.waku_recent_local_avg_st
-      };
+
+      return { rows: [], avgSt: null };
     }
 
     const byCourse = boat?.waku_recent_by_course;
     const avgByCourse = boat?.waku_recent_avg_st_by_course;
+
     if (byCourse && typeof byCourse === "object") {
-      return {
-        rows: Array.isArray(byCourse[selectedCourse]) ? byCourse[selectedCourse] : [],
-        avgSt: avgByCourse?.[selectedCourse]
-      };
+      const rows = Array.isArray(byCourse[courseKey]) ? byCourse[courseKey] : [];
+      const avgSt = avgByCourse?.[courseKey];
+      return { rows, avgSt };
     }
 
-    return {
-      rows: Array.isArray(boat?.waku_recent) ? boat.waku_recent : [],
-      avgSt: boat?.waku_recent_avg_st
-    };
+    return { rows: [], avgSt: null };
+  };
+
+  const getTrendBundle = (boat, mode = "all") => {
+    const selectedCourse = Number(boat?.displayCourse || boat?.waku || 1);
+    return getByCourseBundle(boat, mode, selectedCourse);
   };
 
   const getWakuRecentAvgStText = (boat, mode = "all") => {
     const n = Number(getTrendBundle(boat, mode)?.avgSt);
-    return Number.isFinite(n) ? n.toFixed(2) : "—";
+    return Number.isFinite(n) ? n.toFixed(2) : "0.00";
   };
 
   const getWakuScoreText = (boat, mode = "all") => {
@@ -513,6 +718,108 @@
     </div>
   `;
 
+  const renderCoreNotice = () => `
+    <div style="
+      padding:10px 12px max(14px, env(safe-area-inset-bottom));
+      background:#fff;
+      color:#6b7280;
+      font-size:10px;
+      line-height:1.55;
+      font-weight:600;
+      border-top:1px solid #e5e7eb;
+    ">
+      ※本勝率はBOAT CORE独自の分析ロジックに基づいて算出しています。
+    </div>
+  `;
+
+  const buildRecentRaceNo = (rec) => {
+    const n = Number(rec?.race ?? rec?.rno ?? rec?.race_no ?? 0);
+    return Number.isFinite(n) && n > 0 ? String(Math.trunc(n)) : "";
+  };
+
+  const buildRecentDayText = (rec) => {
+    const raw = String(rec?.day_label ?? "").trim();
+    if (raw) return raw;
+
+    const n = Number(rec?.day ?? rec?.day_no ?? 0);
+    if (!Number.isFinite(n) || n <= 0) return "";
+    return n === 1 ? "初日" : `${Math.trunc(n)}日目`;
+  };
+
+  const canOpenRecentResult = (rec) => {
+    const date = String(rec?.date || "").trim();
+    const jcd = String(rec?.jcd || "").trim();
+    const race = buildRecentRaceNo(rec);
+    const rank = formatRecentRank(rec);
+    return Boolean(date && jcd && race && rank && rank !== "—");
+  };
+
+  const buildRecentResultAttrs = (rec, boat) => {
+    if (!canOpenRecentResult(rec)) return "";
+
+    const venue = String(
+      rec?.venue ||
+      state.raceJson?.race?.venue ||
+      state.raceJson?.venue ||
+      getSearchParams().venueName ||
+      ""
+    ).trim();
+
+    const dayText = buildRecentDayText(rec);
+    const raceNo = buildRecentRaceNo(rec);
+    const eventTitle = String(rec?.event_title || rec?.event_title_norm || "").trim();
+
+    return `
+      data-open-result="1"
+      data-date="${esc(String(rec?.date || "").trim())}"
+      data-jcd="${esc(String(rec?.jcd || "").trim())}"
+      data-race="${esc(raceNo)}"
+      data-day="${esc(dayText)}"
+      data-venue="${esc(venue)}"
+      data-event-title="${esc(eventTitle)}"
+      data-origin-waku="${esc(String(boat?.waku || ""))}"
+      data-display-course="${esc(String(boat?.displayCourse || ""))}"
+    `;
+  };
+
+  const renderTrendResultButton = (rec, boat, rank, isF) => {
+    const rankHtml = `<span class="num-rank">${esc(rank)}</span>`;
+
+    if (!canOpenRecentResult(rec)) {
+      return `
+        <div style="height:14px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;line-height:1;color:${isF ? "#d83939" : "#0f172a"};padding-top:0;border-bottom:0;">
+          ${rankHtml}
+        </div>
+      `;
+    }
+
+    return `
+      <button
+        type="button"
+        class="boatcoreTrendResultBtn"
+        ${buildRecentResultAttrs(rec, boat)}
+        style="
+          height:14px;
+          width:100%;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          font-size:11px;
+          font-weight:800;
+          line-height:1;
+          color:${isF ? "#d83939" : "#2563eb"};
+          padding:0;
+          margin:0;
+          border:0;
+          background:transparent;
+          text-decoration:underline;
+          text-underline-offset:1px;
+          cursor:pointer;
+        "
+      >${rankHtml}</button>
+    `;
+  };
+
   const renderWakuTrendRows = (boats, mode = "all") => boats.map((boat) => {
     const records = getWakuRecentRecords(boat, mode);
     const isFemale = isFemaleRacer(boat);
@@ -535,11 +842,35 @@
           <div style="height:16px;display:flex;align-items:center;justify-content:center;border-bottom:1px solid #e8edf3;">
             <div style="width:20px;height:14px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;${getRecentWakuBadgeStyle(badgeWaku)}">${esc(course)}</div>
           </div>
-          <div style="height:16px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#334155;border-bottom:1px solid #e8edf3;">${esc(st)}</div>
-          <div style="height:14px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;line-height:1;color:${isF ? "#d83939" : "#0f172a"};padding-top:0;border-bottom:0;">${esc(rank)}</div>
+          <div style="height:16px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#334155;border-bottom:1px solid #e8edf3;">
+            <span class="num-st">${esc(st)}</span>
+          </div>
+          ${renderTrendResultButton(rec, boat, rank, isF)}
         </div>
       `;
     }).join("");
+
+    const scoreBox = `
+      <div style="display:grid;grid-template-rows:13px 20px 13px 20px;background:#fff;height:100%;border-left:1px solid #d7dde5;">
+        <div style="display:flex;align-items:center;justify-content:center;border-bottom:1px solid #e8edf3;font-size:9px;font-weight:700;color:#64748b;line-height:1;background:#f8fafc;">平均ST</div>
+        <div style="display:flex;align-items:center;justify-content:center;border-bottom:1px solid #d7dde5;font-size:13px;font-weight:800;color:#1d4ed8;line-height:1;">
+          <span class="num-st">${esc(getWakuRecentAvgStText(boat, mode))}</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:center;border-bottom:1px solid #e8edf3;font-size:9px;font-weight:700;color:#64748b;line-height:1;background:#f8fafc;">勝率</div>
+        <div style="display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#475569;line-height:1;">${esc(getWakuScoreText(boat, mode))}</div>
+      </div>
+    `;
+
+    const proArea = renderProLock(`
+      <div style="display:grid;grid-template-columns:minmax(0,1fr) 68px;width:100%;height:100%;min-height:74px;background:#fff;">
+        <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;border-right:0;">
+          <div style="display:flex;align-items:stretch;min-width:max-content;height:100%;margin-right:-1px;">
+            ${recentCells}
+          </div>
+        </div>
+        ${scoreBox}
+      </div>
+    `);
 
     return `
       <div
@@ -555,8 +886,8 @@
           transition:background .12s ease, opacity .12s ease;
         "
       >
-        <div style="display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;line-height:1;border-right:1px solid #d7dde5;${getWakuChipStyle(displayCourse)}">
-          ${esc(displayCourse)}
+        <div style="display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;line-height:1;border-right:1px solid #d7dde5;${getWakuChipStyle(originWaku)}">
+          ${esc(originWaku)}
         </div>
 
         <div
@@ -594,17 +925,8 @@
           </div>
         </div>
 
-        <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;border-right:0;">
-          <div style="display:flex;align-items:stretch;min-width:max-content;height:100%;margin-right:-1px;">
-            ${recentCells}
-          </div>
-        </div>
-
-        <div style="display:grid;grid-template-rows:13px 20px 13px 20px;background:#fff;">
-          <div style="display:flex;align-items:center;justify-content:center;border-bottom:1px solid #e8edf3;font-size:9px;font-weight:700;color:#64748b;line-height:1;background:#f8fafc;">平均ST</div>
-          <div style="display:flex;align-items:center;justify-content:center;border-bottom:1px solid #d7dde5;font-size:13px;font-weight:800;color:#1d4ed8;line-height:1;">${esc(getWakuRecentAvgStText(boat, mode))}</div>
-          <div style="display:flex;align-items:center;justify-content:center;border-bottom:1px solid #e8edf3;font-size:9px;font-weight:700;color:#64748b;line-height:1;background:#f8fafc;">勝率</div>
-          <div style="display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#475569;line-height:1;">${esc(getWakuScoreText(boat, mode))}</div>
+        <div style="grid-column:3 / 5;height:100%;min-height:74px;overflow:hidden;">
+          ${proArea}
         </div>
       </div>
     `;
@@ -615,13 +937,19 @@
       ${renderDragHint()}
       <div style="flex:1 1 auto;min-height:0;overflow:auto hidden;-webkit-overflow-scrolling:touch;">
         ${renderWakuTrendRows(getTrendBoats(), mode)}
+        ${renderCoreNotice()}
       </div>
     </div>
   `;
 
   const bindNameLinks = (root) => {
     root.querySelectorAll('[data-player-link="1"]').forEach((link) => {
-      link.addEventListener("click", () => {});
+      link.addEventListener("click", (e) => {
+        if (isProMode()) return;
+        e.preventDefault();
+        e.stopPropagation();
+        openProGate();
+      });
     });
   };
 
@@ -659,11 +987,13 @@
     ghost.style.boxShadow = "0 10px 28px rgba(15,23,42,.22)";
     ghost.style.padding = "10px 12px";
     ghost.style.transform = "translate3d(0,0,0)";
+
     ghost.style.opacity = "0.96";
     ghost.innerHTML = `
       <div style="font-size:10px;color:#64748b;font-weight:700;line-height:1.2;">
         ${esc(formatDash(boat?.regno))} / ${esc(formatDash(boat?.branch))} / ${esc(formatDash(boat?.age))}歳
       </div>
+
       <div style="margin-top:6px;font-size:16px;color:#0f172a;font-weight:800;line-height:1.2;">
         ${esc(normalizeName(boat?.name || "—"))}
       </div>
@@ -671,6 +1001,7 @@
         ${esc(boat?.waku)}号艇を移動中
       </div>
     `;
+
     document.body.appendChild(ghost);
     state.drag.ghostEl = ghost;
     updateGhostPosition(state.drag.pointerX || state.drag.startX, state.drag.pointerY || state.drag.startY);
@@ -706,15 +1037,15 @@
     for (const r of rows) {
       const rect = r.getBoundingClientRect();
       if (clientY < rect.top) {
-        return Number(r.dataset.displayCourse || r.dataset["display-course"] || 0) || null;
+        return Number(r.dataset.displayCourse || 0) || null;
       }
       if (clientY >= rect.top && clientY <= rect.bottom) {
-        return Number(r.dataset.displayCourse || r.dataset["display-course"] || 0) || null;
+        return Number(r.dataset.displayCourse || 0) || null;
       }
     }
 
     const last = rows[rows.length - 1];
-    return Number(last.dataset.displayCourse || last.dataset["display-course"] || rows.length) || rows.length;
+    return Number(last.dataset.displayCourse || rows.length) || rows.length;
   };
 
   const startLongPress = (waku, clientX, clientY) => {
@@ -789,6 +1120,48 @@
     });
   };
 
+  const bindProLockClicks = () => {
+    document.querySelectorAll("[data-pro-lock-button='1']").forEach((el) => {
+      el.onclick = (e) => {
+        if (isProMode()) return;
+        e.preventDefault();
+        e.stopPropagation();
+        openProGate();
+      };
+    });
+  };
+
+  const bindTrendResultClicks = () => {
+    const roots = [
+      $("wakuTrendRoot"),
+      $("wakuTrendLocalRoot")
+    ].filter(Boolean);
+
+    roots.forEach((root) => {
+      root.querySelectorAll("[data-open-result='1']").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+
+          const openFn = window.BOAT_CORE_MEET_PERF?.openRaceResultModal;
+          if (typeof openFn !== "function") return;
+
+          const date = String(btn.dataset.date || "").trim();
+          const jcd = String(btn.dataset.jcd || "").trim();
+          const race = Number(btn.dataset.race || 0);
+
+          if (!date || !jcd || !Number.isFinite(race) || race <= 0) return;
+
+          openFn({
+            date,
+            jcd,
+            race
+          });
+        });
+      });
+    });
+  };
+
   const renderTrendRoots = () => {
     const wakuRoot = $("wakuTrendRoot");
     const wakuLocalRoot = $("wakuTrendLocalRoot");
@@ -797,6 +1170,8 @@
     if (wakuLocalRoot) wakuLocalRoot.innerHTML = renderWakuTrendGrid("local");
 
     bindTrendDrag();
+    bindTrendResultClicks();
+    bindProLockClicks();
   };
 
   const renderRoot = async () => {
@@ -804,8 +1179,19 @@
     if (courseRoot) {
       courseRoot.innerHTML = `
         <div class="coursePanel">
-          <div class="coursePanelMain">
-            <div class="coursePanelBody">
+          <div class="coursePanelMain" style="
+            display:flex;
+            flex-direction:column;
+            height:var(--entryViewportH);
+            max-height:var(--entryViewportH);
+            overflow:hidden;
+          ">
+            <div class="coursePanelBody" style="
+              flex:1 1 auto;
+              min-height:0;
+              overflow-y:auto;
+              -webkit-overflow-scrolling:touch;
+            ">
               ${renderMainGrid()}
             </div>
           </div>
@@ -844,15 +1230,35 @@
     }
   };
 
+  const fetchCourseRankThresholds = async () => {
+    if (state.courseRankThresholds) return state.courseRankThresholds;
+
+    try {
+      const res = await fetch(`${COURSE_RANK_THRESHOLDS_URL}?t=${Math.floor(Date.now() / 60000)}`, { cache: "no-store" });
+      if (!res.ok) throw new Error("course rank thresholds fetch failed");
+      state.courseRankThresholds = (await res.json()) || {};
+    } catch {
+      state.courseRankThresholds = {};
+    }
+
+    return state.courseRankThresholds;
+  };
+
   const render = async (json) => {
     state.raceJson = json || null;
     state.trendOrder = [...ORDER];
     resetDragState();
-    await fetchGenderMap();
+
+    await Promise.all([
+      fetchGenderMap(),
+      fetchCourseRankThresholds()
+    ]);
+
     await renderRoot();
   };
 
   const boot = async () => {
+    await fetchCourseRankThresholds();
     await renderRoot();
   };
 
@@ -881,8 +1287,8 @@
     if (!tab) return;
 
     const idx = tab.dataset.waku;
-    document.querySelectorAll('#wakuTabs .entryInnerTab').forEach((t) => t.classList.remove("is-active"));
-    document.querySelectorAll('[data-waku-page]').forEach((p) => {
+    document.querySelectorAll("#wakuTabs .entryInnerTab").forEach((t) => t.classList.remove("is-active"));
+    document.querySelectorAll("[data-waku-page]").forEach((p) => {
       p.style.display = p.dataset.wakuPage === idx ? "block" : "none";
     });
     tab.classList.add("is-active");
